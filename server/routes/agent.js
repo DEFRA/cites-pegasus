@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const urlPrefix = require('../config').urlPrefix
+const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList } = require('../helpers/helper-functions')
 
 const viewTemplate = 'agent'

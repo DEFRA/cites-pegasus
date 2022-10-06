@@ -1,6 +1,6 @@
 const path = require('path')
 const nunjucks = require('nunjucks')
-const config = require('../config')
+const config = require('../../config/config')
 const pkg = require('../../package.json')
 const analyticsAccount = config.analyticsAccount
 
