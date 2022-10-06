@@ -2,6 +2,8 @@ const Joi = require('@hapi/joi')
 const urlPrefix = ''
 const envs = ['dev', 'test', 'prod']
 
+require('dotenv').config()
+
 // Define config schema
 const schema = Joi.object().keys({
   urlPrefix: Joi.string().default(urlPrefix),

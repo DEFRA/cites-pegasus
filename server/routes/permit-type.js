@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList } = require('../helpers/helper-functions')
-//const { setYarValue, getYarValue } = require('../helpers/session')
+const { findErrorList, isChecked } = require('../helpers/helper-functions')
+const { setYarValue, getYarValue } = require('../helpers/session')
 
 const viewTemplate = 'permit-type'
 const currentPath = `${urlPrefix}/${viewTemplate}`
@@ -10,7 +10,6 @@ const nextPath = `${urlPrefix}/agent`
 //const detailsPath = `${urlPrefix}/check-details`
 
 function createModel(errorList, permitType) {
-
   return {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -18,7 +17,7 @@ function createModel(errorList, permitType) {
     pageTitle: errorList ? 'Error: Select the type of permit or certificate you are applying for' : 'What type of permit or certificate are you applying for?',
     serviceName: 'Apply for a CITES permit to move or trade endangered species',
     inputPermitType: {
-      id: "permitType",
+      idPrefix: "permitType",
       name: "permitType",
       fieldset: {
         legend: {
@@ -31,30 +30,35 @@ function createModel(errorList, permitType) {
         {
           value: "import",
           text: "Import",
-          hint: { text: "To move a species into Great Britain from another country." }
+          hint: { text: "To move a species into Great Britain from another country." },
+          checked: isChecked(permitType, "import")
         },
         {
           value: "export",
           text: "Export",
-          hint: { text: "To move a species out of Great Britain to another country." }
+          hint: { text: "To move a species out of Great Britain to another country." },
+          checked: isChecked(permitType, "export")
         },
         {
           value: "reexport",
           text: "Re-export",
-          hint: { text: "To move a species that has already been imported into Great Britain to another country." }
+          hint: { text: "To move a species that has already been imported into Great Britain to another country." },
+          checked: isChecked(permitType, "reexport")
         },
         {
           value: "article10",
           text: "Article 10",
-          hint: { text: "To use any CITES annex A specimen for commercial purposes." }
+          hint: { text: "To use any CITES annex A specimen for commercial purposes." },
+          checked: isChecked(permitType, "article10")
         },
         {
           value: "other",
-          text: "Other"
+          text: "Other",
+          checked: isChecked(permitType, "other")
         }
       ],
 
-      ...(permitType ? { value: permitType } : {}),
+      //...(permitType ? { value: permitType } : {}),
       ...(errorList && errorList.some(err => err.href === '#permitType') ? { errorMessage: { text: errorList.find(err => err.href === '#permitType').text } } : {})
     }
   }
@@ -64,8 +68,8 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    // let permitType = getYarValue(request, 'permitType') || null
-    let permitType = null;
+    let permitType = getYarValue(request, 'permitType') || null
+    //let permitType = null;
     return h.view(viewTemplate, createModel(null, permitType));
   }
 },
@@ -93,12 +97,11 @@ module.exports = [{
         // const { projectName, businessName, numberEmployees, businessTurnover, sbi } = request.payload
         // const businessDetails = { projectName, businessName, numberEmployees, businessTurnover, sbi }
         
-        return h.view(viewTemplate, createModel(errorList, request.payload)).takeover()
+        return h.view(viewTemplate, createModel(errorList, request.payload.permitType)).takeover()
       }
     },
     handler: async (request, h) => {
-
-      //setYarValue(request, 'permitType', request.payload)
+      setYarValue(request, 'permitType', request.payload.permitType)
       return h.redirect(nextPath);
     }
   },

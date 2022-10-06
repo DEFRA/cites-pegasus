@@ -1,34 +1,34 @@
  const lookupErrorText = require('./lookupErrorText')
 // const { GRANT_PERCENTAGE } = require('../helpers/grant-details')
 
-// function isChecked (data, option) {
-//   return !!data && data.includes(option)
-// }
+function isChecked (data, option) {
+  return !!data && data.includes(option)
+}
 
-// function setLabelData (data, labelData) {
-//   return labelData.map((label) => {
-//     if (typeof (label) === 'string' && label !== 'divider') {
-//       return {
-//         value: label,
-//         text: label,
-//         checked: isChecked(data, label),
-//         selected: data === label
-//       }
-//     }
-//     if (label === 'divider') {
-//       return { divider: 'or' }
-//     }
+function setLabelData (data, labelData) {
+  return labelData.map((label) => {
+    if (typeof (label) === 'string' && label !== 'divider') {
+      return {
+        value: label,
+        text: label,
+        checked: isChecked(data, label),
+        selected: data === label
+      }
+    }
+    if (label === 'divider') {
+      return { divider: 'or' }
+    }
 
-//     const { text, value, hint } = label
-//     return {
-//       value,
-//       text,
-//       checked: isChecked(data, value),
-//       selected: data === value,
-//       hint
-//     }
-//   })
-// }
+    const { text, value, hint } = label
+    return {
+      value,
+      text,
+      checked: isChecked(data, value),
+      selected: data === value,
+      hint
+    }
+  })
+}
 
 // function formInputObject (name, classes, text, hint, inputInfo, value) {
 //   const { fieldName, fieldError, inputType, autocomplete } = inputInfo
@@ -191,8 +191,8 @@ function findErrorList ({ details }, inputFields) {
 // }
 
 module.exports = {
-//   isChecked,
-//   setLabelData,
+   isChecked,
+   setLabelData,
 //   formInputObject,
 //   getPostCodeHtml,
 //   errorExtractor,

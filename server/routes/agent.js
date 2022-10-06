@@ -1,15 +1,15 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList } = require('../helpers/helper-functions')
+const { findErrorList, setLabelData} = require('../helpers/helper-functions')
+const { setYarValue, getYarValue } = require('../helpers/session')
 
 const viewTemplate = 'agent'
 const currentPath = `${urlPrefix}/${viewTemplate}`
 const previousPath = `${urlPrefix}/permit-type`
-//const nextPath = `${urlPrefix}/agent`
+const nextPath = `${urlPrefix}/owner-contact-details`
 
-function createModel(errorList, isAgent, hasDetails) {
-
-  const x = {
+function createModel(errorList, isAgent) {
+  return {
     backLink: previousPath,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
@@ -29,31 +29,22 @@ function createModel(errorList, isAgent, hasDetails) {
       hint: { 
         text: "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business." 
       },
-      items: [
-        {
-          value: "yes",
-          text: "Yes"
-        },
-        {
-          value: "no",
-          text: "No"
-        }
-      ],
-
-      ...(isAgent ? { value: isAgent } : {}),
+      items: setLabelData(isAgent, ['Yes', 'No']),
+      
+      //...(isAgent ? { value: isAgent } : {}),
       ...(errorList && errorList.some(err => err.href === '#isAgent') ? { errorMessage: { text: errorList.find(err => err.href === '#isAgent').text } } : {})
     }
   }
-  console.log(x);
-  return x;
+  
 }
 
 module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    isAgent = null;
-    return h.view(viewTemplate, createModel(null, isAgent, null));
+    let isAgent = getYarValue(request, 'isAgent') || null
+    //isAgent = null;
+    return h.view(viewTemplate, createModel(null, isAgent));
   }
 },
 {
@@ -76,10 +67,11 @@ module.exports = [{
           })
         }
 
-        return h.view(viewTemplate, createModel(errorList, request.payload, null)).takeover()
+        return h.view(viewTemplate, createModel(errorList, request.payload.isAgent)).takeover()
       }
     },
     handler: async (request, h) => {
+      setYarValue(request, 'isAgent', request.payload.isAgent)
       return h.redirect(nextPath);
     }
   },
