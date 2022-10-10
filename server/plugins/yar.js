@@ -4,12 +4,12 @@ const config = require('../../config/config')
 module.exports = {
     plugin: require('@hapi/yar'),
       options: {
-        maxCookieSize: 0,//cacheConfig.useRedis ? 0 : 1024,
+        maxCookieSize: cacheConfig.useRedis ? 0 : 1024,
         storeBlank: true,
-        // cache: {
-        //   cache: 'session',
-        //   expiresIn: cacheConfig.expiresIn
-        // },
+        cache: {
+          cache: 'session',
+          expiresIn: cacheConfig.expiresIn
+        },
         cookieOptions: {
           password: config.cookiePassword,
           isSecure: config.cookieOptions.isSecure,

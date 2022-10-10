@@ -1,4 +1,5 @@
  const lookupErrorText = require('./lookupErrorText')
+ const textContent = require('../content/text-content.json')
 // const { GRANT_PERCENTAGE } = require('../helpers/grant-details')
 
 function isChecked (data, option) {
@@ -158,6 +159,11 @@ function setLabelData (data, labelData) {
 //   )))
 // }
 
+function findTextContent(page) {
+  return textContent[page];
+}
+
+
 function findErrorList ({ details }, inputFields) {
   const errorCodes = inputFields.map(input => {
     const foundErrorList = details.filter(({ context: { label: valLabel } }) => (valLabel === input))
@@ -202,6 +208,7 @@ module.exports = {
 //   itemInObject,
 //   fetchObjectItem,
 //   fetchListObjectItems,
+  findTextContent,
   findErrorList,
 //   formatApplicationCode,
 //   getSbiHtml,

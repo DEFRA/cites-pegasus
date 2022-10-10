@@ -2,6 +2,7 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, isChecked } = require('../helpers/helper-functions')
 const { setYarValue, getYarValue } = require('../helpers/session')
+const textContent = require('../content/text-content')
 
 const viewTemplate = 'permit-type'
 const currentPath = `${urlPrefix}/${viewTemplate}`
@@ -10,18 +11,24 @@ const nextPath = `${urlPrefix}/agent`
 //const detailsPath = `${urlPrefix}/check-details`
 
 function createModel(errorList, permitType) {
+  var commonContent = textContent.common;
+  var pageContent = textContent.permitType;
+
   return {
     backLink: previousPath,
+    backLinkButtonText: commonContent.backLinkButton,
+    continueButtonText: commonContent.continueButton,
+    errorSummaryTitleText: commonContent.errorSummaryTitle,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? 'Error: Select the type of permit or certificate you are applying for' : 'What type of permit or certificate are you applying for?',
-    serviceName: 'Apply for a CITES permit to move or trade endangered species',
+    pageTitle: errorList ? 'Error: ' + errorList[0].text : pageContent.defaultTitle,
+    serviceName: commonContent.serviceName,
     inputPermitType: {
       idPrefix: "permitType",
       name: "permitType",
       fieldset: {
         legend: {
-          text: "What type of permit or certificate are you applying for?",
+          text: pageContent.heading,
           isPageHeading: true,
           classes: "govuk-fieldset__legend--l"
         }
@@ -29,31 +36,31 @@ function createModel(errorList, permitType) {
       items: [
         {
           value: "import",
-          text: "Import",
-          hint: { text: "To move a species into Great Britain from another country." },
+          text: pageContent.radioOptionImport,
+          hint: { text: pageContent.radioOptionImportHint },
           checked: isChecked(permitType, "import")
         },
         {
           value: "export",
-          text: "Export",
-          hint: { text: "To move a species out of Great Britain to another country." },
+          text: pageContent.radioOptionExport,
+          hint: { text: pageContent.radioOptionExportHint },
           checked: isChecked(permitType, "export")
         },
         {
           value: "reexport",
-          text: "Re-export",
-          hint: { text: "To move a species that has already been imported into Great Britain to another country." },
+          text: pageContent.radioOptionReexport,
+          hint: { text: pageContent.radioOptionReexportHint },
           checked: isChecked(permitType, "reexport")
         },
         {
           value: "article10",
-          text: "Article 10",
-          hint: { text: "To use any CITES annex A specimen for commercial purposes." },
+          text: pageContent.radioOptionArticle10,
+          hint: { text: pageContent.radioOptionArticle10Hint },
           checked: isChecked(permitType, "article10")
         },
         {
           value: "other",
-          text: "Other",
+          text: pageContent.radioOptionOther,
           checked: isChecked(permitType, "other")
         }
       ],

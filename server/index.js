@@ -1,20 +1,19 @@
 const hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const cacheConfig = require('../config/cache')
-//const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
-//const catbox = require('@hapi/catbox-memory')
+const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
 async function createServer () {
   // Create the hapi server
   const server = hapi.server({
     port: config.port,
-    // cache: [{
-    //   name: 'session',
-    //   provider: {
-    //     constructor: catbox
-    //     options: cacheConfig.catboxOptions
-    //   }
-    // }],
+     cache: [{
+       name: 'session',
+       provider: {
+         constructor: catbox,
+         options: cacheConfig.catboxOptions
+       }
+     }],
     routes: {
       validate: {
         options: {

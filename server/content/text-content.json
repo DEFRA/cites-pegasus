@@ -1,0 +1,21 @@
+{
+    "common": {
+        "serviceName": "Apply for a CITES permit",
+        "backLinkButton": "Back",
+        "continueButton": "Continue",
+        "errorSummaryTitle": "There is a problem"
+    },
+    "permitType": {
+        "defaultTitle": "What type of permit or certificate are you applying for?",
+        "heading": "What type of permit or certificate are you applying for?",
+        "radioOptionImport": "Import",
+        "radioOptionImportHint":"To move a species into Great Britain from another country.",
+        "radioOptionExport": "Export",
+        "radioOptionExportHint":"To move a species out of Great Britain to another country.",
+        "radioOptionReexport": "Re-export",
+        "radioOptionReexportHint":"To move a species that has already been imported into Great Britain to another country.",
+        "radioOptionArticle10": "Article 10",
+        "radioOptionArticle10Hint":"To use any CITES annex A specimen for commercial purposes.",
+        "radioOptionOther": "Other"
+    }
+}
