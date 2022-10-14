@@ -8,6 +8,8 @@ const viewTemplate = 'permit-type'
 const currentPath = `${urlPrefix}/${viewTemplate}`
 const previousPath = `${urlPrefix}/apply-cites-permit`
 const nextPath = `${urlPrefix}/agent`
+const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
+
 //const detailsPath = `${urlPrefix}/check-details`
 
 function createModel(errorList, permitType) {
@@ -116,8 +118,7 @@ module.exports = [{
       setAppData(request, {permitType: request.payload.permitType});
 
       //setYarValue(request, 'permitType', request.payload.permitType)
-      
-      return h.redirect(nextPath);
+      return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
     }
   },
 }

@@ -4,6 +4,7 @@
         "backLinkButton": "Back",
         "continueButton": "Continue",
         "startButton": "Start now",
+        "finishButton": "Finish",
         "errorSummaryTitlePrefix": "Error: ",
         "errorSummaryTitle": "There is a problem",
         "radioOptionYes": "Yes",
@@ -29,6 +30,16 @@
         "radioOptionArticle10": "Article 10",
         "radioOptionArticle10Hint":"To use any CITES annex A specimen for commercial purposes.",
         "radioOptionOther": "Other"
+    },
+    "cannotUseService": {
+        "pageTitle": "You cannot use this service yet",
+        "pageHeader": "You cannot use this service yet",
+        "pageBody": "You can only use this service to apply for:",
+        "bullet1": "import, export or re-export permits",
+        "bullet2": "article 10 certificates",
+        "linkText": "Check how to apply for other CITES permits and certificates",
+        "linkUrl": "/",
+        "finishButtonUrl": "/"
     },
     "agent": {
         "defaultTitle": "Are you applying on behalf of someone else?",

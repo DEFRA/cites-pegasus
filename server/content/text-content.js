@@ -8,6 +8,7 @@ const schema = Joi.object().keys({
         backLinkButton: Joi.string().required(),
         continueButton: Joi.string().required(),
         startButton: Joi.string().required(),
+        finishButton: Joi.string().required(),
         errorSummaryTitlePrefix: Joi.string().required(),
         errorSummaryTitle: Joi.string().required(),
         radioOptionYes: Joi.string().required(),
@@ -33,6 +34,16 @@ const schema = Joi.object().keys({
         radioOptionArticle10: Joi.string().required(),
         radioOptionArticle10Hint: Joi.string().required(),
         radioOptionOther: Joi.string().required()
+    }),
+    cannotUseService:  Joi.object({
+      pageTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      pageBody: Joi.string().required(),
+      bullet1: Joi.string().required(),
+      bullet2: Joi.string().required(),
+      linkText: Joi.string().required(),
+      linkUrl: Joi.string().uri({allowRelative: true}).required(),
+      finishButtonUrl: Joi.string().uri({allowRelative: true}).required()
     }),
     agent: Joi.object({
       defaultTitle: Joi.string().required(),
