@@ -7,7 +7,19 @@ const schema = Joi.object().keys({
         serviceName: Joi.string().required(),
         backLinkButton: Joi.string().required(),
         continueButton: Joi.string().required(),
+        startButton: Joi.string().required(),
+        errorSummaryTitlePrefix: Joi.string().required(),
         errorSummaryTitle: Joi.string().required(),
+        radioOptionYes: Joi.string().required(),
+        radioOptionNo: Joi.string().required()
+    }),
+    applyCitesPermit:  Joi.object({
+      pageTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      pageBody1: Joi.string().required(),
+      pageBody2: Joi.string().required(),
+      bullet1: Joi.string().required(),
+      bullet2: Joi.string().required()
     }),
     permitType: Joi.object({
         defaultTitle: Joi.string().required(),
@@ -21,6 +33,11 @@ const schema = Joi.object().keys({
         radioOptionArticle10: Joi.string().required(),
         radioOptionArticle10Hint: Joi.string().required(),
         radioOptionOther: Joi.string().required()
+    }),
+    agent: Joi.object({
+      defaultTitle: Joi.string().required(),
+      radioHeaderAgent: Joi.string().required(),
+      radioHeaderAgentHint: Joi.string().required()
     })
   })
   

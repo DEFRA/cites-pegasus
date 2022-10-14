@@ -23,7 +23,7 @@ const config = {
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD,
     partition: process.env.REDIS_PARTITION,
-    tls: {servername: process.env.REDIS_HOSTNAME}//process.env.NODE_ENV === 'production' ? {} : undefined
+    tls: process.env.NODE_ENV === 'production' ? {servername: process.env.REDIS_HOSTNAME} : undefined
   }
 }
 

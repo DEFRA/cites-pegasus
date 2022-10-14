@@ -30,6 +30,7 @@ async function createServer () {
   await server.register(require('./plugins/error-pages'))
   await server.register(require('./plugins/logging'))
   await server.register(require('./plugins/yar'))
+  //await server.register(require('./authentication/client-credentials'))
   await server.register(require('blipp'))
 
   return server

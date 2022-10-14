@@ -3,7 +3,19 @@
         "serviceName": "Apply for a CITES permit",
         "backLinkButton": "Back",
         "continueButton": "Continue",
-        "errorSummaryTitle": "There is a problem"
+        "startButton": "Start now",
+        "errorSummaryTitlePrefix": "Error: ",
+        "errorSummaryTitle": "There is a problem",
+        "radioOptionYes": "Yes",
+        "radioOptionNo": "No"
+    },
+    "applyCitesPermit": {
+        "pageTitle": "Apply for a CITES permit",
+        "pageHeader": "Apply for a CITES permit",
+        "pageBody1": "Use this service to apply for a permit to import, export or re-export under the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES).",
+        "pageBody2": "You can use this service to apply for a permit to:",
+        "bullet1": "import, export or re-export a specimen",
+        "bullet2": "use a specimen for commercial purposes (also called an Article 10)"
     },
     "permitType": {
         "defaultTitle": "What type of permit or certificate are you applying for?",
@@ -17,5 +29,10 @@
         "radioOptionArticle10": "Article 10",
         "radioOptionArticle10Hint":"To use any CITES annex A specimen for commercial purposes.",
         "radioOptionOther": "Other"
-    }
+    },
+    "agent": {
+        "defaultTitle": "Are you applying on behalf of someone else?",
+        "radioHeaderAgent": "Are you applying on behalf of someone else?",
+        "radioHeaderAgentHint": "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business."
+    }     
 }

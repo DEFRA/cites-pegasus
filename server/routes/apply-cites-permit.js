@@ -1,17 +1,25 @@
+const textContent = require('../content/text-content')
+const viewTemplate = 'apply-cites-permit'
+
+function createModel(){
+  const commonContent = textContent.common;
+  const pageContent = textContent.applyCitesPermit;
+
+  console.log({ ...commonContent, ...pageContent })
+  return { ...commonContent, ...pageContent }
+}
+
 module.exports = [{
   method: 'GET',
   path: '/apply-cites-permit',
   handler: (request, h) => {
-    return h.view('apply-cites-permit', {
-      pageTitle: 'Apply for a CITES permit',
-      serviceName: 'Apply for a CITES permit'
-    })
+    return h.view(viewTemplate, createModel());  
   }
 },
 {
   method: 'GET',
   path: '/',
   handler: (request, h) => {
-    return h.redirect('apply-cites-permit')
+    return h.view(viewTemplate, createModel()); 
   }
 }]

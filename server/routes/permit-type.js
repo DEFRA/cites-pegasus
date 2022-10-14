@@ -1,9 +1,9 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, isChecked } = require('../helpers/helper-functions')
-const { setYarValue, getYarValue } = require('../helpers/session')
+const { getAppData, setAppData } = require('../helpers/session')
+const { getClientCredentialsToken, test } = require('../authentication/client-credentials')
 const textContent = require('../content/text-content')
-
 const viewTemplate = 'permit-type'
 const currentPath = `${urlPrefix}/${viewTemplate}`
 const previousPath = `${urlPrefix}/apply-cites-permit`
@@ -11,8 +11,8 @@ const nextPath = `${urlPrefix}/agent`
 //const detailsPath = `${urlPrefix}/check-details`
 
 function createModel(errorList, permitType) {
-  var commonContent = textContent.common;
-  var pageContent = textContent.permitType;
+  const commonContent = textContent.common;
+  const pageContent = textContent.permitType;
 
   return {
     backLink: previousPath,
@@ -21,7 +21,7 @@ function createModel(errorList, permitType) {
     errorSummaryTitleText: commonContent.errorSummaryTitle,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? 'Error: ' + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     serviceName: commonContent.serviceName,
     inputPermitType: {
       idPrefix: "permitType",
@@ -71,13 +71,18 @@ function createModel(errorList, permitType) {
   }
 }
 
+
 module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    let permitType = getYarValue(request, 'permitType') || null
+    //test() //Test for authentication method
+
+    const appData = getAppData(request);
+   
+    //let permitType = getYarValue(request, 'permitType') || null
     //let permitType = null;
-    return h.view(viewTemplate, createModel(null, permitType));
+    return h.view(viewTemplate, createModel(null, appData.permitType));
   }
 },
 {
@@ -108,7 +113,10 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      setYarValue(request, 'permitType', request.payload.permitType)
+      setAppData(request, {permitType: request.payload.permitType});
+
+      //setYarValue(request, 'permitType', request.payload.permitType)
+      
       return h.redirect(nextPath);
     }
   },

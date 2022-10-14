@@ -5,22 +5,21 @@
   <div class="govuk-grid-column-two-thirds">
 
     <h1 class="govuk-heading-xl">
-      Apply for a CITES permit
+      {{pageHeader}}
     </h1>
 
-    <p class="govuk-body">Use this service to apply for a permit to import, export or re-export under the Convention on
-      International Trade in Endangered Species of Wild Fauna and Flora (CITES).</p>
-    <p class="govuk-body">You can use this service to apply for a permit to:</p>
+    <p class="govuk-body">{{pageBody1}}</p>
+    <p class="govuk-body">{{pageBody2}}</p>
 
     <ul class="govuk-list govuk-list--bullet">
-      <li>import, export or re-export a specimen</li>
-      <li>use a specimen for commercial purposes (also called an Article 10)</li>
+      <li>{{bullet1}}</li>
+      <li>{{bullet2}}</li>
     </ul>
 
     {% from "govuk/components/button/macro.njk" import govukButton %}
 
     {{ govukButton({
-      text: "Start now",
+      text: startButton,
       href: "permit-type",
       isStartButton: true
     }) }}
