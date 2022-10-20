@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
 <div class="govuk-grid-row">
@@ -16,7 +17,6 @@
       <li>{{bullet2}}</li>
     </ul>
 
-    {% from "govuk/components/button/macro.njk" import govukButton %}
 
     {{ govukButton({
       text: startButton,

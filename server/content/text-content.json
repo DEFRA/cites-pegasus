@@ -45,5 +45,23 @@
         "defaultTitle": "Are you applying on behalf of someone else?",
         "radioHeaderAgent": "Are you applying on behalf of someone else?",
         "radioHeaderAgentHint": "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business."
-    }     
+    },
+    "contactDetailsAgent": {
+        "defaultTitle": "Enter your contact details",
+        "pageHeader": "Enter your contact details",
+        "inputLabelFullName": "Full name", 
+        "inputLabelBusinessName": "Business name (optional)",
+        "inputHintBusinessName": "If you are a business, give the business name.",
+        "inputLabelEmail": "Email address",
+        "inputHintEmail": "We will only use this to send you a copy of the application. "
+    },
+    "contactDetailsApplicant": {
+        "defaultTitle": "Enter your contact details",
+        "pageHeader": "Enter your contact details",
+        "inputLabelFullName": "Full name", 
+        "inputLabelBusinessName": "Business name (optional)",
+        "inputHintBusinessName": "If you are a business, give the business name.",
+        "inputLabelEmail": "Email address",
+        "inputHintEmail": "We will only use this to send you a copy of the application. "
+    }
 }

@@ -49,6 +49,24 @@ const schema = Joi.object().keys({
       defaultTitle: Joi.string().required(),
       radioHeaderAgent: Joi.string().required(),
       radioHeaderAgentHint: Joi.string().required()
+    }),
+    contactDetailsAgent: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      inputLabelFullName: Joi.string().required(),
+      inputLabelBusinessName: Joi.string().required(),
+      inputHintBusinessName: Joi.string().required(),
+      inputLabelEmail: Joi.string().required(),
+      inputHintEmail: Joi.string().required(),
+    }),
+    contactDetailsApplicant: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      inputLabelFullName: Joi.string().required(),
+      inputLabelBusinessName: Joi.string().required(),
+      inputHintBusinessName: Joi.string().required(),
+      inputLabelEmail: Joi.string().required(),
+      inputHintEmail: Joi.string().required(),
     })
   })
   

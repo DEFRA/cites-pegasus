@@ -1,27 +1,32 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, setLabelData} = require('../helpers/helper-functions')
+const { findErrorList, getFieldError, setLabelData} = require('../helpers/helper-functions')
 const { setAppData, getAppData } = require('../helpers/session')
 
 const textContent = require('../content/text-content')
 const viewTemplate = 'agent'
 const currentPath = `${urlPrefix}/${viewTemplate}`
 const previousPath = `${urlPrefix}/permit-type`
-const nextPath = `${urlPrefix}/owner-contact-details`
+const nextPath = `${urlPrefix}/contact-details/`
 
 function createModel(errorList, isAgent) {
-  var commonContent = textContent.common;
-  var pageContent = textContent.agent;
+  const commonContent = textContent.common;
+  const pageContent = textContent.agent;
+  let isAgentRadioVal = null
+  switch (isAgent){
+    case true:
+      isAgentRadioVal = commonContent.radioOptionYes
+      break;
+    case false:
+      isAgentRadioVal = commonContent.radioOptionNo
+      break;      
+  }       
 
-  return {
+  const model = {
     backLink: previousPath,
-    backLinkButtonText: commonContent.backLinkButton,
-    continueButtonText: commonContent.continueButton,
-    errorSummaryTitleText: commonContent.errorSummaryTitle,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    serviceName: commonContent.serviceName,
     inputIsAgent: {
       id: "isAgent",
       name: "isAgent",
@@ -36,12 +41,11 @@ function createModel(errorList, isAgent) {
       hint: { 
         text: pageContent.radioHeaderAgentHint 
       },
-      items: setLabelData(isAgent, [commonContent.radioOptionYes, commonContent.radioOptionNo]),
-      
-      //...(isAgent ? { value: isAgent } : {}),
-      ...(errorList && errorList.some(err => err.href === '#isAgent') ? { errorMessage: { text: errorList.find(err => err.href === '#isAgent').text } } : {})
+      items: setLabelData(isAgentRadioVal, [commonContent.radioOptionYes, commonContent.radioOptionNo]),
+      errorMessage: getFieldError(errorList, '#isAgent')      
     }
   }
+  return { ...commonContent, ...model }
   
 }
 
@@ -78,9 +82,11 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      setAppData(request, {isAgent: request.payload.isAgent})
-      return h.redirect(nextPath);
+      const isAgent = request.payload.isAgent === 'Yes';
+      setAppData(request, {isAgent: isAgent})
+
+      const pathSuffix = isAgent ? 'agent' : 'applicant'
+      return h.redirect(nextPath + pathSuffix);
     }
   },
-}
-]
+}]

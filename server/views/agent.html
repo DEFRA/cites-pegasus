@@ -7,7 +7,7 @@
 
 {% block beforeContent %}
   {{ govukBackLink({
-    text: backLinkButtonText,
+    text: backLinkButton,
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
@@ -16,7 +16,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
       {{govukErrorSummary ({
-      "titleText": errorSummaryTitleText,
+      "titleText": errorSummaryTitle,
       "errorList": errorList
       }) }}
       </div>
@@ -32,7 +32,7 @@
                 {{ govukRadios(inputIsAgent) }}
 
                 {{ govukButton({
-                    text: continueButtonText,
+                    text: continueButton,
                     type: "submit"
                 }) }}
             </form>

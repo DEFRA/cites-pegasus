@@ -1,6 +1,5 @@
  const lookupErrorText = require('./lookupErrorText')
  const textContent = require('../content/text-content.json')
-// const { GRANT_PERCENTAGE } = require('../helpers/grant-details')
 
 function isChecked (data, option) {
   return !!data && data.includes(option)
@@ -196,21 +195,32 @@ function findErrorList ({ details }, inputFields) {
 //   return errorList
 // }
 
+const getFieldError = (errorList, href) => {
+  const err = getErrorMessage(errorList, href)
+  return err ? {text: err} : null
+}
+
+const getErrorMessage = (errorList, href) => {
+  return errorList && errorList.some(err => err.href === href) ? errorList.find(err => err.href === href).text : null
+}
+
 module.exports = {
    isChecked,
    setLabelData,
-//   formInputObject,
-//   getPostCodeHtml,
-//   errorExtractor,
-//   getErrorMessage,
-//   getGrantValues,
-//   formatUKCurrency,
-//   itemInObject,
-//   fetchObjectItem,
-//   fetchListObjectItems,
+   //   formInputObject,
+   //   getPostCodeHtml,
+   //   errorExtractor,
+   //   getErrorMessage,
+   //   getGrantValues,
+   //   formatUKCurrency,
+   //   itemInObject,
+   //   fetchObjectItem,
+   //   fetchListObjectItems,
   findTextContent,
   findErrorList,
 //   formatApplicationCode,
 //   getSbiHtml,
 //   getErrorList
+  getFieldError,
+  getErrorMessage
 }

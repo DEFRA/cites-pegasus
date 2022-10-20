@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, isChecked } = require('../helpers/helper-functions')
+const { findErrorList, getFieldError, isChecked } = require('../helpers/helper-functions')
 const { getAppData, setAppData } = require('../helpers/session')
 const { getClientCredentialsToken, test } = require('../authentication/client-credentials')
 const textContent = require('../content/text-content')
@@ -16,15 +16,11 @@ function createModel(errorList, permitType) {
   const commonContent = textContent.common;
   const pageContent = textContent.permitType;
 
-  return {
+  const model = {
     backLink: previousPath,
-    backLinkButtonText: commonContent.backLinkButton,
-    continueButtonText: commonContent.continueButton,
-    errorSummaryTitleText: commonContent.errorSummaryTitle,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    serviceName: commonContent.serviceName,
     inputPermitType: {
       idPrefix: "permitType",
       name: "permitType",
@@ -66,13 +62,11 @@ function createModel(errorList, permitType) {
           checked: isChecked(permitType, "other")
         }
       ],
-
-      //...(permitType ? { value: permitType } : {}),
-      ...(errorList && errorList.some(err => err.href === '#permitType') ? { errorMessage: { text: errorList.find(err => err.href === '#permitType').text } } : {})
+      errorMessage: getFieldError(errorList, '#permitType')
     }
   }
+  return { ...commonContent, ...model }
 }
-
 
 module.exports = [{
   method: 'GET',
@@ -81,9 +75,6 @@ module.exports = [{
     //test() //Test for authentication method
 
     const appData = getAppData(request);
-   
-    //let permitType = getYarValue(request, 'permitType') || null
-    //let permitType = null;
     return h.view(viewTemplate, createModel(null, appData.permitType));
   }
 },

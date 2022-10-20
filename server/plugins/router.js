@@ -4,6 +4,7 @@ const routes = [].concat(
   require('../routes/cannot-use-service'),
   require('../routes/permit-type'),
   require('../routes/agent'),
+  require('../routes/contact-details'),
   require('../routes/public')
 )
 
