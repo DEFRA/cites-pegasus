@@ -1,7 +1,7 @@
 const textContent = require('../content/text-content')
 const urlPrefix = require('../../config/config').urlPrefix
-const viewTemplate = 'cannot-use-service'
-const currentPath = `${urlPrefix}/${viewTemplate}`
+const pageId = 'cannot-use-service'
+const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 
 function createModel(){
@@ -15,6 +15,6 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: (request, h) => {
-    return h.view(viewTemplate, createModel());  
+    return h.view(pageId, createModel());  
   }
 }]

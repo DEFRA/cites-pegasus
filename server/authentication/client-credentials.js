@@ -1,7 +1,34 @@
+
+const MSAL = require('@azure/msal-node');
+//const fetch = require('node-fetch');
+
+function test2() {
+    const authorityUrl = 'https://login.microsoftonline.com/88167347-a6aa-44c6-adaa-fd6fb533c062';
+    const msalConfig = {
+        auth: {
+            authority: authorityUrl,
+            clientId: "aab2db52-824d-474b-b5de-5c9f28cd5137",
+            clientSecret: "BiY8Q~MTkN73kykew~LcLDDdYSNKANxlyExkZcmq",
+            knownAuthorities: ['login.microsoftonline.com']
+        }
+    }
+    const cca = new MSAL.ConfidentialClientApplication(msalConfig);
+    const serverUrl = 'https://org23e87736.api.crm11.dynamics.com/';
+    //function that acquires a token and passes it to DynamicsWebApi
+    cca.acquireTokenByClientCredential({
+        scopes: [`${serverUrl}/.default`],
+    }).then(response => {
+        var bearer = "Bearer " + response.accessToken;
+        //headers.append("Authorization", bearer);
+        console.log(bearer);
+        console.log(response.expiresOn)
+    })
+}
+
 /*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License.
- */
+* Copyright (c) Microsoft Corporation. All rights reserved.
+* Licensed under the MIT License.
+*/
 
 var msal = require('@azure/msal-node');
 
@@ -102,4 +129,4 @@ function test() {
 }
 //}
 
-module.exports = {test, getClientCredentialsToken};
+module.exports = {test, test2, getClientCredentialsToken};

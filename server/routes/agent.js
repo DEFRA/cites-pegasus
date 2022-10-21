@@ -1,26 +1,27 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError, setLabelData} = require('../helpers/helper-functions')
-const { setAppData, getAppData } = require('../helpers/session')
+const { findErrorList, getFieldError, setLabelData } = require('../helpers/helper-functions')
+const { setAppData, getAppData, validateAppData } = require('../helpers/app-data')
 
 const textContent = require('../content/text-content')
-const viewTemplate = 'agent'
-const currentPath = `${urlPrefix}/${viewTemplate}`
+const pageId = 'agent'
+const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/`
+const invalidAppDataPath = urlPrefix
 
 function createModel(errorList, isAgent) {
   const commonContent = textContent.common;
   const pageContent = textContent.agent;
   let isAgentRadioVal = null
-  switch (isAgent){
+  switch (isAgent) {
     case true:
       isAgentRadioVal = commonContent.radioOptionYes
       break;
     case false:
       isAgentRadioVal = commonContent.radioOptionNo
-      break;      
-  }       
+      break;
+  }
 
   const model = {
     backLink: previousPath,
@@ -38,24 +39,38 @@ function createModel(errorList, isAgent) {
           classes: "govuk-fieldset__legend--l"
         }
       },
-      hint: { 
-        text: pageContent.radioHeaderAgentHint 
+      hint: {
+        text: pageContent.radioHeaderAgentHint
       },
       items: setLabelData(isAgentRadioVal, [commonContent.radioOptionYes, commonContent.radioOptionNo]),
-      errorMessage: getFieldError(errorList, '#isAgent')      
+      errorMessage: getFieldError(errorList, '#isAgent')
     }
   }
   return { ...commonContent, ...model }
-  
+
 }
+
+// function validateAppData(appData) {
+//   if (appData.permitType === null) { throw 'appData error: permitType is null' }
+//   if (appData.permitType === 'other') { throw 'appData error: permitType is "other"' }
+// }
 
 module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
     const appData = getAppData(request) || null
-    
-    return h.view(viewTemplate, createModel(null, appData.isAgent));
+
+    try {
+      validateAppData(appData, pageId)
+      
+    }
+    catch (err) {
+      console.log(err);
+      return h.redirect(`${invalidAppDataPath}/`)
+    }
+
+    return h.view(pageId, createModel(null, appData.isAgent));
   }
 },
 {
@@ -78,13 +93,20 @@ module.exports = [{
           })
         }
 
-        return h.view(viewTemplate, createModel(errorList, request.payload.isAgent)).takeover()
+        return h.view(pageId, createModel(errorList, request.payload.isAgent)).takeover()
       }
     },
     handler: async (request, h) => {
       const isAgent = request.payload.isAgent === 'Yes';
-      setAppData(request, {isAgent: isAgent})
 
+      try {
+        setAppData(request, { isAgent: isAgent, agent: null }, pageId)        
+      }
+      catch (err){
+        console.log(err);
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
+      
       const pathSuffix = isAgent ? 'agent' : 'applicant'
       return h.redirect(nextPath + pathSuffix);
     }

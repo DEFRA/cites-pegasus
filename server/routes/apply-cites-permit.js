@@ -1,7 +1,7 @@
 const textContent = require('../content/text-content')
 const urlPrefix = require('../../config/config').urlPrefix
-const viewTemplate = 'apply-cites-permit'
-const currentPath = `${urlPrefix}/${viewTemplate}`
+const pageId = 'apply-cites-permit'
+const currentPath = `${urlPrefix}/${pageId}`
 
 function createModel(){
   const commonContent = textContent.common;
@@ -14,13 +14,13 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: (request, h) => {
-    return h.view(viewTemplate, createModel());  
+    return h.view(pageId, createModel());  
   }
 },
 {
   method: 'GET',
   path: `${urlPrefix}/`,
   handler: (request, h) => {
-    return h.redirect(currentPath)// view(viewTemplate, createModel()); 
+    return h.redirect(currentPath)// view(pageId, createModel()); 
   }
 }]

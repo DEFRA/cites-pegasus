@@ -1,11 +1,11 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../helpers/helper-functions')
-const { getAppData, setAppData, clearAppData } = require('../helpers/session')
+const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../helpers/regex-validation')
 const textContent = require('../content/text-content')
-const viewTemplate = 'contact-details'
-const currentPath = `${urlPrefix}/${viewTemplate}`
+const pageId = 'contact-details'
+const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/agent`
 const partyTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/postcode`
@@ -61,15 +61,9 @@ function createModel(errorList, data) {
             classes: "govuk-!-width-two-thirds",
             ...(data.email ? { value: data.email } : {}),
             errorMessage: getFieldError(errorList, '#email')
-        }        
+        }
     }
     return { ...commonContent, ...model }
-}
-
-function validateAppData(appData, partyType){
-    if(appData.isAgent === null){ return false; }
-    if(appData.isAgent === false && partyType === 'agent'){ return false; }
-    return true;
 }
 
 module.exports = [{
@@ -78,23 +72,15 @@ module.exports = [{
     handler: async (request, h) => {
         const appData = getAppData(request);
 
-        if(!validateAppData(appData, request.params.partyType)){
+        try {
+            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+        }
+        catch (err) {
+            console.log(err);
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        const pageData =
-            request.params.partyType === 'agent' ?
-                {
-                    fullName: appData.agentFullName,
-                    businessName: appData.agentBusinessName,
-                    email: appData.agentEmail,
-
-                } : {
-                    fullName: appData.applicantFullName,
-                    businessName: appData.applicantBusinessName,
-                    email: appData.applicantEmail,
-                }
-        return h.view(viewTemplate, createModel(null, { partyType: request.params.partyType, ...pageData }));
+        return h.view(pageId, createModel(null, { partyType: request.params.partyType, ...appData[request.params.partyType] }));
     },
     options: {
         validate: {
@@ -133,30 +119,28 @@ module.exports = [{
                 })
 
                 const pageData = { partyType: request.params.partyType, ...request.payload }
-                return h.view(viewTemplate, createModel(errorList, pageData)).takeover()
+                return h.view(pageId, createModel(errorList, pageData)).takeover()
             }
         },
         handler: async (request, h) => {
             const { fullName, businessName, email } = request.payload
-            const contactDetails = request.params.partyType === 'agent' ?
-                {
-                    agentFullName: fullName,
-                    agentBusinessName: businessName,
-                    agentEmail: email,
-
-                } : {
-                    applicantFullName: fullName,
-                    applicantBusinessName: businessName,
-                    applicantEmail: email,
+            const contactDetails = {
+                [request.params.partyType]: {
+                    fullName: fullName,
+                    businessName: businessName,
+                    email: email
                 }
+            }
 
-            const appData = setAppData(request, contactDetails)
-            if(!validateAppData(appData, request.params.partyType)){
+            try {
+                setAppData(request, contactDetails, `${pageId}/${request.params.partyType}`)
+            }
+            catch (err) {
+                console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
             return h.redirect(`${nextPath}/${request.params.partyType}`)
         }
     },
-}
-]
+}]

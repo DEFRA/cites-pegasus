@@ -1,16 +1,14 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../helpers/helper-functions')
-const { getAppData, setAppData } = require('../helpers/session')
-const { getClientCredentialsToken, test } = require('../authentication/client-credentials')
+const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
+const { getClientCredentialsToken, test2 } = require('../authentication/client-credentials')
 const textContent = require('../content/text-content')
-const viewTemplate = 'permit-type'
-const currentPath = `${urlPrefix}/${viewTemplate}`
+const pageId = 'permit-type'
+const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/apply-cites-permit`
 const nextPath = `${urlPrefix}/agent`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
-
-//const detailsPath = `${urlPrefix}/check-details`
 
 function createModel(errorList, permitType) {
   const commonContent = textContent.common;
@@ -72,10 +70,12 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    //test() //Test for authentication method
+    //test2() //Test for authentication method
 
     const appData = getAppData(request);
-    return h.view(viewTemplate, createModel(null, appData.permitType));
+    validateAppData(appData, pageId)
+
+    return h.view(pageId, createModel(null, appData.permitType));
   }
 },
 {
@@ -99,18 +99,14 @@ module.exports = [{
             })
           }
         })
-        // const { projectName, businessName, numberEmployees, businessTurnover, sbi } = request.payload
-        // const businessDetails = { projectName, businessName, numberEmployees, businessTurnover, sbi }
         
-        return h.view(viewTemplate, createModel(errorList, request.payload.permitType)).takeover()
+        return h.view(pageId, createModel(errorList, request.payload.permitType)).takeover()
       }
     },
     handler: async (request, h) => {
       setAppData(request, {permitType: request.payload.permitType});
 
-      //setYarValue(request, 'permitType', request.payload.permitType)
       return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
     }
   },
-}
-]
+}]
