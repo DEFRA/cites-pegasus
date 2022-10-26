@@ -18,6 +18,14 @@ const schema = Joi.object().keys({
     clearInvalid: Joi.bool().default(false),
     strictHeader: Joi.bool().default(true)
   }),
+  dynamicsAPI: Joi.object({
+    knownAuthority: Joi.string(),
+    authorityUrl: Joi.string(),
+    clientId: Joi.string(),
+    clientSecret: Joi.string(),
+    serverUrl: Joi.string(),
+    baseURL: Joi.string()
+  })
 })
 
 // Build config
@@ -34,6 +42,14 @@ const config = {
     clearInvalid: false,
     strictHeader: true
   },
+  dynamicsAPI: {
+    knownAuthority: process.env.KNOWN_AUTHORITY,
+    authorityUrl: process.env.AUTHORITY_URL,
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    serverUrl: process.env.SERVER_URL,
+    baseURL: process.env.BASE_URL
+  }
 }
 
 // Validate config

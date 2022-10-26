@@ -23,11 +23,14 @@
     "@hapi/inert": "6.0.5",
     "@hapi/joi": "17.1.1",
     "@hapi/vision": "6.1.0",
+    "@hapi/wreck": "^18.0.0",
     "@hapi/yar": "^11.0.0",
     "blipp": "4.0.2",
     "dotenv": "^16.0.3",
     "govuk-frontend": "4.0.0",
     "hapi-pino": "9.1.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "nunjucks": "3.2.3"
   },
   "devDependencies": {

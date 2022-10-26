@@ -63,5 +63,12 @@
         "inputHintBusinessName": "If you are a business, give the business name.",
         "inputLabelEmail": "Email address",
         "inputHintEmail": "We will only use this to send you a copy of the application. "
+    },
+    "postcode": {
+        "defaultTitle": "What is your address?",
+        "pageHeader": "What is your address?",
+        "inputLabelPostcode": "Postcode",
+        "buttonFindAddress": "Find address",
+        "linkUnknownPostcode": "I do not know the postcode"
     }
 }

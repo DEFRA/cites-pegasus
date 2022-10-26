@@ -1,4 +1,5 @@
 const { getYarValue, setYarValue } = require('./session')
+const lodash = require('lodash')
 
 const emptyAppData = {
     permitType: null,
@@ -14,10 +15,14 @@ function getAppData(request) {
 function setAppData(request, data, path) {
     const existingAppData = getAppData(request)
     if (path) {validateAppData(existingAppData, path)}
+    
+    console.dir(existingAppData)//TODO Remove this
 
-    const mergedAppData = { ...emptyAppData, ...existingAppData, ...data }
+    const mergedAppData = lodash.merge(emptyAppData, existingAppData, data)
+    //const mergedAppData = { ...emptyAppData, ...existingAppData, ...data }
+    
     setYarValue(request, 'appData', mergedAppData)
-    console.log(mergedAppData)//TODO Remove this
+    console.dir(mergedAppData)//TODO Remove this
     return mergedAppData
 }
 
@@ -28,7 +33,7 @@ function clearAppData(request) {
 
 function validateAppData(appData, path) {
     const appFlow = getAppFlow(appData)
-    console.table(appFlow)
+    //console.table(appFlow)
     if (!appFlow.includes(path)) {
         throw `Invalid navigation to ${path}`
     }

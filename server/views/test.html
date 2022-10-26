@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+<form method="POST" action="test" autocomplete="off" novalidate="novalidate">
+    <h1 class="govuk-heading-xl">
+      Test Page
+    </h1>
+
+    <p><b>Response </b>{{data}}</p>
+
+    {{ govukButton({
+      text: 'Call API',
+      type: 'submit' 
+    }) }}
+
+  </div>
+</div>
+{% endblock %}

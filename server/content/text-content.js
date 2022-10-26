@@ -67,6 +67,13 @@ const schema = Joi.object().keys({
       inputHintBusinessName: Joi.string().required(),
       inputLabelEmail: Joi.string().required(),
       inputHintEmail: Joi.string().required(),
+    }),
+    postcode: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+      buttonFindAddress: Joi.string().required(),
+      linkUnknownPostcode: Joi.string().required()
     })
   })
   

@@ -2,7 +2,6 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../helpers/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { getClientCredentialsToken, test2 } = require('../authentication/client-credentials')
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
 const currentPath = `${urlPrefix}/${pageId}`

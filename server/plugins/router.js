@@ -5,7 +5,9 @@ const routes = [].concat(
   require('../routes/permit-type'),
   require('../routes/agent'),
   require('../routes/contact-details'),
-  require('../routes/public')
+  require('../routes/postcode'),
+  require('../routes/public'),
+  require('../routes/test')
 )
 
 module.exports = {

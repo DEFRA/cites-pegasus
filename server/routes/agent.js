@@ -100,7 +100,9 @@ module.exports = [{
       const isAgent = request.payload.isAgent === 'Yes';
 
       try {
-        setAppData(request, { isAgent: isAgent, agent: null }, pageId)        
+        agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
+
+        setAppData(request, agentData, pageId)        
       }
       catch (err){
         console.log(err);
