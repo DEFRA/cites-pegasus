@@ -1,4 +1,5 @@
 const { getYarValue, setYarValue } = require('./session')
+const { Color } = require('./console-colours')
 const lodash = require('lodash')
 
 const emptyAppData = {
@@ -16,13 +17,14 @@ function setAppData(request, data, path) {
     const existingAppData = getAppData(request)
     if (path) {validateAppData(existingAppData, path)}
     
-    console.dir(existingAppData)//TODO Remove this
+    console.log(Color.FgCyan,'before: ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
 
     const mergedAppData = lodash.merge(emptyAppData, existingAppData, data)
     //const mergedAppData = { ...emptyAppData, ...existingAppData, ...data }
     
     setYarValue(request, 'appData', mergedAppData)
-    console.dir(mergedAppData)//TODO Remove this
+    console.log(Color.FgGreen, 'after: ' + JSON.stringify(mergedAppData, null, 4))//TODO Remove this
+    
     return mergedAppData
 }
 
@@ -48,12 +50,20 @@ function getAppFlow(appData) {
             appFlow.push('contact-details/agent') 
             if (appData.agent?.fullName) {
                 appFlow.push('postcode/agent')
+                appFlow.push('search-address/agent')
+                if(appData.agent?.address?.postcode) {
+                    appFlow.push('select-address/agent')
+                }
             }
         }
-        if (appData.isAgent === false) { // or end of agent flow is complete
+        if (appData.isAgent === false) { //TODO - ADD THE  "or end of agent flow is complete" LOGIC HERE
             appFlow.push('contact-details/applicant') 
             if (appData.applicant?.fullName) {
                 appFlow.push('postcode/applicant')
+                appFlow.push('search-address/applicant')
+                if(appData.applicant?.address?.postcode) {
+                    appFlow.push('select-address/applicant')
+                }
             }
         }
     }

@@ -8,7 +8,7 @@ const pageId = 'postcode'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/contact-details`
 const partyTypes = ['agent', 'applicant']//If these change then change back link logic
-const nextPath = `${urlPrefix}/address`
+const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
 
 
@@ -23,7 +23,7 @@ function createModel(errorList, data) {
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
         linkText: pageContent.linkUnknownPostcode,
-        linkUrl: `/search-for-your-address/${data.partyType}`,
+        linkUrl: `/search-address/${data.partyType}`,
         inputPostcode: {
             label: {
                 text: pageContent.inputLabelPostcode
@@ -52,8 +52,7 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        //return h.view(pageId, createModel(null, { partyType: request.params.partyType, ...appData[request.params.partyType] }));
-        return h.view(pageId, createModel(null, { partyType: request.params.partyType, postcode: appData[request.params.partyType].postcode }));
+        return h.view(pageId, createModel(null, { partyType: request.params.partyType, postcode: appData[request.params.partyType].addressSearchData?.postcode }));
     },
     options: {
         validate: {
@@ -94,25 +93,29 @@ module.exports = [{
             }
         },
         handler: async (request, h) => {
+            const partyType = request.params.partyType
+
+
             const address = {
-                [request.params.partyType]: {
-                    addressLine1: null,
-                    addressLine2: null,
-                    townOrCity: null,
-                    county: null,
-                    postcode: request.payload.postcode
+                [partyType]: {
+                    address: null,
+                    addressSearchData: {
+                        property: null,
+                        street: null,                        
+                        postcode: request.payload.postcode
+                    }
                 }
             }
 
             try {
-                 setAppData(request, address, `${pageId}/${request.params.partyType}`)
+                setAppData(request, address, `${pageId}/${partyType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${request.params.partyType}`)
+            return h.redirect(`${nextPath}/${partyType}`)
         }
     },
 }]
