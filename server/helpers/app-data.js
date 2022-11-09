@@ -51,17 +51,25 @@ function getAppFlow(appData) {
             if (appData.agent?.fullName) {
                 appFlow.push('postcode/agent')
                 appFlow.push('search-address/agent')
-                if(appData.agent?.address?.postcode) {
+                appFlow.push('international-address/agent')
+                if(appData.agent?.addressSearchData?.postcode
+                || appData.agent?.addressSearchData?.property
+                || appData.agent?.addressSearchData?.street
+                || appData.agent?.addressSearchData?.town) {
                     appFlow.push('select-address/agent')
                 }
             }
         }
-        if (appData.isAgent === false) { //TODO - ADD THE  "or end of agent flow is complete" LOGIC HERE
+        if (appData.isAgent === false || (appData.isAgent === true && appData.agent?.address)) {
             appFlow.push('contact-details/applicant') 
             if (appData.applicant?.fullName) {
                 appFlow.push('postcode/applicant')
                 appFlow.push('search-address/applicant')
-                if(appData.applicant?.address?.postcode) {
+                appFlow.push('international-address/applicant')
+                if(appData.applicant?.addressSearchData?.postcode 
+                || appData.applicant?.addressSearchData?.property
+                || appData.applicant?.addressSearchData?.street
+                || appData.applicant?.addressSearchData?.town) {
                     appFlow.push('select-address/applicant')
                 }
             }

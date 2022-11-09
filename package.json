@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "startdev": "nodemon --inspect index.js",
     "build:css": "bin/build-css",
     "build": "bin/build",
     "lint": "standard",
@@ -38,6 +39,7 @@
     "@hapi/lab": "24.5.1",
     "codeclimate-test-reporter": "0.5.1",
     "node-sass": "7.0.1",
+    "nodemon": "^2.0.20",
     "standard": "16.0.4"
   }
 }

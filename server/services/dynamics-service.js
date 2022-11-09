@@ -60,4 +60,35 @@ async function whoAmI(request) {
   }
 }
 
-module.exports = { whoAmI }
+
+async function getSpecies(scientificName) {
+   if(scientificName.search('ant') >= 0){
+    return {
+      speciesid: 5062,
+      scientificname: "Antilocapra americana",
+      citesannex: "I",
+      euannex: "A",
+      gbannex: "A",
+      speciesplusurl: "speciesplus.net/species#/taxon_concepts/5062/"
+    }
+  } else {
+    return null
+  }
+
+  const accessToken = await getAccessToken(request)
+
+  try {
+    const { res, payload } = await Wreck.get(config.baseURL + `cites_species(cites_scientificname=@${scientificName})? @cites_scientificname=[${scientificName}]`, { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
+
+    console.log(res.statusCode)
+    console.log(payload)
+    console.log(payload.UserId)
+    return payload
+  } catch (err) {
+    console.log(err)
+    throw err
+    //return null
+  }
+}
+
+module.exports = { whoAmI, getSpecies }

@@ -3,6 +3,7 @@
         "serviceName": "Apply for a CITES permit",
         "backLinkButton": "Back",
         "continueButton": "Continue",
+        "searchButton": "Search",
         "startButton": "Start now",
         "finishButton": "Finish",
         "errorSummaryTitlePrefix": "Error: ",
@@ -22,13 +23,13 @@
         "defaultTitle": "What type of permit or certificate are you applying for?",
         "heading": "What type of permit or certificate are you applying for?",
         "radioOptionImport": "Import",
-        "radioOptionImportHint":"To move a species into Great Britain from another country.",
+        "radioOptionImportHint": "To move a species into Great Britain from another country.",
         "radioOptionExport": "Export",
-        "radioOptionExportHint":"To move a species out of Great Britain to another country.",
+        "radioOptionExportHint": "To move a species out of Great Britain to another country.",
         "radioOptionReexport": "Re-export",
-        "radioOptionReexportHint":"To move a species that has already been imported into Great Britain to another country.",
+        "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
         "radioOptionArticle10": "Article 10",
-        "radioOptionArticle10Hint":"To use any CITES annex A specimen for commercial purposes.",
+        "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
         "radioOptionOther": "Other"
     },
     "cannotUseService": {
@@ -46,29 +47,105 @@
         "radioHeaderAgent": "Are you applying on behalf of someone else?",
         "radioHeaderAgentHint": "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business."
     },
-    "contactDetailsAgent": {
-        "defaultTitle": "Enter your contact details",
-        "pageHeader": "Enter your contact details",
-        "inputLabelFullName": "Full name", 
-        "inputLabelBusinessName": "Business name (optional)",
-        "inputHintBusinessName": "If you are a business, give the business name.",
-        "inputLabelEmail": "Email address",
-        "inputHintEmail": "We will only use this to send you a copy of the application. "
-    },
-    "contactDetailsApplicant": {
-        "defaultTitle": "Enter your contact details",
-        "pageHeader": "Enter your contact details",
-        "inputLabelFullName": "Full name", 
-        "inputLabelBusinessName": "Business name (optional)",
-        "inputHintBusinessName": "If you are a business, give the business name.",
-        "inputLabelEmail": "Email address",
-        "inputHintEmail": "We will only use this to send you a copy of the application. "
+    "contactDetails": {
+        "agent": {
+            "defaultTitle": "Enter your contact details",
+            "pageHeader": "Enter your contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessName": "If you are a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmail": "We will only use this to send you a copy of the application. "
+        },
+        "applicant": {
+            "defaultTitle": "Enter your contact details",
+            "pageHeader": "Enter your contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessName": "If you are a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmail": "We will only use this to send you a copy of the application. "
+        },
+        "agentLed": {
+            "defaultTitle": "Enter the importer's contact details",
+            "pageHeader": "Enter the importer's contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessName": "If the importer is a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmail": "We will only use this to send the importer a copy of the application. "
+        }
     },
     "postcode": {
-        "defaultTitle": "What is your address?",
-        "pageHeader": "What is your address?",
-        "inputLabelPostcode": "Postcode",
-        "buttonFindAddress": "Find address",
-        "linkUnknownPostcode": "I do not know the postcode"
+        "agent": {
+            "defaultTitle": "What is your address?",
+            "pageHeader": "What is your address?",
+            "inputLabelPostcode": "Postcode",
+            "buttonFindAddress": "Find address",
+            "linkTextUnknownPostcode": "I do not know the postcode",
+            "linkTextInternationalAddress": "Enter an international address"
+        },
+        "applicant": {
+            "defaultTitle": "What is your address?",
+            "pageHeader": "What is your address?",
+            "inputLabelPostcode": "Postcode",
+            "buttonFindAddress": "Find address",
+            "linkTextUnknownPostcode": "I do not know the postcode",
+            "linkTextInternationalAddress": "Enter an international address"
+        },
+        "agentLed": {
+            "defaultTitle": "What is the importer's address?",
+            "pageHeader": "What is the importer's address?",
+            "inputLabelPostcode": "Postcode",
+            "buttonFindAddress": "Find address",
+            "linkTextUnknownPostcode": "I do not know the postcode",
+            "linkTextInternationalAddress": "Enter an international address"
+        }
+    },
+    "searchAddress": {
+        "agent": {
+            "defaultTitle": "Search for your address",
+            "pageHeader": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name (optional)",
+            "inputLabelStreet": "Street (optional)",
+            "inputLabelTown": "Town or city (optional)"
+        },
+        "applicant": {
+            "defaultTitle": "Search for your address",
+            "pageHeader": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name (optional)",
+            "inputLabelStreet": "Street (optional)",
+            "inputLabelTown": "Town or city (optional)"
+        },
+        "agentLed": {
+            "defaultTitle": "Search for your address",
+            "pageHeader": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name (optional)",
+            "inputLabelStreet": "Street (optional)",
+            "inputLabelTown": "Town or city (optional)"
+        }
+    },
+    "selectAddress": {
+        "agent": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "AG Select an address "
+        },
+        "applicant": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "AP Select an address "
+        },
+        "agentLed": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "AL Select an address "
+        }
+    },
+    "speciesName":{
+        "defaultTitle": "What is the name of the species?",
+        "pageHeader": "What is the name of the species?",
+        "inputLabelSpeciesName": "Search using the scientific name."
     }
+    
 }

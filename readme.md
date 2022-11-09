@@ -15,17 +15,6 @@
 
 Node v16+
 
-
-# (Checklist)
-Once you clone this repository you'll need to make a few changes before you're ready to start:
-
-- [ ] Add service name and description to the README above
-- [ ] Check over the content of the 404 and 500 error pages and tailor to suit
-- [ ] Update the `package.json` with the name, description and any git urls and authors etc.  
-- [ ] Update the [views context data](/server/plugins/views.js#L39) to include the correct service and default page title
-- [ ] Remove the .git folder in the root directory. This will cut the cord to this boilerplate repo.
-- [ ] Update the build status badges to your new project
-
 # Running the application
 
 First build the application using:
@@ -43,22 +32,11 @@ Now the application is ready to run:
 
 ## What is this?
 
-A simple hapi-based enterprise ready govuk web application boilerplate.
-Click here for a similar [api boilerplate hapi project](https://github.com/DEFRA/hapi-api-boilerplate).
-
-Based on:
-
-- [hapijs](https://github.com/hapijs/hapi) - The framework & core plugins like `joi`, `vision` etc.
-- [standardjs](http://standardjs.com/) - Linting
-- [govuk-frontend](https://github.com/alphagov/govuk-frontend) - Styles & macros
-- [nunjucks](http://mozilla.github.io/nunjucks/) - Default template engine
-- [npm-scripts](https://docs.npmjs.com/misc/scripts) - Build tool
-- [pm2](https://github.com/Unitech/pm2) - Process manager
-
+A website to capture CITES permit applications
 
 ## Getting started
 
-Clone this repo and run through the checklist above.
+Clone this repo and run the application as described above
 
 Check the server is running by pointing your browser to `http://localhost:3000`
 
@@ -68,14 +46,16 @@ Here's the default structure for your project files.
 
 * **bin** (build tasks)
 * **client** (client js/sass code)
+* **config**
 * **server**
+  * **content** (This is for the replaceable text content)
   * **plugins**
   * **public**  (This folder is publicly served)
     * **static** (Put all static assets in here)
     * **build** (This contains the build output files (js/css etc.) and is not checked-in)
   * **routes**
+  * **services** (Such as dynamics api code)
   * **views**
-  * config.js
   * index.js (Exports a function that creates a server)
 * **test**
 * README.md
@@ -83,7 +63,7 @@ Here's the default structure for your project files.
 
 ## Config
 
-The configuration file for the server is found at `server/config.js`.
+The configuration file for the server is found at `config/config.js`.
 This is where to put any config and all config should be read from the environment.
 The final config object should be validated using joi and the application should not start otherwise.
 

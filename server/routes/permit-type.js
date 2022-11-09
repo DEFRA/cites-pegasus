@@ -69,8 +69,6 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    //test2() //Test for authentication method
-
     const appData = getAppData(request);
     validateAppData(appData, pageId)
 

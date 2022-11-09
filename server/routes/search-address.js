@@ -2,11 +2,11 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../helpers/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { POSTCODE_REGEX } = require('../helpers/regex-validation')
+const { ADDRESS_REGEX } = require('../helpers/regex-validation')
 const textContent = require('../content/text-content')
-const pageId = 'postcode'
+const pageId = 'search-address'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/contact-details`
+const previousPath = `${urlPrefix}/postcode`
 const partyTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
@@ -18,34 +18,53 @@ function createModel(errorList, data) {
 
     if(data.partyType === 'applicant'){
         if(data.isAgent){
-            pageContent = textContent.postcode.agentLed
+            pageContent = textContent.searchAddress.agentLed
         } else {
-            pageContent = textContent.postcode.applicant
+            pageContent = textContent.searchAddress.applicant
         }
     } else {
-        pageContent = textContent.postcode.agent
+        pageContent = textContent.searchAddress.agent
     }
 
     const model = {
         backLink: `${previousPath}/${data.partyType}`,
         pageHeader: pageContent.pageHeader,
+        pageBody: pageContent.pageBody,
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-        linkTextUnknownPostcode: pageContent.linkTextUnknownPostcode,
-        linkUrlUnknownPostcode: `/search-address/${data.partyType}`,
-        linkTextInternationalAddress: pageContent.linkTextInternationalAddress,
-        linkUrlInternationalAddress: `/international-address/${data.partyType}`,
-        inputPostcode: {
+        linkText: pageContent.linkUnknownPostcode,
+        linkUrl: `/search-address/${data.partyType}`,
+        inputProperty: {
             label: {
-                text: pageContent.inputLabelPostcode
+                text: pageContent.inputLabelProperty
             },
-            id: "postcode",
-            name: "postcode",
+            id: "property",
+            name: "property",
             classes: "govuk-!-width-two-thirds",
-            ...(data.postcode ? { value: data.postcode } : {}),
-            errorMessage: getFieldError(errorList, '#postcode')
+            ...(data.property ? { value: data.property } : {}),
+            errorMessage: getFieldError(errorList, '#property')
         },
+        inputStreet: {
+            label: {
+                text: pageContent.inputLabelStreet
+            },
+            id: "street",
+            name: "street",
+            classes: "govuk-!-width-two-thirds",
+            ...(data.street ? { value: data.street } : {}),
+            errorMessage: getFieldError(errorList, '#street')
+        },
+        inputTown: {
+            label: {
+                text: pageContent.inputLabelTown
+            },
+            id: "town",
+            name: "town",
+            classes: "govuk-!-width-two-thirds",
+            ...(data.town ? { value: data.town } : {}),
+            errorMessage: getFieldError(errorList, '#town')
+        }
     }
     return { ...commonContent, ...model }
 }
@@ -57,8 +76,10 @@ module.exports = [{
         validate: {
             params: Joi.object({
                 partyType: Joi.string().valid(...partyTypes)
-            })
-
+            }),
+            failAction: (request, h, error) => {
+                console.log(error)
+            }       
         }
     },
     handler: async (request, h) => {
@@ -72,7 +93,8 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData.isAgent, postcode: appData[request.params.partyType].addressSearchData?.postcode }));
+        const pageData = { partyType: request.params.partyType, isAgent: appData.isAgent, ...appData[request.params.partyType].addressSearchData }
+        return h.view(pageId, createModel(null, pageData));
     }
 },
 {
@@ -85,11 +107,13 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             payload: Joi.object({
-                postcode: Joi.string().regex(POSTCODE_REGEX).required()
+                property: Joi.string().regex(ADDRESS_REGEX),
+                street: Joi.string().regex(ADDRESS_REGEX),
+                town: Joi.string().regex(ADDRESS_REGEX)
             }),
             failAction: (request, h, err) => {
                 const errorList = []
-                const fields = ['postcode']
+                const fields = ['property', 'street', 'town']
                 fields.forEach(field => {
                     const fieldError = findErrorList(err, [field])[0]
                     if (fieldError) {
@@ -112,10 +136,10 @@ module.exports = [{
             const appData = {
                 [partyType]: {
                     addressSearchData: {
-                        property: null,
-                        street: null,    
-                        town: null,                    
-                        postcode: request.payload.postcode
+                        property: request.payload.property,
+                        street: request.payload.street,                        
+                        town: request.payload.town,
+                        postcode: null
                     }
                 }
             }

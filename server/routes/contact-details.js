@@ -14,7 +14,17 @@ const invalidAppDataPath = urlPrefix
 
 function createModel(errorList, data) {
     const commonContent = textContent.common;
-    const pageContent = data.partyType === 'agent' ? textContent.contactDetailsAgent : textContent.contactDetailsApplicant;
+    
+    let pageContent = null
+    if(data.partyType === 'applicant'){
+        if(data.isAgent){
+            pageContent = textContent.contactDetails.agentLed
+        } else {
+            pageContent = textContent.contactDetails.applicant
+        }
+    } else {
+        pageContent = textContent.contactDetails.agent
+    }
 
     const model = {
         backLink: previousPath,
@@ -22,7 +32,6 @@ function createModel(errorList, data) {
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-
 
         inputFullName: {
             label: {
@@ -80,7 +89,7 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        return h.view(pageId, createModel(null, { partyType: request.params.partyType, ...appData[request.params.partyType] }));
+        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData.isAgent, ...appData[request.params.partyType] }));
     },
     options: {
         validate: {
@@ -118,7 +127,8 @@ module.exports = [{
                     }
                 })
 
-                const pageData = { partyType: request.params.partyType, ...request.payload }
+                const appData = getAppData(request);
+                const pageData = { partyType: request.params.partyType, isAgent: appData.isAgent, ...request.payload }
                 return h.view(pageId, createModel(errorList, pageData)).takeover()
             }
         },

@@ -36,19 +36,14 @@
           }
         }) %}
 
-        {{ govukInput(inputPostcode) }}
+        {{ govukInput(inputSpeciesName) }}
+        {{ govukInput(inputQuantity) }}
+        {{ govukInput(inputUnitOfMeasure) }}
 
         {{ govukButton({
           text: continueButton,
           type: "submit"
         }) }}
-
-        <p class="govuk-body">
-          <a href="{{linkUrlUnknownPostcode}}">{{linkTextUnknownPostcode}}</a>
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-7">
-          <a href="{{linkUrlInternationalAddress}}">{{linkTextInternationalAddress}}</a>
-        </p>
 
         {% endcall %}
       </form>

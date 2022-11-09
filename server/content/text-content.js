@@ -3,54 +3,65 @@ const textContent = require('./text-content.json');
 
 // Define config schema
 const schema = Joi.object().keys({
-    common: Joi.object({
-        serviceName: Joi.string().required(),
-        backLinkButton: Joi.string().required(),
-        continueButton: Joi.string().required(),
-        startButton: Joi.string().required(),
-        finishButton: Joi.string().required(),
-        errorSummaryTitlePrefix: Joi.string().required(),
-        errorSummaryTitle: Joi.string().required(),
-        radioOptionYes: Joi.string().required(),
-        radioOptionNo: Joi.string().required()
-    }),
-    applyCitesPermit:  Joi.object({
-      pageTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      pageBody1: Joi.string().required(),
-      pageBody2: Joi.string().required(),
-      bullet1: Joi.string().required(),
-      bullet2: Joi.string().required()
-    }),
-    permitType: Joi.object({
-        defaultTitle: Joi.string().required(),
-        heading: Joi.string().required(),
-        radioOptionImport: Joi.string().required(),
-        radioOptionImportHint: Joi.string().required(),
-        radioOptionExport: Joi.string().required(),
-        radioOptionExportHint: Joi.string().required(),
-        radioOptionReexport: Joi.string().required(),
-        radioOptionReexportHint: Joi.string().required(),
-        radioOptionArticle10: Joi.string().required(),
-        radioOptionArticle10Hint: Joi.string().required(),
-        radioOptionOther: Joi.string().required()
-    }),
-    cannotUseService:  Joi.object({
-      pageTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      pageBody: Joi.string().required(),
-      bullet1: Joi.string().required(),
-      bullet2: Joi.string().required(),
-      linkText: Joi.string().required(),
-      linkUrl: Joi.string().uri({allowRelative: true}).required(),
-      finishButtonUrl: Joi.string().uri({allowRelative: true}).required()
-    }),
+  common: Joi.object({
+    serviceName: Joi.string().required(),
+    backLinkButton: Joi.string().required(),
+    continueButton: Joi.string().required(),
+    searchButton: Joi.string().required(),
+    startButton: Joi.string().required(),
+    finishButton: Joi.string().required(),
+    errorSummaryTitlePrefix: Joi.string().required(),
+    errorSummaryTitle: Joi.string().required(),
+    radioOptionYes: Joi.string().required(),
+    radioOptionNo: Joi.string().required()
+  }),
+  applyCitesPermit: Joi.object({
+    pageTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),
+    pageBody2: Joi.string().required(),
+    bullet1: Joi.string().required(),
+    bullet2: Joi.string().required()
+  }),
+  permitType: Joi.object({
+    defaultTitle: Joi.string().required(),
+    heading: Joi.string().required(),
+    radioOptionImport: Joi.string().required(),
+    radioOptionImportHint: Joi.string().required(),
+    radioOptionExport: Joi.string().required(),
+    radioOptionExportHint: Joi.string().required(),
+    radioOptionReexport: Joi.string().required(),
+    radioOptionReexportHint: Joi.string().required(),
+    radioOptionArticle10: Joi.string().required(),
+    radioOptionArticle10Hint: Joi.string().required(),
+    radioOptionOther: Joi.string().required()
+  }),
+  cannotUseService: Joi.object({
+    pageTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    bullet1: Joi.string().required(),
+    bullet2: Joi.string().required(),
+    linkText: Joi.string().required(),
+    linkUrl: Joi.string().uri({ allowRelative: true }).required(),
+    finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
+  }),
+  agent: Joi.object({
+    defaultTitle: Joi.string().required(),
+    radioHeaderAgent: Joi.string().required(),
+    radioHeaderAgentHint: Joi.string().required()
+  }),
+  contactDetails: Joi.object({
     agent: Joi.object({
       defaultTitle: Joi.string().required(),
-      radioHeaderAgent: Joi.string().required(),
-      radioHeaderAgentHint: Joi.string().required()
+      pageHeader: Joi.string().required(),
+      inputLabelFullName: Joi.string().required(),
+      inputLabelBusinessName: Joi.string().required(),
+      inputHintBusinessName: Joi.string().required(),
+      inputLabelEmail: Joi.string().required(),
+      inputHintEmail: Joi.string().required(),
     }),
-    contactDetailsAgent: Joi.object({
+    applicant: Joi.object({
       defaultTitle: Joi.string().required(),
       pageHeader: Joi.string().required(),
       inputLabelFullName: Joi.string().required(),
@@ -59,7 +70,7 @@ const schema = Joi.object().keys({
       inputLabelEmail: Joi.string().required(),
       inputHintEmail: Joi.string().required(),
     }),
-    contactDetailsApplicant: Joi.object({
+    agentLed: Joi.object({
       defaultTitle: Joi.string().required(),
       pageHeader: Joi.string().required(),
       inputLabelFullName: Joi.string().required(),
@@ -67,24 +78,89 @@ const schema = Joi.object().keys({
       inputHintBusinessName: Joi.string().required(),
       inputLabelEmail: Joi.string().required(),
       inputHintEmail: Joi.string().required(),
-    }),
-    postcode: Joi.object({
+    })
+  }),
+  postcode: Joi.object({
+    agent: Joi.object({
       defaultTitle: Joi.string().required(),
       pageHeader: Joi.string().required(),
       inputLabelPostcode: Joi.string().required(),
       buttonFindAddress: Joi.string().required(),
-      linkUnknownPostcode: Joi.string().required()
+      linkTextUnknownPostcode: Joi.string().required(),
+      linkTextInternationalAddress: Joi.string().required()
+    }),
+    applicant: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+      buttonFindAddress: Joi.string().required(),
+      linkTextUnknownPostcode: Joi.string().required(),
+      linkTextInternationalAddress: Joi.string().required()
+    }),
+    agentLed: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+      buttonFindAddress: Joi.string().required(),
+      linkTextUnknownPostcode: Joi.string().required(),
+      linkTextInternationalAddress: Joi.string().required()
     })
+  }),
+  searchAddress: Joi.object({
+    agent: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      pageBody: Joi.string().required(),
+      inputLabelProperty: Joi.string().required(),
+      inputLabelStreet: Joi.string().required(),
+      inputLabelTown: Joi.string().required()
+    }),
+    applicant: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      pageBody: Joi.string().required(),
+      inputLabelProperty: Joi.string().required(),
+      inputLabelStreet: Joi.string().required(),
+      inputLabelTown: Joi.string().required()
+    }),
+    agentLed: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      pageBody: Joi.string().required(),
+      inputLabelProperty: Joi.string().required(),
+      inputLabelStreet: Joi.string().required(),
+      inputLabelTown: Joi.string().required()
+    })
+  }),
+  selectAddress: Joi.object({
+    agent: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required()
+    }),
+    applicant: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required()
+    }),
+    agentLed: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required()
+    })
+  }),
+  speciesName: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelSpeciesName: Joi.string().required()
   })
-  
-  
-  // Validate config
-  const { error, value } = schema.validate(textContent)
-  
-  // Throw if config is invalid
-  if (error) {
-    throw new Error(`The text-content.json file is invalid. ${error.message}`)
-  }
-    
-  module.exports = value
-  
+
+})
+
+
+// Validate config
+const { error, value } = schema.validate(textContent)
+
+// Throw if config is invalid
+if (error) {
+  throw new Error(`The text-content.json file is invalid. ${error.message}`)
+}
+
+module.exports = value
