@@ -149,9 +149,13 @@ const schema = Joi.object().keys({
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    inputLabelSpeciesName: Joi.string().required()
+    inputLabelSpeciesName: Joi.string().required(),
+    inputHintSpeciesName: Joi.string().required(),
+    inputLabelQuantity:  Joi.string().required(),
+    selectLabelUnitOfMeasurement:  Joi.string().required(),
+    unitOfMeasurementPrompt: Joi.string().required(),
+    unitsOfMeasurement: Joi.array().items(Joi.object({ text: Joi.string().required(), value: Joi.string().required()}))
   })
-
 })
 
 

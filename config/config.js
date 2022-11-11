@@ -31,7 +31,7 @@ const schema = Joi.object().keys({
 // Build config
 const config = {
   urlPrefix: process.env.URL_PREFIX,
-  port: process.env.PORT,
+  port: process.env.PORT || 8080,
   env: process.env.NODE_ENV,
   cookiePassword: process.env.COOKIE_PASSWORD,
   cookieOptions: {
