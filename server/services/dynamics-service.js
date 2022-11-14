@@ -66,8 +66,13 @@ async function getSpecies(request, speciesName) {
   try {
     const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName}')`
     const { res, payload } = await Wreck.get(url, { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
-    console.log(payload)
-    return payload.cites_species_response
+    
+    if(payload.cites_species_response){
+      const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
+      return JSON.parse(json)
+    }
+
+    return null
   } catch (err) {
     console.log(err)
     throw err

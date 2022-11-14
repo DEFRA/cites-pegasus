@@ -7,9 +7,9 @@ const textContent = require('../content/text-content')
 const lodash = require('lodash')
 const pageId = 'species-name'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/notdoneyet`//TODO
-const nextPath = `${urlPrefix}/notdoneyet`//TODO
-const unknownSpeciesPath = `${urlPrefix}/notdoneyet`//TODO
+const previousPath = `${urlPrefix}/NOT-DONE-YET`//TODO
+const nextPath = `${urlPrefix}/SPECIES-NAME-VALID-NOT-DONE-YET`//TODO
+const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET`//TODO
 
 function createModel(errorList, speciesName, quantity, unitOfMeasurement) {
   const commonContent = textContent.common
@@ -109,7 +109,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const species = getSpecies(request, request.payload.speciesName)
+      const species = await getSpecies(request, request.payload.speciesName)
       if (species?.scientificName){
         setAppData(request, { speciesName: species.scientificName, quantity: request.payload.quantity, unitOfMeasurement: request.payload.unitOfMeasurement });
         return h.redirect(nextPath)

@@ -8,8 +8,8 @@ const errors = {
     'error.postcode.string.empty' : 'Enter your postcode',
     'error.postcode.string.pattern.base' : 'Enter a real postcode',
     'error.speciesName.string.empty'  : 'Enter the scientific name',
-    'error.quantity.number.base' : 'Enter the quantity',
     'error.unitOfMeasurement.string.empty' : 'Select the unit of measurement',
+    'error.quantity.number.base' : 'Enter the quantity using numbers 0 to 9',
     'error.quantity.number.min' : 'Quantity must be 1 or more',
     'error.quantity.number.max' : 'Quantity must be 99 or fewer'
   }
