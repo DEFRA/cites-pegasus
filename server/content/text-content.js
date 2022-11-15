@@ -1,7 +1,51 @@
 const Joi = require('@hapi/joi');
 const textContent = require('./text-content.json');
 
-// Define config schema
+const searchAddressSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  pageBody: Joi.string().required(),
+  inputLabelProperty: Joi.string().required(),
+  inputLabelStreet: Joi.string().required(),
+  inputLabelTown: Joi.string().required()
+})
+
+const selectAddressSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  selectLabelAddress: Joi.string().required(),
+  selectAddressPromptNoResults: Joi.string().required(),
+  selectAddressPromptSingle: Joi.string().required(),
+  selectAddressPromptMultiple: Joi.string().required(),
+  detailsSummaryText: Joi.string().required(),
+  detailsText: Joi.string().required(),
+  detailsLinkText: Joi.string().required(),
+  linkTextSearchAgain: Joi.string().required(),
+  bodyTextImport: Joi.string().allow("", null),
+  bodyTextExport: Joi.string().allow("", null),
+  bodyTextReexport: Joi.string().allow("", null),
+  bodyTextArticle10: Joi.string().allow("", null)
+})
+
+const postcodeSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  inputLabelPostcode: Joi.string().required(),
+  buttonFindAddress: Joi.string().required(),
+  linkTextUnknownPostcode: Joi.string().required(),
+  linkTextInternationalAddress: Joi.string().required()
+})
+
+const contactDetailsSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  inputLabelFullName: Joi.string().required(),
+  inputLabelBusinessName: Joi.string().required(),
+  inputHintBusinessName: Joi.string().required(),
+  inputLabelEmail: Joi.string().required(),
+  inputHintEmail: Joi.string().required(),
+})
+
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
@@ -52,109 +96,34 @@ const schema = Joi.object().keys({
     radioHeaderAgentHint: Joi.string().required()
   }),
   contactDetails: Joi.object({
-    agent: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      inputLabelFullName: Joi.string().required(),
-      inputLabelBusinessName: Joi.string().required(),
-      inputHintBusinessName: Joi.string().required(),
-      inputLabelEmail: Joi.string().required(),
-      inputHintEmail: Joi.string().required(),
-    }),
-    applicant: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      inputLabelFullName: Joi.string().required(),
-      inputLabelBusinessName: Joi.string().required(),
-      inputHintBusinessName: Joi.string().required(),
-      inputLabelEmail: Joi.string().required(),
-      inputHintEmail: Joi.string().required(),
-    }),
-    agentLed: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      inputLabelFullName: Joi.string().required(),
-      inputLabelBusinessName: Joi.string().required(),
-      inputHintBusinessName: Joi.string().required(),
-      inputLabelEmail: Joi.string().required(),
-      inputHintEmail: Joi.string().required(),
-    })
+    agent: contactDetailsSchema,
+    applicant: contactDetailsSchema,
+    agentLed: contactDetailsSchema
   }),
   postcode: Joi.object({
-    agent: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      inputLabelPostcode: Joi.string().required(),
-      buttonFindAddress: Joi.string().required(),
-      linkTextUnknownPostcode: Joi.string().required(),
-      linkTextInternationalAddress: Joi.string().required()
-    }),
-    applicant: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      inputLabelPostcode: Joi.string().required(),
-      buttonFindAddress: Joi.string().required(),
-      linkTextUnknownPostcode: Joi.string().required(),
-      linkTextInternationalAddress: Joi.string().required()
-    }),
-    agentLed: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      inputLabelPostcode: Joi.string().required(),
-      buttonFindAddress: Joi.string().required(),
-      linkTextUnknownPostcode: Joi.string().required(),
-      linkTextInternationalAddress: Joi.string().required()
-    })
+    agent: postcodeSchema,
+    applicant: postcodeSchema,
+    agentLed: postcodeSchema
   }),
   searchAddress: Joi.object({
-    agent: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      pageBody: Joi.string().required(),
-      inputLabelProperty: Joi.string().required(),
-      inputLabelStreet: Joi.string().required(),
-      inputLabelTown: Joi.string().required()
-    }),
-    applicant: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      pageBody: Joi.string().required(),
-      inputLabelProperty: Joi.string().required(),
-      inputLabelStreet: Joi.string().required(),
-      inputLabelTown: Joi.string().required()
-    }),
-    agentLed: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required(),
-      pageBody: Joi.string().required(),
-      inputLabelProperty: Joi.string().required(),
-      inputLabelStreet: Joi.string().required(),
-      inputLabelTown: Joi.string().required()
-    })
+    agent: searchAddressSchema,
+    applicant: searchAddressSchema,
+    agentLed: searchAddressSchema
   }),
   selectAddress: Joi.object({
-    agent: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required()
-    }),
-    applicant: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required()
-    }),
-    agentLed: Joi.object({
-      defaultTitle: Joi.string().required(),
-      pageHeader: Joi.string().required()
-    })
+    agent: selectAddressSchema,
+    applicant: selectAddressSchema,
+    agentLed: selectAddressSchema
   }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     inputLabelSpeciesName: Joi.string().required(),
     inputHintSpeciesName: Joi.string().required(),
-    inputLabelQuantity:  Joi.string().required(),
-    selectLabelUnitOfMeasurement:  Joi.string().required(),
+    inputLabelQuantity: Joi.string().required(),
+    selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object({ text: Joi.string().required(), value: Joi.string().required()}))
+    unitsOfMeasurement: Joi.array().items(Joi.object({ text: Joi.string().required(), value: Joi.string().required() }))
   })
 })
 

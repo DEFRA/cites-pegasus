@@ -131,15 +131,52 @@
     "selectAddress": {
         "agent": {
             "defaultTitle": "Select an address ",
-            "pageHeader": "AG Select an address "
+            "pageHeader": "AG Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "detailsSummaryText": "I cannot find the address in the list",
+            "detailsText": "If you cannot find the address, ",
+            "detailsLinkText":"enter your address manually",            
+            "linkTextSearchAgain": "Search for the address again",
+            "bodyTextImport": "",
+            "bodyTextExport": "",
+            "bodyTextReexport": "",
+            "bodyTextArticle10": ""
+                       
         },
         "applicant": {
             "defaultTitle": "Select an address ",
-            "pageHeader": "AP Select an address "
+            "pageHeader": "AP Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "detailsSummaryText": "I cannot find the address in the list",
+            "detailsText": "If you cannot find the address, ",
+            "detailsLinkText":"enter your address manually",            
+            "linkTextSearchAgain": "Search for the address again",
+            "bodyTextImport": "",
+            "bodyTextExport": "",
+            "bodyTextReexport": "",
+            "bodyTextArticle10": ""
         },
         "agentLed": {
             "defaultTitle": "Select an address ",
-            "pageHeader": "AL Select an address "
+            "pageHeader": "AL Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "detailsSummaryText": "I cannot find the address in the list",
+            "detailsText": "If you cannot find the address, ",
+            "detailsLinkText":"enter your address manually",            
+            "linkTextSearchAgain": "Search for the address again",
+            "bodyTextImport": "If you still cannot find the address, contact the importer to confirm their details.",
+            "bodyTextExport": "If you still cannot find the address, contact the exporter to confirm their details.",
+            "bodyTextReexport": "If you still cannot find the address, contact the re-exporter to confirm their details.",
+            "bodyTextArticle10": "If you still cannot find the address, contact the applicant to confirm their details."
         }
     },
     "speciesName":{

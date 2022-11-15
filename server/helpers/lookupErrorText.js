@@ -11,7 +11,8 @@ const errors = {
     'error.unitOfMeasurement.string.empty' : 'Select the unit of measurement',
     'error.quantity.number.base' : 'Enter the quantity using numbers 0 to 9',
     'error.quantity.number.min' : 'Quantity must be 1 or more',
-    'error.quantity.number.max' : 'Quantity must be 99 or fewer'
+    'error.quantity.number.max' : 'Quantity must be 99 or fewer',
+    'error.address.string.empty' : 'Select an address'
   }
   const lookupErrorText = (key) => {
     return errors[key] || key

@@ -75,10 +75,10 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    // const appData = getAppData(request);
+    const appData = getAppData(request);
     // validateAppData(appData, pageId)
 
-    return h.view(pageId, createModel(null, null, null, null));
+    return h.view(pageId, createModel(null, appData.speciesName, appData.quantity, appData.unitOfMeasurement));
   }
 },
 {
@@ -110,8 +110,8 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const species = await getSpecies(request, request.payload.speciesName)
-      if (species?.scientificName){
-        setAppData(request, { speciesName: species.scientificName, quantity: request.payload.quantity, unitOfMeasurement: request.payload.unitOfMeasurement });
+      if (species?.scientificname){
+        setAppData(request, { speciesName: species.scientificname, quantity: request.payload.quantity, unitOfMeasurement: request.payload.unitOfMeasurement });
         return h.redirect(nextPath)
       }
       return h.redirect(unknownSpeciesPath)
