@@ -1,9 +1,10 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -11,7 +12,7 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
-{# 
+
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -21,7 +22,7 @@
         }) }}
       </div>
     </div>
-  {% endif %} #}
+  {% endif %}
 
 {% endblock %}
 {% block content %}
@@ -36,18 +37,28 @@
           }
         }) %}
 
-        <h3 class="govuk-body">Search Type: {{searchType}}</h3>
-{#         
-        <p class="govuk-body">{{pageBody}}</p>
+        {{ govukSelect(selectAddress) }}
 
-        {{ govukInput(inputProperty) }}
-        {{ govukInput(inputStreet) }}
-        {{ govukInput(inputTown) }}
+        <details class="govuk-details" data-module="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+              {{detailsSummaryText}}
+            </span>
+          </summary>
+          <div class="govuk-details__text">
+            {{detailsText}}
+            <a href="{{detailsLinkUrl}}">{{detailsLinkText}}</a>
+          </div>
+        </details>
+
+        <p class="govuk-body">
+          <a href="{{searchAgainLink}}">{{linkTextSearchAgain}}</a> {{bodyText}}
+        </p>
 
         {{ govukButton({
-          text: searchButton,
-          type: "submit"
-        }) }} #}
+          text: continueButton,
+          type: "continue"
+        }) }}
 
         {% endcall %}
       </form>

@@ -4,14 +4,27 @@ const { findErrorList, getFieldError, isChecked } = require('../helpers/helper-f
 const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
 const { getSpecies } = require('../services/dynamics-service')
 const textContent = require('../content/text-content')
+const lodash = require('lodash')
 const pageId = 'species-name'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/`//TODO
-const nextPath = `${urlPrefix}/`//TODO
+const previousPath = `${urlPrefix}/NOT-DONE-YET`//TODO
+const nextPath = `${urlPrefix}/SPECIES-NAME-VALID-NOT-DONE-YET`//TODO
+const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET`//TODO
 
-function createModel(errorList, speciesName) {
-  const commonContent = textContent.common;
-  const pageContent = textContent.speciesName;
+function createModel(errorList, speciesName, quantity, unitOfMeasurement) {
+  const commonContent = textContent.common
+  const pageContent = textContent.speciesName
+
+console.log(pageContent.unitsOfMeasurement)
+
+  const unitsOfMeasurement = lodash.cloneDeep([{ text: pageContent.unitOfMeasurementPrompt, value: null}, ...pageContent.unitsOfMeasurement])
+
+  if (unitOfMeasurement){
+    const currentUnitOfMeasurement = unitsOfMeasurement.find(e => e.value === unitOfMeasurement)
+    if(currentUnitOfMeasurement){
+      currentUnitOfMeasurement.selected = 'true'
+    } 
+  }
 
   const model = {
     backLink: previousPath,
@@ -25,94 +38,49 @@ function createModel(errorList, speciesName) {
       label: {
         text: pageContent.inputLabelSpeciesName
       },
+      // hint: {
+      //   text: pageContent.inputHintSpeciesName
+      // },
       id: "speciesName",
       name: "speciesName",
-      classes: "govuk-!-width-two-thirds",
       ...(speciesName ? { value: speciesName } : {}),
       errorMessage: getFieldError(errorList, '#speciesName')
     },
     inputQuantity: {
       label: {
-        text: 'quantity'
+        text: pageContent.inputLabelQuantity
       },
       id: "quantity",
       name: "quantity",
-      classes: "govuk-!-width-two-thirds",
-      //...(quantity ? { value: quantity } : {}),
+      classes: "govuk-input--width-4",
+      ...(quantity ? { value: quantity } : {}),
       errorMessage: getFieldError(errorList, '#quantity')
     },
-    inputUnitOfMeasure: {
+    selectUnitOfMeasurement: {
       label: {
-        text: 'unit of measure'
+        text: pageContent.selectLabelUnitOfMeasurement
       },
-      id: "unitOfMeasure",
-      name: "unitOfMeasure",
-      classes: "govuk-!-width-two-thirds",
-      //...(unitOfMeasure ? { value: unitOfMeasure } : {}),
-      errorMessage: getFieldError(errorList, '#unitOfMeasure')
-    },
-    //searchResults: searchResult?.scientificname ? searchResult?.scientificname : 'no results'
+      id: "unitOfMeasurement",
+      name: "unitOfMeasurement",
+      classes: "govuk-input--width-4",
+      items: unitsOfMeasurement,
+      //...(unitOfMeasurement ? { value: unitOfMeasurement } : {}),
+      errorMessage: getFieldError(errorList, '#unitOfMeasurement')
+    }
   }
   return { ...commonContent, ...model }
-}
-
-function validateScientificName(value, helpers) {
-  if (value === 'ant') {
-    return value
-  } else {
-    return helpers.error("any.invalid")
-  }
 }
 
 module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    // const appData = getAppData(request);
+    const appData = getAppData(request);
     // validateAppData(appData, pageId)
 
-    return h.view(pageId, createModel(null, null));
+    return h.view(pageId, createModel(null, appData.speciesName, appData.quantity, appData.unitOfMeasurement));
   }
 },
-// {
-//   method: 'POST',
-//   path: `${currentPath}/search`,
-//   options: {
-//     validate: {
-//       options: { abortEarly: false },
-//       payload: Joi.object({
-//         speciesName: Joi.string().required(),
-//         quantity: Joi.string().required(),
-//         unitOfMeasure: Joi.string().required()
-//       }),
-//       failAction: (request, h, err) => {
-//         const errorList = []
-//         const fields = ['speciesName', 'quantity', 'unitOfMeasure']
-//         fields.forEach(field => {
-//           const fieldError = findErrorList(err, [field])[0]
-//           if (fieldError) {
-//             errorList.push({
-//               text: fieldError,
-//               href: `#${field}`
-//             })
-//           }
-//         })
-//         console.log('Error Searching')
-
-//         return h.view(pageId, createModel(errorList, request.payload.speciesName, null)).takeover()
-//       }
-//     },
-//     handler: async (request, h) => {
-//       console.log('Searching')
-
-//       const result = await getSpecies(request.payload.speciesName)
-
-//       return h.view(pageId, createModel(null, request.payload.speciesName, result));
-
-//       //return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
-//     }
-//   },
-// },
 {
   method: 'POST',
   path: currentPath,
@@ -120,13 +88,13 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        speciesName: Joi.string().required().custom(validateScientificName),
-        quantity: Joi.string().allow(null, ''),
-        unitOfMeasure: Joi.string().allow(null, '')
+        speciesName: Joi.string().required(),
+        quantity: Joi.number().required().min(1).max(99),
+        unitOfMeasurement: Joi.string()
       }),
       failAction: (request, h, err) => {
         const errorList = []
-        const fields = ['speciesName', 'quantity', 'unitOfMeasure']
+        const fields = ['speciesName', 'quantity', 'unitOfMeasurement']
         fields.forEach(field => {
           const fieldError = findErrorList(err, [field])[0]
           if (fieldError) {
@@ -137,16 +105,16 @@ module.exports = [{
           }
         })
 
-        console.log('Error Continuing')
-        return h.view(pageId, createModel(errorList, request.payload.speciesName)).takeover()
+        return h.view(pageId, createModel(errorList, request.payload.speciesName, request.payload.quantity, request.payload.unitOfMeasurement)).takeover()
       }
     },
     handler: async (request, h) => {
-      console.log('Continuing')
-      //setAppData(request, { speciesName: request.payload.speciesName });
-
-      return h.view(pageId, createModel(null, request.payload.speciesName)).takeover()
-      //return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
+      const species = await getSpecies(request, request.payload.speciesName)
+      if (species?.scientificname){
+        setAppData(request, { speciesName: species.scientificname, quantity: request.payload.quantity, unitOfMeasurement: request.payload.unitOfMeasurement });
+        return h.redirect(nextPath)
+      }
+      return h.redirect(unknownSpeciesPath)
     }
   },
 }]

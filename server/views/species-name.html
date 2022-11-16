@@ -2,6 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 
@@ -26,7 +27,7 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    {# <div class="govuk-grid-column-two-thirds"> #}
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
         {% call govukFieldset({
           legend: {
@@ -35,18 +36,27 @@
             isPageHeading: true
           }
         }) %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            {{ govukInput(inputSpeciesName) }}
+          </div>
+          <div class="govuk-grid-column-one-half">
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-quarter">
+                {{ govukInput(inputQuantity) }}
+              </div>
+              <div class="govuk-grid-column-three-quarters">
+                {{ govukSelect(selectUnitOfMeasurement) }}
+              </div>
+            </div>
+          </div>
 
-        {{ govukInput(inputSpeciesName) }}
-        {{ govukInput(inputQuantity) }}
-        {{ govukInput(inputUnitOfMeasure) }}
-
-        {{ govukButton({
+          {% endcall %}
+          {{ govukButton({
           text: continueButton,
           type: "submit"
         }) }}
-
-        {% endcall %}
-      </form>
+        </form>
+      {# </div> #}
     </div>
-  </div>
-{% endblock %}
+  {% endblock %}
