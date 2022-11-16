@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">
+      {{pageHeader}}
+    </h1>
+
+    <p class="govuk-body">{{pageBody1}}</p>
+    <p class="govuk-body">{{pageBody2}}</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>{{bullet1}}</li>
+      <li>{{bullet2}}</li>
+    </ul>
+
+
+    {{ govukButton({
+      text: startButton,
+      href: "permit-type",
+      isStartButton: true
+    }) }}
+
+  </div>
+</div>
+{% endblock %}
