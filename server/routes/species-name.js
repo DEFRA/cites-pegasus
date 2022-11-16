@@ -34,18 +34,23 @@ console.log(pageContent.unitsOfMeasurement)
     //formActionSearch: `${currentPath}/search`,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    inputSpeciesName: {
-      label: {
-        text: pageContent.inputLabelSpeciesName
-      },
-      // hint: {
-      //   text: pageContent.inputHintSpeciesName
-      // },
-      id: "speciesName",
-      name: "speciesName",
-      ...(speciesName ? { value: speciesName } : {}),
-      errorMessage: getFieldError(errorList, '#speciesName')
-    },
+    inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
+    inputLabelSpeciesNameLinkText: pageContent.inputLabelSpeciesNameLinkText,
+    inputLabelSpeciesNameLinkUrl: pageContent.inputLabelSpeciesNameLinkUrl,
+    speciesNameError: getFieldError(errorList, '#speciesName'),
+    speciesName: speciesName,
+    // inputSpeciesName: {
+    //   label: {
+    //     text: pageContent.inputLabelSpeciesName
+    //   },
+    //   // hint: {
+    //   //   text: pageContent.inputHintSpeciesName
+    //   // },
+    //   // id: "speciesName",
+    //   // name: "speciesName",
+    //   ...(speciesName ? { value: speciesName } : {}),
+    //   //errorMessage: getFieldError(errorList, '#speciesName')
+    // },
     inputQuantity: {
       label: {
         text: pageContent.inputLabelQuantity

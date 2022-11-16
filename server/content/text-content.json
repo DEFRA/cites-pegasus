@@ -180,10 +180,11 @@
         }
     },
     "speciesName":{
-        "defaultTitle": "What is the name of the species?",
-        "pageHeader": "What is the name of the species?",
-        "inputLabelSpeciesName": "Search using the scientific name",
-        "inputHintSpeciesName": "You can search for the scientific name on species+",
+        "defaultTitle": "What is the scientific name of the species?",
+        "pageHeader": "What is the scientific name of the species?",
+        "inputLabelSpeciesName": "You can ",
+        "inputLabelSpeciesNameLinkText": "search for the scientific name on species+.",
+        "inputLabelSpeciesNameLinkUrl": "https://speciesplus.net/",
         "inputLabelQuantity":  "Quantity",
         "selectLabelUnitOfMeasurement": "Unit of measurement",
         "unitOfMeasurementPrompt": "Choose unit of measurement",
