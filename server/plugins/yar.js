@@ -14,10 +14,13 @@ module.exports = {
           password: config.cookiePassword,
           isSecure: config.cookieOptions.isSecure,
           ttl: cacheConfig.expiresIn
-        },
+        }//,
         // customSessionIDGenerator: function (request) {
-        //   const sessionID = Uuid.v4()
-        //   protectiveMonitoringServiceSendEvent(request, sessionID, 'FTF-SESSION-CREATED', '0701')
+        //   // const sessionID = Uuid.v4()
+        //   // protectiveMonitoringServiceSendEvent(request, sessionID, 'FTF-SESSION-CREATED', '0701')
+        //   // return sessionID
+        //   const sessionID = Crypto.randomUUID();
+        //   console.log(sessionID)
         //   return sessionID
         // }
       }
