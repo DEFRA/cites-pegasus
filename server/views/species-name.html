@@ -27,7 +27,7 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    {# <div class="govuk-grid-column-two-thirds"> #}
+    <div class="govuk-grid-column-two-thirds">
     <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
       {% call govukFieldset({
           legend: {
@@ -52,8 +52,7 @@
           </div> #}
 
       {# {{ govukInput(inputSpeciesName) }} #}
-      <div class="govuk-grid-row">
-      <div class="govuk-form-group govuk-grid-column-two-thirds {% if speciesNameError %}govuk-form-group--error{% endif %}">
+      <div class="govuk-form-group {% if speciesNameError %}govuk-form-group--error{% endif %}">
         <h1 class="govuk-label-wrapper">
           <label class="govuk-label" for="speciesName">
             {{inputLabelSpeciesName}}
@@ -66,7 +65,6 @@
         </p>
         <input id="speciesName" name="speciesName" class="govuk-input {% if speciesNameError %}govuk-input--error{% endif %}" value="{{speciesName}}" type="text">
       </div>
-      </div>
       {{ govukInput(inputQuantity) }}
       {{ govukSelect(selectUnitOfMeasurement) }}
 
@@ -76,6 +74,6 @@
           type: "submit"
         }) }}
     </form>
-    {# </div> #}
+    </div>
   </div>
 {% endblock %}
