@@ -182,9 +182,10 @@
     "speciesName":{
         "defaultTitle": "What is the scientific name of the species?",
         "pageHeader": "What is the scientific name of the species?",
-        "inputLabelSpeciesName": "You can ",
-        "inputLabelSpeciesNameLinkText": "search for the scientific name on species+.",
-        "inputLabelSpeciesNameLinkUrl": "https://speciesplus.net/",
+        "bodyText": "You can ",
+        "bodyLinkText": "search for the scientific name on species+.",
+        "bodyLinkUrl": "https://speciesplus.net/",
+        "inputLabelSpeciesName": "Scientific name",
         "inputLabelQuantity":  "Quantity",
         "selectLabelUnitOfMeasurement": "Unit of measurement",
         "unitOfMeasurementPrompt": "Choose unit of measurement",

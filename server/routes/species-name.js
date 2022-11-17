@@ -28,21 +28,23 @@ console.log(pageContent.unitsOfMeasurement)
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
-    inputLabelSpeciesNameLinkText: pageContent.inputLabelSpeciesNameLinkText,
-    inputLabelSpeciesNameLinkUrl: pageContent.inputLabelSpeciesNameLinkUrl,
+    bodyText: pageContent.bodyText,
+    bodyLinkText: pageContent.bodyLinkText,
+    bodyLinkUrl: pageContent.bodyLinkUrl,
     speciesNameError: getFieldError(errorList, '#speciesName'),
-        // inputSpeciesName: {
-    //   label: {
-    //     text: pageContent.inputLabelSpeciesName
-    //   },
-    //   // hint: {
-    //   //   text: pageContent.inputHintSpeciesName
-    //   // },
-    //   // id: "speciesName",
-    //   // name: "speciesName",
-    //   ...(speciesName ? { value: speciesName } : {}),
-    //   //errorMessage: getFieldError(errorList, '#speciesName')
-    // },
+    inputSpeciesName: {
+      label: {
+        text: pageContent.inputLabelSpeciesName
+      },
+      // hint: {
+      //    text: pageContent.inputHintSpeciesName
+      // },
+      id: "speciesName",
+      name: "speciesName",
+      classes: "govuk-!-width-two-thirds",
+      ...(speciesName ? { value: speciesName } : {}),
+      errorMessage: getFieldError(errorList, '#speciesName')
+    },
     inputQuantity: {
       label: {
         text: pageContent.inputLabelQuantity
@@ -59,7 +61,6 @@ console.log(pageContent.unitsOfMeasurement)
       },
       id: "unitOfMeasurement",
       name: "unitOfMeasurement",
-      classes: "govuk-input--width-4",
       items: unitsOfMeasurement,
       errorMessage: getFieldError(errorList, '#unitOfMeasurement')
     }

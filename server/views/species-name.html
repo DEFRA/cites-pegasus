@@ -36,23 +36,12 @@
             isPageHeading: true
           }
         }) %}
-      {# <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
-            {{ govukInput(inputSpeciesName) }}
-          </div>
-          <div class="govuk-grid-column-one-half">
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-quarter">
-                {{ govukInput(inputQuantity) }}
-              </div>
-              <div class="govuk-grid-column-three-quarters">
-                {{ govukSelect(selectUnitOfMeasurement) }}
-              </div>
-            </div>
-          </div> #}
 
-      {# {{ govukInput(inputSpeciesName) }} #}
-      <div class="govuk-form-group {% if speciesNameError %}govuk-form-group--error{% endif %}">
+      <p>
+        {{bodyText}} <a href="{{bodyLinkUrl}}" target="_blank">{{bodyLinkText}}</a>
+      </p>
+
+      {# <div class="govuk-form-group {% if speciesNameError %}govuk-form-group--error{% endif %}">
         <h1 class="govuk-label-wrapper">
           <label class="govuk-label" for="speciesName">
             {{inputLabelSpeciesName}}
@@ -64,7 +53,8 @@
           {{speciesNameError.text}}
         </p>
         <input id="speciesName" name="speciesName" class="govuk-input {% if speciesNameError %}govuk-input--error{% endif %}" value="{{speciesName}}" type="text">
-      </div>
+      </div> #}
+      {{ govukInput(inputSpeciesName) }}
       {{ govukInput(inputQuantity) }}
       {{ govukSelect(selectUnitOfMeasurement) }}
 
