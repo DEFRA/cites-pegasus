@@ -72,7 +72,7 @@ module.exports = [{
     const appData = getAppData(request);
     validateAppData(appData, pageId)
 
-    return h.view(pageId, createModel(null, appData.permitType));
+    return h.view(pageId, createModel(null, appData?.permitType));
   }
 },
 {
