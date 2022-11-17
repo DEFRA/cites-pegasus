@@ -1,7 +1,6 @@
 <!-- [![Build Status](https://travis-ci.com/DEFRA/hapi-web-boilerplate.svg?branch=master)](https://travis-ci.com/DEFRA/hapi-web-boilerplate) [![Maintainability](https://api.codeclimate.com/v1/badges/5c3956c73c9b1496dadd/maintainability)](https://codeclimate.com/github/DEFRA/hapi-web-boilerplate/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/5c3956c73c9b1496dadd/test_coverage)](https://codeclimate.com/github/DEFRA/hapi-web-boilerplate/test_coverage) [![Greenkeeper badge](https://badges.greenkeeper.io/DEFRA/hapi-web-boilerplate.svg)](https://greenkeeper.io/) -->
 
-# (Enter service name)
-(CITES Application)
+CITES Application Portal
 
 # Environment variables
 (Be sure to describe any environment variables here by maintaining a list like this)
