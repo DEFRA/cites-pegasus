@@ -18,28 +18,20 @@ function createModel(errorList, speciesName, quantity, unitOfMeasurement) {
 console.log(pageContent.unitsOfMeasurement)
 
   const unitsOfMeasurement = lodash.cloneDeep([{ text: pageContent.unitOfMeasurementPrompt, value: null}, ...pageContent.unitsOfMeasurement])
-
-  if (unitOfMeasurement){
-    const currentUnitOfMeasurement = unitsOfMeasurement.find(e => e.value === unitOfMeasurement)
-    if(currentUnitOfMeasurement){
-      currentUnitOfMeasurement.selected = 'true'
-    } 
-  }
+  unitsOfMeasurement.forEach(e => { if (e.value === unitOfMeasurement) e.selected = 'true' })
 
   const model = {
     backLink: previousPath,
     pageHeader: pageContent.pageHeader,
     speciesName: speciesName,
     formActionPage: currentPath,
-    //formActionSearch: `${currentPath}/search`,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
     inputLabelSpeciesNameLinkText: pageContent.inputLabelSpeciesNameLinkText,
     inputLabelSpeciesNameLinkUrl: pageContent.inputLabelSpeciesNameLinkUrl,
     speciesNameError: getFieldError(errorList, '#speciesName'),
-    speciesName: speciesName,
-    // inputSpeciesName: {
+        // inputSpeciesName: {
     //   label: {
     //     text: pageContent.inputLabelSpeciesName
     //   },
@@ -69,7 +61,6 @@ console.log(pageContent.unitsOfMeasurement)
       name: "unitOfMeasurement",
       classes: "govuk-input--width-4",
       items: unitsOfMeasurement,
-      //...(unitOfMeasurement ? { value: unitOfMeasurement } : {}),
       errorMessage: getFieldError(errorList, '#unitOfMeasurement')
     }
   }
@@ -83,7 +74,7 @@ module.exports = [{
     const appData = getAppData(request);
     // validateAppData(appData, pageId)
 
-    return h.view(pageId, createModel(null, appData.speciesName, appData.quantity, appData.unitOfMeasurement));
+    return h.view(pageId, createModel(null, appData?.speciesName, appData?.quantity, appData?.unitOfMeasurement));
   }
 },
 {

@@ -89,7 +89,7 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData.isAgent, ...appData[request.params.partyType] }));
+        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData?.isAgent, ...appData[request.params.partyType] }));
     },
     options: {
         validate: {
@@ -128,7 +128,7 @@ module.exports = [{
                 })
 
                 const appData = getAppData(request);
-                const pageData = { partyType: request.params.partyType, isAgent: appData.isAgent, ...request.payload }
+                const pageData = { partyType: request.params.partyType, isAgent: appData?.isAgent, ...request.payload }
                 return h.view(pageId, createModel(errorList, pageData)).takeover()
             }
         },

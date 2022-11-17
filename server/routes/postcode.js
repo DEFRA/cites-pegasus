@@ -72,7 +72,7 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData.isAgent, postcode: appData[request.params.partyType].addressSearchData?.postcode }));
+        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData?.isAgent, postcode: appData[request.params.partyType].addressSearchData?.postcode }));
     }
 },
 {
@@ -101,7 +101,7 @@ module.exports = [{
                 })
 
                 const appData = getAppData(request);
-                const pageData = { partyType: request.params.partyType, isAgent: appData.isAgent, ...request.payload }
+                const pageData = { partyType: request.params.partyType, isAgent: appData?.isAgent, ...request.payload }
                 return h.view(pageId, createModel(errorList, pageData)).takeover()
             }
         },

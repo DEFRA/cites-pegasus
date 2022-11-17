@@ -70,7 +70,7 @@ module.exports = [{
       return h.redirect(`${invalidAppDataPath}/`)
     }
 
-    return h.view(pageId, createModel(null, appData.isAgent));
+    return h.view(pageId, createModel(null, appData?.isAgent));
   }
 },
 {

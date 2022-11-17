@@ -122,7 +122,7 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        const pageData = { partyType: request.params.partyType, permitType: appData.permitType, isAgent: appData.isAgent, ...appData[request.params.partyType].addressSearchData }
+        const pageData = { partyType: request.params.partyType, permitType: appData?.permitType, isAgent: appData?.isAgent, ...appData[request.params.partyType].addressSearchData }
         return h.view(pageId, createModel(null, pageData));
 
     }
@@ -153,7 +153,7 @@ module.exports = [{
                 })
 
                 const appData = getAppData(request);
-                const pageData = { partyType: request.params.partyType, permitType: appData.permitType, isAgent: appData.isAgent, ...request.payload }
+                const pageData = { partyType: request.params.partyType, permitType: appData?.permitType, isAgent: appData?.isAgent, ...request.payload }
                 return h.view(pageId, createModel(errorList, pageData)).takeover()
             }
         },

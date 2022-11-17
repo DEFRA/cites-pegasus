@@ -10,7 +10,8 @@ const routes = [].concat(
   require('../routes/select-address'),
   require('../routes/species-name'),
   require('../routes/public'),
-  require('../routes/test')
+  require('../routes/test'),
+  require('../routes/oidc')
 )
 
 module.exports = {
