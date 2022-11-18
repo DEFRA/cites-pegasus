@@ -10,7 +10,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
 const previousPathAddress = `${urlPrefix}/search-address`
 const partyTypes = ['agent', 'applicant']
-//const nextPath = `${urlPrefix}/select-address`
+const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errorList, data) {
@@ -79,12 +79,13 @@ function createModel(errorList, data) {
                 text: pageContent.selectLabelAddress
             },
             items: addressSelectItems,
-            classes: "govuk-!-width-two-thirds"
+            classes: "govuk-!-width-two-thirds",
+            errorMessage: getFieldError(errorList, '#address')
         },
         detailsSummaryText: pageContent.detailsSummaryText,
         detailsText: pageContent.detailsText,
         detailsLinkText: pageContent.detailsLinkText,
-        detailsLinkUrl: "/enter-address"
+        detailsLinkUrl: `/enter-address/${data.partyType}`
     }
     return { ...commonContent, ...model }
 }

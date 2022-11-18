@@ -131,7 +131,7 @@
     "selectAddress": {
         "agent": {
             "defaultTitle": "Select an address ",
-            "pageHeader": "AG Select an address ",
+            "pageHeader": "Select an address ",
             "selectLabelAddress": "Address",
             "selectAddressPromptNoResults": "No addresses found",
             "selectAddressPromptSingle": "1 address found",
@@ -148,7 +148,7 @@
         },
         "applicant": {
             "defaultTitle": "Select an address ",
-            "pageHeader": "AP Select an address ",
+            "pageHeader": "Select an address ",
             "selectLabelAddress": "Address",
             "selectAddressPromptNoResults": "No addresses found",
             "selectAddressPromptSingle": "1 address found",
@@ -164,7 +164,7 @@
         },
         "agentLed": {
             "defaultTitle": "Select an address ",
-            "pageHeader": "AL Select an address ",
+            "pageHeader": "Select an address ",
             "selectLabelAddress": "Address",
             "selectAddressPromptNoResults": "No addresses found",
             "selectAddressPromptSingle": "1 address found",
