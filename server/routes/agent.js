@@ -10,9 +10,10 @@ const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/`
 const invalidAppDataPath = urlPrefix
 
-function createModel(errorList, isAgent) {
+function createModel(errors, isAgent) {
   const commonContent = textContent.common;
   const pageContent = textContent.agent;
+
   let isAgentRadioVal = null
   switch (isAgent) {
     case true:
@@ -21,6 +22,22 @@ function createModel(errorList, isAgent) {
     case false:
       isAgentRadioVal = commonContent.radioOptionNo
       break;
+  }
+
+  let errorList = null
+  if(errors){
+      errorList = []
+      const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+      const fields = ['isAgent']
+      fields.forEach(field => {
+          const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+          if (fieldError) {
+              errorList.push({
+                  text: fieldError,
+                  href: `#${field}`
+              })
+          }
+      })
   }
 
   const model = {
@@ -83,17 +100,7 @@ module.exports = [{
         isAgent: Joi.string().required()
       }),
       failAction: (request, h, err) => {
-        const errorList = []
-        const field = 'isAgent'
-        const fieldError = findErrorList(err, [field])[0]
-        if (fieldError) {
-          errorList.push({
-            text: fieldError,
-            href: `#${field}`
-          })
-        }
-
-        return h.view(pageId, createModel(errorList, request.payload.isAgent)).takeover()
+        return h.view(pageId, createModel(err, request.payload.isAgent)).takeover()
       }
     },
     handler: async (request, h) => {

@@ -2,13 +2,13 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../helpers/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { POSTCODE_REGEX } = require('../helpers/regex-validation')
+const { ADDRESS_REGEX } = require('../helpers/regex-validation')
 const textContent = require('../content/text-content')
-const pageId = 'postcode'
+const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/contact-details`
+const previousPath = `${urlPrefix}/select-address`
 const partyTypes = ['agent', 'applicant']
-const nextPath = `${urlPrefix}/select-address`
+//const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
 
 
@@ -16,52 +16,43 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
 
-    if(data.partyType === 'applicant'){
-        if(data.isAgent){
-            pageContent = textContent.postcode.agentLed
+    if (data.partyType === 'applicant') {
+        if (data.isAgent) {
+            pageContent = textContent.enterAddress.agentLed
         } else {
-            pageContent = textContent.postcode.applicant
+            pageContent = textContent.enterAddress.applicant
         }
     } else {
-        pageContent = textContent.postcode.agent
+        pageContent = textContent.enterAddress.agent
     }
 
     let defaultTitle = ''
     let pageHeader = ''
-    let linkTextInternationalAddress = ''
-    let errorMessages = null
+
     switch (data.permitType) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressImport
-            errorMessages = pageContent.errorMessagesImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressExport
-            errorMessages = pageContent.errorMessagesExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressReexport
-            errorMessages = pageContent.errorMessagesReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressArticle10
-            errorMessages = pageContent.errorMessagesArticle10
             break;
     }
 
     let errorList = null
-    if(errors){
+    if (errors) {
         errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
-        const fields = ['postcode']
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+        const fields = ['addressLine1', 'town', 'postcode']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
             if (fieldError) {
@@ -72,29 +63,64 @@ function createModel(errors, data) {
             }
         })
     }
-    
+
     const model = {
         backLink: `${previousPath}/${data.partyType}`,
         pageHeader: pageHeader,
+        pageBody: pageContent.pageBody,
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
-        linkTextUnknownPostcode: pageContent.linkTextUnknownPostcode,
-        linkUrlUnknownPostcode: `/search-address/${data.partyType}`,
-        linkTextInternationalAddress: linkTextInternationalAddress,
-        linkUrlInternationalAddress: `/international-address/${data.partyType}`,
+
+        inputAddressLine1: {
+            label: {
+                text: pageContent.inputLabelAddressLine1
+            },
+            id: "addressLine1",
+            name: "addressLine1",
+            ...(data.addressLine1 ? { value: data.addressLine1 } : {}),
+            errorMessage: getFieldError(errorList, '#addressLine1')
+        },
+        inputAddressLine2: {
+            label: {
+                text: pageContent.inputLabelAddressLine2
+            },
+            id: "addressLine2",
+            name: "addressLine2",
+            ...(data.addressLine2 ? { value: data.addressLine2 } : {}),
+            errorMessage: getFieldError(errorList, '#addressLine2')
+        },
+        inputTown: {
+            label: {
+                text: pageContent.inputLabelTown
+            },
+            id: "town",
+            name: "town",
+            classes: "govuk-!-width-two-thirds",
+            ...(data.town ? { value: data.town } : {}),
+            errorMessage: getFieldError(errorList, '#town')
+        },
+        inputCounty: {
+            label: {
+                text: pageContent.inputLabelCounty
+            },
+            id: "county",
+            name: "county",
+            classes: "govuk-!-width-two-thirds",
+            ...(data.county ? { value: data.county } : {}),
+            errorMessage: getFieldError(errorList, '#county')
+        },
         inputPostcode: {
             label: {
                 text: pageContent.inputLabelPostcode
             },
             id: "postcode",
             name: "postcode",
-            classes: "govuk-!-width-two-thirds",
+            classes: "govuk-input--width-10",
             ...(data.postcode ? { value: data.postcode } : {}),
             errorMessage: getFieldError(errorList, '#postcode')
-        },
+        }
     }
-    
     return { ...commonContent, ...model }
 }
 
@@ -108,7 +134,7 @@ module.exports = [{
             }),
             failAction: (request, h, error) => {
                 console.log(error)
-            }   
+            }
         }
     },
     handler: async (request, h) => {
@@ -122,11 +148,11 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        const pageData = { 
+        const pageData = {
             partyType: request.params.partyType, 
             isAgent: appData?.isAgent, 
             permitType: appData?.permitType, 
-            postcode: appData[request.params.partyType].addressSearchData?.postcode 
+            ...appData[request.params.partyType].address 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -142,7 +168,9 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             payload: Joi.object({
-                postcode: Joi.string().regex(POSTCODE_REGEX).required()
+                addressLine1: Joi.string().regex(ADDRESS_REGEX),
+                town: Joi.string().regex(ADDRESS_REGEX),
+                postcode: Joi.string().regex(ADDRESS_REGEX)
             }),
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
@@ -159,13 +187,13 @@ module.exports = [{
         handler: async (request, h) => {
             const partyType = request.params.partyType
 
-
             const appData = {
                 [partyType]: {
-                    addressSearchData: {
-                        property: null,
-                        street: null,    
-                        town: null,                    
+                    address: {
+                        addressLine1: request.payload.addressLine1,
+                        addressLine1: request.payload.addressLine1,
+                        town: request.payload.town,
+                        county: request.payload.county,
                         postcode: request.payload.postcode
                     }
                 }
@@ -182,4 +210,5 @@ module.exports = [{
             return h.redirect(`${nextPath}/${partyType}`)
         }
     },
-}]
+}
+]

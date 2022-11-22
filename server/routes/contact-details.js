@@ -12,7 +12,7 @@ const nextPath = `${urlPrefix}/postcode`
 const invalidAppDataPath = urlPrefix
 
 
-function createModel(errorList, data) {
+function createModel(errors, data) {
     const commonContent = textContent.common;
     
     let pageContent = null
@@ -24,6 +24,22 @@ function createModel(errorList, data) {
         }
     } else {
         pageContent = textContent.contactDetails.agent
+    }
+
+    let errorList = null
+    if(errors){
+        errorList = []
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+        const fields = ['fullName', 'businessName', 'email']
+        fields.forEach(field => {
+            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+            if (fieldError) {
+                errorList.push({
+                    text: fieldError,
+                    href: `#${field}`
+                })
+            }
+        })
     }
 
     const model = {
@@ -88,8 +104,13 @@ module.exports = [{
             console.log(err);
             return h.redirect(`${invalidAppDataPath}/`)
         }
+        const pageData = { 
+            partyType: request.params.partyType, 
+            isAgent: appData?.isAgent, 
+            ...appData[request.params.partyType] 
+        }
 
-        return h.view(pageId, createModel(null, { partyType: request.params.partyType, isAgent: appData?.isAgent, ...appData[request.params.partyType] }));
+        return h.view(pageId, createModel(null, pageData));
     },
     options: {
         validate: {
@@ -115,21 +136,14 @@ module.exports = [{
                 email: Joi.string().email().allow("")
             }),
             failAction: (request, h, err) => {
-                const errorList = []
-                const fields = ['fullName', 'businessName', 'email']
-                fields.forEach(field => {
-                    const fieldError = findErrorList(err, [field])[0]
-                    if (fieldError) {
-                        errorList.push({
-                            text: fieldError,
-                            href: `#${field}`
-                        })
-                    }
-                })
-
                 const appData = getAppData(request);
-                const pageData = { partyType: request.params.partyType, isAgent: appData?.isAgent, ...request.payload }
-                return h.view(pageId, createModel(errorList, pageData)).takeover()
+                const pageData = { 
+                    partyType: request.params.partyType, 
+                    isAgent: appData?.isAgent, 
+                    ...request.payload 
+                }
+
+                return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {

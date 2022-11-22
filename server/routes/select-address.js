@@ -13,7 +13,7 @@ const partyTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
-function createModel(errorList, data) {
+function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
     
@@ -43,6 +43,22 @@ function createModel(errorList, data) {
             break;
     }
     
+    let errorList = null
+    if(errors){
+        errorList = []
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+        const fields = ['address']
+        fields.forEach(field => {
+            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+            if (fieldError) {
+                errorList.push({
+                    text: fieldError,
+                    href: `#${field}`
+                })
+            }
+        })
+    }
+
     //TODO - GET REAL ADDRESS RESULTS
     //const searchResults = null;
     //const searchResults = [{ value: "3 Station Road", text: "3 Station Road, The Locality, The City, The County, B74 4DG" }];
@@ -141,21 +157,15 @@ module.exports = [{
                 address: Joi.string().required()
             }),
             failAction: (request, h, err) => {
-                const errorList = []
-                const fields = ['address']
-                fields.forEach(field => {
-                    const fieldError = findErrorList(err, [field])[0]
-                    if (fieldError) {
-                        errorList.push({
-                            text: fieldError,
-                            href: `#${field}`
-                        })
-                    }
-                })
-
                 const appData = getAppData(request);
-                const pageData = { partyType: request.params.partyType, permitType: appData?.permitType, isAgent: appData?.isAgent, ...request.payload }
-                return h.view(pageId, createModel(errorList, pageData)).takeover()
+                const pageData = { 
+                    partyType: request.params.partyType, 
+                    permitType: appData?.permitType, 
+                    isAgent: appData?.isAgent, 
+                    ...request.payload 
+                }
+
+                return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {
@@ -163,7 +173,9 @@ module.exports = [{
 
             const appData = {
                 [partyType]: {
-                    address: request.payload.address
+                    address: {
+                        addressSummary: request.payload.address
+                    }
                 }
             }
 

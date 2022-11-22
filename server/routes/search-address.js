@@ -12,7 +12,7 @@ const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
 
 
-function createModel(errorList, data) {
+function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
 
@@ -26,13 +26,56 @@ function createModel(errorList, data) {
         pageContent = textContent.searchAddress.agent
     }
 
+    let defaultTitle = ''
+    let pageHeader = ''
+    let errorMessages = null
+
+    switch (data.permitType) {
+        case 'import':
+            defaultTitle = pageContent.defaultTitleImport
+            pageHeader = pageContent.pageHeaderImport
+            errorMessages = pageContent.errorMessagesImport
+            break;
+        case 'export':
+            defaultTitle = pageContent.defaultTitleExport
+            pageHeader = pageContent.pageHeaderExport
+            errorMessages = pageContent.errorMessagesExport
+            break;
+        case 'reexport':
+            defaultTitle = pageContent.defaultTitleReexport
+            pageHeader = pageContent.pageHeaderReexport
+            errorMessages = pageContent.errorMessagesReexport
+            break;
+        case 'article10':
+            defaultTitle = pageContent.defaultTitleArticle10
+            pageHeader = pageContent.pageHeaderArticle10
+            errorMessages = pageContent.errorMessagesArticle10
+            break;
+    }
+
+    let errorList = null
+    if(errors){
+        errorList = []
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
+        const fields = ['property', 'street', 'town']
+        fields.forEach(field => {
+            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+            if (fieldError) {
+                errorList.push({
+                    text: fieldError,
+                    href: `#${field}`
+                })
+            }
+        })
+    }
+
     const model = {
         backLink: `${previousPath}/${data.partyType}`,
-        pageHeader: pageContent.pageHeader,
+        pageHeader: pageHeader,
         pageBody: pageContent.pageBody,
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
         linkText: pageContent.linkUnknownPostcode,
         linkUrl: `/search-address/${data.partyType}`,
         inputProperty: {
@@ -66,6 +109,7 @@ function createModel(errorList, data) {
             errorMessage: getFieldError(errorList, '#town')
         }
     }
+
     return { ...commonContent, ...model }
 }
 
@@ -93,7 +137,13 @@ module.exports = [{
             return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        const pageData = { partyType: request.params.partyType, isAgent: appData?.isAgent, ...appData[request.params.partyType].addressSearchData }
+        const pageData = { 
+            partyType: request.params.partyType, 
+            isAgent: appData?.isAgent, 
+            permitType: appData?.permitType, 
+            ...appData[request.params.partyType].addressSearchData 
+        }
+
         return h.view(pageId, createModel(null, pageData));
     }
 },
@@ -112,26 +162,19 @@ module.exports = [{
                 town: Joi.string().regex(ADDRESS_REGEX)
             }),
             failAction: (request, h, err) => {
-                const errorList = []
-                const fields = ['property', 'street', 'town']
-                fields.forEach(field => {
-                    const fieldError = findErrorList(err, [field])[0]
-                    if (fieldError) {
-                        errorList.push({
-                            text: fieldError,
-                            href: `#${field}`
-                        })
-                    }
-                })
-
                 const appData = getAppData(request);
-                const pageData = { partyType: request.params.partyType, isAgent: appData?.isAgent, ...request.payload }
-                return h.view(pageId, createModel(errorList, pageData)).takeover()
+                const pageData = { 
+                    partyType: request.params.partyType, 
+                    isAgent: appData?.isAgent, 
+                    permitType: appData?.permitType, 
+                    ...request.payload 
+                }
+
+                return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {
             const partyType = request.params.partyType
-
 
             const appData = {
                 [partyType]: {

@@ -11,19 +11,33 @@ const previousPath = `${urlPrefix}/NOT-DONE-YET`//TODO
 const nextPath = `${urlPrefix}/SPECIES-NAME-VALID-NOT-DONE-YET`//TODO
 const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET`//TODO
 
-function createModel(errorList, speciesName, quantity, unitOfMeasurement) {
+function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.speciesName
 
-console.log(pageContent.unitsOfMeasurement)
-
   const unitsOfMeasurement = lodash.cloneDeep([{ text: pageContent.unitOfMeasurementPrompt, value: null}, ...pageContent.unitsOfMeasurement])
-  unitsOfMeasurement.forEach(e => { if (e.value === unitOfMeasurement) e.selected = 'true' })
+  unitsOfMeasurement.forEach(e => { if (e.value === data.unitOfMeasurement) e.selected = 'true' })
+
+  let errorList = null
+    if(errors){
+        errorList = []
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+        const fields = ['speciesName', 'quantity', 'unitOfMeasurement']
+        fields.forEach(field => {
+            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+            if (fieldError) {
+                errorList.push({
+                    text: fieldError,
+                    href: `#${field}`
+                })
+            }
+        })
+    }  
 
   const model = {
     backLink: previousPath,
     pageHeader: pageContent.pageHeader,
-    speciesName: speciesName,
+    speciesName: data.speciesName,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -42,7 +56,7 @@ console.log(pageContent.unitsOfMeasurement)
       id: "speciesName",
       name: "speciesName",
       classes: "govuk-!-width-two-thirds",
-      ...(speciesName ? { value: speciesName } : {}),
+      ...(data.speciesName ? { value: data.speciesName } : {}),
       errorMessage: getFieldError(errorList, '#speciesName')
     },
     inputQuantity: {
@@ -52,7 +66,7 @@ console.log(pageContent.unitsOfMeasurement)
       id: "quantity",
       name: "quantity",
       classes: "govuk-input--width-4",
-      ...(quantity ? { value: quantity } : {}),
+      ...(data.quantity ? { value: data.quantity } : {}),
       errorMessage: getFieldError(errorList, '#quantity')
     },
     selectUnitOfMeasurement: {
@@ -73,9 +87,14 @@ module.exports = [{
   path: currentPath,
   handler: async (request, h) => {
     const appData = getAppData(request);
-    // validateAppData(appData, pageId)
+    // validateAppData(appData, pageId) //TODO
+    const pageData = { 
+      speciesName: appData?.speciesName, 
+      quantity: appData?.quantity, 
+      unitOfMeasurement: appData?.unitOfMeasurement
+    }
 
-    return h.view(pageId, createModel(null, appData?.speciesName, appData?.quantity, appData?.unitOfMeasurement));
+    return h.view(pageId, createModel(null, pageData));
   }
 },
 {
@@ -86,23 +105,16 @@ module.exports = [{
       options: { abortEarly: false },
       payload: Joi.object({
         speciesName: Joi.string().required(),
-        quantity: Joi.number().required().min(1).max(99),
+        quantity: Joi.number().required().min(0.0001).max(1000000),
         unitOfMeasurement: Joi.string()
       }),
-      failAction: (request, h, err) => {
-        const errorList = []
-        const fields = ['speciesName', 'quantity', 'unitOfMeasurement']
-        fields.forEach(field => {
-          const fieldError = findErrorList(err, [field])[0]
-          if (fieldError) {
-            errorList.push({
-              text: fieldError,
-              href: `#${field}`
-            })
-          }
-        })
-
-        return h.view(pageId, createModel(errorList, request.payload.speciesName, request.payload.quantity, request.payload.unitOfMeasurement)).takeover()
+      failAction: (request, h, err) => {        
+        const pageData = { 
+          speciesName: request.payload.speciesName, 
+          quantity: request.payload.quantity, 
+          unitOfMeasurement: request.payload.unitOfMeasurement
+        }
+        return h.view(pageId, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
