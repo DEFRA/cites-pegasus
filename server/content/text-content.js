@@ -2,12 +2,22 @@ const Joi = require('@hapi/joi');
 const textContent = require('./text-content.json');
 
 const searchAddressSchema = Joi.object({
-  defaultTitle: Joi.string().required(),
-  pageHeader: Joi.string().required(),
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
   pageBody: Joi.string().required(),
   inputLabelProperty: Joi.string().required(),
   inputLabelStreet: Joi.string().required(),
-  inputLabelTown: Joi.string().required()
+  inputLabelTown: Joi.string().required(),
+  errorMessagesImport: Joi.object(),
+  errorMessagesExport: Joi.object(),
+  errorMessagesReexport: Joi.object(),
+  errorMessagesArticle10: Joi.object(),
 })
 
 const selectAddressSchema = Joi.object({
@@ -28,12 +38,25 @@ const selectAddressSchema = Joi.object({
 })
 
 const postcodeSchema = Joi.object({
-  defaultTitle: Joi.string().required(),
-  pageHeader: Joi.string().required(),
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
   inputLabelPostcode: Joi.string().required(),
   buttonFindAddress: Joi.string().required(),
   linkTextUnknownPostcode: Joi.string().required(),
-  linkTextInternationalAddress: Joi.string().required()
+  linkTextInternationalAddressImport: Joi.string().optional(),
+  linkTextInternationalAddressExport: Joi.string().optional(),
+  linkTextInternationalAddressReexport: Joi.string().optional(),
+  linkTextInternationalAddressArticle10: Joi.string().optional(),
+  errorMessagesImport: Joi.object(),
+  errorMessagesExport: Joi.object(),
+  errorMessagesReexport: Joi.object(),
+  errorMessagesArticle10: Joi.object(),
 })
 
 const contactDetailsSchema = Joi.object({
@@ -44,6 +67,24 @@ const contactDetailsSchema = Joi.object({
   inputHintBusinessName: Joi.string().required(),
   inputLabelEmail: Joi.string().required(),
   inputHintEmail: Joi.string().required(),
+})
+
+const enterAddressSchema = Joi.object({
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
+  pageBody: Joi.string().required(),
+  inputLabelAddressLine1: Joi.string().required(),
+  inputLabelAddressLine2: Joi.string().required(),
+  inputLabelTown: Joi.string().required(),
+  inputLabelCounty: Joi.string().required(),
+  inputLabelPostcode: Joi.string().required(),
+  errorMessages: Joi.object()
 })
 
 const schema = Joi.object().keys({
@@ -57,7 +98,8 @@ const schema = Joi.object().keys({
     errorSummaryTitlePrefix: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
-    radioOptionNo: Joi.string().required()
+    radioOptionNo: Joi.string().required(),
+    errorMessages: Joi.object()
   }),
   applyCitesPermit: Joi.object({
     pageTitle: Joi.string().required(),
@@ -115,6 +157,11 @@ const schema = Joi.object().keys({
     applicant: selectAddressSchema,
     agentLed: selectAddressSchema
   }),
+  enterAddress: Joi.object({
+    agent: enterAddressSchema,
+    applicant: enterAddressSchema,
+    agentLed: enterAddressSchema
+  }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -125,7 +172,7 @@ const schema = Joi.object().keys({
     inputLabelQuantity: Joi.string().required(),
     selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object({ text: Joi.string().required(), value: Joi.string().required() }))
+    unitsOfMeasurement: Joi.array().items(Joi.object())
   })
 })
 

@@ -1,4 +1,3 @@
- const lookupErrorText = require('./lookupErrorText')
  const textContent = require('../content/text-content.json')
 
 function isChecked (data, option) {
@@ -108,9 +107,6 @@ function setLabelData (data, labelData) {
 //   return errorObject
 // }
 
-// function getErrorMessage (object) {
-//   return lookupErrorText(object[Object.keys(object)[0]])
-// }
 
 // function getGrantValues (projectCost) {
 //   const calculatedGrant = Number(GRANT_PERCENTAGE * projectCost / 100).toFixed(2)
@@ -158,12 +154,7 @@ function setLabelData (data, labelData) {
 //   )))
 // }
 
-function findTextContent(page) {
-  return textContent[page];
-}
-
-
-function findErrorList ({ details }, inputFields) {
+function findErrorList ({ details }, inputFields, errorMessages) {
   const errorCodes = inputFields.map(input => {
     const foundErrorList = details.filter(({ context: { label: valLabel } }) => (valLabel === input))
 
@@ -176,7 +167,7 @@ function findErrorList ({ details }, inputFields) {
   return errorCodes.map(err => (
     err === null
       ? null
-      : lookupErrorText(err)
+      : errorMessages[err] ?? err
   ))
 }
 
@@ -216,7 +207,6 @@ module.exports = {
    //   itemInObject,
    //   fetchObjectItem,
    //   fetchListObjectItems,
-  findTextContent,
   findErrorList,
 //   formatApplicationCode,
 //   getSbiHtml,
