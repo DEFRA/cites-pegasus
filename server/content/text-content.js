@@ -1,5 +1,5 @@
-const Joi = require('@hapi/joi');
-const textContent = require('./text-content.json');
+const Joi = require("@hapi/joi")
+const textContent = require("./text-content.json")
 
 const searchAddressSchema = Joi.object({
   defaultTitle: Joi.string().required(),
@@ -43,7 +43,36 @@ const contactDetailsSchema = Joi.object({
   inputLabelBusinessName: Joi.string().required(),
   inputHintBusinessName: Joi.string().required(),
   inputLabelEmail: Joi.string().required(),
-  inputHintEmail: Joi.string().required(),
+  inputHintEmail: Joi.string().required()
+})
+
+const sourceSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  heading: Joi.string().required(),
+  radioOptionW: Joi.string().required(),
+  radioOptionWHint: Joi.string().required(),
+  radioOptionD: Joi.string().required(),
+  radioOptionDHint: Joi.string().required(),
+  radioOptionI: Joi.string().required(),
+  radioOptionIHint: Joi.string().required(),
+  inputLabelIEnterAnotherSourceCode: Joi.string().required(),
+  radioOptionO: Joi.string().required(),
+  radioOptionOHint: Joi.string().required(),
+  inputLabelOEnterAnotherSourceCode: Joi.string().required(),
+  radioOptionX: Joi.string().required(),
+  radioOptionXHint: Joi.string().required(),
+  radioOptionR: Joi.string().allow("", null),
+  radioOptionRHint: Joi.string().allow("", null),
+  radioOptionC: Joi.string().allow("", null),
+  radioOptionCHint: Joi.string().allow("", null),
+  radioOptionF: Joi.string().allow("", null),
+  radioOptionFHint: Joi.string().allow("", null),
+  radioOptionA: Joi.string().allow("", null),
+  radioOptionAHint: Joi.string().allow("", null),
+  radioOptionDontKnow: Joi.string().required(),
+  radioOptionDontKnowHint: Joi.string().required(),
+  textAreaLabelEnterAReason: Joi.string().required(),
+  dividerText: Joi.string().required()
 })
 
 const schema = Joi.object().keys({
@@ -125,10 +154,18 @@ const schema = Joi.object().keys({
     inputLabelQuantity: Joi.string().required(),
     selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object({ text: Joi.string().required(), value: Joi.string().required() }))
+    unitsOfMeasurement: Joi.array().items(
+      Joi.object({
+        text: Joi.string().required(),
+        value: Joi.string().required()
+      })
+    )
+  }),
+  source: Joi.object({
+    animal: sourceSchema,
+    plant: sourceSchema
   })
 })
-
 
 // Validate config
 const { error, value } = schema.validate(textContent)
