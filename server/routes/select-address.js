@@ -16,7 +16,7 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
-    
+
     if (data.partyType === 'applicant') {
         if (data.isAgent) {
             pageContent = textContent.selectAddress.agentLed
@@ -174,7 +174,13 @@ module.exports = [{
             const appData = {
                 [partyType]: {
                     address: {
-                        addressSummary: request.payload.address
+                        manualEntry: false,
+                        //addressSummary: request.payload.address,
+                        addressLine1: '3 The Road',//TODO Pull the full address data from the api
+                        addressLine2: 'The Area',
+                        town: 'The Town',
+                        county: 'The County',
+                        postcode: 'AB1 2CD'
                     }
                 }
             }

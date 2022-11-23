@@ -8,7 +8,7 @@ const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/select-address`
 const partyTypes = ['agent', 'applicant']
-//const nextPath = `${urlPrefix}/select-address`
+const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
 
@@ -28,30 +28,35 @@ function createModel(errors, data) {
 
     let defaultTitle = ''
     let pageHeader = ''
+    let errorMessages = null
 
     switch (data.permitType) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
+            errorMessages = pageContent.errorMessagesImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
+            errorMessages = pageContent.errorMessagesExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
+            errorMessages = pageContent.errorMessagesReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
+            errorMessages = pageContent.errorMessagesArticle10
             break;
     }
 
     let errorList = null
     if (errors) {
         errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
         const fields = ['addressLine1', 'town', 'postcode']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
@@ -169,7 +174,9 @@ module.exports = [{
             options: { abortEarly: false },
             payload: Joi.object({
                 addressLine1: Joi.string().regex(ADDRESS_REGEX),
+                addressLine2: Joi.string().regex(ADDRESS_REGEX).optional(),
                 town: Joi.string().regex(ADDRESS_REGEX),
+                county: Joi.string().regex(ADDRESS_REGEX).optional(),
                 postcode: Joi.string().regex(ADDRESS_REGEX)
             }),
             failAction: (request, h, err) => {
@@ -190,8 +197,9 @@ module.exports = [{
             const appData = {
                 [partyType]: {
                     address: {
+                        manualEntry: true,
                         addressLine1: request.payload.addressLine1,
-                        addressLine1: request.payload.addressLine1,
+                        addressLine2: request.payload.addressLine2,
                         town: request.payload.town,
                         county: request.payload.county,
                         postcode: request.payload.postcode
