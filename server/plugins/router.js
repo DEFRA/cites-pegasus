@@ -9,6 +9,7 @@ const routes = [].concat(
   require('../routes/search-address'),
   require('../routes/select-address'),
   require('../routes/species-name'),
+  require('../routes/enter-address'),
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc')

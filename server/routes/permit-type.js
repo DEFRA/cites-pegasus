@@ -9,10 +9,26 @@ const previousPath = `${urlPrefix}/apply-cites-permit`
 const nextPath = `${urlPrefix}/agent`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 
-function createModel(errorList, permitType) {
+function createModel(errors, permitType) {
   const commonContent = textContent.common;
   const pageContent = textContent.permitType;
 
+  let errorList = null
+  if(errors){
+      errorList = []
+      const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+      const fields = ['permitType']
+      fields.forEach(field => {
+          const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+          if (fieldError) {
+              errorList.push({
+                  text: fieldError,
+                  href: `#${field}`
+              })
+          }
+      })
+  }
+  
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -85,19 +101,7 @@ module.exports = [{
         permitType: Joi.string().required()
       }),
       failAction: (request, h, err) => {
-        const errorList = []
-        const fields = ['permitType']
-        fields.forEach(field => {
-          const fieldError = findErrorList(err, [field])[0]
-          if (fieldError) {
-            errorList.push({
-              text: fieldError,
-              href: `#${field}`
-            })
-          }
-        })
-        
-        return h.view(pageId, createModel(errorList, request.payload.permitType)).takeover()
+        return h.view(pageId, createModel(err, request.payload.permitType)).takeover()
       }
     },
     handler: async (request, h) => {
