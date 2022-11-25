@@ -28,7 +28,8 @@
             "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
             "error.quantity.number.min": "Quantity must be 0.0001 or more",
             "error.quantity.number.max": "Quantity must be 1000000 or fewer",
-            "error.address.string.empty": "Select an address"
+            "error.address.string.empty": "Select an address",
+            "error.source.string.empty" : "Select the source code"
         }
     },
     "applyCitesPermit": {
