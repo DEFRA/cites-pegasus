@@ -1,8 +1,11 @@
 {
     "common": {
         "serviceName": "Apply for a CITES permit",
+        "phaseBannerPhase": "alpha",
+        "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='#'>feedback</a> will help us to improve it.",
         "backLinkButton": "Back",
         "continueButton": "Continue",
+        "confirmButton": "Confirm",
         "searchButton": "Search",
         "startButton": "Start now",
         "finishButton": "Finish",
@@ -291,6 +294,28 @@
             "inputLabelTown": "Town or city",
             "inputLabelCounty": "County (optional)",
             "inputLabelPostcode": "Postcode"            
+        }
+    },
+    "confirmAddress": {
+        "agent": {
+            "defaultTitle": "Confirm the address",
+            "pageHeader": "Confirm the address",
+            "changeAddressLinkText": "Change address"         
+        },
+        "applicant": {
+            "defaultTitle": "Confirm the address",
+            "pageHeader": "Confirm the address",
+            "changeAddressLinkText": "Change address",
+            "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
+            "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
+        },
+        "agentLed": {
+            "defaultTitle": "Confirm the address",
+            "pageHeader": "Confirm the address",
+            "changeAddressLinkText": "Change address",
+            "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
+            "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
+            "radioOptionDeliverToAgentAddress": "Deliver the permit to"
         }
     },
     "speciesName": {

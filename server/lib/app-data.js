@@ -59,6 +59,9 @@ function getAppFlow(appData) {
                 || appData?.agent?.addressSearchData?.town) {
                     appFlow.push('select-address/agent')
                 }
+                if(appData?.agent?.address){
+                    appFlow.push('confirm-address/agent')
+                }
             }
         }
         if (appData?.isAgent === false || (appData?.isAgent === true && appData?.agent?.address)) {
@@ -73,6 +76,9 @@ function getAppFlow(appData) {
                 || appData?.applicant?.addressSearchData?.street
                 || appData?.applicant?.addressSearchData?.town) {
                     appFlow.push('select-address/applicant')
+                }
+                if(appData?.applicant?.address){
+                    appFlow.push('confirm-address/applicant')
                 }
             }
         }

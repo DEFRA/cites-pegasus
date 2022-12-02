@@ -1,8 +1,8 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError } = require('../helpers/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { ADDRESS_REGEX } = require('../helpers/regex-validation')
+const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'search-address'
 const currentPath = `${urlPrefix}/${pageId}`

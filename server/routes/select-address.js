@@ -1,8 +1,9 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError } = require('../helpers/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { ADDRESS_REGEX } = require('../helpers/regex-validation')
+const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { ADDRESS_REGEX } = require('../lib/regex-validation')
+const { getAddressesByPostcode } = require('../services/address-service')
 const textContent = require('../content/text-content')
 const postcode = require('./postcode')
 const pageId = 'select-address'
@@ -42,9 +43,9 @@ function createModel(errors, data) {
             bodyText = pageContent.bodyTextArticle10
             break;
     }
-    
+
     let errorList = null
-    if(errors){
+    if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
         const fields = ['address']
@@ -65,13 +66,14 @@ function createModel(errors, data) {
     const searchResults = [{ value: "3 Station Road", text: "3 Station Road, The Locality, The City, The County, B74 4DG" }, { value: "45 Main Street", text: "45 Main Street, The Locality, The City, The County, B74 4DG" }];
     let addressSelectItems = []
 
-    if (searchResults && searchResults.length > 0) {
-        if (searchResults.length === 1) {
+    if (data.results && data.results.length > 0) {
+        if (data.results.length === 1) {
             addressSelectItems.push({ value: "", text: pageContent.selectAddressPromptSingle })
         } else {
-            addressSelectItems.push({ value: "", text: `${searchResults.length} ${pageContent.selectAddressPromptMultiple}` })
+            addressSelectItems.push({ value: "", text: `${data.results.length} ${pageContent.selectAddressPromptMultiple}` })
         }
-        addressSelectItems = [...addressSelectItems, ...searchResults]
+        data.results.forEach(res => { addressSelectItems.push({ value: res.Address.UPRN, text: res.Address.AddressLine }) })
+        //addressSelectItems = [...addressSelectItems, ...searchResults]
 
     } else {
         addressSelectItems.push({ value: "", text: pageContent.selectAddressPromptNoResults })
@@ -129,22 +131,25 @@ module.exports = [{
     },
     handler: async (request, h) => {
         const appData = getAppData(request);
-
+        let searchResponse = null
         try {
+            const searchData = appData[request.params.partyType].addressSearchData
             validateAppData(appData, `${pageId}/${request.params.partyType}`)
             validateSearchData(appData[request.params.partyType].addressSearchData)
+            const response = await getAddressesByPostcode(searchData.postcode)
+            const pageData = {
+                partyType: request.params.partyType,
+                permitType: appData?.permitType,
+                isAgent: appData?.isAgent,
+                ...appData[request.params.partyType]?.addressSearchData,
+                results: response.results
+            }
+            return h.view(pageId, createModel(null, pageData));
         }
         catch (err) {
             console.log(err);
             return h.redirect(`${invalidAppDataPath}/`)
         }
-
-        const pageData = { 
-            partyType: request.params.partyType, 
-            permitType: appData?.permitType, 
-            isAgent: appData?.isAgent, 
-            ...appData[request.params.partyType]?.addressSearchData }
-        return h.view(pageId, createModel(null, pageData));
 
     }
 },
@@ -162,12 +167,12 @@ module.exports = [{
             }),
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
-                const pageData = { 
-                    partyType: request.params.partyType, 
-                    permitType: appData?.permitType, 
-                    isAgent: appData?.isAgent, 
+                const pageData = {
+                    partyType: request.params.partyType,
+                    permitType: appData?.permitType,
+                    isAgent: appData?.isAgent,
                     ...appData[request.params.partyType]?.addressSearchData,
-                    ...request.payload 
+                    ...request.payload
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()

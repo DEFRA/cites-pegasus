@@ -1,7 +1,7 @@
 
 const MSAL = require('@azure/msal-node');
 const Wreck = require('@hapi/wreck');
-const { getYarValue, setYarValue } = require('../helpers/session')
+const { getYarValue, setYarValue } = require('../lib/session')
 var moment = require('moment');
 const config = require('../../config/config').dynamicsAPI
 
