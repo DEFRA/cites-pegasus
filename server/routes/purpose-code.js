@@ -17,7 +17,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source`
 const nextPath = `${urlPrefix}/specimen-details`
 
-function createModel(errors, purposeCode) {
+function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.purposeCode
 
@@ -47,7 +47,10 @@ function createModel(errors, purposeCode) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-
+    speciesName: "Homopus solus",
+    quantity: "3",
+    // speciesName: data.speciesName,
+    // quantity: data.quantity,
     inputPurposeCode: {
       idPrefix: "purposeCode",
       name: "purposeCode",
@@ -66,7 +69,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "B")
+          checked: isChecked(data.purposeCode, "B")
         },
         {
           value: "E",
@@ -75,7 +78,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "E")
+          checked: isChecked(data.purposeCode, "E")
         },
         {
           value: "G",
@@ -84,7 +87,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "G")
+          checked: isChecked(data.purposeCode, "G")
         },
         {
           value: "H",
@@ -93,7 +96,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "H")
+          checked: isChecked(data.purposeCode, "H")
         },
         {
           value: "L",
@@ -102,7 +105,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "L")
+          checked: isChecked(data.purposeCode, "L")
         },
         {
           value: "M",
@@ -111,7 +114,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "M")
+          checked: isChecked(data.purposeCode, "M")
         },
         {
           value: "N",
@@ -120,7 +123,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "N")
+          checked: isChecked(data.purposeCode, "N")
         },
         {
           value: "P",
@@ -129,7 +132,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "P")
+          checked: isChecked(data.purposeCode, "P")
         },
         {
           value: "Q",
@@ -138,7 +141,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "Q")
+          checked: isChecked(data.purposeCode, "Q")
         },
         {
           value: "S",
@@ -147,7 +150,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "S")
+          checked: isChecked(data.purposeCode, "S")
         },
         {
           value: "T",
@@ -156,7 +159,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "T")
+          checked: isChecked(data.purposeCode, "T")
         },
         {
           value: "Z",
@@ -165,7 +168,7 @@ function createModel(errors, purposeCode) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(purposeCode, "Z")
+          checked: isChecked(data.purposeCode, "Z")
         }
       ],
       errorMessage: getFieldError(errorList, "#purposeCode")
@@ -178,26 +181,53 @@ module.exports = [
   {
     method: "GET",
     path: currentPath,
+    // path: `${currentPath}/{specimenId}`,
     handler: async (request, h) => {
       const appData = getAppData(request)
       // validateAppData(appData, pageId)
-      
-      return h.view(pageId, createModel(null, appData?.species.purposeCode, appData?.species.speciesName, appData?.species.quantity))
+
+      const pageData = {
+        // speciesId: request.params.speciesId,
+        // specimenId: request.params.specimenId,
+        speciesName: appData?.speciesName,
+        unitOfMeasurement: appData?.unitOfMeasurement,
+        quantity: appData?.quantity,
+        purposeCode: appData?.purposeCode
+        // ...appData[request.params.specimenId]
+      }
+
+      return h.view(pageId, createModel(null, pageData))
     }
   },
+
   {
     method: "POST",
     path: currentPath,
+    // path: `${currentPath}/{specimenId}`,
     options: {
       validate: {
+        // params: Joi.object({
+        //   specimenId: Joi.string().required()
+        // }),
         options: { abortEarly: false },
         payload: Joi.object({
-          purposeCode: Joi.string().required()
+          purposeCode: Joi.string().required(),
+          speciesName: Joi.string().required(),
+          quantity: Joi.number().required().min(0.0001).max(1000000),
+          unitOfMeasurement: Joi.string()
         }),
         failAction: (request, h, err) => {
-          return h
-            .view(pageId, createModel(err, request.payload.purposeCode))
-            .takeover()
+          const appData = getAppData(request)
+          const pageData = {
+            // speciesId: request.params.speciesId,
+            // specimenId: request.params.specimenId,
+            speciesName: appData?.speciesName,
+            unitOfMeasurement: appData?.unitOfMeasurement,
+            quantity: appData?.quantity,
+            purposeCode: appData?.purposeCode
+            // ...appData[request.params.specimenId]
+          }
+          return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
@@ -205,8 +235,15 @@ module.exports = [
           purposeCode: request.payload.species.purposeCode
         })
 
+        // return h.redirect((`${nextPath}/${request.params.specimenId}`))
         return h.redirect(nextPath)
       }
     }
   }
 ]
+
+// appData?.purposeCode,
+// appData?.speciesName,
+// appData?.quantity,
+// appData?.unitOfMeasurement,
+// appData?.specimenId,
