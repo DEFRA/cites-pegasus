@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError, setLabelData } = require('../helpers/helper-functions')
-const { setAppData, getAppData, validateAppData } = require('../helpers/app-data')
+const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
+const { setAppData, getAppData, validateAppData } = require('../lib/app-data')
 
 const textContent = require('../content/text-content')
 const pageId = 'agent'

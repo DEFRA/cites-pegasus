@@ -1,352 +1,377 @@
 {
-  "common": {
-    "serviceName": "Apply for a CITES permit",
-    "backLinkButton": "Back",
-    "continueButton": "Continue",
-    "searchButton": "Search",
-    "startButton": "Start now",
-    "finishButton": "Finish",
-    "errorSummaryTitlePrefix": "Error: ",
-    "errorSummaryTitle": "There is a problem",
-    "radioOptionYes": "Yes",
-    "radioOptionNo": "No",
-    "errorMessages": {
-      "error.permitType.any.required": "Select the type of permit or certificate that you are applying for ",
-      "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else",
-      "error.fullName.string.empty": "Full name is required",
-      "error.fullName.string.pattern.base": "Full name is invalid",
-      "error.businessName.string.pattern.base": "Business name is invalid",
-      "error.email.string.email": "Email format is invalid",
-      "error.addressLine1.string.empty": "Enter the address line 1",
-      "error.property.string.empty": "Enter the property",
-      "error.street.string.empty": "Enter the street",
-      "error.town.string.empty": "Enter the town or city ",
-      "error.postcode.string.empty": "Enter your postcode",
-      "error.postcode.string.pattern.base": "Enter a real postcode",
-      "error.speciesName.string.empty": "Enter the scientific name",
-      "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
-      "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
-      "error.quantity.number.min": "Quantity must be 0.0001 or more",
-      "error.quantity.number.max": "Quantity must be 1000000 or fewer",
-      "error.address.string.empty": "Select an address",
-      "error.purposeCode.any.required": "Select the purpose code"
-    }
-  },
-  "applyCitesPermit": {
-    "pageTitle": "Apply for a CITES permit",
-    "pageHeader": "Apply for a CITES permit",
-    "pageBody1": "Use this service to apply for a permit to import, export or re-export under the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES).",
-    "pageBody2": "You can use this service to apply for a permit to:",
-    "bullet1": "import, export or re-export a specimen",
-    "bullet2": "use a specimen for commercial purposes (also called an Article 10)"
-  },
-  "permitType": {
-    "defaultTitle": "What type of permit or certificate are you applying for?",
-    "heading": "What type of permit or certificate are you applying for?",
-    "radioOptionImport": "Import",
-    "radioOptionImportHint": "To move a species into Great Britain from another country.",
-    "radioOptionExport": "Export",
-    "radioOptionExportHint": "To move a species out of Great Britain to another country.",
-    "radioOptionReexport": "Re-export",
-    "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
-    "radioOptionArticle10": "Article 10",
-    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
-    "radioOptionOther": "Other"
-  },
-  "cannotUseService": {
-    "pageTitle": "You cannot use this service yet",
-    "pageHeader": "You cannot use this service yet",
-    "pageBody": "You can only use this service to apply for:",
-    "bullet1": "import, export or re-export permits",
-    "bullet2": "article 10 certificates",
-    "linkText": "Check how to apply for other CITES permits and certificates",
-    "linkUrl": "/",
-    "finishButtonUrl": "/"
-  },
-  "agent": {
-    "defaultTitle": "Are you applying on behalf of someone else?",
-    "radioHeaderAgent": "Are you applying on behalf of someone else?",
-    "radioHeaderAgentHint": "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business."
-  },
-  "contactDetails": {
+    "common": {
+        "serviceName": "Apply for a CITES permit",
+        "phaseBannerPhase": "alpha",
+        "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='#'>feedback</a> will help us to improve it.",
+        "backLinkButton": "Back",
+        "continueButton": "Continue",
+        "confirmButton": "Confirm",
+        "searchButton": "Search",
+        "startButton": "Start now",
+        "finishButton": "Finish",
+        "errorSummaryTitlePrefix": "Error: ",
+        "errorSummaryTitle": "There is a problem",
+        "radioOptionYes": "Yes",
+        "radioOptionNo": "No",
+        "errorMessages": {
+            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for ",
+            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else",
+            "error.fullName.string.empty": "Full name is required",
+            "error.fullName.string.pattern.base": "Full name is invalid",
+            "error.businessName.string.pattern.base": "Business name is invalid",
+            "error.email.string.email": "Email format is invalid",
+            "error.addressLine1.string.empty": "Enter the address line 1",
+            "error.property.string.empty": "Enter the property",
+            "error.street.string.empty": "Enter the street",
+            "error.town.string.empty": "Enter the town or city ",
+            "error.postcode.string.empty": "Enter your postcode",
+            "error.postcode.string.pattern.base": "Enter a real postcode",
+            "error.speciesName.string.empty": "Enter the scientific name",
+            "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
+            "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
+            "error.quantity.number.min": "Quantity must be 0.0001 or more",
+            "error.quantity.number.max": "Quantity must be 1000000 or fewer",
+            "error.address.string.empty": "Select an address",
+            "error.purposeCode.any.required": "Select the purpose code"
+        }
+    },
+    "applyCitesPermit": {
+        "pageTitle": "Apply for a CITES permit",
+        "pageHeader": "Apply for a CITES permit",
+        "pageBody1": "Use this service to apply for a permit to import, export or re-export under the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES).",
+        "pageBody2": "You can use this service to apply for a permit to:",
+        "bullet1": "import, export or re-export a specimen",
+        "bullet2": "use a specimen for commercial purposes (also called an Article 10)"
+    },
+    "permitType": {
+        "defaultTitle": "What type of permit or certificate are you applying for?",
+        "heading": "What type of permit or certificate are you applying for?",
+        "radioOptionImport": "Import",
+        "radioOptionImportHint": "To move a species into Great Britain from another country.",
+        "radioOptionExport": "Export",
+        "radioOptionExportHint": "To move a species out of Great Britain to another country.",
+        "radioOptionReexport": "Re-export",
+        "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
+        "radioOptionArticle10": "Article 10",
+        "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
+        "radioOptionOther": "Other"
+    },
+    "cannotUseService": {
+        "pageTitle": "You cannot use this service yet",
+        "pageHeader": "You cannot use this service yet",
+        "pageBody": "You can only use this service to apply for:",
+        "bullet1": "import, export or re-export permits",
+        "bullet2": "article 10 certificates",
+        "linkText": "Check how to apply for other CITES permits and certificates",
+        "linkUrl": "/",
+        "finishButtonUrl": "/"
+    },
     "agent": {
-      "defaultTitle": "Enter your contact details",
-      "pageHeader": "Enter your contact details",
-      "inputLabelFullName": "Full name",
-      "inputLabelBusinessName": "Business name (optional)",
-      "inputHintBusinessName": "If you are a business, give the business name.",
-      "inputLabelEmail": "Email address",
-      "inputHintEmail": "We will only use this to send you a copy of the application. "
+        "defaultTitle": "Are you applying on behalf of someone else?",
+        "radioHeaderAgent": "Are you applying on behalf of someone else?",
+        "radioHeaderAgentHint": "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business."
     },
-    "applicant": {
-      "defaultTitle": "Enter your contact details",
-      "pageHeader": "Enter your contact details",
-      "inputLabelFullName": "Full name",
-      "inputLabelBusinessName": "Business name (optional)",
-      "inputHintBusinessName": "If you are a business, give the business name.",
-      "inputLabelEmail": "Email address",
-      "inputHintEmail": "We will only use this to send you a copy of the application. "
+    "contactDetails": {
+        "agent": {
+            "defaultTitle": "Enter your contact details",
+            "pageHeader": "Enter your contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessName": "If you are a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmail": "We will only use this to send you a copy of the application. "
+        },
+        "applicant": {
+            "defaultTitle": "Enter your contact details",
+            "pageHeader": "Enter your contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessName": "If you are a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmail": "We will only use this to send you a copy of the application. "
+        },
+        "agentLed": {
+            "defaultTitle": "Enter the importer's contact details",
+            "pageHeader": "Enter the importer's contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessName": "If the importer is a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmail": "We will only use this to send the importer a copy of the application. "
+        }
     },
-    "agentLed": {
-      "defaultTitle": "Enter the importer's contact details",
-      "pageHeader": "Enter the importer's contact details",
-      "inputLabelFullName": "Full name",
-      "inputLabelBusinessName": "Business name (optional)",
-      "inputHintBusinessName": "If the importer is a business, give the business name.",
-      "inputLabelEmail": "Email address",
-      "inputHintEmail": "We will only use this to send the importer a copy of the application. "
-    }
-  },
-  "postcode": {
-    "agent": {
-      "defaultTitleImport": "What is your address?",
-      "defaultTitleExport": "What is your address?",
-      "defaultTitleReexport": "What is your address?",
-      "defaultTitleArticle10": "What is your address?",
-      "pageHeaderImport": "What is your address?",
-      "pageHeaderExport": "What is your address?",
-      "pageHeaderReexport": "What is your address?",
-      "pageHeaderArticle10": "What is your address?",
-      "inputLabelPostcode": "Postcode",
-      "buttonFindAddress": "Find address",
-      "linkTextUnknownPostcode": "I do not know the postcode"
+    "postcode": {
+        "agent": {
+            "defaultTitleImport": "What is your address?",
+            "defaultTitleExport": "What is your address?",
+            "defaultTitleReexport": "What is your address?",
+            "defaultTitleArticle10": "What is your address?",
+            "pageHeaderImport": "What is your address?",
+            "pageHeaderExport": "What is your address?",
+            "pageHeaderReexport": "What is your address?",
+            "pageHeaderArticle10": "What is your address?",
+            "inputLabelPostcode": "Postcode",
+            "buttonFindAddress": "Find address",
+            "linkTextUnknownPostcode": "I do not know the postcode"            
+        },
+        "applicant": {
+            "defaultTitleImport": "What is your address?",
+            "defaultTitleExport": "What is your address?",
+            "defaultTitleReexport": "What is your address?",
+            "defaultTitleArticle10": "What is your address?",
+            "pageHeaderImport": "What is your address?",
+            "pageHeaderExport": "What is your address?",
+            "pageHeaderReexport": "What is your address?",
+            "pageHeaderArticle10": "What is your address?",
+            "inputLabelPostcode": "Postcode",
+            "buttonFindAddress": "Find address",
+            "linkTextUnknownPostcode": "I do not know the postcode"            
+        },
+        "agentLed": {
+            "defaultTitleImport": "What’s the importer’s address?",
+            "defaultTitleExport": "What’s the exporter’s address?",
+            "defaultTitleReexport": "What’s the re-exporter’s address?",
+            "defaultTitleArticle10": "What’s the applicant’s address?",
+            "pageHeaderImport": "What’s the importer’s address?",
+            "pageHeaderExport": "What’s the exporter’s address?",
+            "pageHeaderReexport": "What’s the re-exporter’s address?",
+            "pageHeaderArticle10": "What’s the applicant’s address?",
+            "inputLabelPostcode": "Postcode",
+            "buttonFindAddress": "Find address",
+            "linkTextUnknownPostcode": "I do not know the postcode",
+            "linkTextInternationalAddressImport": "I The importer lives outside the UK ",
+            "linkTextInternationalAddressExport": "The exporter lives outside the UK",
+            "linkTextInternationalAddressReexport": "The re-exporter lives outside the UK",
+            "linkTextInternationalAddressArticle10": "The applicant lives outside the UK",
+            "errorMessagesImport": {
+                "error.postcode.string.empty": "Enter the importer's postcode"                
+            },
+            "errorMessagesExport": {
+                "error.postcode.string.empty": "Enter the exporter's postcode"                
+            },
+            "errorMessagesReexport": {
+                "error.postcode.string.empty": "Enter the re-exporter's postcode"                
+            },
+            "errorMessagesArticle10": {
+                "error.postcode.string.empty": "Enter the applicant's postcode"                
+            }
+        }
     },
-    "applicant": {
-      "defaultTitleImport": "What is your address?",
-      "defaultTitleExport": "What is your address?",
-      "defaultTitleReexport": "What is your address?",
-      "defaultTitleArticle10": "What is your address?",
-      "pageHeaderImport": "What is your address?",
-      "pageHeaderExport": "What is your address?",
-      "pageHeaderReexport": "What is your address?",
-      "pageHeaderArticle10": "What is your address?",
-      "inputLabelPostcode": "Postcode",
-      "buttonFindAddress": "Find address",
-      "linkTextUnknownPostcode": "I do not know the postcode"
+    "searchAddress": {
+        "agent": {
+            "defaultTitleImport": "Search for your address",
+            "defaultTitleExport": "Search for your address",
+            "defaultTitleReexport": "Search for your address",
+            "defaultTitleArticle10": "Search for your address",
+            "pageHeaderImport": "Search for your address",
+            "pageHeaderExport": "Search for your address",
+            "pageHeaderReexport": "Search for your address",
+            "pageHeaderArticle10": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name",
+            "inputLabelStreet": "Street",
+            "inputLabelTown": "Town or city"
+        },
+        "applicant": {
+            "defaultTitleImport": "Search for your address",
+            "defaultTitleExport": "Search for your address",
+            "defaultTitleReexport": "Search for your address",
+            "defaultTitleArticle10": "Search for your address",
+            "pageHeaderImport": "Search for your address",
+            "pageHeaderExport": "Search for your address",
+            "pageHeaderReexport": "Search for your address",
+            "pageHeaderArticle10": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name",
+            "inputLabelStreet": "Street",
+            "inputLabelTown": "Town or city"            
+        },
+        "agentLed": {
+            "defaultTitleImport": "Search for the importer’s address",
+            "defaultTitleExport": "Search for the exporter’s address",
+            "defaultTitleReexport": "Search for the re-exporter’s address",
+            "defaultTitleArticle10": "Search for the applicant’s address",
+            "pageHeaderImport": "Search for the importer’s address",
+            "pageHeaderExport": "Search for the exporter’s address",
+            "pageHeaderReexport": "Search for the re-exporter’s address",
+            "pageHeaderArticle10": "Search for the applicant’s address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name",
+            "inputLabelStreet": "Street",
+            "inputLabelTown": "Town or city"                        
+        }
     },
-    "agentLed": {
-      "defaultTitleImport": "What’s the importer’s address?",
-      "defaultTitleExport": "What’s the exporter’s address?",
-      "defaultTitleReexport": "What’s the re-exporter’s address?",
-      "defaultTitleArticle10": "What’s the applicant’s address?",
-      "pageHeaderImport": "What’s the importer’s address?",
-      "pageHeaderExport": "What’s the exporter’s address?",
-      "pageHeaderReexport": "What’s the re-exporter’s address?",
-      "pageHeaderArticle10": "What’s the applicant’s address?",
-      "inputLabelPostcode": "Postcode",
-      "buttonFindAddress": "Find address",
-      "linkTextUnknownPostcode": "I do not know the postcode",
-      "linkTextInternationalAddressImport": "I The importer lives outside the UK ",
-      "linkTextInternationalAddressExport": "The exporter lives outside the UK",
-      "linkTextInternationalAddressReexport": "The re-exporter lives outside the UK",
-      "linkTextInternationalAddressArticle10": "The applicant lives outside the UK",
-      "errorMessagesImport": {
-        "error.postcode.string.empty": "Enter the importer's postcode"
-      },
-      "errorMessagesExport": {
-        "error.postcode.string.empty": "Enter the exporter's postcode"
-      },
-      "errorMessagesReexport": {
-        "error.postcode.string.empty": "Enter the re-exporter's postcode"
-      },
-      "errorMessagesArticle10": {
-        "error.postcode.string.empty": "Enter the applicant's postcode"
-      }
-    }
-  },
-  "searchAddress": {
-    "agent": {
-      "defaultTitleImport": "Search for your address",
-      "defaultTitleExport": "Search for your address",
-      "defaultTitleReexport": "Search for your address",
-      "defaultTitleArticle10": "Search for your address",
-      "pageHeaderImport": "Search for your address",
-      "pageHeaderExport": "Search for your address",
-      "pageHeaderReexport": "Search for your address",
-      "pageHeaderArticle10": "Search for your address",
-      "pageBody": "If you are a business, give the business address.",
-      "inputLabelProperty": "Property number or name",
-      "inputLabelStreet": "Street",
-      "inputLabelTown": "Town or city"
+    "selectAddress": {
+        "agent": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "detailsSummaryText": "I cannot find the address in the list",
+            "detailsText": "If you cannot find the address, ",
+            "detailsLinkText": "enter your address manually",
+            "linkTextSearchAgain": "Search for the address again"            
+        },
+        "applicant": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "detailsSummaryText": "I cannot find the address in the list",
+            "detailsText": "If you cannot find the address, ",
+            "detailsLinkText": "enter your address manually",
+            "linkTextSearchAgain": "Search for the address again",
+            "bodyTextImport": "",
+            "bodyTextExport": "",
+            "bodyTextReexport": "",
+            "bodyTextArticle10": ""
+        },
+        "agentLed": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "detailsSummaryText": "I cannot find the address in the list",
+            "detailsText": "If you cannot find the address, ",
+            "detailsLinkText": "enter your address manually",
+            "linkTextSearchAgain": "Search for the address again",
+            "bodyTextImport": "If you still cannot find the address, contact the importer to confirm their details.",
+            "bodyTextExport": "If you still cannot find the address, contact the exporter to confirm their details.",
+            "bodyTextReexport": "If you still cannot find the address, contact the re-exporter to confirm their details.",
+            "bodyTextArticle10": "If you still cannot find the address, contact the applicant to confirm their details."
+        }
     },
-    "applicant": {
-      "defaultTitleImport": "Search for your address",
-      "defaultTitleExport": "Search for your address",
-      "defaultTitleReexport": "Search for your address",
-      "defaultTitleArticle10": "Search for your address",
-      "pageHeaderImport": "Search for your address",
-      "pageHeaderExport": "Search for your address",
-      "pageHeaderReexport": "Search for your address",
-      "pageHeaderArticle10": "Search for your address",
-      "pageBody": "If you are a business, give the business address.",
-      "inputLabelProperty": "Property number or name",
-      "inputLabelStreet": "Street",
-      "inputLabelTown": "Town or city"
+    "enterAddress": {
+        "agent": {
+            "defaultTitleImport": "Enter your address",
+            "defaultTitleExport": "Enter your address",
+            "defaultTitleReexport": "Enter your address",
+            "defaultTitleArticle10": "Enter your address",
+            "pageHeaderImport": "Enter your address",
+            "pageHeaderExport": "Enter your address",
+            "pageHeaderReexport": "Enter your address",
+            "pageHeaderArticle10": "Enter your address",
+            "pageBody": "If you are a business, enter the business address.",
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2 (optional)",
+            "inputLabelTown": "Town or city",
+            "inputLabelCounty": "County (optional)",
+            "inputLabelPostcode": "Postcode"
+        },
+        "applicant": {
+            "defaultTitleImport": "Enter your address",
+            "defaultTitleExport": "Enter your address",
+            "defaultTitleReexport": "Enter your address",
+            "defaultTitleArticle10": "Enter your address",
+            "pageHeaderImport": "Enter your address",
+            "pageHeaderExport": "Enter your address",
+            "pageHeaderReexport": "Enter your address",
+            "pageHeaderArticle10": "Enter your address",
+            "pageBody": "If you are a business, enter the business address.",
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2 (optional)",
+            "inputLabelTown": "Town or city",
+            "inputLabelCounty": "County (optional)",
+            "inputLabelPostcode": "Postcode"
+        },
+        "agentLed": {
+            "defaultTitleImport": "Enter the importer's address",
+            "defaultTitleExport": "Enter the exporter's address",
+            "defaultTitleReexport": "Enter the re-exporter's address",
+            "defaultTitleArticle10": "Enter the applicant's address",
+            "pageHeaderImport": "Enter the importer's address",
+            "pageHeaderExport": "Enter the exporter's address",
+            "pageHeaderReexport": "Enter the re-exporter's address",
+            "pageHeaderArticle10": "Enter the applicant's address",
+            "pageBody": "If you are a business, enter the business address.",
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2 (optional)",
+            "inputLabelTown": "Town or city",
+            "inputLabelCounty": "County (optional)",
+            "inputLabelPostcode": "Postcode"            
+        }
     },
-    "agentLed": {
-      "defaultTitleImport": "Search for the importer’s address",
-      "defaultTitleExport": "Search for the exporter’s address",
-      "defaultTitleReexport": "Search for the re-exporter’s address",
-      "defaultTitleArticle10": "Search for the applicant’s address",
-      "pageHeaderImport": "Search for the importer’s address",
-      "pageHeaderExport": "Search for the exporter’s address",
-      "pageHeaderReexport": "Search for the re-exporter’s address",
-      "pageHeaderArticle10": "Search for the applicant’s address",
-      "pageBody": "If you are a business, give the business address.",
-      "inputLabelProperty": "Property number or name",
-      "inputLabelStreet": "Street",
-      "inputLabelTown": "Town or city"
-    }
-  },
-  "selectAddress": {
-    "agent": {
-      "defaultTitle": "Select an address ",
-      "pageHeader": "Select an address ",
-      "selectLabelAddress": "Address",
-      "selectAddressPromptNoResults": "No addresses found",
-      "selectAddressPromptSingle": "1 address found",
-      "selectAddressPromptMultiple": "addresses found",
-      "detailsSummaryText": "I cannot find the address in the list",
-      "detailsText": "If you cannot find the address, ",
-      "detailsLinkText": "enter your address manually",
-      "linkTextSearchAgain": "Search for the address again"
+    "confirmAddress": {
+        "agent": {
+            "defaultTitle": "Confirm the address",
+            "pageHeader": "Confirm the address",
+            "changeAddressLinkText": "Change address"         
+        },
+        "applicant": {
+            "defaultTitle": "Confirm the address",
+            "pageHeader": "Confirm the address",
+            "changeAddressLinkText": "Change address",
+            "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
+            "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
+        },
+        "agentLed": {
+            "defaultTitle": "Confirm the address",
+            "pageHeader": "Confirm the address",
+            "changeAddressLinkText": "Change address",
+            "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
+            "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
+            "radioOptionDeliverToAgentAddress": "Deliver the permit to"
+        }
     },
-    "applicant": {
-      "defaultTitle": "Select an address ",
-      "pageHeader": "Select an address ",
-      "selectLabelAddress": "Address",
-      "selectAddressPromptNoResults": "No addresses found",
-      "selectAddressPromptSingle": "1 address found",
-      "selectAddressPromptMultiple": "addresses found",
-      "detailsSummaryText": "I cannot find the address in the list",
-      "detailsText": "If you cannot find the address, ",
-      "detailsLinkText": "enter your address manually",
-      "linkTextSearchAgain": "Search for the address again",
-      "bodyTextImport": "",
-      "bodyTextExport": "",
-      "bodyTextReexport": "",
-      "bodyTextArticle10": ""
+    "speciesName": {
+        "defaultTitle": "What is the scientific name of the species?",
+        "pageHeader": "What is the scientific name of the species?",
+        "bodyText": "You can ",
+        "bodyLinkText": "search for the scientific name on species+.",
+        "bodyLinkUrl": "https://speciesplus.net/",
+        "inputLabelSpeciesName": "Scientific name",
+        "inputLabelQuantity": "Quantity",
+        "selectLabelUnitOfMeasurement": "Unit of measurement",
+        "unitOfMeasurementPrompt": "Choose unit of measurement",
+        "unitsOfMeasurement": [
+            {
+                "text": "Number of specimens",
+                "value": "noOfSpecimens"
+            },
+            {
+                "text": "cm3",
+                "value": "cm3"
+            },
+            {
+                "text": "g",
+                "value": "g"
+            },
+            {
+                "text": "Kg",
+                "value": "Kg"
+            },
+            {
+                "text": "l",
+                "value": "l"
+            },
+            {
+                "text": "m",
+                "value": "m"
+            },
+            {
+                "text": "m2",
+                "value": "m2"
+            },
+            {
+                "text": "m3",
+                "value": "m3"
+            },
+            {
+                "text": "ml",
+                "value": "ml"
+            },
+            {
+                "text": "tonne",
+                "value": "tonne"
+            }
+        ]
     },
-    "agentLed": {
-      "defaultTitle": "Select an address ",
-      "pageHeader": "Select an address ",
-      "selectLabelAddress": "Address",
-      "selectAddressPromptNoResults": "No addresses found",
-      "selectAddressPromptSingle": "1 address found",
-      "selectAddressPromptMultiple": "addresses found",
-      "detailsSummaryText": "I cannot find the address in the list",
-      "detailsText": "If you cannot find the address, ",
-      "detailsLinkText": "enter your address manually",
-      "linkTextSearchAgain": "Search for the address again",
-      "bodyTextImport": "If you still cannot find the address, contact the importer to confirm their details.",
-      "bodyTextExport": "If you still cannot find the address, contact the exporter to confirm their details.",
-      "bodyTextReexport": "If you still cannot find the address, contact the re-exporter to confirm their details.",
-      "bodyTextArticle10": "If you still cannot find the address, contact the applicant to confirm their details."
-    }
-  },
-  "enterAddress": {
-    "agent": {
-      "defaultTitleImport": "Enter your address",
-      "defaultTitleExport": "Enter your address",
-      "defaultTitleReexport": "Enter your address",
-      "defaultTitleArticle10": "Enter your address",
-      "pageHeaderImport": "Enter your address",
-      "pageHeaderExport": "Enter your address",
-      "pageHeaderReexport": "Enter your address",
-      "pageHeaderArticle10": "Enter your address",
-      "pageBody": "If you are a business, enter the business address.",
-      "inputLabelAddressLine1": "Address line 1",
-      "inputLabelAddressLine2": "Address line 2 (optional)",
-      "inputLabelTown": "Town or city",
-      "inputLabelCounty": "County (optional)",
-      "inputLabelPostcode": "Postcode"
-    },
-    "applicant": {
-      "defaultTitleImport": "Enter your address",
-      "defaultTitleExport": "Enter your address",
-      "defaultTitleReexport": "Enter your address",
-      "defaultTitleArticle10": "Enter your address",
-      "pageHeaderImport": "Enter your address",
-      "pageHeaderExport": "Enter your address",
-      "pageHeaderReexport": "Enter your address",
-      "pageHeaderArticle10": "Enter your address",
-      "pageBody": "If you are a business, enter the business address.",
-      "inputLabelAddressLine1": "Address line 1",
-      "inputLabelAddressLine2": "Address line 2 (optional)",
-      "inputLabelTown": "Town or city",
-      "inputLabelCounty": "County (optional)",
-      "inputLabelPostcode": "Postcode"
-    },
-    "agentLed": {
-      "defaultTitleImport": "Enter the importer's address",
-      "defaultTitleExport": "Enter the exporter's address",
-      "defaultTitleReexport": "Enter the re-exporter's address",
-      "defaultTitleArticle10": "Enter the applicant's address",
-      "pageHeaderImport": "Enter the importer's address",
-      "pageHeaderExport": "Enter the exporter's address",
-      "pageHeaderReexport": "Enter the re-exporter's address",
-      "pageHeaderArticle10": "Enter the applicant's address",
-      "pageBody": "If you are a business, enter the business address.",
-      "inputLabelAddressLine1": "Address line 1",
-      "inputLabelAddressLine2": "Address line 2 (optional)",
-      "inputLabelTown": "Town or city",
-      "inputLabelCounty": "County (optional)",
-      "inputLabelPostcode": "Postcode"
-    }
-  },
-  "speciesName": {
-    "defaultTitle": "What is the scientific name of the species?",
-    "pageHeader": "What is the scientific name of the species?",
-    "bodyText": "You can ",
-    "bodyLinkText": "search for the scientific name on species+.",
-    "bodyLinkUrl": "https://speciesplus.net/",
-    "inputLabelSpeciesName": "Scientific name",
-    "inputLabelQuantity": "Quantity",
-    "selectLabelUnitOfMeasurement": "Unit of measurement",
-    "unitOfMeasurementPrompt": "Choose unit of measurement",
-    "unitsOfMeasurement": [
-      {
-        "text": "Number of specimens",
-        "value": "noOfSpecimens"
-      },
-      {
-        "text": "cm3",
-        "value": "cm3"
-      },
-      {
-        "text": "g",
-        "value": "g"
-      },
-      {
-        "text": "Kg",
-        "value": "Kg"
-      },
-      {
-        "text": "l",
-        "value": "l"
-      },
-      {
-        "text": "m",
-        "value": "m"
-      },
-      {
-        "text": "m2",
-        "value": "m2"
-      },
-      {
-        "text": "m3",
-        "value": "m3"
-      },
-      {
-        "text": "ml",
-        "value": "ml"
-      },
-      {
-        "text": "tonne",
-        "value": "tonne"
-      }
-    ]
-  },
   "purposeCode": {
     "defaultTitle": "What is the purpose code?",
     "heading": "What is the purpose code?",
