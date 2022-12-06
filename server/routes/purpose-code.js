@@ -15,6 +15,8 @@ const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source`
+// const specimenIds = [1, ...quantity]
+const specimenIds = [1, 2, 3, 4]
 const nextPath = `${urlPrefix}/specimen-details`
 
 function createModel(errors, data) {
@@ -49,8 +51,11 @@ function createModel(errors, data) {
       : pageContent.defaultTitle,
     speciesName: "Homopus solus",
     quantity: "3",
+    specimenId: "2",
     // speciesName: data.speciesName,
     // quantity: data.quantity,
+    // specimenId: request.params.specimenId,
+
     inputPurposeCode: {
       idPrefix: "purposeCode",
       name: "purposeCode",
@@ -180,20 +185,26 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: currentPath,
-    // path: `${currentPath}/{specimenId}`,
+    // path: currentPath,
+    path: `${currentPath}/{specimenId}`,
+    // options: {
+    //   validate: {
+    //     params: Joi.object({
+    //       specimenId: Joi.string().valid(...specimenIds)
+    //     })
+    //   }
+    // },
     handler: async (request, h) => {
       const appData = getAppData(request)
       // validateAppData(appData, pageId)
 
       const pageData = {
         // speciesId: request.params.speciesId,
-        // specimenId: request.params.specimenId,
+        specimenId: request.params.specimenId,
         speciesName: appData?.speciesName,
-        unitOfMeasurement: appData?.unitOfMeasurement,
         quantity: appData?.quantity,
-        purposeCode: appData?.purposeCode
-        // ...appData[request.params.specimenId]
+        purposeCode: appData?.purposeCode,
+        ...appData[request.params.specimenId]
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -202,41 +213,43 @@ module.exports = [
 
   {
     method: "POST",
-    path: currentPath,
-    // path: `${currentPath}/{specimenId}`,
+    // path: currentPath,
+    path: `${currentPath}/{specimenId}`,
     options: {
       validate: {
         // params: Joi.object({
         //   specimenId: Joi.string().required()
         // }),
+
+        params: Joi.object({
+          specimenId: Joi.string().valid(...specimenIds)
+        }),
         options: { abortEarly: false },
         payload: Joi.object({
-          purposeCode: Joi.string().required(),
           speciesName: Joi.string().required(),
           quantity: Joi.number().required().min(0.0001).max(1000000),
-          unitOfMeasurement: Joi.string()
+          purposeCode: Joi.string().required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
             // speciesId: request.params.speciesId,
-            // specimenId: request.params.specimenId,
+            specimenId: request.params.specimenId,
             speciesName: appData?.speciesName,
-            unitOfMeasurement: appData?.unitOfMeasurement,
             quantity: appData?.quantity,
-            purposeCode: appData?.purposeCode
-            // ...appData[request.params.specimenId]
+            purposeCode: appData?.purposeCode,
+            ...appData[request.params.specimenId]
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
         setAppData(request, {
-          purposeCode: request.payload.species.purposeCode
+          purposeCode: request.payload.purposeCode
         })
 
-        // return h.redirect((`${nextPath}/${request.params.specimenId}`))
-        return h.redirect(nextPath)
+        return h.redirect(`${nextPath}/${request.params.specimenId}`)
+        // return h.redirect(nextPath)
       }
     }
   }
