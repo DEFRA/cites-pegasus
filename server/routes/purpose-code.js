@@ -4,20 +4,14 @@ const {
   findErrorList,
   getFieldError,
   isChecked
-} = require("../helpers/helper-functions")
-const {
-  getAppData,
-  setAppData,
-  validateAppData
-} = require("../helpers/app-data")
+} = require("../lib/helper-functions")
+const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 
 const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source`
-// const specimenIds = [1, ...quantity]
-const specimenIds = [1, 2, 3, 4]
-const nextPath = `${urlPrefix}/specimen-details`
+const nextPath = `${urlPrefix}/specimen-details`//TO DO
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -44,17 +38,17 @@ function createModel(errors, data) {
 
   const model = {
     backLink: previousPath,
-    formActionPage: currentPath,
+    formActionPage: `${currentPath}/${data.speciesId}/${data.specimenId}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    speciesName: "Homopus solus",
-    quantity: "3",
-    specimenId: "2",
-    // speciesName: data.speciesName,
-    // quantity: data.quantity,
-    // specimenId: request.params.specimenId,
+    // speciesName: "Homopus solus",
+    // quantity: "3",
+    // specimenId: "2",
+    speciesName: data.speciesName,
+    quantity: data.quantity,
+    specimenId: data.specimenId,
 
     inputPurposeCode: {
       idPrefix: "purposeCode",
@@ -185,25 +179,26 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    // path: currentPath,
-    path: `${currentPath}/{specimenId}`,
-    // options: {
-    //   validate: {
-    //     params: Joi.object({
-    //       specimenId: Joi.string().valid(...specimenIds)
-    //     })
-    //   }
-    // },
+    path: `${currentPath}/{speciesId}/{specimenId}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          speciesId: Joi.number().required(),
+          specimenId: Joi.number().required()
+        })
+      }
+    },
     handler: async (request, h) => {
       const appData = getAppData(request)
       // validateAppData(appData, pageId)
 
       const pageData = {
-        // speciesId: request.params.speciesId,
+        speciesId: request.params.speciesId,
         specimenId: request.params.specimenId,
         speciesName: appData?.speciesName,
         quantity: appData?.quantity,
         purposeCode: appData?.purposeCode,
+        ...appData[request.params.speciesId],
         ...appData[request.params.specimenId]
       }
 
@@ -213,31 +208,25 @@ module.exports = [
 
   {
     method: "POST",
-    // path: currentPath,
-    path: `${currentPath}/{specimenId}`,
+    path: `${currentPath}/{speciesId}/{specimenId}`,
     options: {
       validate: {
-        // params: Joi.object({
-        //   specimenId: Joi.string().required()
-        // }),
-
         params: Joi.object({
-          specimenId: Joi.string().valid(...specimenIds)
+          speciesId: Joi.number().required(),
+          specimenId: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          speciesName: Joi.string().required(),
-          quantity: Joi.number().required().min(0.0001).max(1000000),
           purposeCode: Joi.string().required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
-            // speciesId: request.params.speciesId,
+            speciesId: request.params.speciesId,
             specimenId: request.params.specimenId,
             speciesName: appData?.speciesName,
             quantity: appData?.quantity,
-            purposeCode: appData?.purposeCode,
+            ...appData[request.params.speciesId],
             ...appData[request.params.specimenId]
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -248,8 +237,7 @@ module.exports = [
           purposeCode: request.payload.purposeCode
         })
 
-        return h.redirect(`${nextPath}/${request.params.specimenId}`)
-        // return h.redirect(nextPath)
+        return h.redirect(`${nextPath}/${request.params.speciesId}/${request.params.specimenId}`)
       }
     }
   }
