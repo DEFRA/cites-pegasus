@@ -1,8 +1,8 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError } = require('../helpers/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { ADDRESS_REGEX } = require('../helpers/regex-validation')
+const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -174,9 +174,9 @@ module.exports = [{
             options: { abortEarly: false },
             payload: Joi.object({
                 addressLine1: Joi.string().regex(ADDRESS_REGEX),
-                addressLine2: Joi.string().regex(ADDRESS_REGEX).optional(),
+                addressLine2: Joi.string().regex(ADDRESS_REGEX).optional().allow('',null),
                 town: Joi.string().regex(ADDRESS_REGEX),
-                county: Joi.string().regex(ADDRESS_REGEX).optional(),
+                county: Joi.string().regex(ADDRESS_REGEX).optional().allow('',null),
                 postcode: Joi.string().regex(ADDRESS_REGEX)
             }),
             failAction: (request, h, err) => {
@@ -198,11 +198,11 @@ module.exports = [{
                 [partyType]: {
                     address: {
                         manualEntry: true,
-                        addressLine1: request.payload.addressLine1,
-                        addressLine2: request.payload.addressLine2,
-                        town: request.payload.town,
-                        county: request.payload.county,
-                        postcode: request.payload.postcode
+                        addressLine1: request.payload.addressLine1.trim(),
+                        addressLine2: request.payload.addressLine2.trim(),
+                        town: request.payload.town.trim(),
+                        county: request.payload.county.trim(),
+                        postcode: request.payload.postcode.trim()
                     }
                 }
             }

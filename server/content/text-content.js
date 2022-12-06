@@ -90,11 +90,23 @@ const enterAddressSchema = Joi.object({
   errorMessagesArticle10: Joi.object(),
 })
 
+const confirmAddressSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  changeAddressLinkText: Joi.string().required(),
+  radioOptionDeliverToThisAddress: Joi.string().optional().allow("", null),
+  radioOptionDeliverToDifferentAddress: Joi.string().optional().allow("", null),
+  radioOptionDeliverToAgentAddress: Joi.string().optional().allow("", null),
+})
+
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
+    phaseBannerPhase: Joi.string().required(),
+    phaseBannerHTML: Joi.string().required(),    
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
+    confirmButton: Joi.string().required(),
     searchButton: Joi.string().required(),
     startButton: Joi.string().required(),
     finishButton: Joi.string().required(),
@@ -164,6 +176,11 @@ const schema = Joi.object().keys({
     agent: enterAddressSchema,
     applicant: enterAddressSchema,
     agentLed: enterAddressSchema
+  }),
+  confirmAddress: Joi.object({
+    agent: confirmAddressSchema,
+    applicant: confirmAddressSchema,
+    agentLed: confirmAddressSchema
   }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
