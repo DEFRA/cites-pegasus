@@ -1,8 +1,8 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError } = require('../helpers/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../helpers/app-data')
-const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../helpers/regex-validation')
+const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -150,9 +150,9 @@ module.exports = [{
             const { fullName, businessName, email } = request.payload
             const contactDetails = {
                 [request.params.partyType]: {
-                    fullName: fullName,
-                    businessName: businessName,
-                    email: email
+                    fullName: fullName.trim(),
+                    businessName: businessName.trim(),
+                    email: email.trim()
                 }
             }
 

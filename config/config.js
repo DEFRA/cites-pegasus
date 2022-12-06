@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi')
 const urlPrefix = ''
-const envs = ['dev', 'test', 'prod']
+const envs = ['dev', 'test', 'snd', 'pre', 'prod']
 
 require('dotenv').config()
 
@@ -10,6 +10,10 @@ const schema = Joi.object().keys({
   port: Joi.number().default(3000),
   env: Joi.string().valid(...envs).default(envs[0]),
   cookiePassword: Joi.string().default('dummycookiepassworddummycookiepassword'),
+  addressLookupAPICertName: Joi.string().required(),
+  keyVaultName: Joi.string().required(),
+  keyVaultUri: Joi.string().required(),
+  addressLookupBaseUrl: Joi.string().required(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     encoding: Joi.string().valid('base64json').default('base64json'),
@@ -34,6 +38,10 @@ const config = {
   port: process.env.PORT || 8080,
   env: process.env.NODE_ENV,
   cookiePassword: process.env.COOKIE_PASSWORD,
+  addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
+  keyVaultName: process.env.KEY_VAULT_NAME,
+  keyVaultUri: process.env.KEY_VAULT_URI,
+  addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     encoding: 'base64json',
