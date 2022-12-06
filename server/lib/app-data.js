@@ -18,7 +18,7 @@ function setAppData(request, data, path) {
     const existingAppData = getAppData(request)
     if (path) {validateAppData(existingAppData, path)}
     
-    //console.log(Color.FgCyan,'before: ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
+    console.log(Color.FgCyan,'session data before update ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
 
     const mergedAppData = lodash.merge(existingAppData, data)
     //const mergedAppData = { ...emptyAppData, ...existingAppData, ...data }

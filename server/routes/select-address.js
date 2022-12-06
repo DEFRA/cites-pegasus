@@ -60,10 +60,6 @@ function createModel(errors, data) {
         })
     }
 
-    //TODO - GET REAL ADDRESS RESULTS
-    //const searchResults = null;
-    //const searchResults = [{ value: "3 Station Road", text: "3 Station Road, The Locality, The City, The County, B74 4DG" }];
-    const searchResults = [{ value: "3 Station Road", text: "3 Station Road, The Locality, The City, The County, B74 4DG" }, { value: "45 Main Street", text: "45 Main Street, The Locality, The City, The County, B74 4DG" }];
     let addressSelectItems = []
 
     if (data.results && data.results.length > 0) {
@@ -72,13 +68,11 @@ function createModel(errors, data) {
         } else {
             addressSelectItems.push({ value: "", text: `${data.results.length} ${pageContent.selectAddressPromptMultiple}` })
         }
-        data.results.forEach(res => { addressSelectItems.push({ value: res.Address.UPRN, text: res.Address.AddressLine }) })
-        //addressSelectItems = [...addressSelectItems, ...searchResults]
 
+        data.results.forEach(res => { addressSelectItems.push({ value: res.Address.UPRN, text: res.Address.AddressLine }) })
     } else {
         addressSelectItems.push({ value: "", text: pageContent.selectAddressPromptNoResults })
     }
-
 
     const model = {
         searchType: data.postcode ? `Postcode search - ${data.postcode}` : `Address search: - ${data.property}`,
@@ -130,27 +124,48 @@ module.exports = [{
         }
     },
     handler: async (request, h) => {
+        const partyType = request.params.partyType
         const appData = getAppData(request);
-        let searchResponse = null
         try {
-            const searchData = appData[request.params.partyType].addressSearchData
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
-            validateSearchData(appData[request.params.partyType].addressSearchData)
+            const searchData = appData[partyType].addressSearchData
+            validateAppData(appData, `${pageId}/${partyType}`)
+            validateSearchData(appData[partyType].addressSearchData)
+
+            let newAppData = {
+                [partyType]: {
+                    addressSearchData: {
+                        results: null
+                    }
+                }
+            }
+
+            setAppData(request, newAppData, `${pageId}/${partyType}`)
+
             const response = await getAddressesByPostcode(searchData.postcode)
             const pageData = {
-                partyType: request.params.partyType,
+                partyType: partyType,
                 permitType: appData?.permitType,
                 isAgent: appData?.isAgent,
-                ...appData[request.params.partyType]?.addressSearchData,
+                ...appData[partyType]?.addressSearchData,
                 results: response.results
             }
+
+            newAppData = {
+                [partyType]: {
+                    addressSearchData: {
+                        results: response.results
+                    }
+                }
+            }
+
+            setAppData(request, newAppData, `${pageId}/${partyType}`)
+
             return h.view(pageId, createModel(null, pageData));
         }
         catch (err) {
             console.log(err);
             return h.redirect(`${invalidAppDataPath}/`)
         }
-
     }
 },
 {
@@ -180,30 +195,38 @@ module.exports = [{
         },
         handler: async (request, h) => {
             const partyType = request.params.partyType
+            try {
+                const appData = getAppData(request);
 
-            const appData = {
-                [partyType]: {
-                    address: {
-                        manualEntry: false,
-                        //addressSummary: request.payload.address,
-                        addressLine1: '3 The Road',//TODO Pull the full address data from the api
-                        addressLine2: 'The Area',
-                        town: 'The Town',
-                        county: 'The County',
-                        postcode: 'AB1 2CD'
+                const selectedAddress = appData[partyType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
+
+                const addressLine1Components = [selectedAddress.SubBuildingName, selectedAddress.BuildingNumber, selectedAddress.BuildingName, selectedAddress.Street].filter(Boolean)
+
+                const newAppData = {
+                    [partyType]: {
+                        // addressSearchData: { 
+                        //     results: null
+                        // },
+                        address: {
+                            manualEntry: false,
+                            //addressSummary: request.payload.address,
+                            addressLine1: addressLine1Components.join(", "),
+                            addressLine2: '',
+                            town: selectedAddress.Town,
+                            county: selectedAddress.County,
+                            postcode: selectedAddress.Postcode
+                        }
                     }
                 }
-            }
 
-            try {
-                setAppData(request, appData, `${pageId}/${partyType}`)
+                setAppData(request, newAppData, `${pageId}/${partyType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${partyType}`)
+            return h.Hredirect(`${nextPath}/${partyType}`)
         }
     },
 }
