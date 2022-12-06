@@ -8,7 +8,7 @@ const lodash = require('lodash')
 const pageId = 'species-name'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/NOT-DONE-YET`//TODO
-const nextPath = `${urlPrefix}/purpose-code/2/1`
+const nextPath = `${urlPrefix}/purpose-code/1/1`
 const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET`//TODO
 
 function createModel(errors, data) {

@@ -38,17 +38,17 @@ function createModel(errors, data) {
 
   const model = {
     backLink: previousPath,
-    formActionPage: `${currentPath}/${data.speciesId}/${data.specimenId}`,
+    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     // speciesName: "Homopus solus",
     // quantity: "3",
-    // specimenId: "2",
+    // specimenIndex: "2",
     speciesName: data.speciesName,
     quantity: data.quantity,
-    specimenId: data.specimenId,
+    specimenIndex: data.specimenIndex,
 
     inputPurposeCode: {
       idPrefix: "purposeCode",
@@ -179,12 +179,12 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesId}/{specimenId}`,
+    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesId: Joi.number().required(),
-          specimenId: Joi.number().required()
+          speciesIndex: Joi.number().required(),
+          specimenIndex: Joi.number().required()
         })
       }
     },
@@ -193,13 +193,13 @@ module.exports = [
       // validateAppData(appData, pageId)
 
       const pageData = {
-        speciesId: request.params.speciesId,
-        specimenId: request.params.specimenId,
+        speciesIndex: request.params.speciesIndex,
+        specimenIndex: request.params.specimenIndex,
         speciesName: appData?.speciesName,
         quantity: appData?.quantity,
         purposeCode: appData?.purposeCode,
-        ...appData[request.params.speciesId],
-        ...appData[request.params.specimenId]
+        ...appData[request.params.speciesIndex],
+        ...appData[request.params.specimenIndex]
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -208,12 +208,12 @@ module.exports = [
 
   {
     method: "POST",
-    path: `${currentPath}/{speciesId}/{specimenId}`,
+    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesId: Joi.number().required(),
-          specimenId: Joi.number().required()
+          speciesIndex: Joi.number().required(),
+          specimenIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -222,12 +222,12 @@ module.exports = [
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
-            speciesId: request.params.speciesId,
-            specimenId: request.params.specimenId,
+            speciesIndex: request.params.speciesIndex,
+            specimenIndex: request.params.specimenIndex,
             speciesName: appData?.speciesName,
             quantity: appData?.quantity,
-            ...appData[request.params.speciesId],
-            ...appData[request.params.specimenId]
+            ...appData[request.params.speciesIndex],
+            ...appData[request.params.specimenIndex]
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -237,14 +237,9 @@ module.exports = [
           purposeCode: request.payload.purposeCode
         })
 
-        return h.redirect(`${nextPath}/${request.params.speciesId}/${request.params.specimenId}`)
+        return h.redirect(`${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
       }
     }
   }
 ]
 
-// appData?.purposeCode,
-// appData?.speciesName,
-// appData?.quantity,
-// appData?.unitOfMeasurement,
-// appData?.specimenId,
