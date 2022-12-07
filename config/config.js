@@ -8,6 +8,7 @@ require('dotenv').config()
 const schema = Joi.object().keys({
   port: Joi.number().default(3000),
   TESTSETTING: Joi.string().required(),
+  ANOTHERTESTSETTING: Joi.string().required(),
   env: Joi.string().valid(...envs).default(envs[0]),
   urlPrefix: Joi.string().default(urlPrefix),
   cookiePassword: Joi.string().default('dummycookiepassworddummycookiepassword'),
@@ -36,6 +37,7 @@ const schema = Joi.object().keys({
 const config = {
   port: process.env.PORT || 8080,
   TESTSETTING: process.env.TESTSETTING,
+  ANOTHERTESTSETTING: process.env.ANOTHERTESTSETTING,
   env: process.env.NODE_ENV,
   urlPrefix: process.env.URL_PREFIX,
   cookiePassword: process.env.COOKIE_PASSWORD,
