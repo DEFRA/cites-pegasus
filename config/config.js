@@ -6,14 +6,14 @@ require('dotenv').config()
 
 // Define config schema
 const schema = Joi.object().keys({
-  urlPrefix: Joi.string().default(urlPrefix),
   port: Joi.number().default(3000),
+  TESTSETTING: Joi.string().required(),
   env: Joi.string().valid(...envs).default(envs[0]),
+  urlPrefix: Joi.string().default(urlPrefix),
   cookiePassword: Joi.string().default('dummycookiepassworddummycookiepassword'),
-  addressLookupAPICertName: Joi.string().required(),
-  keyVaultName: Joi.string().required(),
   keyVaultUri: Joi.string().required(),
   addressLookupBaseUrl: Joi.string().required(),
+  addressLookupAPICertName: Joi.string().required(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     encoding: Joi.string().valid('base64json').default('base64json'),
@@ -23,25 +23,25 @@ const schema = Joi.object().keys({
     strictHeader: Joi.bool().default(true)
   }),
   dynamicsAPI: Joi.object({
-    knownAuthority: Joi.string(),
-    authorityUrl: Joi.string(),
-    clientId: Joi.string(),
-    clientSecret: Joi.string(),
-    serverUrl: Joi.string(),
-    baseURL: Joi.string()
+    knownAuthority: Joi.string().required(),
+    authorityUrl: Joi.string().required(),
+    clientId: Joi.string().required(),
+    clientSecret: Joi.string().required(),
+    serverUrl: Joi.string().required(),
+    baseURL: Joi.string().required()
   })
 })
 
 // Build config
 const config = {
-  urlPrefix: process.env.URL_PREFIX,
   port: process.env.PORT || 8080,
+  TESTSETTING: process.env.TESTSETTING,
   env: process.env.NODE_ENV,
+  urlPrefix: process.env.URL_PREFIX,
   cookiePassword: process.env.COOKIE_PASSWORD,
-  addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
-  keyVaultName: process.env.KEY_VAULT_NAME,
   keyVaultUri: process.env.KEY_VAULT_URI,
   addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
+  addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     encoding: 'base64json',
