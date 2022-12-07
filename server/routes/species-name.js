@@ -7,7 +7,7 @@ const textContent = require('../content/text-content')
 const lodash = require('lodash')
 const pageId = 'species-name'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/NOT-DONE-YET`//TODO
+const previousPath = `${urlPrefix}/confirm-address/applicant`//TODO
 const nextPath = `${urlPrefix}/SPECIES-NAME-VALID-NOT-DONE-YET`//TODO
 const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET`//TODO
 
