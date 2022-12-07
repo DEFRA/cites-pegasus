@@ -226,7 +226,35 @@ const schema = Joi.object().keys({
   sourceCode: Joi.object({
     animal: sourceCodeSchema,
     plant: sourceCodeSchema
-  })
+  }),
+  purposeCode: Joi.object({
+    defaultTitle: Joi.string().required(),
+    heading: Joi.string().required(),
+    radioOptionB: Joi.string().required(),
+    radioOptionBHint: Joi.string().required(),
+    radioOptionE: Joi.string().required(),
+    radioOptionEHint: Joi.string().required(),
+    radioOptionG: Joi.string().required(),
+    radioOptionGHint: Joi.string().required(),
+    radioOptionH: Joi.string().required(),
+    radioOptionHHint: Joi.string().required(),
+    radioOptionL: Joi.string().required(),
+    radioOptionLHint: Joi.string().required(),
+    radioOptionM: Joi.string().required(),
+    radioOptionMHint: Joi.string().required(),
+    radioOptionN: Joi.string().required(),
+    radioOptionNHint: Joi.string().required(),
+    radioOptionP: Joi.string().required(),
+    radioOptionPHint: Joi.string().required(),
+    radioOptionQ: Joi.string().required(),
+    radioOptionQHint: Joi.string().required(),
+    radioOptionS: Joi.string().required(),
+    radioOptionSHint: Joi.string().required(),
+    radioOptionT: Joi.string().required(),
+    radioOptionTHint: Joi.string().required(),
+    radioOptionZ: Joi.string().required(),
+    radioOptionZHint: Joi.string().required(),
+  }),
 })
 
 // Validate config

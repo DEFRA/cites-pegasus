@@ -32,7 +32,8 @@
             "error.quantity.number.min": "Quantity must be 0.0001 or more",
             "error.quantity.number.max": "Quantity must be 1000000 or fewer",
             "error.address.string.empty": "Select an address",
-            "error.source.string.empty" : "Select the source code"
+            "error.sourceCode.string.empty" : "Select the source code",
+            "error.purposeCode.any.required": "Select the purpose code"
         }
     },
     "applyCitesPermit": {
@@ -413,5 +414,33 @@
         "textAreaLabelEnterAReason": "Enter a reason",
         "dividerText": "Or"
       }
-    }
+    },
+  "purposeCode": {
+    "defaultTitle": "What is the purpose code?",
+    "heading": "What is the purpose code?",
+    "radioOptionB": "B",
+    "radioOptionBHint": "Breeding in captivity or artificial propagation",
+    "radioOptionE": "E",
+    "radioOptionEHint": "Educational",
+    "radioOptionG": "G",
+    "radioOptionGHint": "Botanical gardens",
+    "radioOptionH": "H",
+    "radioOptionHHint": "Hunting trophies",
+    "radioOptionL": "L",
+    "radioOptionLHint": "Enforcement",
+    "radioOptionM": "M",
+    "radioOptionMHint": "Bio-medical research",
+    "radioOptionN": "N",
+    "radioOptionNHint": "Reintroduction or introduction into the wild",
+    "radioOptionP": "P",
+    "radioOptionPHint": "Personal",
+    "radioOptionQ": "Q",
+    "radioOptionQHint": "Circuses and travelling exhibitions",
+    "radioOptionS": "S",
+    "radioOptionSHint": "Scientific",
+    "radioOptionT": "T",
+    "radioOptionTHint": "Commercial",
+    "radioOptionZ": "Z",
+    "radioOptionZHint": "Zoos"
+  }
 }
