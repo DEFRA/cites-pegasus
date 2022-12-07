@@ -356,7 +356,7 @@
             }
         ]
     },
-    "source": {
+    "sourceCode": {
       "animal": {
         "defaultTitle": "What is the source code?",
         "heading": "What is the source code?",

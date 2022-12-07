@@ -69,7 +69,7 @@ const contactDetailsSchema = Joi.object({
   inputHintEmail: Joi.string().required()
 })
 
-const sourceSchema = Joi.object({
+const sourceCodeSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   heading: Joi.string().required(),
   radioOptionW: Joi.string().required(),
@@ -223,9 +223,9 @@ const schema = Joi.object().keys({
     unitOfMeasurementPrompt: Joi.string().required(),
     unitsOfMeasurement: Joi.array().items(Joi.object())
   }),
-  source: Joi.object({
-    animal: sourceSchema,
-    plant: sourceSchema
+  sourceCode: Joi.object({
+    animal: sourceCodeSchema,
+    plant: sourceCodeSchema
   })
 })
 
