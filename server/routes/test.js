@@ -2,50 +2,23 @@ const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'test'
 const Joi = require('joi')
 const { whoAmI } = require('../services/dynamics-service')
+const config = require('../../config/config')
 
 module.exports = [
   {
     method: 'GET',
     path: `${urlPrefix}/test`,
     handler: async (request, h) => {
-      //const authToken = await auth.getClientCredentialsToken()
-
-      // const searchData = {
-      //   //postcode: null,
-
-      //   property: null,
-      //   street: 'dfgfdf',
-      //   town: 'x'
-      // }
-
-      // if(searchData.postcode && (searchData.property || searchData.street || searchData.town)){
-      //   console.log('error both')
-      // } else if(!searchData.postcode && !searchData.property && !searchData.street && !searchData.town){
-      //   console.log('error neither')
-      // } else {
-      //   console.log('all good')
-      // }
-
-
-      // const schema = Joi.object({
-      //   postcode: Joi.string(),
-      //   property: Joi.string()
-      //   // street: Joi.string().empty(),
-      //   // town: Joi.string().empty()
-      // }).or('property', 'postcode')
-
-
-      // // Validate config
-      // const { error, value } = schema.validate({postcode: 'abc', property: ''})
-
-      // // Throw if config is invalid
-      // if (error) {
-      //   console.log(error)
-      // } else {
-      //   console.log('All good')
-      // }
-
-      return h.view(pageId, null);
+    
+      data = {
+        keyVaultUri: config.keyVaultUri,
+        addressLookupAPICertName: config.addressLookupAPICertName,
+        addressLookupBaseUrl: config.addressLookupBaseUrl,
+        authorityUrl: config.dynamicsAPI.authorityUrl,
+        clientId: config.dynamicsAPI.clientId,
+        baseURL: config.dynamicsAPI.baseURL
+      }
+      return h.view(pageId, data);
     }
   },
   {
