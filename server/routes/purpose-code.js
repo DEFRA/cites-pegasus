@@ -11,7 +11,7 @@ const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source`
-const nextPath = `${urlPrefix}/specimen-details`//TO DO
+const nextPath = `${urlPrefix}/specimen-details` //TO DO
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -36,6 +36,15 @@ function createModel(errors, data) {
     })
   }
 
+  const speciesName = data.speciesName
+  const quantity = data.quantity
+  const specimenIndex = data.specimenIndex
+  const unitOfMeasurement = data.unitOfMeasurement
+
+  const captionText = (unitOfMeasurement === "noOfSpecimens"
+    ? `${speciesName} (${specimenIndex} of ${quantity})`
+    : `${speciesName}`)
+
   const model = {
     backLink: previousPath,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -43,12 +52,7 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    // speciesName: "Homopus solus",
-    // quantity: "3",
-    // specimenIndex: "2",
-    speciesName: data.speciesName,
-    quantity: data.quantity,
-    specimenIndex: data.specimenIndex,
+    captionText: captionText,
 
     inputPurposeCode: {
       idPrefix: "purposeCode",
@@ -197,6 +201,7 @@ module.exports = [
         specimenIndex: request.params.specimenIndex,
         speciesName: appData?.speciesName,
         quantity: appData?.quantity,
+        unitOfMeasurement: appData?.unitOfMeasurement,
         purposeCode: appData?.purposeCode,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
@@ -226,6 +231,7 @@ module.exports = [
             specimenIndex: request.params.specimenIndex,
             speciesName: appData?.speciesName,
             quantity: appData?.quantity,
+            unitOfMeasurement: appData?.unitOfMeasurement,
             ...appData[request.params.speciesIndex],
             ...appData[request.params.specimenIndex]
           }
@@ -237,9 +243,10 @@ module.exports = [
           purposeCode: request.payload.purposeCode
         })
 
-        return h.redirect(`${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        return h.redirect(
+          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        )
       }
     }
   }
 ]
-
