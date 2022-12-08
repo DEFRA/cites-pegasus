@@ -226,7 +226,7 @@ module.exports = [{
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.Hredirect(`${nextPath}/${partyType}`)
+            return h.redirect(`${nextPath}/${partyType}`)
         }
     },
 }
