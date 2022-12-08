@@ -69,10 +69,13 @@ function createModel(errors, data) {
             addressSelectItems.push({ value: "", text: `${data.results.length} ${pageContent.selectAddressPromptMultiple}` })
         }
 
-        data.results.forEach(res => { addressSelectItems.push({ value: res.Address.UPRN, text: res.Address.AddressLine }) })
+        data.results.forEach(res => { addressSelectItems.push({ value: res.Address.UPRN, text: res.Address.AddressLine, selected: res.Address.UPRN === data.uprn }) })
     } else {
         addressSelectItems.push({ value: "", text: pageContent.selectAddressPromptNoResults })
     }
+
+    // const unitsOfMeasurement = lodash.cloneDeep([{ text: pageContent.unitOfMeasurementPrompt, value: null}, ...pageContent.unitsOfMeasurement])
+    // unitsOfMeasurement.forEach(e => { if (e.value === data.unitOfMeasurement) e.selected = 'true' })
 
     const model = {
         searchType: data.postcode ? `Postcode search - ${data.postcode}` : `Address search: - ${data.property}`,
@@ -147,7 +150,8 @@ module.exports = [{
                 permitType: appData?.permitType,
                 isAgent: appData?.isAgent,
                 ...appData[partyType]?.addressSearchData,
-                results: response.results
+                results: response.results,
+                ...appData[partyType].address,
             }
 
             newAppData = {
@@ -208,13 +212,13 @@ module.exports = [{
                         //     results: null
                         // },
                         address: {
-                            manualEntry: false,
                             //addressSummary: request.payload.address,
                             addressLine1: addressLine1Components.join(", "),
                             addressLine2: '',
                             town: selectedAddress.Town,
                             county: selectedAddress.County,
-                            postcode: selectedAddress.Postcode
+                            postcode: selectedAddress.Postcode,
+                            uprn: selectedAddress.UPRN
                         }
                     }
                 }
