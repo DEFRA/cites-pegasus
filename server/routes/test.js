@@ -9,9 +9,16 @@ module.exports = [
     method: 'GET',
     path: `${urlPrefix}/test`,
     handler: async (request, h) => {
-      
-      
-      return h.view(pageId, { anothertestsetting: config.ANOTHERTESTSETTING });
+    
+      data = {
+        keyVaultUri: config.keyVaultUri,
+        addressLookupAPICertName: config.addressLookupAPICertName,
+        addressLookupBaseUrl: config.addressLookupBaseUrl,
+        authorityUrl: config.dynamicsAPI.authorityUrl,
+        clientId: config.dynamicsAPI.clientId,
+        baseURL: config.dynamicsAPI.baseURL
+      }
+      return h.view(pageId, data);
     }
   },
   {

@@ -9,15 +9,23 @@
       Test Page
     </h1>
 
-    <p><b>Response </b>{{data}}</p>
-
-    <p>Another test setting {{anothertestsetting}}</p>
-
+  <h2>Address Lookup Config</h2>
+  <p><b>KEY_VAULT_URI:</b> {{keyVaultUri}}</p>
+  <p><b>ADDRESS_LOOKUP_API_CERT_NAME:</b> {{addressLookupAPICertName}}</p>
+  <p><b>ADDRESS_LOOKUP_BASE_URL:</b> {{addressLookupBaseUrl}}</p>
+  <br/>
+  <h2>Dynamics Config</h2>
+  <p><b>AUTHORITY_URL:</b> {{authorityUrl}}</p>
+  <p><b>CLIENT_ID:</b> {{clientId}}</p>
+  <p><b>BASE_URL:</b> {{baseURL}}</p>
+  <br/>
+  <h2>Dynamics Test Call</h2>
     {{ govukButton({
       text: 'Call API',
       type: 'submit' 
     }) }}
 
+    <p><b>Response </b>{{data}}</p>
   </div>
 </div>
 {% endblock %}
