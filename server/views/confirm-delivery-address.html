@@ -6,24 +6,25 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 
 {% block beforeContent %}
-  {{ govukBackLink({
+  {# {{ govukBackLink({
     text: backLinkButton,
     href: backLink,
 	  attributes: {id: 'linkBack'}
-  }) }}
+  }) }} #}
 
-  {#{% if errorList %}
+  {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-         {{govukErrorSummary ({
+        {# {{govukErrorSummary ({
         "titleText": errorSummaryTitle,
         "errorList": errorList
-        }) }} 
+        }) }} #}
       </div>
     </div>
-  {% endif %}#}
+  {% endif %}
 
 {% endblock %}
+
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -43,7 +44,7 @@
         {% if county %}<br>{{county}}{% endif %}
         {% if postcode %}<br>{{postcode}}{% endif %}</p>
         
-        {# {{ govukRadios(inputDeliveryAddressOptions) }} #}
+        {{ govukRadios(inputDeliveryAddressOptions) }}
 
         {{ govukButton({
         text: confirmButton,

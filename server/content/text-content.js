@@ -60,8 +60,14 @@ const postcodeSchema = Joi.object({
 })
 
 const contactDetailsSchema = Joi.object({
-  defaultTitle: Joi.string().required(),
-  pageHeader: Joi.string().required(),
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
   inputLabelFullName: Joi.string().required(),
   inputLabelBusinessName: Joi.string().required(),
   inputHintBusinessName: Joi.string().required(),
@@ -91,8 +97,14 @@ const enterAddressSchema = Joi.object({
 })
 
 const confirmAddressSchema = Joi.object({
-  defaultTitle: Joi.string().required(),
-  pageHeader: Joi.string().required(),
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
   changeAddressLinkText: Joi.string().required(),
   radioOptionDeliverToThisAddress: Joi.string().optional().allow("", null),
   radioOptionDeliverToDifferentAddress: Joi.string().optional().allow("", null),

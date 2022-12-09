@@ -6,7 +6,6 @@ const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/agent`
 const partyTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/postcode`
 const invalidAppDataPath = urlPrefix
@@ -24,6 +23,30 @@ function createModel(errors, data) {
         }
     } else {
         pageContent = textContent.contactDetails.agent
+    }
+
+    let previousPath = data.partyType === 'applicant' && data.isAgent ? `${urlPrefix}/confirm-address/agent` : `${urlPrefix}/agent`
+
+    let defaultTitle = ''
+    let pageHeader = ''
+
+    switch (data.permitType) {
+        case 'import':
+            defaultTitle = pageContent.defaultTitleImport
+            pageHeader = pageContent.pageHeaderImport
+            break;
+        case 'export':
+            defaultTitle = pageContent.defaultTitleExport
+            pageHeader = pageContent.pageHeaderExport
+            break;
+        case 'reexport':
+            defaultTitle = pageContent.defaultTitleReexport
+            pageHeader = pageContent.pageHeaderReexport
+            break;
+        case 'article10':
+            defaultTitle = pageContent.defaultTitleArticle10
+            pageHeader = pageContent.pageHeaderArticle10
+            break;
     }
 
     let errorList = null
@@ -44,10 +67,10 @@ function createModel(errors, data) {
 
     const model = {
         backLink: previousPath,
-        pageHeader: pageContent.pageHeader,
+        pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
 
         inputFullName: {
             label: {
@@ -107,6 +130,7 @@ module.exports = [{
         const pageData = { 
             partyType: request.params.partyType, 
             isAgent: appData?.isAgent, 
+            permitType: appData?.permitType,
             ...appData[request.params.partyType] 
         }
 
@@ -140,6 +164,7 @@ module.exports = [{
                 const pageData = { 
                     partyType: request.params.partyType, 
                     isAgent: appData?.isAgent, 
+                    permitType: appData?.permitType,
                     ...request.payload 
                 }
 
