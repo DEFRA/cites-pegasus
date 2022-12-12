@@ -197,12 +197,12 @@ module.exports = [{
             const appData = {
                 [partyType]: {
                     address: {
-                        manualEntry: true,
                         addressLine1: request.payload.addressLine1.trim(),
                         addressLine2: request.payload.addressLine2.trim(),
                         town: request.payload.town.trim(),
                         county: request.payload.county.trim(),
-                        postcode: request.payload.postcode.trim()
+                        postcode: request.payload.postcode.trim(),
+                        uprn: null
                     }
                 }
             }
