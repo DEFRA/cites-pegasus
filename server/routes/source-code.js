@@ -3,23 +3,38 @@ const urlPrefix = require("../../config/config").urlPrefix
 const {
   findErrorList,
   getFieldError,
-  isChecked,
-  isAnimal
+  isChecked
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
-const nextPath = `${urlPrefix}/PURPOSE-NOT-DONE-YET` //TODO
-const speciesTypes = ["animal", "plant"]
+const nextPath = `${urlPrefix}/purpose-code`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = null
 
-  if (isAnimal(data.speciesType)) {
+  if (data.kingdom === "Animalia") {
+    console.log("kingdom", data.kingdom)
+    console.log("name>>>", data.speciesName)
+    console.log("error!!!!!!")
+    console.log("before animal", pageContent)
+
+    console.log(
+      "before animal sourceCode. Animal",
+      textContent.sourceCode.animal
+    )
+
     pageContent = textContent.sourceCode.animal
+    console.log("kingdom1", data.kingdom)
+   
+    console.log("after animal", pageContent)
+
+    console.log("animal", pageContent)
+
+
   } else {
     pageContent = textContent.sourceCode.plant
   }
@@ -79,13 +94,13 @@ function createModel(errors, data) {
           hint: { text: pageContent.radioOptionWHint },
           checked: isChecked(data.sourceCode, "W")
         },
-        isAnimal(data.speciesType) && {
+        data.kingdom === "Animalia" && {
           value: "R",
           text: pageContent.radioOptionR,
           hint: { text: pageContent.radioOptionRHint },
           checked: isChecked(data.sourceCode, "R")
         },
-        isAnimal(data.speciesType) && {
+        data.kingdom === "Animalia" && {
           value: "D",
           text: pageContent.radioOptionD,
           hint: { text: pageContent.radioOptionDHint },
@@ -97,13 +112,13 @@ function createModel(errors, data) {
           hint: { text: pageContent.radioOptionCHint },
           checked: isChecked(data.sourceCode, "C")
         },
-        isAnimal(data.speciesType) && {
+        data.kingdom === "Animalia" && {
           value: "F",
           text: pageContent.radioOptionF,
           hint: { text: pageContent.radioOptionFHint },
           checked: isChecked(data.sourceCode, "F")
         },
-        !isAnimal(data.speciesType) && {
+        !(data.kingdom === "Animalia") && {
           value: "A",
           text: pageContent.radioOptionA,
           hint: { text: pageContent.radioOptionAHint },
@@ -171,14 +186,13 @@ module.exports = [
         speciesName: appData?.speciesName,
         quantity: appData?.quantity,
         unitOfMeasurement: appData?.unitOfMeasurement,
-        speciesType: appData?.kingdom,
+        kingdom: appData?.kingdom,
         sourceCode: appData?.sourceCode,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
-      
-        
       }
       return h.view(pageId, createModel(null, pageData))
+      console.log(">>>>>>>", pageData)
     }
   },
   {
@@ -197,16 +211,20 @@ module.exports = [
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
-            speciesType: request.params.speciesType,
-            isAgent: appData?.isAgent,
-            ...request.payload
+            speciesIndex: request.params.speciesIndex,
+            specimenIndex: request.params.specimenIndex,
+            speciesName: appData?.speciesName,
+            quantity: appData?.quantity,
+            unitOfMeasurement: appData?.unitOfMeasurement,
+            kingdom: appData?.kingdom,
+            ...appData[request.params.speciesIndex],
+            ...appData[request.params.specimenIndex]
           }
-
           return h.view(pageId, createModel(pageData)).takeover()
         }
       },
       handler: async (request, h) => {
-        setAppData(request, { source: request.payload.source })
+        setAppData(request, { sourceCode: request.payload.sourceCode })
         return h.redirect(nextPath)
       }
     }

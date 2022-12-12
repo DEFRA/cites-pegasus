@@ -8,7 +8,7 @@ const lodash = require('lodash')
 const pageId = 'species-name'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/NOT-DONE-YET`//TODO
-const nextPath = `${urlPrefix}/purpose-code/1/1`
+const nextPath = `${urlPrefix}/source-code/0/0`
 const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET`//TODO
 
 function createModel(errors, data) {
@@ -118,12 +118,33 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const species = await getSpecies(request, request.payload.speciesName)
-      if (species?.scientificname){
-        setAppData(request, { speciesName: species.scientificname, quantity: request.payload.quantity, unitOfMeasurement: request.payload.unitOfMeasurement });
+      const speciesData = await getSpecies(request, request.payload.speciesName)
+      const species = [
+          {
+            speciesIndex: 0,
+            speciesName: speciesData.scientificname,
+            quantity: request.payload.quantity,
+            unitOfMeasurement: request.payload.unitOfMeasurement,
+            kingdom: speciesData.kingdom,
+            specimens: []
+          }
+        ]
+
+      if (request.payload.unitOfMeasurement === "noOfSpecimens") {
+          for (let i = 0; i < request.payload.quantity; i++) {
+      
+           species[0].specimens.push({ specimenIndex: i})
+          }
+        }
+
+   
+      if (speciesData?.scientificname){
+        setAppData(request, species);
         return h.redirect(nextPath)
       }
       return h.redirect(unknownSpeciesPath)
     }
   },
 }]
+
+ 

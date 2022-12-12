@@ -92,8 +92,8 @@ const sourceCodeSchema = Joi.object({
   radioOptionFHint: Joi.string().allow("", null),
   radioOptionA: Joi.string().allow("", null),
   radioOptionAHint: Joi.string().allow("", null),
-  radioOptionDontKnow: Joi.string().required(),
-  radioOptionDontKnowHint: Joi.string().required(),
+  radioOptionU: Joi.string().required(),
+  radioOptionUHint: Joi.string().required(),
   textAreaLabelEnterAReason: Joi.string().required(),
   dividerText: Joi.string().required()
 })

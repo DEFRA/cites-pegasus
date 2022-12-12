@@ -12,6 +12,7 @@ const routes = [].concat(
   require('../routes/enter-address'),
   require('../routes/purpose-code'),
   require('../routes/confirm-address'),
+  require('../routes/source-code'),
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc')

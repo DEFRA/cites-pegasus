@@ -201,9 +201,6 @@ const getErrorMessage = (errorList, href) => {
     : null
 }
 
-function isAnimal(data) {
-  return data === "animal"
-}
 
 module.exports = {
   isChecked,
@@ -223,5 +220,4 @@ module.exports = {
   //   getErrorList
   getFieldError,
   getErrorMessage,
-  isAnimal
 }
