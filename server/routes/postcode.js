@@ -28,31 +28,27 @@ function createModel(errors, data) {
 
     let defaultTitle = ''
     let pageHeader = ''
-    let linkTextInternationalAddress = ''
+    
     let errorMessages = null
     switch (data.permitType) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressImport
             errorMessages = pageContent.errorMessagesImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressExport
             errorMessages = pageContent.errorMessagesExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressReexport
             errorMessages = pageContent.errorMessagesReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressArticle10
             errorMessages = pageContent.errorMessagesArticle10
             break;
     }

@@ -9,7 +9,6 @@ const postcode = require('./postcode')
 const pageId = 'select-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
-const previousPathAddress = `${urlPrefix}/search-address`
 const partyTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
@@ -79,7 +78,7 @@ function createModel(errors, data) {
 
     const model = {
         searchType: data.postcode ? `Postcode search - ${data.postcode}` : `Address search: - ${data.property}`,
-        backLink: `${data.postcode ? previousPathPostcode : previousPathAddress}/${data.partyType}`,
+        backLink: `${previousPathPostcode}/${data.partyType}`,
         searchAgainLink: `${previousPathPostcode}/${data.partyType}`,
         pageHeader: pageContent.pageHeader,
         formActionPage: `${currentPath}/${data.partyType}`,
