@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
   port: Joi.number().default(3000),
   env: Joi.string().valid(...envs).default(envs[0]),
   urlPrefix: Joi.string().default(urlPrefix),
-  cookiePassword: Joi.string().default('dummycookiepassworddummycookiepassword'),
+  
   keyVaultUri: Joi.string().required(),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
@@ -24,8 +24,6 @@ const schema = Joi.object().keys({
   dynamicsAPI: Joi.object({
     knownAuthority: Joi.string().required(),
     authorityUrl: Joi.string().required(),
-    clientId: Joi.string().required(),
-    clientSecret: Joi.string().required(),
     serverUrl: Joi.string().required(),
     baseURL: Joi.string().required()
   })
@@ -36,7 +34,6 @@ const config = {
   port: process.env.PORT || 8080,
   env: process.env.NODE_ENV || 'dev',
   urlPrefix: process.env.URL_PREFIX,
-  cookiePassword: process.env.COOKIE_PASSWORD,
   keyVaultUri: process.env.KEY_VAULT_URI,
   addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
@@ -51,8 +48,6 @@ const config = {
   dynamicsAPI: {
     knownAuthority: process.env.KNOWN_AUTHORITY,
     authorityUrl: process.env.AUTHORITY_URL,
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
     serverUrl: process.env.SERVER_URL,
     baseURL: process.env.BASE_URL
   }

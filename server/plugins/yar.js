@@ -1,8 +1,15 @@
 const cacheConfig = require('../../config/cache')
 const config = require('../../config/config')
+const { readSecret } = require('../lib/key-vault')
 
 module.exports = {
-    plugin: require('@hapi/yar'),
+  name: 'yar',
+  register: async function (server, options) {
+
+    const cookiePassword = (await readSecret('SESSION-COOKIE-PASSWORD')).value
+
+    server.register({
+      plugin: require('@hapi/yar'),
       options: {
         maxCookieSize: cacheConfig.useRedis ? 0 : 1024,
         storeBlank: true,
@@ -11,7 +18,7 @@ module.exports = {
           expiresIn: cacheConfig.expiresIn
         },
         cookieOptions: {
-          password: config.cookiePassword,
+          password: cookiePassword,
           isSecure: config.cookieOptions.isSecure,
           ttl: cacheConfig.expiresIn
         }//,
@@ -24,4 +31,6 @@ module.exports = {
         //   return sessionID
         // }
       }
+    })
+  },
 }

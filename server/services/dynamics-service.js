@@ -4,13 +4,17 @@ const Wreck = require('@hapi/wreck');
 const { getYarValue, setYarValue } = require('../lib/session')
 var moment = require('moment');
 const config = require('../../config/config').dynamicsAPI
+const { readSecret } = require('../lib/key-vault')
 
-function getClientCredentialsToken() {
+async function  getClientCredentialsToken() {
+  const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
+  const clientSecret = await readSecret('DYNAMICS-API-CLIENT-SECRET')
+
   const msalConfig = {
     auth: {
       authority: config.authorityUrl,
-      clientId: config.clientId,
-      clientSecret: config.clientSecret,
+      clientId: clientId.value,
+      clientSecret: clientSecret.value,
       knownAuthorities: [config.knownAuthority]
     }
   }
