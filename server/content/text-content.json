@@ -24,8 +24,8 @@
             "error.property.string.empty": "Enter the property",
             "error.street.string.empty": "Enter the street",
             "error.town.string.empty": "Enter the town or city ",
-            "error.postcode.string.empty": "Enter your postal or zip code",
-            "error.postcode.string.pattern.base": "Enter a real postal or zip code",
+            "error.postcode.string.empty": "Enter a postcode",
+            "error.postcode.string.pattern.base": "Enter a real postcode",
             "error.speciesName.string.empty": "Enter the scientific name",
             "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
             "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
@@ -119,6 +119,11 @@
         }
     },
     "postcode": {
+        "common":{
+            "buttonFindAddress": "Find address",
+            "linkTextEnterAddress": "Enter address manually",
+            "inputLabelPostcode": "Postcode"
+        },
         "agent": {
             "defaultTitleImport": "What is your address?",
             "defaultTitleExport": "What is your address?",
@@ -128,22 +133,28 @@
             "pageHeaderExport": "What is your address?",
             "pageHeaderReexport": "What is your address?",
             "pageHeaderArticle10": "What is your address?",
-            "inputLabelPostcode": "Postcode",
-            "buttonFindAddress": "Find address",
-            "linkTextUnknownPostcode": "I do not know the postcode"            
+            "errorMessagesImport": {
+                "error.postcode.string.empty": "Enter your postcode"                
+            },
+            "errorMessagesExport": {
+                "error.postcode.string.empty": "Enter your postcode"                
+            },
+            "errorMessagesReexport": {
+                "error.postcode.string.empty": "Enter your postcode"                
+            },
+            "errorMessagesArticle10": {
+                "error.postcode.string.empty": "Enter your postcode"                
+            }
         },
         "applicant": {
-            "defaultTitleImport": "What is your address?",
-            "defaultTitleExport": "What is your address?",
-            "defaultTitleReexport": "What is your address?",
-            "defaultTitleArticle10": "What is your address?",
-            "pageHeaderImport": "What is your address?",
-            "pageHeaderExport": "What is your address?",
-            "pageHeaderReexport": "What is your address?",
-            "pageHeaderArticle10": "What is your address?",
-            "inputLabelPostcode": "Postcode",
-            "buttonFindAddress": "Find address",
-            "linkTextUnknownPostcode": "I do not know the postcode"            
+            "defaultTitleImport": "What’s the importer’s address?",
+            "defaultTitleExport": "What’s the exporter’s address?",
+            "defaultTitleReexport": "What’s the re-exporter’s address?",
+            "defaultTitleArticle10": "What’s the applicant’s address?",
+            "pageHeaderImport": "What’s the importer’s address?",
+            "pageHeaderExport": "What’s the exporter’s address?",
+            "pageHeaderReexport": "What’s the re-exporter’s address?",
+            "pageHeaderArticle10": "What’s the applicant’s address?"
         },
         "agentLed": {
             "defaultTitleImport": "What’s the importer’s address?",
@@ -153,26 +164,7 @@
             "pageHeaderImport": "What’s the importer’s address?",
             "pageHeaderExport": "What’s the exporter’s address?",
             "pageHeaderReexport": "What’s the re-exporter’s address?",
-            "pageHeaderArticle10": "What’s the applicant’s address?",
-            "inputLabelPostcode": "Postcode",
-            "buttonFindAddress": "Find address",
-            "linkTextUnknownPostcode": "I do not know the postcode",
-            "linkTextInternationalAddressImport": "I The importer lives outside the UK ",
-            "linkTextInternationalAddressExport": "The exporter lives outside the UK",
-            "linkTextInternationalAddressReexport": "The re-exporter lives outside the UK",
-            "linkTextInternationalAddressArticle10": "The applicant lives outside the UK",
-            "errorMessagesImport": {
-                "error.postcode.string.empty": "Enter the importer's postcode"                
-            },
-            "errorMessagesExport": {
-                "error.postcode.string.empty": "Enter the exporter's postcode"                
-            },
-            "errorMessagesReexport": {
-                "error.postcode.string.empty": "Enter the re-exporter's postcode"                
-            },
-            "errorMessagesArticle10": {
-                "error.postcode.string.empty": "Enter the applicant's postcode"                
-            }
+            "pageHeaderArticle10": "What’s the applicant’s address?"
         }
     },
     "searchAddress": {

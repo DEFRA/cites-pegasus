@@ -18,12 +18,12 @@ function createModel(errors, data) {
 
     if(data.partyType === 'applicant'){
         if(data.isAgent){
-            pageContent = textContent.postcode.agentLed
+            pageContent = {...textContent.postcode.common, ...textContent.postcode.agentLed}
         } else {
-            pageContent = textContent.postcode.applicant
+            pageContent = {...textContent.postcode.common, ...textContent.postcode.applicant}
         }
     } else {
-        pageContent = textContent.postcode.agent
+        pageContent = {...textContent.postcode.common, ...textContent.postcode.agent}
     }
 
     let defaultTitle = ''
@@ -79,10 +79,9 @@ function createModel(errors, data) {
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
-        linkTextUnknownPostcode: pageContent.linkTextUnknownPostcode,
-        linkUrlUnknownPostcode: `/search-address/${data.partyType}`,
-        linkTextInternationalAddress: linkTextInternationalAddress,
-        linkUrlInternationalAddress: `/international-address/${data.partyType}`,
+        linkTextEnterAddress: pageContent.linkTextEnterAddress,
+        linkUrlEnterAddress: `/enter-address/${data.partyType}`,
+        buttonFindAddress: pageContent.buttonFindAddress,
         inputPostcode: {
             label: {
                 text: pageContent.inputLabelPostcode

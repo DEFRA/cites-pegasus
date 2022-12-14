@@ -46,13 +46,6 @@ const postcodeSchema = Joi.object({
   pageHeaderExport: Joi.string().required(),
   pageHeaderReexport: Joi.string().required(),
   pageHeaderArticle10: Joi.string().required(),
-  inputLabelPostcode: Joi.string().required(),
-  buttonFindAddress: Joi.string().required(),
-  linkTextUnknownPostcode: Joi.string().required(),
-  linkTextInternationalAddressImport: Joi.string().optional().allow("", null),
-  linkTextInternationalAddressExport: Joi.string().optional().allow("", null),
-  linkTextInternationalAddressReexport: Joi.string().optional().allow("", null),
-  linkTextInternationalAddressArticle10: Joi.string().optional().allow("", null),
   errorMessagesImport: Joi.object(),
   errorMessagesExport: Joi.object(),
   errorMessagesReexport: Joi.object(),
@@ -170,6 +163,11 @@ const schema = Joi.object().keys({
     agentLed: contactDetailsSchema
   }),
   postcode: Joi.object({
+    common: Joi.object({
+      buttonFindAddress: Joi.string().required(),
+      linkTextEnterAddress: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+    }),
     agent: postcodeSchema,
     applicant: postcodeSchema,
     agentLed: postcodeSchema
