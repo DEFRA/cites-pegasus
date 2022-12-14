@@ -38,7 +38,7 @@ function createModel(errors, data) {
 
   const speciesName = data.speciesName
   const quantity = data.quantity
-  const specimenIndex = data.specimenIndex
+  const specimenIndex = data.specimenIndex + 1
   const unitOfMeasurement = data.unitOfMeasurement
 
   const captionText = (unitOfMeasurement === "noOfSpecimens"

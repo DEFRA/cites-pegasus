@@ -33,6 +33,9 @@
           "error.quantity.number.max": "Quantity must be less than 1000000",
           "error.address.string.empty": "Select an address",
           "error.sourceCode.string.empty": "Select the source code",
+          "error.anotherSourceCode.string.empty": "Enter another source code ",
+          "error.anotherSourceCode.string.max": "Source code must be one letter",
+          "error.anotherSourceCode.string.base": "Source code must only include letters a to z",
           "error.purposeCode.any.required": "Select the purpose code"
       }
   },
@@ -425,17 +428,17 @@
       "radioOptionFHint": "Animals born in captivity that do not meet the Commission Regulation criteria",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelIEnterAnotherSourceCode": "Enter another source code",
+
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
-      "inputLabelOEnterAnotherSourceCode": "Enter another source code",
+      
       "radioOptionX": "X",
       "radioOptionXHint": "Taken from the marine environment",
       "radioOptionA": "",
       "radioOptionAHint": "",
       "radioOptionU": "U",
-      "radioOptionUHint": "I do not know",
-      "textAreaLabelEnterAReason": "Enter a reason",
+      "radioOptionUHint": "I do not know", 
+     
       "dividerText": "Or"
     },
     "plant": {
@@ -452,7 +455,7 @@
       "inputLabelIEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
-      "inputLabelOEnterAnotherSourceCode": "Enter another source code",
+      
       "radioOptionX": "X",
       "radioOptionXHint": "Taken from the marine environment",
       "radioOptionR": "",
@@ -463,7 +466,7 @@
       "radioOptionFHint": "",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know",
-      "textAreaLabelEnterAReason": "Enter a reason",
+     
       "dividerText": "Or"
     }
   },

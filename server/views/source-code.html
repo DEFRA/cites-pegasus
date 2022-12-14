@@ -24,27 +24,13 @@
     </div>
   {% endif %}
 
-  
-  {% set textHtml %}
-  {{ govukInput({
-    id: "contact-by-text",
-    name: "contact-by-text",
-    type: "tel",
-    autocomplete: "tel",
-    classes: "govuk-!-width-one-third",
-    label: {
-      text: "Mobile phone number"
-    }
-  }) }}
-  {% endset -%}
-
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
         <span class="govuk-caption-l"> {{captionText}} </span>
-        {{ govukRadios(inputSource) }}
+        {{ govukRadios(inputSourceCode) }}
 
         {{ govukButton({
         text: continueButton,

@@ -14,30 +14,11 @@ const nextPath = `${urlPrefix}/purpose-code`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = null
 
-  if (data.kingdom === "Animalia") {
-    console.log("kingdom", data.kingdom)
-    console.log("name>>>", data.speciesName)
-    console.log("error!!!!!!")
-    console.log("before animal", pageContent)
-
-    console.log(
-      "before animal sourceCode. Animal",
-      textContent.sourceCode.animal
-    )
-
-    pageContent = textContent.sourceCode.animal
-    console.log("kingdom1", data.kingdom)
-   
-    console.log("after animal", pageContent)
-
-    console.log("animal", pageContent)
-
-
-  } else {
-    pageContent = textContent.sourceCode.plant
-  }
+  const pageContent =
+    data.kingdom === "Animalia"
+      ? textContent.sourceCode.animal
+      : textContent.sourceCode.plant
 
   let errorList = null
   if (errors) {
@@ -60,7 +41,7 @@ function createModel(errors, data) {
 
   const speciesName = data.speciesName
   const quantity = data.quantity
-  const specimenIndex = data.specimenIndex
+  const specimenIndex = data.specimenIndex + 1
   const unitOfMeasurement = data.unitOfMeasurement
 
   const captionText =
@@ -77,7 +58,7 @@ function createModel(errors, data) {
       : pageContent.defaultTitle,
     captionText: captionText,
 
-    inputSource: {
+    inputSourceCode: {
       idPrefix: "sourceCode",
       name: "sourceCode",
       fieldset: {
@@ -92,42 +73,63 @@ function createModel(errors, data) {
           value: "W",
           text: pageContent.radioOptionW,
           hint: { text: pageContent.radioOptionWHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "W")
         },
         data.kingdom === "Animalia" && {
           value: "R",
           text: pageContent.radioOptionR,
           hint: { text: pageContent.radioOptionRHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "R")
         },
         data.kingdom === "Animalia" && {
           value: "D",
           text: pageContent.radioOptionD,
           hint: { text: pageContent.radioOptionDHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "D")
         },
         {
           value: "C",
           text: pageContent.radioOptionC,
           hint: { text: pageContent.radioOptionCHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "C")
         },
         data.kingdom === "Animalia" && {
           value: "F",
           text: pageContent.radioOptionF,
           hint: { text: pageContent.radioOptionFHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "F")
         },
         !(data.kingdom === "Animalia") && {
           value: "A",
           text: pageContent.radioOptionA,
           hint: { text: pageContent.radioOptionAHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "A")
         },
         {
           value: "I",
           text: pageContent.radioOptionI,
           hint: { text: pageContent.radioOptionIHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "I")
           // conditional: {
           //     html: emailHtml
@@ -137,6 +139,9 @@ function createModel(errors, data) {
           value: "O",
           text: pageContent.radioOptionO,
           hint: { text: pageContent.radioOptionOHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "O")
           // conditional: {
           //     html: emailHtml
@@ -146,6 +151,9 @@ function createModel(errors, data) {
           value: "X",
           text: pageContent.radioOptionX,
           hint: { text: pageContent.radioOptionXHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "X")
         },
         {
@@ -153,8 +161,14 @@ function createModel(errors, data) {
         },
         {
           value: "U",
-          text: pageContent.radioOptionDontKnow,
-          hint: { text: pageContent.radioOptionDontKnowHint },
+          text: pageContent.radioOptionU,
+          hint: {
+            text: pageContent.radioOptionUHint,
+            classes: "govuk-!-font-weight-bold"
+          },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
           checked: isChecked(data.sourceCode, "C")
         }
       ],
@@ -192,7 +206,6 @@ module.exports = [
         ...appData[request.params.specimenIndex]
       }
       return h.view(pageId, createModel(null, pageData))
-      console.log(">>>>>>>", pageData)
     }
   },
   {
@@ -225,7 +238,9 @@ module.exports = [
       },
       handler: async (request, h) => {
         setAppData(request, { sourceCode: request.payload.sourceCode })
-        return h.redirect(nextPath)
+        return h.redirect(
+          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        )
       }
     }
   }
