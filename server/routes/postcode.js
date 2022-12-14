@@ -18,41 +18,37 @@ function createModel(errors, data) {
 
     if(data.partyType === 'applicant'){
         if(data.isAgent){
-            pageContent = textContent.postcode.agentLed
+            pageContent = {...textContent.postcode.common, ...textContent.postcode.agentLed}
         } else {
-            pageContent = textContent.postcode.applicant
+            pageContent = {...textContent.postcode.common, ...textContent.postcode.applicant}
         }
     } else {
-        pageContent = textContent.postcode.agent
+        pageContent = {...textContent.postcode.common, ...textContent.postcode.agent}
     }
 
     let defaultTitle = ''
     let pageHeader = ''
-    let linkTextInternationalAddress = ''
+    
     let errorMessages = null
     switch (data.permitType) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressImport
             errorMessages = pageContent.errorMessagesImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressExport
             errorMessages = pageContent.errorMessagesExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressReexport
             errorMessages = pageContent.errorMessagesReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
-            linkTextInternationalAddress = pageContent.linkTextInternationalAddressArticle10
             errorMessages = pageContent.errorMessagesArticle10
             break;
     }
@@ -79,10 +75,9 @@ function createModel(errors, data) {
         formActionPage: `${currentPath}/${data.partyType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
-        linkTextUnknownPostcode: pageContent.linkTextUnknownPostcode,
-        linkUrlUnknownPostcode: `/search-address/${data.partyType}`,
-        linkTextInternationalAddress: linkTextInternationalAddress,
-        linkUrlInternationalAddress: `/international-address/${data.partyType}`,
+        linkTextEnterAddress: pageContent.linkTextEnterAddress,
+        linkUrlEnterAddress: `/enter-address/${data.partyType}`,
+        buttonFindAddress: pageContent.buttonFindAddress,
         inputPostcode: {
             label: {
                 text: pageContent.inputLabelPostcode
