@@ -1,8 +1,8 @@
 {
     "common": {
         "serviceName": "Apply for a CITES permit",
-        "phaseBannerPhase": "alpha",
-        "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='#'>feedback</a> will help us to improve it.",
+        "phaseBannerPhase": "beta",
+        "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:ashay.mali@capgemini.com'>feedback</a> will help us to improve it.",
         "backLinkButton": "Back",
         "continueButton": "Continue",
         "confirmButton": "Confirm",
