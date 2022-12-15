@@ -8,7 +8,6 @@ const {
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
-// const input = require("../views/input.html")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
@@ -51,8 +50,9 @@ function createModel(errors, data) {
       ? `${speciesName} (${specimenIndex} of ${quantity})`
       : `${speciesName}`
 
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n";
-  renderString = renderString + ' {{govukInput(input)}}'
+  var renderString =
+    "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
+  renderString = renderString + " {{govukInput(input)}}"
 
   const sourceInput = nunjucks.renderString(renderString, {
     input: {
@@ -61,10 +61,56 @@ function createModel(errors, data) {
       classes: "govuk-input govuk-input--width-2",
       label: {
         text: pageContent.inputLabelIEnterAnotherSourceCode
-      }
+      },
+      errorMessage: getFieldError(errorList, "#enterAnotherSourceCode")
     }
   })
-  
+
+  //Text Input part
+  // inputLabelIEnterAnotherSourceCode: {
+  //   id: "enterAnotherSourceCode",
+  //   name: "enterAnotherSourceCode",
+  //   classes: "govuk-input govuk-input--width-2",
+  //   label: {
+  //     text: pageContent.inputLabelIEnterAnotherSourceCode
+  //   },
+  //   ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
+  //   errorMessage: getFieldError(errorList, "#anotherSourceCode")
+  // },
+
+  // var renderString =
+  //   "{% from 'govuk/components/textarea/macro.njk' import govukTextarea %} \n"
+  // renderString = renderString + " {{govukTextarea(input)}}"
+
+  // const sourceTextarea = nunjucks.renderString(renderString, {
+  //   input: {
+  //     id: "enterAReason",
+  //     name: "enterAReason",
+  //     classes: "govuk-textarea govuk-js-character-count",
+  //     label: {
+  //       text: pageContent.textAreaLabelEnterAReason
+  //     },
+  //     errorMessage: getFieldError(errorList, "#enterAReason")
+  //   }
+  // })
+
+  var renderString =
+    "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n"
+  renderString = renderString + " {{govukCharacterCount(input)}}"
+
+  const sourceCharacterCount = nunjucks.renderString(renderString, {
+    input: {
+      id: "enterAReason",
+      name: "enterAReason",
+      maxlength: 200,
+      classes: "govuk-textarea govuk-js-character-count",
+      label: {
+        text: pageContent.textAreaLabelEnterAReason
+      },
+      errorMessage: getFieldError(errorList, "#enterAReason")
+    }
+  })
+
   const model = {
     backLink: previousPath,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -74,19 +120,6 @@ function createModel(errors, data) {
       : pageContent.defaultTitle,
     captionText: captionText,
 
-    //Text Input part
-    inputLabelIEnterAnotherSourceCode: {
-      id: "enterAnotherSourceCode",
-      name: "enterAnotherSourceCode",
-      classes: "govuk-input govuk-input--width-2",
-      label: {
-        text: pageContent.inputLabelIEnterAnotherSourceCode
-      },
-      ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
-      errorMessage: getFieldError(errorList, "#anotherSourceCode")
-    },
-
-     //Radio part
     inputSourceCode: {
       idPrefix: "sourceCode",
       name: "sourceCode",
@@ -160,22 +193,8 @@ function createModel(errors, data) {
             classes: "govuk-!-font-weight-bold"
           },
           checked: isChecked(data.sourceCode, "I"),
-
-          //condional text input
           conditional: {
             html: sourceInput
-            // html: govukInput({
-            //   id: "enterAnotherSourceCode",
-            //   name: "enterAnotherSourceCode",
-            //   classes: "govuk-input govuk-input--width-2",
-            //   label: {
-            //     text: pageContent.inputLabelIEnterAnotherSourceCode
-            //   },
-            //   ...(data.anotherSourceCode
-            //     ? { value: data.anotherSourceCode }
-            //     : {}),
-            //   errorMessage: getFieldError(errorList, "#anotherSourceCode")
-            // })          
           }
         },
         {
@@ -185,8 +204,10 @@ function createModel(errors, data) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(data.sourceCode, "O")
-          
+          checked: isChecked(data.sourceCode, "O"),
+          conditional: {
+            html: sourceInput
+          }
         },
         {
           value: "X",
@@ -210,7 +231,10 @@ function createModel(errors, data) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(data.sourceCode, "C")
+          checked: isChecked(data.sourceCode, "C"),
+          conditional: {
+            html: sourceCharacterCount
+          }
         }
       ],
       errorMessage: getFieldError(errorList, "#sourceCode")

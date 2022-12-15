@@ -90,17 +90,17 @@ const sourceCodeSchema = Joi.object({
   radioOptionFHint: Joi.string().allow("", null),
   radioOptionI: Joi.string().required(),
   radioOptionIHint: Joi.string().required(),
-  inputLabelIEnterAnotherSourceCode: Joi.string().optional().allow("", null),
+  inputLabelIEnterAnotherSourceCode: Joi.string().required(),
   radioOptionO: Joi.string().required(),
   radioOptionOHint: Joi.string().required(),
-  
+  inputLabelOEnterAnotherSourceCode: Joi.string().optional().allow("", null),
   radioOptionX: Joi.string().required(),
   radioOptionXHint: Joi.string().required(),
   radioOptionA: Joi.string().allow("", null),
   radioOptionAHint: Joi.string().allow("", null),
   radioOptionU: Joi.string().required(),
   radioOptionUHint: Joi.string().required(),
-  
+  textAreaLabelEnterAReason: Joi.string().required(),
   dividerText: Joi.string().required()
 })
 

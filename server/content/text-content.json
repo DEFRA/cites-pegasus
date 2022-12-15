@@ -438,7 +438,7 @@
       "radioOptionAHint": "",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know", 
-     
+      "textAreaLabelEnterAReason": "Enter a reason",
       "dividerText": "Or"
     },
     "plant": {
@@ -466,7 +466,7 @@
       "radioOptionFHint": "",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know",
-     
+      "textAreaLabelEnterAReason": "Enter a reason",
       "dividerText": "Or"
     }
   },
