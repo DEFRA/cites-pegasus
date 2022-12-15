@@ -212,12 +212,12 @@ module.exports = [{
                         // },
                         address: {
                             //addressSummary: request.payload.address,
-                            addressLine1: addressLine1Components.join(", "),
+                            addressLine1: addressLine1Components.join(", ") || null,
                             addressLine2: '',
-                            town: selectedAddress.Town,
-                            county: selectedAddress.County,
-                            postcode: selectedAddress.Postcode,
-                            uprn: selectedAddress.UPRN
+                            town: selectedAddress.Town || null,
+                            county: selectedAddress.County || null,
+                            postcode: selectedAddress.Postcode || null,
+                            uprn: selectedAddress.UPRN || null
                         }
                     }
                 }
