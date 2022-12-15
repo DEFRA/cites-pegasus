@@ -7,6 +7,7 @@ const {
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
+// const input = require("../views/input.html")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
@@ -58,6 +59,19 @@ function createModel(errors, data) {
       : pageContent.defaultTitle,
     captionText: captionText,
 
+    //Text Input part
+    inputLabelIEnterAnotherSourceCode: {
+      id: "enterAnotherSourceCode",
+      name: "enterAnotherSourceCode",
+      classes: "govuk-input govuk-input--width-2",
+      label: {
+        text: pageContent.inputLabelIEnterAnotherSourceCode
+      },
+      ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
+      errorMessage: getFieldError(errorList, "#anotherSourceCode")
+    },
+
+     //Radio part
     inputSourceCode: {
       idPrefix: "sourceCode",
       name: "sourceCode",
@@ -130,10 +144,24 @@ function createModel(errors, data) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(data.sourceCode, "I")
-          // conditional: {
-          //     html: emailHtml
-          //   },
+          checked: isChecked(data.sourceCode, "I"),
+
+          //condional text input
+          conditional: {
+            html: data.speciesName
+            // html: govukInput({
+            //   id: "enterAnotherSourceCode",
+            //   name: "enterAnotherSourceCode",
+            //   classes: "govuk-input govuk-input--width-2",
+            //   label: {
+            //     text: pageContent.inputLabelIEnterAnotherSourceCode
+            //   },
+            //   ...(data.anotherSourceCode
+            //     ? { value: data.anotherSourceCode }
+            //     : {}),
+            //   errorMessage: getFieldError(errorList, "#anotherSourceCode")
+            // })          
+          }
         },
         {
           value: "O",
@@ -143,9 +171,7 @@ function createModel(errors, data) {
             classes: "govuk-!-font-weight-bold"
           },
           checked: isChecked(data.sourceCode, "O")
-          // conditional: {
-          //     html: emailHtml
-          //   },
+          
         },
         {
           value: "X",
@@ -202,6 +228,7 @@ module.exports = [
         unitOfMeasurement: appData?.unitOfMeasurement,
         kingdom: appData?.kingdom,
         sourceCode: appData?.sourceCode,
+        anotherSourceCode: appData?.anotherSourceCode,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
       }
@@ -219,7 +246,8 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          sourceCode: Joi.string().required()
+          sourceCode: Joi.string().required(),
+          anotherSourceCode: Joi.string().required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
@@ -237,7 +265,10 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        setAppData(request, { sourceCode: request.payload.sourceCode })
+        setAppData(request, {
+          sourceCode: request.payload.sourceCode,
+          anotherSourceCode: request.payload.anotherSourceCode
+        })
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
