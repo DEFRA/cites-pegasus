@@ -7,6 +7,7 @@ const {
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
+const nunjucks = require("nunjucks")
 // const input = require("../views/input.html")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -50,6 +51,20 @@ function createModel(errors, data) {
       ? `${speciesName} (${specimenIndex} of ${quantity})`
       : `${speciesName}`
 
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n";
+  renderString = renderString + ' {{govukInput(input)}}'
+
+  const sourceInput = nunjucks.renderString(renderString, {
+    input: {
+      id: "enterAnotherSourceCode",
+      name: "enterAnotherSourceCode",
+      classes: "govuk-input govuk-input--width-2",
+      label: {
+        text: pageContent.inputLabelIEnterAnotherSourceCode
+      }
+    }
+  })
+  
   const model = {
     backLink: previousPath,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -148,7 +163,7 @@ function createModel(errors, data) {
 
           //condional text input
           conditional: {
-            html: data.speciesName
+            html: sourceInput
             // html: govukInput({
             //   id: "enterAnotherSourceCode",
             //   name: "enterAnotherSourceCode",
