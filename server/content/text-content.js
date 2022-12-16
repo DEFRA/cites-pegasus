@@ -77,16 +77,17 @@ const enterAddressSchema = Joi.object({
   pageHeaderExport: Joi.string().required(),
   pageHeaderReexport: Joi.string().required(),
   pageHeaderArticle10: Joi.string().required(),
-  pageBody: Joi.string().required(),
+  pageBodyImport: Joi.string().required(),
+  pageBodyExport: Joi.string().required(),
+  pageBodyReexport: Joi.string().required(),
+  pageBodyArticle10: Joi.string().required(),
   inputLabelAddressLine1: Joi.string().required(),
   inputLabelAddressLine2: Joi.string().required(),
-  inputLabelTown: Joi.string().required(),
-  inputLabelCounty: Joi.string().required(),
+  inputLabelAddressLine3: Joi.string().required(),
+  inputLabelAddressLine4: Joi.string().required(),
   inputLabelPostcode: Joi.string().required(),
-  errorMessagesImport: Joi.object(),
-  errorMessagesExport: Joi.object(),
-  errorMessagesReexport: Joi.object(),
-  errorMessagesArticle10: Joi.object(),
+  inputLabelCountry: Joi.string().required(),
+  errorMessages: Joi.object()
 })
 
 const confirmAddressSchema = Joi.object({
@@ -186,7 +187,8 @@ const schema = Joi.object().keys({
   enterAddress: Joi.object({
     agent: enterAddressSchema,
     applicant: enterAddressSchema,
-    agentLed: enterAddressSchema
+    agentLed: enterAddressSchema,
+    delivery: enterAddressSchema
   }),
   confirmAddress: Joi.object({
     agent: confirmAddressSchema,
