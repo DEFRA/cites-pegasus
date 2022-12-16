@@ -51,10 +51,7 @@ function getAppFlow(appData) {
             if (appData?.agent?.fullName) {
                 appFlow.push('postcode/agent')
                 appFlow.push('enter-address/agent')
-                if(appData?.agent?.addressSearchData?.postcode
-                || appData?.agent?.addressSearchData?.property
-                || appData?.agent?.addressSearchData?.street
-                || appData?.agent?.addressSearchData?.town) {
+                if(appData?.agent?.addressSearchData?.postcode) {
                     appFlow.push('select-address/agent')
                 }
                 if(appData?.agent?.address){
@@ -67,10 +64,7 @@ function getAppFlow(appData) {
             if (appData?.applicant?.fullName) {
                 appFlow.push('postcode/applicant')
                 appFlow.push('enter-address/applicant')
-                if(appData?.applicant?.addressSearchData?.postcode 
-                || appData?.applicant?.addressSearchData?.property
-                || appData?.applicant?.addressSearchData?.street
-                || appData?.applicant?.addressSearchData?.town) {
+                if(appData?.applicant?.addressSearchData?.postcode) {
                     appFlow.push('select-address/applicant')
                 }
                 if(appData?.applicant?.address){
@@ -78,8 +72,18 @@ function getAppFlow(appData) {
                 }
             }
         }
+        if (appData?.applicant?.address) {            
+            appFlow.push('postcode/delivery')
+            appFlow.push('enter-address/delivery')
+            if(appData?.delivery?.addressSearchData?.postcode) {
+                appFlow.push('select-address/delivery')
+            }
+            if(appData?.delivery?.address){
+                appFlow.push('confirm-address/delivery')
+            }            
+        }
     }
-
+    //console.log(appFlow)
     return appFlow
 }
 

@@ -7,7 +7,7 @@ const textContent = require('../content/text-content')
 const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/postcode`
-const partyTypes = ['agent', 'applicant']
+const contactTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
@@ -16,7 +16,7 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
 
-    if (data.partyType === 'applicant') {
+    if (data.contactType === 'applicant') {
         if (data.isAgent) {
             pageContent = textContent.enterAddress.agentLed
         } else {
@@ -70,10 +70,10 @@ function createModel(errors, data) {
     }
 
     const model = {
-        backLink: `${previousPath}/${data.partyType}`,
+        backLink: `${previousPath}/${data.contactType}`,
         pageHeader: pageHeader,
         pageBody: pageContent.pageBody,
-        formActionPage: `${currentPath}/${data.partyType}`,
+        formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
 
@@ -131,11 +131,11 @@ function createModel(errors, data) {
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             failAction: (request, h, error) => {
                 console.log(error)
@@ -146,7 +146,7 @@ module.exports = [{
         const appData = getAppData(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+            validateAppData(appData, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
@@ -154,10 +154,10 @@ module.exports = [{
         }
 
         const pageData = {
-            partyType: request.params.partyType, 
+            contactType: request.params.contactType, 
             isAgent: appData?.isAgent, 
             permitType: appData?.permitType, 
-            ...appData[request.params.partyType].address 
+            ...appData[request.params.contactType].address 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -165,11 +165,11 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             options: { abortEarly: false },
             payload: Joi.object({
@@ -182,7 +182,7 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
                 const pageData = { 
-                    partyType: request.params.partyType, 
+                    contactType: request.params.contactType, 
                     isAgent: appData?.isAgent, 
                     permitType: appData?.permitType, 
                     ...request.payload 
@@ -192,10 +192,10 @@ module.exports = [{
             }
         },
         handler: async (request, h) => {
-            const partyType = request.params.partyType
+            const contactType = request.params.contactType
 
             const appData = {
-                [partyType]: {
+                [contactType]: {
                     address: {
                         addressLine1: request.payload.addressLine1.trim(),
                         addressLine2: request.payload.addressLine2.trim(),
@@ -208,14 +208,14 @@ module.exports = [{
             }
 
             try {
-                setAppData(request, appData, `${pageId}/${partyType}`)
+                setAppData(request, appData, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${partyType}`)
+            return h.redirect(`${nextPath}/${contactType}`)
         }
     },
 }

@@ -5,7 +5,7 @@ const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
 const currentPath = `${urlPrefix}/${pageId}`
-const partyTypes = ['agent', 'applicant']
+const contactTypes = ['agent', 'applicant']
 const deliveryAddressOptions = ['this', 'different', 'agent']
 const invalidAppDataPath = urlPrefix
 
@@ -14,7 +14,7 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
     
-    if(data.partyType === 'applicant'){
+    if(data.contactType === 'applicant'){
         if(data.isAgent){
             pageContent = textContent.confirmAddress.agentLed
         } else {
@@ -28,7 +28,7 @@ function createModel(errors, data) {
     
 
     //let deliveryAddressOptionItems = []
-    // if (data.partyType === 'applicant') {
+    // if (data.contactType === 'applicant') {
     //     if (data.isAgent) {
     //         pageContent = textContent.confirmAddress.agentLed
 
@@ -104,9 +104,9 @@ function createModel(errors, data) {
     // }
 
     const model = {        
-        backLink: `${previousPath}/${data.partyType}`,
+        backLink: `${previousPath}/${data.contactType}`,
         pageHeader: pageHeader,
-        formActionPage: `${currentPath}/${data.partyType}`,
+        formActionPage: `${currentPath}/${data.contactType}`,
         // ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
         addressLine1: data.addressLine1,
@@ -115,7 +115,7 @@ function createModel(errors, data) {
         county: data.county,
         postcode: data.postcode,
         changeAddressLinkText: pageContent.changeAddressLinkText,
-        changeAddressLink: `/postcode/${data.partyType}`,
+        changeAddressLink: `/postcode/${data.contactType}`,
         // inputDeliveryAddressOptions: {
         //     idPrefix: "deliveryAddressOption",
         //     name: "deliveryAddressOption",
@@ -135,11 +135,11 @@ function createModel(errors, data) {
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             failAction: (request, h, error) => {
                 console.log(error)
@@ -150,7 +150,7 @@ module.exports = [{
         const appData = getAppData(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+            validateAppData(appData, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
@@ -158,11 +158,11 @@ module.exports = [{
         }
 
         const pageData = {
-            partyType: request.params.partyType,
+            contactType: request.params.contactType,
             isAgent: appData?.isAgent,
             permitType: appData?.permitType,
             //deliveryAddressOption: appData?.deliveryAddressOption,
-            ...appData[request.params.partyType].address,
+            ...appData[request.params.contactType].address,
             //agentAddressSummary: null// appData[agent]?.address.addressSummary 
         }
 
@@ -171,11 +171,11 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             options: { abortEarly: false },
             // payload: Joi.object({
@@ -184,11 +184,11 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
                 const pageData = {
-                    partyType: request.params.partyType,
+                    contactType: request.params.contactType,
                     isAgent: appData?.isAgent,
                     permitType: appData?.permitType,
                     //deliveryAddressOption: request.payload.deliveryAddressOption,
-                    ...appData[request.params.partyType].address,
+                    ...appData[request.params.contactType].address,
                     //agentAddressSummary: null// appData[agent]?.address.addressSummary 
                 }
 
@@ -197,14 +197,14 @@ module.exports = [{
         },
         handler: async (request, h) => {
             // const appData = getAppData(request)
-            // const partyType = request.params.partyType
+            // const contactType = request.params.contactType
             // const deliveryAddressOption = request.payload.deliveryAddressOption
             //let nextPath = null
             //let deliveryAddress = null
 
-            const nextPath = request.params.partyType === 'agent' ? `${urlPrefix}/contact-details/applicant` : `${urlPrefix}/species-name`
+            const nextPath = request.params.contactType === 'agent' ? `${urlPrefix}/contact-details/applicant` : `${urlPrefix}/species-name`
 
-            // switch (partyType) {
+            // switch (contactType) {
             //     case 'agent':
             //         nextPath = `${urlPrefix}/contact-details/applicant`
             //         break;
@@ -252,7 +252,7 @@ module.exports = [{
             // }
 
             // try {
-            //     setAppData(request, newAppData, `${pageId}/${partyType}`)
+            //     setAppData(request, newAppData, `${pageId}/${contactType}`)
             // }
             // catch (err) {
             //     console.log(err);

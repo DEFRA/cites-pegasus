@@ -165,6 +165,16 @@
             "pageHeaderExport": "What’s the exporter’s address?",
             "pageHeaderReexport": "What’s the re-exporter’s address?",
             "pageHeaderArticle10": "What’s the applicant’s address?"
+        },
+        "delivery": {
+            "defaultTitleImport": "What is the delivery address?",
+            "defaultTitleExport": "What is the delivery address?",
+            "defaultTitleReexport": "What is the delivery address?",
+            "defaultTitleArticle10": "What is the delivery address?",
+            "pageHeaderImport": "What is the delivery address?",
+            "pageHeaderExport": "What is the delivery address?",
+            "pageHeaderReexport": "What is the delivery address?",
+            "pageHeaderArticle10": "What is the delivery address?"
         }
     },
     "searchAddress": {

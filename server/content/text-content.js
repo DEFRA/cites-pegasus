@@ -170,7 +170,8 @@ const schema = Joi.object().keys({
     }),
     agent: postcodeSchema,
     applicant: postcodeSchema,
-    agentLed: postcodeSchema
+    agentLed: postcodeSchema,
+    delivery: postcodeSchema
   }),
   searchAddress: Joi.object({
     agent: searchAddressSchema,

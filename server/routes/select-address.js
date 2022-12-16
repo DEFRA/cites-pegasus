@@ -9,7 +9,7 @@ const postcode = require('./postcode')
 const pageId = 'select-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
-const partyTypes = ['agent', 'applicant']
+const contactTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
@@ -17,7 +17,7 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
 
-    if (data.partyType === 'applicant') {
+    if (data.contactType === 'applicant') {
         if (data.isAgent) {
             pageContent = textContent.selectAddress.agentLed
         } else {
@@ -77,11 +77,10 @@ function createModel(errors, data) {
     // unitsOfMeasurement.forEach(e => { if (e.value === data.unitOfMeasurement) e.selected = 'true' })
 
     const model = {
-        searchType: data.postcode ? `Postcode search - ${data.postcode}` : `Address search: - ${data.property}`,
-        backLink: `${previousPathPostcode}/${data.partyType}`,
-        searchAgainLink: `${previousPathPostcode}/${data.partyType}`,
+        backLink: `${previousPathPostcode}/${data.contactType}`,
+        searchAgainLink: `${previousPathPostcode}/${data.contactType}`,
         pageHeader: pageContent.pageHeader,
-        formActionPage: `${currentPath}/${data.partyType}`,
+        formActionPage: `${currentPath}/${data.contactType}`,
         linkTextSearchAgain: pageContent.linkTextSearchAgain,
         bodyText: bodyText,
         ...errorList ? { errorList } : {},
@@ -99,26 +98,24 @@ function createModel(errors, data) {
         detailsSummaryText: pageContent.detailsSummaryText,
         detailsText: pageContent.detailsText,
         detailsLinkText: pageContent.detailsLinkText,
-        detailsLinkUrl: `/enter-address/${data.partyType}`
+        detailsLinkUrl: `/enter-address/${data.contactType}`
     }
     return { ...commonContent, ...model }
 }
 
 function validateSearchData(searchData) {
-    if (searchData.postcode && (searchData.property || searchData.street || searchData.town)) {
-        throw "must be postcode or address search, not both"
-    } else if (!searchData.postcode && !searchData.property && !searchData.street && !searchData.town) {
+    if (!searchData.postcode) {
         throw "must provide postcode or address search details"
     }
 }
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             failAction: (request, h, error) => {
                 console.log(error)
@@ -126,42 +123,42 @@ module.exports = [{
         }
     },
     handler: async (request, h) => {
-        const partyType = request.params.partyType
+        const contactType = request.params.contactType
         const appData = getAppData(request);
         try {
-            const searchData = appData[partyType].addressSearchData
-            validateAppData(appData, `${pageId}/${partyType}`)
-            validateSearchData(appData[partyType].addressSearchData)
+            const searchData = appData[contactType].addressSearchData
+            validateAppData(appData, `${pageId}/${contactType}`)
+            validateSearchData(appData[contactType].addressSearchData)
 
             let newAppData = {
-                [partyType]: {
+                [contactType]: {
                     addressSearchData: {
                         results: null
                     }
                 }
             }
 
-            setAppData(request, newAppData, `${pageId}/${partyType}`)
+            setAppData(request, newAppData, `${pageId}/${contactType}`)
 
             const response = await getAddressesByPostcode(searchData.postcode)
             const pageData = {
-                partyType: partyType,
+                contactType: contactType,
                 permitType: appData?.permitType,
                 isAgent: appData?.isAgent,
-                ...appData[partyType]?.addressSearchData,
+                ...appData[contactType]?.addressSearchData,
                 results: response.results,
-                ...appData[partyType].address,
+                ...appData[contactType].address,
             }
 
             newAppData = {
-                [partyType]: {
+                [contactType]: {
                     addressSearchData: {
                         results: response.results
                     }
                 }
             }
 
-            setAppData(request, newAppData, `${pageId}/${partyType}`)
+            setAppData(request, newAppData, `${pageId}/${contactType}`)
 
             return h.view(pageId, createModel(null, pageData));
         }
@@ -173,11 +170,11 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             options: { abortEarly: false },
             payload: Joi.object({
@@ -186,10 +183,10 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
                 const pageData = {
-                    partyType: request.params.partyType,
+                    contactType: request.params.contactType,
                     permitType: appData?.permitType,
                     isAgent: appData?.isAgent,
-                    ...appData[request.params.partyType]?.addressSearchData,
+                    ...appData[request.params.contactType]?.addressSearchData,
                     ...request.payload
                 }
 
@@ -197,16 +194,16 @@ module.exports = [{
             }
         },
         handler: async (request, h) => {
-            const partyType = request.params.partyType
+            const contactType = request.params.contactType
             try {
                 const appData = getAppData(request);
 
-                const selectedAddress = appData[partyType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
+                const selectedAddress = appData[contactType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
 
                 const addressLine1Components = [selectedAddress.SubBuildingName, selectedAddress.BuildingNumber, selectedAddress.BuildingName, selectedAddress.Street].filter(Boolean)
 
                 const newAppData = {
-                    [partyType]: {
+                    [contactType]: {
                         // addressSearchData: { 
                         //     results: null
                         // },
@@ -222,14 +219,14 @@ module.exports = [{
                     }
                 }
 
-                setAppData(request, newAppData, `${pageId}/${partyType}`)
+                setAppData(request, newAppData, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${partyType}`)
+            return h.redirect(`${nextPath}/${contactType}`)
         }
     },
 }
