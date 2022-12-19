@@ -4,7 +4,6 @@ const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
-const { internal } = require('@hapi/boom')
 const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/postcode`
@@ -171,7 +170,7 @@ module.exports = [{
             contactType: request.params.contactType,
             isAgent: appData?.isAgent,
             permitType: appData?.permitType,
-            ...appData[request.params.contactType].address
+            ...appData[request.params.contactType]?.address
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -231,7 +230,7 @@ module.exports = [{
                         addressLine3: request.payload.addressLine3.trim(),
                         addressLine4: request.payload.addressLine4.trim(),
                         postcode: request.payload.postcode.trim(),
-                        country: request.payload.country.trim() || 'UK',
+                        country: request.payload.country ? request.payload.country.trim() : 'UK',
                         uprn: null
                     }
                 }

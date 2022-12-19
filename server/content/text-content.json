@@ -229,49 +229,26 @@
         }
     },
     "selectAddress": {
-        "agent": {
+        "common": {
             "defaultTitle": "Select an address ",
             "pageHeader": "Select an address ",
             "selectLabelAddress": "Address",
             "selectAddressPromptNoResults": "No addresses found",
             "selectAddressPromptSingle": "1 address found",
             "selectAddressPromptMultiple": "addresses found",
-            "detailsSummaryText": "I cannot find the address in the list",
-            "detailsText": "If you cannot find the address, ",
-            "detailsLinkText": "enter your address manually",
-            "linkTextSearchAgain": "Search for the address again"            
+            "changePostcodeLinkText": "Change postcode"
+        },
+        "agent": {            
+            "enterManualAddressLinkText": "Enter your address manually"
         },
         "applicant": {
-            "defaultTitle": "Select an address ",
-            "pageHeader": "Select an address ",
-            "selectLabelAddress": "Address",
-            "selectAddressPromptNoResults": "No addresses found",
-            "selectAddressPromptSingle": "1 address found",
-            "selectAddressPromptMultiple": "addresses found",
-            "detailsSummaryText": "I cannot find the address in the list",
-            "detailsText": "If you cannot find the address, ",
-            "detailsLinkText": "enter your address manually",
-            "linkTextSearchAgain": "Search for the address again",
-            "bodyTextImport": "",
-            "bodyTextExport": "",
-            "bodyTextReexport": "",
-            "bodyTextArticle10": ""
+            "enterManualAddressLinkText": "Enter the address manually"
         },
         "agentLed": {
-            "defaultTitle": "Select an address ",
-            "pageHeader": "Select an address ",
-            "selectLabelAddress": "Address",
-            "selectAddressPromptNoResults": "No addresses found",
-            "selectAddressPromptSingle": "1 address found",
-            "selectAddressPromptMultiple": "addresses found",
-            "detailsSummaryText": "I cannot find the address in the list",
-            "detailsText": "If you cannot find the address, ",
-            "detailsLinkText": "enter your address manually",
-            "linkTextSearchAgain": "Search for the address again",
-            "bodyTextImport": "If you still cannot find the address, contact the importer to confirm their details.",
-            "bodyTextExport": "If you still cannot find the address, contact the exporter to confirm their details.",
-            "bodyTextReexport": "If you still cannot find the address, contact the re-exporter to confirm their details.",
-            "bodyTextArticle10": "If you still cannot find the address, contact the applicant to confirm their details."
+            "enterManualAddressLinkText": "Enter the address manually"
+        },
+        "delivery": {
+            "enterManualAddressLinkText": "Enter the address manually"
         }
     },
     "enterAddress": {
@@ -359,9 +336,9 @@
                 "error.addressLine2.string.pattern.base": "Address line 2 must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
                 "error.addressLine3.string.empty": "Enter the town or city",
                 "error.addressLine3.string.max": "Town or city must be 150 characters or less",
-                "error.addressLine3.string.pattern.base": "Town or city must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine3.string.pattern.base": "Town or city must only include letters a to z and special characters such as hyphens, spaces and apostrophes",                                                        
                 "error.addressLine4.string.max": "County must be 150 characters or less",
-                "error.addressLine4.string.pattern.base": "County must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine4.string.pattern.base": "County must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
                 "error.postcode.string.empty": "Enter a postcode",
                 "error.postcode.string.max": "Enter a real postcode",
                 "error.postcode.string.pattern.base": "Enter a real postcode"

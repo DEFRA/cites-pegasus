@@ -21,20 +21,14 @@ const searchAddressSchema = Joi.object({
 })
 
 const selectAddressSchema = Joi.object({
-  defaultTitle: Joi.string().required(),
-  pageHeader: Joi.string().required(),
-  selectLabelAddress: Joi.string().required(),
-  selectAddressPromptNoResults: Joi.string().required(),
-  selectAddressPromptSingle: Joi.string().required(),
-  selectAddressPromptMultiple: Joi.string().required(),
-  detailsSummaryText: Joi.string().required(),
-  detailsText: Joi.string().required(),
-  detailsLinkText: Joi.string().required(),
-  linkTextSearchAgain: Joi.string().required(),
-  bodyTextImport: Joi.string().optional().allow("", null),
-  bodyTextExport: Joi.string().optional().allow("", null),
-  bodyTextReexport: Joi.string().optional().allow("", null),
-  bodyTextArticle10: Joi.string().optional().allow("", null)
+  defaultTitle: Joi.string(),
+  pageHeader: Joi.string(),
+  selectLabelAddress: Joi.string(),
+  selectAddressPromptNoResults: Joi.string(),
+  selectAddressPromptSingle: Joi.string(),
+  selectAddressPromptMultiple: Joi.string(),
+  changePostcodeLinkText: Joi.string(),
+  enterManualAddressLinkText: Joi.string()
 })
 
 const postcodeSchema = Joi.object({
@@ -180,9 +174,19 @@ const schema = Joi.object().keys({
     agentLed: searchAddressSchema
   }),
   selectAddress: Joi.object({
+    common: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      selectLabelAddress: Joi.string().required(),
+      selectAddressPromptNoResults: Joi.string().required(),
+      selectAddressPromptSingle: Joi.string().required(),
+      selectAddressPromptMultiple: Joi.string().required(),
+      changePostcodeLinkText: Joi.string().required()
+    }),
     agent: selectAddressSchema,
     applicant: selectAddressSchema,
-    agentLed: selectAddressSchema
+    agentLed: selectAddressSchema,
+    delivery: selectAddressSchema
   }),
   enterAddress: Joi.object({
     agent: enterAddressSchema,

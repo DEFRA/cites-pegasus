@@ -9,7 +9,7 @@ const postcode = require('./postcode')
 const pageId = 'select-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
-const contactTypes = ['agent', 'applicant']
+const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
@@ -19,28 +19,14 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = textContent.selectAddress.agentLed
+            pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.agentLed }
         } else {
-            pageContent = textContent.selectAddress.applicant
+            pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.applicant }
         }
+    } else if (data.contactType === 'agent') {
+        pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.agent }
     } else {
-        pageContent = textContent.selectAddress.agent
-    }
-
-    let bodyText = ''
-    switch (data.permitType) {
-        case 'import':
-            bodyText = pageContent.bodyTextImport
-            break;
-        case 'export':
-            bodyText = pageContent.bodyTextExport
-            break;
-        case 'reexport':
-            bodyText = pageContent.bodyTextReexport
-            break;
-        case 'article10':
-            bodyText = pageContent.bodyTextArticle10
-            break;
+        pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.delivery }
     }
 
     let errorList = null
@@ -78,11 +64,12 @@ function createModel(errors, data) {
 
     const model = {
         backLink: `${previousPathPostcode}/${data.contactType}`,
-        searchAgainLink: `${previousPathPostcode}/${data.contactType}`,
         pageHeader: pageContent.pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
-        linkTextSearchAgain: pageContent.linkTextSearchAgain,
-        bodyText: bodyText,
+        changePostcodeLinkText: pageContent.changePostcodeLinkText,
+        changePostcodeUrl: `${previousPathPostcode}/${data.contactType}`,
+        enterManualAddressLinkText: pageContent.enterManualAddressLinkText,
+        enterManualAddressUrl: `/enter-address/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
         selectAddress: {
@@ -95,10 +82,6 @@ function createModel(errors, data) {
             classes: "govuk-!-width-two-thirds",
             errorMessage: getFieldError(errorList, '#address')
         },
-        detailsSummaryText: pageContent.detailsSummaryText,
-        detailsText: pageContent.detailsText,
-        detailsLinkText: pageContent.detailsLinkText,
-        detailsLinkUrl: `/enter-address/${data.contactType}`
     }
     return { ...commonContent, ...model }
 }
@@ -200,7 +183,23 @@ module.exports = [{
 
                 const selectedAddress = appData[contactType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
 
+                // const selectedAddress = {
+                //     //SubBuildingName: "Room 1",
+                //     BuildingName: "The building",
+                //     BuildingNumber: "Building no 1",
+                //     //Street: "The street",
+                //     Locality: "locality",
+                //     DependentLocality: "dep locality",
+                //     Town: "town",
+                //     County: "county",
+                //     Postcode: "B74 4QJ",
+                //     Country: "ENGLAND",
+                //     UPRN: "100070591023"
+                // }
+
                 const addressLine1Components = [selectedAddress.SubBuildingName, selectedAddress.BuildingNumber, selectedAddress.BuildingName, selectedAddress.Street].filter(Boolean)
+                const localityComponents = [selectedAddress.DependentLocality, selectedAddress.Locality].filter(Boolean)
+                const otherAddressLineComponents = [localityComponents.join(", "), selectedAddress.Town, selectedAddress.County].filter(Boolean)
 
                 const newAppData = {
                     [contactType]: {
@@ -210,10 +209,11 @@ module.exports = [{
                         address: {
                             //addressSummary: request.payload.address,
                             addressLine1: addressLine1Components.join(", ") || null,
-                            addressLine2: '',
-                            town: selectedAddress.Town || null,
-                            county: selectedAddress.County || null,
+                            addressLine2: otherAddressLineComponents[0] || null,
+                            addressLine3: otherAddressLineComponents[1] || null,
+                            addressLine4: otherAddressLineComponents[2] || null,
                             postcode: selectedAddress.Postcode || null,
+                            country: selectedAddress.Country || null,
                             uprn: selectedAddress.UPRN || null
                         }
                     }
