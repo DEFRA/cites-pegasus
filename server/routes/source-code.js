@@ -6,7 +6,7 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
-const { SOURCECODE_REGEX, COMMENTS_REGEX } = require('../lib/regex-validation')
+const { SOURCECODE_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "source-code"
@@ -29,7 +29,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["sourceCode", "enterAReason"]
+    const fields = ["sourceCode", "anotherSourceCode", "enterAReason"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -57,14 +57,14 @@ function createModel(errors, data) {
 
   const sourceInput = nunjucks.renderString(renderString, {
     input: {
-      id: "enterAnotherSourceCode",
-      name: "enterAnotherSourceCode",
+      id: "anotherSourceCode",
+      name: "anotherSourceCode",
       classes: "govuk-input govuk-input--width-2",
       label: {
         text: pageContent.inputLabelEnterAnotherSourceCode
       },
       ...(data.sourceCode ? { value: data.sourceCode } : {}),
-      errorMessage: getFieldError(errorList, "#sourceCode")
+      errorMessage: getFieldError(errorList, "#anotherSourceCode")
     }
   })
 
@@ -81,7 +81,7 @@ function createModel(errors, data) {
       label: {
         text: pageContent.characterCountLabelEnterAReason
       },
-      ...(data.remarks ? { value: data.remarks } : {}),
+      ...(data.enterAReason ? { value: data.enterAReason } : {}),
       errorMessage: getFieldError(errorList, "#enterAReason")
     }
   })
@@ -242,7 +242,7 @@ module.exports = [
         unitOfMeasurement: appData?.unitOfMeasurement,
         kingdom: appData?.kingdom,
         sourceCode: appData?.sourceCode,
-        remarks: appData?.remarks,
+        enterAReason: appData?.enterAReason,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
       }
@@ -260,8 +260,16 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          sourceCode: Joi.string().regex(SOURCECODE_REGEX).length(1).required(),
-          remarks: Joi.string().min(1).max(151).regex(COMMENTS_REGEX).required()
+          sourceCode: Joi.string().required(),
+          anotherSourceCode: Joi.string()
+            .regex(SOURCECODE_REGEX)
+            .length(1)
+            .required(),
+          enterAReason: Joi.string()
+            .min(1)
+            .max(151)
+            .regex(COMMENTS_REGEX)
+            .required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
@@ -279,9 +287,18 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
+        const sourceCode =
+          request.payload.sourceCode === "I" ||
+          request.payload.sourceCode === "O"
+            ? request.payload.anotherSourceCode
+            : request.payload.sourceCode
+
+        const enterAReason =
+          request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+
         setAppData(request, {
-          sourceCode: request.payload.sourceCode,
-          anotherSourceCode: request.payload.anotherSourceCode
+          sourceCode: sourceCode,
+          enterAReason: enterAReason
         })
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
@@ -291,32 +308,30 @@ module.exports = [
   }
 ]
 
+//Text Input part
+// inputLabelIEnterAnotherSourceCode: {
+//   id: "enterAnotherSourceCode",
+//   name: "enterAnotherSourceCode",
+//   classes: "govuk-input govuk-input--width-2",
+//   label: {
+//     text: pageContent.inputLabelIEnterAnotherSourceCode
+//   },
+//   ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
+//   errorMessage: getFieldError(errorList, "#anotherSourceCode")
+// },
 
+// var renderString =
+//   "{% from 'govuk/components/textarea/macro.njk' import govukTextarea %} \n"
+// renderString = renderString + " {{govukTextarea(input)}}"
 
-  //Text Input part
-  // inputLabelIEnterAnotherSourceCode: {
-  //   id: "enterAnotherSourceCode",
-  //   name: "enterAnotherSourceCode",
-  //   classes: "govuk-input govuk-input--width-2",
-  //   label: {
-  //     text: pageContent.inputLabelIEnterAnotherSourceCode
-  //   },
-  //   ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
-  //   errorMessage: getFieldError(errorList, "#anotherSourceCode")
-  // },
-
-  // var renderString =
-  //   "{% from 'govuk/components/textarea/macro.njk' import govukTextarea %} \n"
-  // renderString = renderString + " {{govukTextarea(input)}}"
-
-  // const sourceTextarea = nunjucks.renderString(renderString, {
-  //   input: {
-  //     id: "enterAReason",
-  //     name: "enterAReason",
-  //     classes: "govuk-textarea govuk-js-character-count",
-  //     label: {
-  //       text: pageContent.textAreaLabelEnterAReason
-  //     },
-  //     errorMessage: getFieldError(errorList, "#enterAReason")
-  //   }
-  // })
+// const sourceTextarea = nunjucks.renderString(renderString, {
+//   input: {
+//     id: "enterAReason",
+//     name: "enterAReason",
+//     classes: "govuk-textarea govuk-js-character-count",
+//     label: {
+//       text: pageContent.textAreaLabelEnterAReason
+//     },
+//     errorMessage: getFieldError(errorList, "#enterAReason")
+//   }
+// })
