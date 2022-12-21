@@ -126,7 +126,7 @@
         }
     },
     "postcode": {
-        "common":{
+        "common": {
             "buttonFindAddress": "Find address",
             "linkTextEnterAddress": "Enter address manually",
             "inputLabelPostcode": "Postcode"
@@ -141,16 +141,16 @@
             "pageHeaderReexport": "What is your address?",
             "pageHeaderArticle10": "What is your address?",
             "errorMessagesImport": {
-                "error.postcode.string.empty": "Enter your postcode"                
+                "error.postcode.string.empty": "Enter your postcode"
             },
             "errorMessagesExport": {
-                "error.postcode.string.empty": "Enter your postcode"                
+                "error.postcode.string.empty": "Enter your postcode"
             },
             "errorMessagesReexport": {
-                "error.postcode.string.empty": "Enter your postcode"                
+                "error.postcode.string.empty": "Enter your postcode"
             },
             "errorMessagesArticle10": {
-                "error.postcode.string.empty": "Enter your postcode"                
+                "error.postcode.string.empty": "Enter your postcode"
             }
         },
         "applicant": {
@@ -211,7 +211,7 @@
             "pageBody": "If you are a business, give the business address.",
             "inputLabelProperty": "Property number or name",
             "inputLabelStreet": "Street",
-            "inputLabelTown": "Town or city"            
+            "inputLabelTown": "Town or city"
         },
         "agentLed": {
             "defaultTitleImport": "Search for the importer’s address",
@@ -225,7 +225,7 @@
             "pageBody": "If you are a business, give the business address.",
             "inputLabelProperty": "Property number or name",
             "inputLabelStreet": "Street",
-            "inputLabelTown": "Town or city"                        
+            "inputLabelTown": "Town or city"
         }
     },
     "selectAddress": {
@@ -238,7 +238,7 @@
             "selectAddressPromptMultiple": "addresses found",
             "changePostcodeLinkText": "Change postcode"
         },
-        "agent": {            
+        "agent": {
             "enterManualAddressLinkText": "Enter your address manually"
         },
         "applicant": {
@@ -252,6 +252,14 @@
         }
     },
     "enterAddress": {
+        "common": {
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2",
+            "inputLabelAddressLine3": "Address line 3 (optional)",
+            "inputLabelAddressLine4": "Address line 4 (optional)",
+            "inputLabelPostcode": "Postal or zip code (if your country has one)",
+            "inputLabelCountry": "Country"
+        },
         "agent": {
             "defaultTitleImport": "Enter your address",
             "defaultTitleExport": "Enter your address",
@@ -264,13 +272,7 @@
             "pageBodyImport": "If you are a business, enter the business address.",
             "pageBodyExport": "If you are a business, enter the business address.",
             "pageBodyReexport": "If you are a business, enter the business address.",
-            "pageBodyArticle10": "If you are a business, enter the business address.",
-            "inputLabelAddressLine1": "Address line 1",
-            "inputLabelAddressLine2": "Address line 2",
-            "inputLabelAddressLine3": "Address line 3 (optional)",
-            "inputLabelAddressLine4": "Address line 4 (optional)",
-            "inputLabelPostcode": "Postal or zip code (if your country has one)",
-            "inputLabelCountry": "Country"
+            "pageBodyArticle10": "If you are a business, enter the business address."
         },
         "applicant": {
             "defaultTitleImport": "Enter the importer's address",
@@ -284,13 +286,7 @@
             "pageBodyImport": "If the importer is a business, give the business address.",
             "pageBodyExport": "If the exporter is a business, give the business address.",
             "pageBodyReexport": "If the re-exporter is a business, give the business address.",
-            "pageBodyArticle10": "If the applicant is a business, give the business address.",
-            "inputLabelAddressLine1": "Address line 1",
-            "inputLabelAddressLine2": "Address line 2",
-            "inputLabelAddressLine3": "Address line 3 (optional)",
-            "inputLabelAddressLine4": "Address line 4 (optional)",
-            "inputLabelPostcode": "Postal or zip code (if your country has one)",
-            "inputLabelCountry": "Country"
+            "pageBodyArticle10": "If the applicant is a business, give the business address."
         },
         "agentLed": {
             "defaultTitleImport": "Enter the importer's address",
@@ -304,13 +300,7 @@
             "pageBodyImport": "If the importer is a business, give the business address.",
             "pageBodyExport": "If the exporter is a business, give the business address.",
             "pageBodyReexport": "If the re-exporter is a business, give the business address.",
-            "pageBodyArticle10": "If the applicant is a business, give the business address.",
-            "inputLabelAddressLine1": "Address line 1",
-            "inputLabelAddressLine2": "Address line 2",
-            "inputLabelAddressLine3": "Address line 3 (optional)",
-            "inputLabelAddressLine4": "Address line 4 (optional)",
-            "inputLabelPostcode": "Postal or zip code (if your country has one) ",
-            "inputLabelCountry": "Country"
+            "pageBodyArticle10": "If the applicant is a business, give the business address."
         },
         "delivery": {
             "defaultTitleImport": "Enter the delivery address ",
@@ -336,7 +326,7 @@
                 "error.addressLine2.string.pattern.base": "Address line 2 must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
                 "error.addressLine3.string.empty": "Enter the town or city",
                 "error.addressLine3.string.max": "Town or city must be 150 characters or less",
-                "error.addressLine3.string.pattern.base": "Town or city must only include letters a to z and special characters such as hyphens, spaces and apostrophes",                                                        
+                "error.addressLine3.string.pattern.base": "Town or city must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
                 "error.addressLine4.string.max": "County must be 150 characters or less",
                 "error.addressLine4.string.pattern.base": "County must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
                 "error.postcode.string.empty": "Enter a postcode",
@@ -346,6 +336,9 @@
         }
     },
     "confirmAddress": {
+        "common": {
+            "changeAddressLinkText": "Change address"
+        },
         "agent": {
             "defaultTitleImport": "Confirm the address",
             "defaultTitleExport": "Confirm the address",
@@ -354,8 +347,7 @@
             "pageHeaderImport": "Confirm the address",
             "pageHeaderExport": "Confirm the address",
             "pageHeaderReexport": "Confirm the address",
-            "pageHeaderArticle10": "Confirm the address",
-            "changeAddressLinkText": "Change address"         
+            "pageHeaderArticle10": "Confirm the address"            
         },
         "applicant": {
             "defaultTitleImport": "Confirm the importer’s address",
@@ -365,10 +357,7 @@
             "pageHeaderImport": "Confirm the importer’s address ",
             "pageHeaderExport": "Confirm the exporter’s address",
             "pageHeaderReexport": "Confirm the re-exporter’s address",
-            "pageHeaderArticle10": "Confirm the applicant's address",
-            "changeAddressLinkText": "Change address",
-            "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
-            "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
+            "pageHeaderArticle10": "Confirm the applicant's address"
         },
         "agentLed": {
             "defaultTitleImport": "Confirm the importer’s address",
@@ -378,12 +367,25 @@
             "pageHeaderImport": "Confirm the importer’s address ",
             "pageHeaderExport": "Confirm the exporter’s address",
             "pageHeaderReexport": "Confirm the re-exporter’s address",
-            "pageHeaderArticle10": "Confirm the applicant's address",
-            "changeAddressLinkText": "Change address",
-            "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
-            "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
-            "radioOptionDeliverToAgentAddress": "Deliver the permit to"
+            "pageHeaderArticle10": "Confirm the applicant's address"
+        },
+        "delivery": {
+            "defaultTitleImport": "Confirm the delivery address",
+            "defaultTitleExport": "Confirm the delivery address",
+            "defaultTitleReexport": "Confirm the delivery address",
+            "defaultTitleArticle10": "Confirm the delivery address",
+            "pageHeaderImport": "Confirm the delivery address ",
+            "pageHeaderExport": "Confirm the delivery address",
+            "pageHeaderReexport": "Confirm the delivery address",
+            "pageHeaderArticle10": "Confirm the delivery address"
         }
+    },
+    "selectDeliveryAddress": {
+        "defaultTitle": "Select the delivery address",
+        "pageHeader": "Select the delivery address",
+        "radioOptionDeliverToApplicantAddress": "Deliver the permit to this address",
+        "radioOptionDeliverToAgentAddress": "Deliver the permit to",
+        "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
     },
     "speciesName": {
         "defaultTitle": "What is the scientific name of the species?",
@@ -438,32 +440,32 @@
             }
         ]
     },
-  "purposeCode": {
-    "defaultTitle": "What is the purpose code?",
-    "heading": "What is the purpose code?",
-    "radioOptionB": "B",
-    "radioOptionBHint": "Breeding in captivity or artificial propagation",
-    "radioOptionE": "E",
-    "radioOptionEHint": "Educational",
-    "radioOptionG": "G",
-    "radioOptionGHint": "Botanical gardens",
-    "radioOptionH": "H",
-    "radioOptionHHint": "Hunting trophies",
-    "radioOptionL": "L",
-    "radioOptionLHint": "Enforcement",
-    "radioOptionM": "M",
-    "radioOptionMHint": "Bio-medical research",
-    "radioOptionN": "N",
-    "radioOptionNHint": "Reintroduction or introduction into the wild",
-    "radioOptionP": "P",
-    "radioOptionPHint": "Personal",
-    "radioOptionQ": "Q",
-    "radioOptionQHint": "Circuses and travelling exhibitions",
-    "radioOptionS": "S",
-    "radioOptionSHint": "Scientific",
-    "radioOptionT": "T",
-    "radioOptionTHint": "Commercial",
-    "radioOptionZ": "Z",
-    "radioOptionZHint": "Zoos"
-  }
+    "purposeCode": {
+        "defaultTitle": "What is the purpose code?",
+        "heading": "What is the purpose code?",
+        "radioOptionB": "B",
+        "radioOptionBHint": "Breeding in captivity or artificial propagation",
+        "radioOptionE": "E",
+        "radioOptionEHint": "Educational",
+        "radioOptionG": "G",
+        "radioOptionGHint": "Botanical gardens",
+        "radioOptionH": "H",
+        "radioOptionHHint": "Hunting trophies",
+        "radioOptionL": "L",
+        "radioOptionLHint": "Enforcement",
+        "radioOptionM": "M",
+        "radioOptionMHint": "Bio-medical research",
+        "radioOptionN": "N",
+        "radioOptionNHint": "Reintroduction or introduction into the wild",
+        "radioOptionP": "P",
+        "radioOptionPHint": "Personal",
+        "radioOptionQ": "Q",
+        "radioOptionQHint": "Circuses and travelling exhibitions",
+        "radioOptionS": "S",
+        "radioOptionSHint": "Scientific",
+        "radioOptionT": "T",
+        "radioOptionTHint": "Commercial",
+        "radioOptionZ": "Z",
+        "radioOptionZHint": "Zoos"
+    }
 }

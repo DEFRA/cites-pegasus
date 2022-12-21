@@ -75,12 +75,12 @@ const enterAddressSchema = Joi.object({
   pageBodyExport: Joi.string().required(),
   pageBodyReexport: Joi.string().required(),
   pageBodyArticle10: Joi.string().required(),
-  inputLabelAddressLine1: Joi.string().required(),
-  inputLabelAddressLine2: Joi.string().required(),
-  inputLabelAddressLine3: Joi.string().required(),
-  inputLabelAddressLine4: Joi.string().required(),
-  inputLabelPostcode: Joi.string().required(),
-  inputLabelCountry: Joi.string().required(),
+  inputLabelAddressLine1: Joi.string(),
+  inputLabelAddressLine2: Joi.string(),
+  inputLabelAddressLine3: Joi.string(),
+  inputLabelAddressLine4: Joi.string(),
+  inputLabelPostcode: Joi.string(),
+  inputLabelCountry: Joi.string(),
   errorMessages: Joi.object()
 })
 
@@ -93,17 +93,14 @@ const confirmAddressSchema = Joi.object({
   pageHeaderExport: Joi.string().required(),
   pageHeaderReexport: Joi.string().required(),
   pageHeaderArticle10: Joi.string().required(),
-  changeAddressLinkText: Joi.string().required(),
-  radioOptionDeliverToThisAddress: Joi.string().optional().allow("", null),
-  radioOptionDeliverToDifferentAddress: Joi.string().optional().allow("", null),
-  radioOptionDeliverToAgentAddress: Joi.string().optional().allow("", null),
+  changeAddressLinkText: Joi.string()
 })
 
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
     phaseBannerPhase: Joi.string().required(),
-    phaseBannerHTML: Joi.string().required(),    
+    phaseBannerHTML: Joi.string().required(),
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
@@ -189,15 +186,34 @@ const schema = Joi.object().keys({
     delivery: selectAddressSchema
   }),
   enterAddress: Joi.object({
+    common: Joi.object({
+      inputLabelAddressLine1: Joi.string().required(),
+      inputLabelAddressLine2: Joi.string().required(),
+      inputLabelAddressLine3: Joi.string().required(),
+      inputLabelAddressLine4: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+      inputLabelCountry: Joi.string().required(),
+    }),
     agent: enterAddressSchema,
     applicant: enterAddressSchema,
     agentLed: enterAddressSchema,
     delivery: enterAddressSchema
   }),
   confirmAddress: Joi.object({
+    common: Joi.object({
+      changeAddressLinkText: Joi.string().required()
+    }),
     agent: confirmAddressSchema,
     applicant: confirmAddressSchema,
-    agentLed: confirmAddressSchema
+    agentLed: confirmAddressSchema,
+    delivery: confirmAddressSchema
+  }),
+  selectDeliveryAddress: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionDeliverToApplicantAddress: Joi.string().required(),
+    radioOptionDeliverToAgentAddress: Joi.string().required(),
+    radioOptionDeliverToDifferentAddress: Joi.string().required()
   }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),

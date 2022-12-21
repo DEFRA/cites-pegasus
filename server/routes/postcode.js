@@ -6,7 +6,8 @@ const { POSTCODE_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'postcode'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/contact-details`
+const previousPathContactDetails = `${urlPrefix}/contact-details`
+const previousPathSelectDeliveryAddress = `${urlPrefix}/select-delivery-address`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
@@ -15,6 +16,7 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
+    let backLink = `${previousPathContactDetails}/${data.contactType}`
 
     if(data.contactType === 'applicant'){
         if(data.isAgent){
@@ -26,6 +28,7 @@ function createModel(errors, data) {
         pageContent = {...textContent.postcode.common, ...textContent.postcode.agent}
     } else {
         pageContent = {...textContent.postcode.common, ...textContent.postcode.delivery}
+        backLink = previousPathSelectDeliveryAddress
     }
 
     let defaultTitle = ''
@@ -72,7 +75,7 @@ function createModel(errors, data) {
     }
     
     const model = {
-        backLink: `${previousPath}/${data.contactType}`,
+        backLink: backLink,
         pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},

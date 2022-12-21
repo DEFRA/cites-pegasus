@@ -11,18 +11,6 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
-
-  {#{% if errorList %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-         {{govukErrorSummary ({
-        "titleText": errorSummaryTitle,
-        "errorList": errorList
-        }) }} 
-      </div>
-    </div>
-  {% endif %}#}
-
 {% endblock %}
 
 {% block content %}
@@ -39,11 +27,10 @@
         <p>
         {% if addressLine1 %}<br>{{addressLine1}}{% endif %}
         {% if addressLine2 %}<br>{{addressLine2}}{% endif %}
-        {% if town %}<br>{{town}}{% endif %}
-        {% if county %}<br>{{county}}{% endif %}
-        {% if postcode %}<br>{{postcode}}{% endif %}</p>
-        
-        {# {{ govukRadios(inputDeliveryAddressOptions) }} #}
+        {% if addressLine3 %}<br>{{addressLine3}}{% endif %}
+        {% if addressLine4 %}<br>{{addressLine4}}{% endif %}
+        {% if postcode %}<br>{{postcode}}{% endif %}        
+        {% if showCountry %}<br>{{country}}{% endif %}</p>
 
         {{ govukButton({
         text: confirmButton,

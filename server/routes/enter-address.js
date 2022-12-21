@@ -18,9 +18,9 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = textContent.enterAddress.agentLed
+            pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.agentLed }
         } else {
-            pageContent = textContent.enterAddress.applicant
+            pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.applicant }
         }
     } else if (data.contactType === 'agent') {
         pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.agent }
