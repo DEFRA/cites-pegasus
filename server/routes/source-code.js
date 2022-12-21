@@ -63,7 +63,7 @@ function createModel(errors, data) {
       label: {
         text: pageContent.inputLabelEnterAnotherSourceCode
       },
-      ...(data.sourceCode ? { value: data.sourceCode } : {}),
+      ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
       errorMessage: getFieldError(errorList, "#anotherSourceCode")
     }
   })
@@ -242,6 +242,7 @@ module.exports = [
         unitOfMeasurement: appData?.unitOfMeasurement,
         kingdom: appData?.kingdom,
         sourceCode: appData?.sourceCode,
+        anotherSourceCode: appData?.anotherSourceCode,
         enterAReason: appData?.enterAReason,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
@@ -261,16 +262,16 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           sourceCode: Joi.string().required(),
-          anotherSourceCode: Joi.string()
-            .regex(SOURCECODE_REGEX)
-            .length(1)
-            .required(),
-          enterAReason: Joi.string()
-            .min(1)
-            .max(151)
-            .regex(COMMENTS_REGEX)
-            .required()
+          anotherSourceCode: Joi.when("sourceCode", {
+            is: "I" || "O",
+            then: Joi.string().length(1).regex(SOURCECODE_REGEX).required()
+          }),
+          enterAReason: Joi.when("sourceCode", {
+            is: "U",
+            then: Joi.string().min(1).max(151).regex(COMMENTS_REGEX).required()
+          })
         }),
+
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
@@ -283,7 +284,7 @@ module.exports = [
             ...appData[request.params.speciesIndex],
             ...appData[request.params.specimenIndex]
           }
-          return h.view(pageId, createModel(pageData)).takeover()
+          return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
@@ -298,6 +299,7 @@ module.exports = [
 
         setAppData(request, {
           sourceCode: sourceCode,
+          anotherSourceCode: sourceCode,
           enterAReason: enterAReason
         })
         return h.redirect(
@@ -335,3 +337,15 @@ module.exports = [
 //     errorMessage: getFieldError(errorList, "#enterAReason")
 //   }
 // })
+
+// anotherSourceCode: Joi.string()
+// .regex(SOURCECODE_REGEX)
+// .length(1)
+// .allow(""),
+
+// enterAReason: Joi.string()
+// .min(1)
+// .max(151)
+// .regex(COMMENTS_REGEX)
+// .allow(""),
+// }),
