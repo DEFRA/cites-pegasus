@@ -29,7 +29,12 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["sourceCode", "anotherSourceCode", "enterAReason"]
+    const fields = [
+      "sourceCode",
+      "anotherSourceCodeForI",
+      "anotherSourceCodeForO",
+      "enterAReason"
+    ]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -55,16 +60,33 @@ function createModel(errors, data) {
     "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
 
-  const sourceInput = nunjucks.renderString(renderString, {
+  const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
-      id: "anotherSourceCode",
-      name: "anotherSourceCode",
+      id: "anotherSourceCodeForI",
+      name: "anotherSourceCodeForI",
       classes: "govuk-input govuk-input--width-2",
       label: {
         text: pageContent.inputLabelEnterAnotherSourceCode
       },
-      ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
-      errorMessage: getFieldError(errorList, "#anotherSourceCode")
+      ...(data.anotherSourceCodeForI
+        ? { value: data.anotherSourceCodeForI }
+        : {}),
+      errorMessage: getFieldError(errorList, "#anotherSourceCodeForI")
+    }
+  })
+
+  const sourceInputForO = nunjucks.renderString(renderString, {
+    input: {
+      id: "anotherSourceCodeForO",
+      name: "anotherSourceCodeForO",
+      classes: "govuk-input govuk-input--width-2",
+      label: {
+        text: pageContent.inputLabelEnterAnotherSourceCode
+      },
+      ...(data.anotherSourceCodeForO
+        ? { value: data.anotherSourceCodeForO }
+        : {}),
+      errorMessage: getFieldError(errorList, "#anotherSourceCodeForO")
     }
   })
 
@@ -169,7 +191,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "I"),
           conditional: {
-            html: sourceInput
+            html: sourceInputForI
           }
         },
         {
@@ -181,7 +203,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "O"),
           conditional: {
-            html: sourceInput
+            html: sourceInputForO
           }
         },
         {
@@ -242,7 +264,8 @@ module.exports = [
         unitOfMeasurement: appData?.unitOfMeasurement,
         kingdom: appData?.kingdom,
         sourceCode: appData?.sourceCode,
-        anotherSourceCode: appData?.anotherSourceCode,
+        anotherSourceCodeForI: appData?.sourceCode,
+        anotherSourceCodeForO: appData?.sourceCode,
         enterAReason: appData?.enterAReason,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
@@ -262,8 +285,12 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           sourceCode: Joi.string().required(),
-          anotherSourceCode: Joi.when("sourceCode", {
-            is: "I" || "O",
+          anotherSourceCodeForI: Joi.when("sourceCode", {
+            is: "I",
+            then: Joi.string().length(1).regex(SOURCECODE_REGEX).required()
+          }),
+          anotherSourceCodeForO: Joi.when("sourceCode", {
+            is: "O",
             then: Joi.string().length(1).regex(SOURCECODE_REGEX).required()
           }),
           enterAReason: Joi.when("sourceCode", {
@@ -288,18 +315,23 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const sourceCode =
-          request.payload.sourceCode === "I" ||
-          request.payload.sourceCode === "O"
-            ? request.payload.anotherSourceCode
-            : request.payload.sourceCode
+        let sourceCode = ""
+        switch (request.payload.sourceCode) {
+          case "I":
+            sourceCode = request.payload.anotherSourceCodeForI
+            break
+          case "O":
+            sourceCode = request.payload.anotherSourceCodeForO
+            break
+          default:
+            sourceCode = request.payload.sourceCode
+        }
 
         const enterAReason =
           request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
         setAppData(request, {
           sourceCode: sourceCode,
-          anotherSourceCode: sourceCode,
           enterAReason: enterAReason
         })
         return h.redirect(
@@ -310,42 +342,6 @@ module.exports = [
   }
 ]
 
-//Text Input part
-// inputLabelIEnterAnotherSourceCode: {
-//   id: "enterAnotherSourceCode",
-//   name: "enterAnotherSourceCode",
-//   classes: "govuk-input govuk-input--width-2",
-//   label: {
-//     text: pageContent.inputLabelIEnterAnotherSourceCode
-//   },
-//   ...(data.anotherSourceCode ? { value: data.anotherSourceCode } : {}),
-//   errorMessage: getFieldError(errorList, "#anotherSourceCode")
-// },
 
-// var renderString =
-//   "{% from 'govuk/components/textarea/macro.njk' import govukTextarea %} \n"
-// renderString = renderString + " {{govukTextarea(input)}}"
 
-// const sourceTextarea = nunjucks.renderString(renderString, {
-//   input: {
-//     id: "enterAReason",
-//     name: "enterAReason",
-//     classes: "govuk-textarea govuk-js-character-count",
-//     label: {
-//       text: pageContent.textAreaLabelEnterAReason
-//     },
-//     errorMessage: getFieldError(errorList, "#enterAReason")
-//   }
-// })
 
-// anotherSourceCode: Joi.string()
-// .regex(SOURCECODE_REGEX)
-// .length(1)
-// .allow(""),
-
-// enterAReason: Joi.string()
-// .min(1)
-// .max(151)
-// .regex(COMMENTS_REGEX)
-// .allow(""),
-// }),
