@@ -32,10 +32,13 @@
           "error.quantity.number.min": "Quantity must be more than 0.0001",
           "error.quantity.number.max": "Quantity must be less than 1000000",
           "error.address.string.empty": "Select an address",
-          "error.sourceCode.string.empty": "Select the source code",
-          "error.anotherSourceCode.string.empty": "Enter another source code ",
-          "error.anotherSourceCode.string.max": "Source code must be one letter",
-          "error.anotherSourceCode.string.base": "Source code must only include letters a to z",
+          "error.sourceCode.any.required": "Select the source code",
+          "error.sourceCode.string.empty": "Enter another source code",
+          "error.sourceCode.string.length": "Source code must be one letter",
+          "error.sourceCode.string.pattern.base": "Source code must only include letters a to z",
+          "error.enterAReason.string.empty": "Enter a reason",
+          "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+          "error.enterAReason.string.max": "Reason must be 150 characters or less",
           "error.purposeCode.any.required": "Select the purpose code"
       }
   },
@@ -428,17 +431,16 @@
       "radioOptionFHint": "Animals born in captivity that do not meet the Commission Regulation criteria",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelIEnterAnotherSourceCode": "Enter another source code",
+      "inputLabelEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
-      
       "radioOptionX": "X",
       "radioOptionXHint": "Taken from the marine environment",
       "radioOptionA": "",
       "radioOptionAHint": "",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know", 
-      "textAreaLabelEnterAReason": "Enter a reason",
+      "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or"
     },
     "plant": {
@@ -452,10 +454,9 @@
       "radioOptionAHint": "Plants artificially propagated for non-commercial purposes",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelIEnterAnotherSourceCode": "Enter another source code",
+      "inputLabelEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
-      
       "radioOptionX": "X",
       "radioOptionXHint": "Taken from the marine environment",
       "radioOptionR": "",
@@ -466,7 +467,7 @@
       "radioOptionFHint": "",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know",
-      "textAreaLabelEnterAReason": "Enter a reason",
+      "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or"
     }
   },
