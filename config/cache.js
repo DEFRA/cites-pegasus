@@ -1,5 +1,5 @@
 const Joi = require('joi')
-
+const { readSecret } = require('../server/lib/key-vault')
 require('dotenv').config()
 
 // Define config schema
@@ -9,7 +9,7 @@ const schema = Joi.object({
   catboxOptions: Joi.object({
     host: Joi.string().required(),
     port: Joi.string().required(),
-    password: Joi.string().allow(''),
+    //password: Joi.string().allow(''),
     partition: Joi.string().required(),
     tls: Joi.object()
   })
@@ -21,7 +21,7 @@ const config = {
   catboxOptions: {
     host: process.env.REDIS_HOSTNAME,
     port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASSWORD,
+    //password: process.env.REDIS_PASSWORD,
     partition: process.env.REDIS_PARTITION,
     tls: {host: process.env.REDIS_HOSTNAME}//process.env.NODE_ENV === 'production' ? {servername: process.env.REDIS_HOSTNAME} : undefined
   }
@@ -37,4 +37,10 @@ if (result.error) {
   throw new Error(`The cache config is invalid. ${result.error.message}`)
 }
 
-module.exports = result.value
+async function getCacheConfig(){    
+  const redisPassword = await readSecret('REDIS-PASSWORD')
+  result.value.catboxOptions.password = redisPassword.value
+  return result.value
+}
+
+module.exports = { getCacheConfig }//result.value

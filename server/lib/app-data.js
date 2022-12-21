@@ -50,9 +50,7 @@ function getAppFlow(appData) {
             appFlow.push('contact-details/agent') 
             if (appData?.agent?.fullName) {
                 appFlow.push('postcode/agent')
-                appFlow.push('search-address/agent')
                 appFlow.push('enter-address/agent')
-                appFlow.push('international-address/agent')
                 if(appData?.agent?.addressSearchData?.postcode
                 || appData?.agent?.addressSearchData?.property
                 || appData?.agent?.addressSearchData?.street
@@ -68,9 +66,7 @@ function getAppFlow(appData) {
             appFlow.push('contact-details/applicant') 
             if (appData?.applicant?.fullName) {
                 appFlow.push('postcode/applicant')
-                appFlow.push('search-address/applicant')
                 appFlow.push('enter-address/applicant')
-                appFlow.push('international-address/applicant')
                 if(appData?.applicant?.addressSearchData?.postcode 
                 || appData?.applicant?.addressSearchData?.property
                 || appData?.applicant?.addressSearchData?.street
