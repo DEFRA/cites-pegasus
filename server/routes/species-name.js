@@ -50,9 +50,6 @@ function createModel(errors, data) {
       label: {
         text: pageContent.inputLabelSpeciesName
       },
-      // hint: {
-      //    text: pageContent.inputHintSpeciesName
-      // },
       id: "speciesName",
       name: "speciesName",
       classes: "govuk-!-width-two-thirds",
@@ -117,15 +114,16 @@ module.exports = [{
         return h.view(pageId, createModel(err, pageData)).takeover()
       }
     },
+
     handler: async (request, h) => {
       const speciesData = await getSpecies(request, request.payload.speciesName)
       const species = [
           {
             speciesIndex: 0,
-            speciesName: speciesData.scientificname,
+            speciesName: speciesData?.scientificname,
             quantity: request.payload.quantity,
             unitOfMeasurement: request.payload.unitOfMeasurement,
-            kingdom: speciesData.kingdom,
+            kingdom: speciesData?.kingdom,
             specimens: []
           }
         ]
