@@ -6,7 +6,7 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
-const { SOURCECODE_REGEX, SOURCECODEREMARKS_REGEX } = require('../lib/regex-validation')
+const { SOURCECODE_REGEX, COMMENTS_REGEX } = require('../lib/regex-validation')
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "source-code"
@@ -261,7 +261,7 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           sourceCode: Joi.string().regex(SOURCECODE_REGEX).length(1).required(),
-          remarks: Joi.string().min(1).max(151).regex(SOURCECODEREMARKS_REGEX).required()
+          remarks: Joi.string().min(1).max(151).regex(COMMENTS_REGEX).required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)

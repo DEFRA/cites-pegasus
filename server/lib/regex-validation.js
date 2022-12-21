@@ -8,7 +8,7 @@ const NUMBER_REGEX = /^\d+$/
 //const TOWN_REGEX = /^[a-zA-Z -]+$/
 const ADDRESS_REGEX = /^[a-zA-Z0-9' -]+$/
 const SOURCECODE_REGEX = /^[a-zA-Z]+$/
-const SOURCECODEREMARKS_REGEX = /^[a-zA-Z0-9' ,.’£$%&*=+#@\{\[\(\)\}\]\/\\\-\—]+$/
+const COMMENTS_REGEX = /^[a-zA-Z0-9' ,.’£$%&*=+#@\{\[\(\)\}\]\/\\\-\—]+$/
 
 module.exports = {
   POSTCODE_REGEX,
@@ -20,5 +20,5 @@ module.exports = {
   //TOWN_REGEX,
   ADDRESS_REGEX,
   SOURCECODE_REGEX,
-  SOURCECODEREMARKS_REGEX
+  COMMENTS_REGEX
 }
