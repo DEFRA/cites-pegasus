@@ -41,9 +41,12 @@
 
         {{ govukInput(inputAddressLine1) }}
         {{ govukInput(inputAddressLine2) }}
-        {{ govukInput(inputTown) }}
-        {{ govukInput(inputCounty) }}
+        {{ govukInput(inputAddressLine3) }}
+        {{ govukInput(inputAddressLine4) }}
         {{ govukInput(inputPostcode) }}
+        {% if internationalAddress %}
+          {{ govukInput(inputCountry) }}
+        {% endif %}
 
         {{ govukButton({
           text: continueButton,

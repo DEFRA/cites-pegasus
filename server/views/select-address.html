@@ -39,20 +39,12 @@
 
         {{ govukSelect(selectAddress) }}
 
-        <details class="govuk-details" data-module="govuk-details">
-          <summary class="govuk-details__summary">
-            <span class="govuk-details__summary-text">
-              {{detailsSummaryText}}
-            </span>
-          </summary>
-          <div class="govuk-details__text">
-            {{detailsText}}
-            <a href="{{detailsLinkUrl}}">{{detailsLinkText}}</a>
-          </div>
-        </details>
+        <p class="govuk-body">
+          <a href="{{changePostcodeUrl}}">{{changePostcodeLinkText}}</a>
+        </p>
 
         <p class="govuk-body">
-          <a href="{{searchAgainLink}}">{{linkTextSearchAgain}}</a> {{bodyText}}
+          <a href="{{enterManualAddressUrl}}">{{enterManualAddressLinkText}}</a>
         </p>
 
         {{ govukButton({

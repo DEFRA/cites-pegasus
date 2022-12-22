@@ -1,4 +1,4 @@
-const cacheConfig = require('../../config/cache')
+const { getCacheConfig } = require('../../config/cache')
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 
@@ -7,7 +7,8 @@ module.exports = {
   register: async function (server, options) {
 
     const cookiePassword = (await readSecret('SESSION-COOKIE-PASSWORD')).value
-
+    const cacheConfig = await getCacheConfig()
+    
     server.register({
       plugin: require('@hapi/yar'),
       options: {
