@@ -17,6 +17,10 @@ const nextPath = `${urlPrefix}/purpose-code`
 function createModel(errors, data) {
   const commonContent = textContent.common
 
+
+  console.log("DATA>>>>", data)
+
+
   const pageContent =
     data.kingdom === "Animalia"
       ? textContent.sourceCode.animal
@@ -259,14 +263,16 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        speciesName: appData?.speciesName,
-        quantity: appData?.quantity,
-        unitOfMeasurement: appData?.unitOfMeasurement,
-        kingdom: appData?.kingdom,
-        sourceCode: appData?.sourceCode,
-        anotherSourceCodeForI: appData?.sourceCode,
-        anotherSourceCodeForO: appData?.sourceCode,
-        enterAReason: appData?.enterAReason,
+        speciesName: appData?.species[speciesIndex].speciesName,
+        quantity: appData?.species[speciesIndex].quantity,
+        unitOfMeasurement: appData?.species[speciesIndex].unitOfMeasurement,
+        kingdom: appData?.species[speciesIndex].kingdom,
+        sourceCode:
+          appData?.species[speciesIndex].specimens[specimenIndex].sourceCode,
+        // anotherSourceCodeForI: appData?.sourceCode,
+        // anotherSourceCodeForO: appData?.sourceCode,
+        enterAReason:
+          appData?.species[speciesIndex].specimens[specimenIndex].enterAReason,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
       }
@@ -304,10 +310,10 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName: appData?.speciesName,
-            quantity: appData?.quantity,
-            unitOfMeasurement: appData?.unitOfMeasurement,
-            kingdom: appData?.kingdom,
+            speciesName: appData?.species[speciesIndex].speciesName,
+            quantity: appData?.species[speciesIndex].quantity,
+            unitOfMeasurement: appData?.species[speciesIndex].unitOfMeasurement,
+            kingdom: appData?.species[speciesIndex].kingdom,
             ...appData[request.params.speciesIndex],
             ...appData[request.params.specimenIndex]
           }
@@ -327,13 +333,22 @@ module.exports = [
             sourceCode = request.payload.sourceCode
         }
 
+        console.log("sourcecode>>>", sourceCode)
+
         const enterAReason =
           request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
-        setAppData(request, {
-          sourceCode: sourceCode,
-          enterAReason: enterAReason
-        })
+        const pageData = {
+          [request.params.specimenIndex]: {
+            sourceCode: sourceCode,
+            enterAReason: enterAReason
+          }
+        }
+
+        console.log("reasonnnn>>>", enterAReason)
+
+
+        setAppData(request, pageData)
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
@@ -341,7 +356,3 @@ module.exports = [
     }
   }
 ]
-
-
-
-
