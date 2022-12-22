@@ -352,24 +352,10 @@ module.exports = [
         let enterAReason =
           request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
-        // enterAReason = specimenData.push({ enterAReason: enterAReason })
-        // sourceCode = specimenData.push({ sourceCode: sourceCode })
+        specimenData.sourceCode = sourceCode
+        specimenData.enterAReason = enterAReason
 
-        const appData = {
-          sourceCode: sourceCode,
-          enterAReason: enterAReason
-        }
-
-        // const appData = {
-        //   [species]: {
-        //     sourceCode: sourceCode,
-        //     enterAReason: enterAReason
-        //   }
-        // }
-
-        const newAppData = specimenData.push(appData)
-
-        setAppData(request, newAppData)
+        setAppData(request, specimenData)
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
