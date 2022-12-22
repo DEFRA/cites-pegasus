@@ -199,10 +199,10 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        speciesName: appData?.speciesName,
-        quantity: appData?.quantity,
-        unitOfMeasurement: appData?.unitOfMeasurement,
-        purposeCode: appData?.purposeCode,
+        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+        quantity: appData.species[request.params.speciesIndex]?.quantity,
+        unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,    
+        purposeCode: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]?.purposeCode,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
       }
@@ -229,9 +229,9 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName: appData?.speciesName,
-            quantity: appData?.quantity,
-            unitOfMeasurement: appData?.unitOfMeasurement,
+            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+            quantity: appData.species[request.params.speciesIndex]?.quantity,
+            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
             ...appData[request.params.speciesIndex],
             ...appData[request.params.specimenIndex]
           }

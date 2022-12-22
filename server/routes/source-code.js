@@ -17,9 +17,7 @@ const nextPath = `${urlPrefix}/purpose-code`
 function createModel(errors, data) {
   const commonContent = textContent.common
 
-
   console.log("DATA>>>>", data)
-
 
   const pageContent =
     data.kingdom === "Animalia"
@@ -263,16 +261,27 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        speciesName: appData?.species[speciesIndex].speciesName,
-        quantity: appData?.species[speciesIndex].quantity,
-        unitOfMeasurement: appData?.species[speciesIndex].unitOfMeasurement,
-        kingdom: appData?.species[speciesIndex].kingdom,
+        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+        quantity: appData.species[request.params.speciesIndex]?.quantity,
+        unitOfMeasurement:
+          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+        kingdom: appData.species[request.params.speciesIndex]?.kingdom,
         sourceCode:
-          appData?.species[speciesIndex].specimens[specimenIndex].sourceCode,
-        // anotherSourceCodeForI: appData?.sourceCode,
-        // anotherSourceCodeForO: appData?.sourceCode,
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.sourceCode,
+        anotherSourceCodeForI:
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.sourceCode,
+        anotherSourceCodeForO:
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.sourceCode,
         enterAReason:
-          appData?.species[speciesIndex].specimens[specimenIndex].enterAReason,
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.enterAReason,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
       }
@@ -310,10 +319,12 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName: appData?.species[speciesIndex].speciesName,
-            quantity: appData?.species[speciesIndex].quantity,
-            unitOfMeasurement: appData?.species[speciesIndex].unitOfMeasurement,
-            kingdom: appData?.species[speciesIndex].kingdom,
+            speciesName:
+              appData.species[request.params.speciesIndex]?.speciesName,
+            quantity: appData.species[request.params.speciesIndex]?.quantity,
+            unitOfMeasurement:
+              appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+            kingdom: appData.species[request.params.speciesIndex]?.kingdom,
             ...appData[request.params.speciesIndex],
             ...appData[request.params.specimenIndex]
           }
@@ -321,6 +332,11 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
+        const specimensData = getAppData(request)
+        const specimenData =
+          specimensData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]
         let sourceCode = ""
         switch (request.payload.sourceCode) {
           case "I":
@@ -333,22 +349,27 @@ module.exports = [
             sourceCode = request.payload.sourceCode
         }
 
-        console.log("sourcecode>>>", sourceCode)
-
-        const enterAReason =
+        let enterAReason =
           request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
-        const pageData = {
-          [request.params.specimenIndex]: {
-            sourceCode: sourceCode,
-            enterAReason: enterAReason
-          }
+        // enterAReason = specimenData.push({ enterAReason: enterAReason })
+        // sourceCode = specimenData.push({ sourceCode: sourceCode })
+
+        const appData = {
+          sourceCode: sourceCode,
+          enterAReason: enterAReason
         }
 
-        console.log("reasonnnn>>>", enterAReason)
+        // const appData = {
+        //   [species]: {
+        //     sourceCode: sourceCode,
+        //     enterAReason: enterAReason
+        //   }
+        // }
 
+        const newAppData = specimenData.push(appData)
 
-        setAppData(request, pageData)
+        setAppData(request, newAppData)
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )

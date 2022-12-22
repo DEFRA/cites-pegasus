@@ -135,6 +135,7 @@ module.exports = [
           request,
           request.payload.speciesName
         )
+
         const appData = {
           species: [
             {
@@ -150,7 +151,7 @@ module.exports = [
 
         if (request.payload.unitOfMeasurement === "noOfSpecimens") {
           for (let i = 0; i < request.payload.quantity; i++) {
-            species[0].specimens.push({ specimenIndex: i })
+            appData.species[0].specimens.push({ specimenIndex: i })
           }
         }
 
