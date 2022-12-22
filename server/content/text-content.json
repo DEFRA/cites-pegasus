@@ -21,11 +21,18 @@
       "error.businessName.string.pattern.base": "Business name is invalid",
       "error.email.string.email": "Email format is invalid",
       "error.addressLine1.string.empty": "Enter the address line 1",
-      "error.property.string.empty": "Enter the property",
-      "error.street.string.empty": "Enter the street",
-      "error.town.string.empty": "Enter the town or city ",
-      "error.postcode.string.empty": "Enter a postcode",
-      "error.postcode.string.pattern.base": "Enter a real postcode",
+      "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+      "error.addressLine2.string.empty": "Enter the address line 2",
+      "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+      "error.addressLine3.string.empty": "Enter the address line 3",
+      "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+      "error.addressLine4.string.empty": "Enter the address line 4",
+      "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+      "error.postcode.string.empty": "Enter a postal or zip code",
+      "error.postcode.string.max": "Enter a real postal or zip code",
+      "error.postcode.string.pattern.base": "Enter a real postal or zip code",
+      "error.country.string.empty": "Enter the country",
+      "error.country.string.max": "Country must be 150 characters or less",
       "error.speciesName.string.empty": "Enter the scientific name",
       "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
       "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
@@ -175,6 +182,16 @@
       "pageHeaderExport": "What’s the exporter’s address?",
       "pageHeaderReexport": "What’s the re-exporter’s address?",
       "pageHeaderArticle10": "What’s the applicant’s address?"
+    },
+    "delivery": {
+      "defaultTitleImport": "What is the delivery address?",
+      "defaultTitleExport": "What is the delivery address?",
+      "defaultTitleReexport": "What is the delivery address?",
+      "defaultTitleArticle10": "What is the delivery address?",
+      "pageHeaderImport": "What is the delivery address?",
+      "pageHeaderExport": "What is the delivery address?",
+      "pageHeaderReexport": "What is the delivery address?",
+      "pageHeaderArticle10": "What is the delivery address?"
     }
   },
   "searchAddress": {
@@ -222,52 +239,37 @@
     }
   },
   "selectAddress": {
-    "agent": {
+    "common": {
       "defaultTitle": "Select an address ",
       "pageHeader": "Select an address ",
       "selectLabelAddress": "Address",
       "selectAddressPromptNoResults": "No addresses found",
       "selectAddressPromptSingle": "1 address found",
       "selectAddressPromptMultiple": "addresses found",
-      "detailsSummaryText": "I cannot find the address in the list",
-      "detailsText": "If you cannot find the address, ",
-      "detailsLinkText": "enter your address manually",
-      "linkTextSearchAgain": "Search for the address again"
+      "changePostcodeLinkText": "Change postcode"
+    },
+    "agent": {
+      "enterManualAddressLinkText": "Enter your address manually"
     },
     "applicant": {
-      "defaultTitle": "Select an address ",
-      "pageHeader": "Select an address ",
-      "selectLabelAddress": "Address",
-      "selectAddressPromptNoResults": "No addresses found",
-      "selectAddressPromptSingle": "1 address found",
-      "selectAddressPromptMultiple": "addresses found",
-      "detailsSummaryText": "I cannot find the address in the list",
-      "detailsText": "If you cannot find the address, ",
-      "detailsLinkText": "enter your address manually",
-      "linkTextSearchAgain": "Search for the address again",
-      "bodyTextImport": "",
-      "bodyTextExport": "",
-      "bodyTextReexport": "",
-      "bodyTextArticle10": ""
+      "enterManualAddressLinkText": "Enter the address manually"
     },
     "agentLed": {
-      "defaultTitle": "Select an address ",
-      "pageHeader": "Select an address ",
-      "selectLabelAddress": "Address",
-      "selectAddressPromptNoResults": "No addresses found",
-      "selectAddressPromptSingle": "1 address found",
-      "selectAddressPromptMultiple": "addresses found",
-      "detailsSummaryText": "I cannot find the address in the list",
-      "detailsText": "If you cannot find the address, ",
-      "detailsLinkText": "enter your address manually",
-      "linkTextSearchAgain": "Search for the address again",
-      "bodyTextImport": "If you still cannot find the address, contact the importer to confirm their details.",
-      "bodyTextExport": "If you still cannot find the address, contact the exporter to confirm their details.",
-      "bodyTextReexport": "If you still cannot find the address, contact the re-exporter to confirm their details.",
-      "bodyTextArticle10": "If you still cannot find the address, contact the applicant to confirm their details."
+      "enterManualAddressLinkText": "Enter the address manually"
+    },
+    "delivery": {
+      "enterManualAddressLinkText": "Enter the address manually"
     }
   },
   "enterAddress": {
+    "common": {
+      "inputLabelAddressLine1": "Address line 1",
+      "inputLabelAddressLine2": "Address line 2",
+      "inputLabelAddressLine3": "Address line 3 (optional)",
+      "inputLabelAddressLine4": "Address line 4 (optional)",
+      "inputLabelPostcode": "Postal or zip code (if your country has one)",
+      "inputLabelCountry": "Country"
+    },
     "agent": {
       "defaultTitleImport": "Enter your address",
       "defaultTitleExport": "Enter your address",
@@ -277,28 +279,24 @@
       "pageHeaderExport": "Enter your address",
       "pageHeaderReexport": "Enter your address",
       "pageHeaderArticle10": "Enter your address",
-      "pageBody": "If you are a business, enter the business address.",
-      "inputLabelAddressLine1": "Address line 1",
-      "inputLabelAddressLine2": "Address line 2 (optional)",
-      "inputLabelTown": "Town or city",
-      "inputLabelCounty": "County (optional)",
-      "inputLabelPostcode": "Postcode"
+      "pageBodyImport": "If you are a business, enter the business address.",
+      "pageBodyExport": "If you are a business, enter the business address.",
+      "pageBodyReexport": "If you are a business, enter the business address.",
+      "pageBodyArticle10": "If you are a business, enter the business address."
     },
     "applicant": {
-      "defaultTitleImport": "Enter your address",
-      "defaultTitleExport": "Enter your address",
-      "defaultTitleReexport": "Enter your address",
-      "defaultTitleArticle10": "Enter your address",
-      "pageHeaderImport": "Enter your address",
-      "pageHeaderExport": "Enter your address",
-      "pageHeaderReexport": "Enter your address",
-      "pageHeaderArticle10": "Enter your address",
-      "pageBody": "If you are a business, enter the business address.",
-      "inputLabelAddressLine1": "Address line 1",
-      "inputLabelAddressLine2": "Address line 2 (optional)",
-      "inputLabelTown": "Town or city",
-      "inputLabelCounty": "County (optional)",
-      "inputLabelPostcode": "Postcode"
+      "defaultTitleImport": "Enter the importer's address",
+      "defaultTitleExport": "Enter the exporter's address",
+      "defaultTitleReexport": "Enter the re-exporter's address",
+      "defaultTitleArticle10": "Enter the applicant's address",
+      "pageHeaderImport": "Enter the importer's address",
+      "pageHeaderExport": "Enter the exporter's address",
+      "pageHeaderReexport": "Enter the re-exporter's address",
+      "pageHeaderArticle10": "Enter the applicant's address",
+      "pageBodyImport": "If the importer is a business, give the business address.",
+      "pageBodyExport": "If the exporter is a business, give the business address.",
+      "pageBodyReexport": "If the re-exporter is a business, give the business address.",
+      "pageBodyArticle10": "If the applicant is a business, give the business address."
     },
     "agentLed": {
       "defaultTitleImport": "Enter the importer's address",
@@ -309,15 +307,48 @@
       "pageHeaderExport": "Enter the exporter's address",
       "pageHeaderReexport": "Enter the re-exporter's address",
       "pageHeaderArticle10": "Enter the applicant's address",
-      "pageBody": "If you are a business, enter the business address.",
+      "pageBodyImport": "If the importer is a business, give the business address.",
+      "pageBodyExport": "If the exporter is a business, give the business address.",
+      "pageBodyReexport": "If the re-exporter is a business, give the business address.",
+      "pageBodyArticle10": "If the applicant is a business, give the business address."
+    },
+    "delivery": {
+      "defaultTitleImport": "Enter the delivery address ",
+      "defaultTitleExport": "Enter the delivery address ",
+      "defaultTitleReexport": "Enter the delivery address ",
+      "defaultTitleArticle10": "Enter the delivery address ",
+      "pageHeaderImport": "Enter the delivery address ",
+      "pageHeaderExport": "Enter the delivery address ",
+      "pageHeaderReexport": "Enter the delivery address ",
+      "pageHeaderArticle10": "Enter the delivery address ",
+      "pageBodyImport": "You must enter a UK address.",
+      "pageBodyExport": "You must enter a UK address.",
+      "pageBodyReexport": "You must enter a UK address.",
+      "pageBodyArticle10": "You must enter a UK address.",
       "inputLabelAddressLine1": "Address line 1",
       "inputLabelAddressLine2": "Address line 2 (optional)",
-      "inputLabelTown": "Town or city",
-      "inputLabelCounty": "County (optional)",
-      "inputLabelPostcode": "Postcode"
+      "inputLabelAddressLine3": "Town or city",
+      "inputLabelAddressLine4": "County (optional)",
+      "inputLabelPostcode": "Postcode",
+      "inputLabelCountry": "Country",
+      "errorMessages": {
+        "error.addressLine1.string.pattern.base": "Address line 1 must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+        "error.addressLine2.string.pattern.base": "Address line 2 must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+        "error.addressLine3.string.empty": "Enter the town or city",
+        "error.addressLine3.string.max": "Town or city must be 150 characters or less",
+        "error.addressLine3.string.pattern.base": "Town or city must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
+        "error.addressLine4.string.max": "County must be 150 characters or less",
+        "error.addressLine4.string.pattern.base": "County must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
+        "error.postcode.string.empty": "Enter a postcode",
+        "error.postcode.string.max": "Enter a real postcode",
+        "error.postcode.string.pattern.base": "Enter a real postcode"
+      }
     }
   },
   "confirmAddress": {
+    "common": {
+      "changeAddressLinkText": "Change address"
+    },
     "agent": {
       "defaultTitleImport": "Confirm the address",
       "defaultTitleExport": "Confirm the address",
@@ -326,8 +357,7 @@
       "pageHeaderImport": "Confirm the address",
       "pageHeaderExport": "Confirm the address",
       "pageHeaderReexport": "Confirm the address",
-      "pageHeaderArticle10": "Confirm the address",
-      "changeAddressLinkText": "Change address"
+      "pageHeaderArticle10": "Confirm the address"
     },
     "applicant": {
       "defaultTitleImport": "Confirm the importer’s address",
@@ -337,10 +367,7 @@
       "pageHeaderImport": "Confirm the importer’s address ",
       "pageHeaderExport": "Confirm the exporter’s address",
       "pageHeaderReexport": "Confirm the re-exporter’s address",
-      "pageHeaderArticle10": "Confirm the applicant's address",
-      "changeAddressLinkText": "Change address",
-      "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
-      "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
+      "pageHeaderArticle10": "Confirm the applicant's address"
     },
     "agentLed": {
       "defaultTitleImport": "Confirm the importer’s address",
@@ -350,12 +377,25 @@
       "pageHeaderImport": "Confirm the importer’s address ",
       "pageHeaderExport": "Confirm the exporter’s address",
       "pageHeaderReexport": "Confirm the re-exporter’s address",
-      "pageHeaderArticle10": "Confirm the applicant's address",
-      "changeAddressLinkText": "Change address",
-      "radioOptionDeliverToThisAddress": "Deliver the permit to this address",
-      "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
-      "radioOptionDeliverToAgentAddress": "Deliver the permit to"
+      "pageHeaderArticle10": "Confirm the applicant's address"
+    },
+    "delivery": {
+      "defaultTitleImport": "Confirm the delivery address",
+      "defaultTitleExport": "Confirm the delivery address",
+      "defaultTitleReexport": "Confirm the delivery address",
+      "defaultTitleArticle10": "Confirm the delivery address",
+      "pageHeaderImport": "Confirm the delivery address ",
+      "pageHeaderExport": "Confirm the delivery address",
+      "pageHeaderReexport": "Confirm the delivery address",
+      "pageHeaderArticle10": "Confirm the delivery address"
     }
+  },
+  "selectDeliveryAddress": {
+    "defaultTitle": "Select the delivery address",
+    "pageHeader": "Select the delivery address",
+    "radioOptionDeliverToApplicantAddress": "Deliver the permit to this address",
+    "radioOptionDeliverToAgentAddress": "Deliver the permit to",
+    "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
   },
   "speciesName": {
     "defaultTitle": "What is the scientific name of the species?",

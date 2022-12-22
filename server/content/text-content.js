@@ -21,20 +21,14 @@ const searchAddressSchema = Joi.object({
 })
 
 const selectAddressSchema = Joi.object({
-  defaultTitle: Joi.string().required(),
-  pageHeader: Joi.string().required(),
-  selectLabelAddress: Joi.string().required(),
-  selectAddressPromptNoResults: Joi.string().required(),
-  selectAddressPromptSingle: Joi.string().required(),
-  selectAddressPromptMultiple: Joi.string().required(),
-  detailsSummaryText: Joi.string().required(),
-  detailsText: Joi.string().required(),
-  detailsLinkText: Joi.string().required(),
-  linkTextSearchAgain: Joi.string().required(),
-  bodyTextImport: Joi.string().optional().allow("", null),
-  bodyTextExport: Joi.string().optional().allow("", null),
-  bodyTextReexport: Joi.string().optional().allow("", null),
-  bodyTextArticle10: Joi.string().optional().allow("", null)
+  defaultTitle: Joi.string(),
+  pageHeader: Joi.string(),
+  selectLabelAddress: Joi.string(),
+  selectAddressPromptNoResults: Joi.string(),
+  selectAddressPromptSingle: Joi.string(),
+  selectAddressPromptMultiple: Joi.string(),
+  changePostcodeLinkText: Joi.string(),
+  enterManualAddressLinkText: Joi.string()
 })
 
 const postcodeSchema = Joi.object({
@@ -65,7 +59,41 @@ const contactDetailsSchema = Joi.object({
   inputLabelBusinessName: Joi.string().required(),
   inputHintBusinessName: Joi.string().required(),
   inputLabelEmail: Joi.string().required(),
-  inputHintEmail: Joi.string().required()
+  inputHintEmail: Joi.string().required(),
+})
+
+const enterAddressSchema = Joi.object({
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
+  pageBodyImport: Joi.string().required(),
+  pageBodyExport: Joi.string().required(),
+  pageBodyReexport: Joi.string().required(),
+  pageBodyArticle10: Joi.string().required(),
+  inputLabelAddressLine1: Joi.string(),
+  inputLabelAddressLine2: Joi.string(),
+  inputLabelAddressLine3: Joi.string(),
+  inputLabelAddressLine4: Joi.string(),
+  inputLabelPostcode: Joi.string(),
+  inputLabelCountry: Joi.string(),
+  errorMessages: Joi.object()
+})
+
+const confirmAddressSchema = Joi.object({
+  defaultTitleImport: Joi.string().required(),
+  defaultTitleExport: Joi.string().required(),
+  defaultTitleReexport: Joi.string().required(),
+  defaultTitleArticle10: Joi.string().required(),
+  pageHeaderImport: Joi.string().required(),
+  pageHeaderExport: Joi.string().required(),
+  pageHeaderReexport: Joi.string().required(),
+  pageHeaderArticle10: Joi.string().required(),
+  changeAddressLinkText: Joi.string()
 })
 
 const sourceCodeSchema = Joi.object({
@@ -96,47 +124,11 @@ const sourceCodeSchema = Joi.object({
   dividerText: Joi.string().required()
 })
 
-const enterAddressSchema = Joi.object({
-  defaultTitleImport: Joi.string().required(),
-  defaultTitleExport: Joi.string().required(),
-  defaultTitleReexport: Joi.string().required(),
-  defaultTitleArticle10: Joi.string().required(),
-  pageHeaderImport: Joi.string().required(),
-  pageHeaderExport: Joi.string().required(),
-  pageHeaderReexport: Joi.string().required(),
-  pageHeaderArticle10: Joi.string().required(),
-  pageBody: Joi.string().required(),
-  inputLabelAddressLine1: Joi.string().required(),
-  inputLabelAddressLine2: Joi.string().required(),
-  inputLabelTown: Joi.string().required(),
-  inputLabelCounty: Joi.string().required(),
-  inputLabelPostcode: Joi.string().required(),
-  errorMessagesImport: Joi.object(),
-  errorMessagesExport: Joi.object(),
-  errorMessagesReexport: Joi.object(),
-  errorMessagesArticle10: Joi.object(),
-})
-
-const confirmAddressSchema = Joi.object({
-  defaultTitleImport: Joi.string().required(),
-  defaultTitleExport: Joi.string().required(),
-  defaultTitleReexport: Joi.string().required(),
-  defaultTitleArticle10: Joi.string().required(),
-  pageHeaderImport: Joi.string().required(),
-  pageHeaderExport: Joi.string().required(),
-  pageHeaderReexport: Joi.string().required(),
-  pageHeaderArticle10: Joi.string().required(),
-  changeAddressLinkText: Joi.string().required(),
-  radioOptionDeliverToThisAddress: Joi.string().optional().allow("", null),
-  radioOptionDeliverToDifferentAddress: Joi.string().optional().allow("", null),
-  radioOptionDeliverToAgentAddress: Joi.string().optional().allow("", null),
-})
-
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
     phaseBannerPhase: Joi.string().required(),
-    phaseBannerHTML: Joi.string().required(),    
+    phaseBannerHTML: Joi.string().required(),
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
@@ -198,7 +190,8 @@ const schema = Joi.object().keys({
     }),
     agent: postcodeSchema,
     applicant: postcodeSchema,
-    agentLed: postcodeSchema
+    agentLed: postcodeSchema,
+    delivery: postcodeSchema
   }),
   searchAddress: Joi.object({
     agent: searchAddressSchema,
@@ -206,19 +199,49 @@ const schema = Joi.object().keys({
     agentLed: searchAddressSchema
   }),
   selectAddress: Joi.object({
+    common: Joi.object({
+      defaultTitle: Joi.string().required(),
+      pageHeader: Joi.string().required(),
+      selectLabelAddress: Joi.string().required(),
+      selectAddressPromptNoResults: Joi.string().required(),
+      selectAddressPromptSingle: Joi.string().required(),
+      selectAddressPromptMultiple: Joi.string().required(),
+      changePostcodeLinkText: Joi.string().required()
+    }),
     agent: selectAddressSchema,
     applicant: selectAddressSchema,
-    agentLed: selectAddressSchema
+    agentLed: selectAddressSchema,
+    delivery: selectAddressSchema
   }),
   enterAddress: Joi.object({
+    common: Joi.object({
+      inputLabelAddressLine1: Joi.string().required(),
+      inputLabelAddressLine2: Joi.string().required(),
+      inputLabelAddressLine3: Joi.string().required(),
+      inputLabelAddressLine4: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+      inputLabelCountry: Joi.string().required(),
+    }),
     agent: enterAddressSchema,
     applicant: enterAddressSchema,
-    agentLed: enterAddressSchema
+    agentLed: enterAddressSchema,
+    delivery: enterAddressSchema
   }),
   confirmAddress: Joi.object({
+    common: Joi.object({
+      changeAddressLinkText: Joi.string().required()
+    }),
     agent: confirmAddressSchema,
     applicant: confirmAddressSchema,
-    agentLed: confirmAddressSchema
+    agentLed: confirmAddressSchema,
+    delivery: confirmAddressSchema
+  }),
+  selectDeliveryAddress: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionDeliverToApplicantAddress: Joi.string().required(),
+    radioOptionDeliverToAgentAddress: Joi.string().required(),
+    radioOptionDeliverToDifferentAddress: Joi.string().required()
   }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
