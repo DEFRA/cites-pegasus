@@ -195,6 +195,19 @@ const getErrorMessage = (errorList, href) => {
   return errorList && errorList.some(err => err.href === href) ? errorList.find(err => err.href === href).text : null
 }
 
+const getAddressSummary = (address) => {
+  const addressComponents = [
+      address.addressLine1, 
+      address.addressLine2, 
+      address.addressLine3, 
+      address.addressLine4,
+      address.postcode,
+      address.country
+  ].filter(Boolean)
+
+  return addressComponents.join(', ')
+}
+
 module.exports = {
    isChecked,
    setLabelData,
@@ -212,5 +225,6 @@ module.exports = {
 //   getSbiHtml,
 //   getErrorList
   getFieldError,
-  getErrorMessage
+  getErrorMessage,
+  getAddressSummary
 }

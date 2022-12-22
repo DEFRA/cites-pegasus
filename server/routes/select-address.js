@@ -203,9 +203,9 @@ module.exports = [{
 
                 const newAppData = {
                     [contactType]: {
-                        // addressSearchData: { 
-                        //     results: null
-                        // },
+                        addressSearchData: { //TODO COMMENT THIS BIT OUT
+                            results: null
+                        },
                         address: {
                             //addressSummary: request.payload.address,
                             addressLine1: addressLine1Components.join(", ") || null,

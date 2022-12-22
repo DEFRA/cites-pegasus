@@ -383,9 +383,12 @@
     "selectDeliveryAddress": {
         "defaultTitle": "Select the delivery address",
         "pageHeader": "Select the delivery address",
-        "radioOptionDeliverToApplicantAddress": "Deliver the permit to this address",
+        "radioOptionDeliverToApplicantAddress": "Deliver the permit to",
         "radioOptionDeliverToAgentAddress": "Deliver the permit to",
-        "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address"
+        "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
+        "errorMessages": {
+            "error.deliveryAddressOption.any.required": "Select the delivery address"
+        }
     },
     "speciesName": {
         "defaultTitle": "What is the scientific name of the species?",
