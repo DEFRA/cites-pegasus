@@ -1,69 +1,29 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
 const currentPath = `${urlPrefix}/${pageId}`
-const partyTypes = ['agent', 'applicant']
-const deliveryAddressOptions = ['this', 'different', 'agent']
+const contactTypes = ['agent', 'applicant', 'delivery']
 const invalidAppDataPath = urlPrefix
-
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
-    
-    if(data.partyType === 'applicant'){
-        if(data.isAgent){
-            pageContent = textContent.confirmAddress.agentLed
+
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
+            pageContent = { ...textContent.confirmAddress.common, ...textContent.confirmAddress.agentLed }
         } else {
-            pageContent = textContent.confirmAddress.applicant
+            pageContent = { ...textContent.confirmAddress.common, ...textContent.confirmAddress.applicant }
         }
+    } else if (data.contactType === 'agent') {
+        pageContent = { ...textContent.confirmAddress.common, ...textContent.confirmAddress.agent }
     } else {
-        pageContent = textContent.confirmAddress.agent
+        pageContent = { ...textContent.confirmAddress.common, ...textContent.confirmAddress.delivery }
     }
-    
+
     let previousPath = data.uprn ? `${urlPrefix}/select-address` : `${urlPrefix}/enter-address`
-    
-
-    //let deliveryAddressOptionItems = []
-    // if (data.partyType === 'applicant') {
-    //     if (data.isAgent) {
-    //         pageContent = textContent.confirmAddress.agentLed
-
-    //         deliveryAddressOptionItems.push({
-    //             value: "this",
-    //             text: pageContent.radioOptionDeliverToThisAddress,
-    //             checked: isChecked(data.deliveryAddressOption, "this")
-    //         })
-    //         deliveryAddressOptionItems.push({
-    //             value: "different",
-    //             text: pageContent.radioOptionDeliverToDifferentAddress,
-    //             checked: isChecked(data.deliveryAddressOption, "different")
-    //         })
-    //         deliveryAddressOptionItems.push({
-    //             value: "agent",
-    //             text: `${pageContent.radioOptionDeliverToAgentAddress} ${data.agentAddressSummary}`,
-    //             checked: isChecked(data.deliveryAddressOption, "agent")
-    //         })
-    //     } else {
-    //         pageContent = textContent.confirmAddress.applicant
-
-    //         deliveryAddressOptionItems.push({
-    //             value: "this",
-    //             text: pageContent.radioOptionDeliverToThisAddress
-    //             //checked: isChecked(data.deliveryAddressOption, "this")
-    //         })
-    //         deliveryAddressOptionItems.push({
-    //             value: "different",
-    //             text: pageContent.radioOptionDeliverToDifferentAddress
-    //             //checked: isChecked(data.deliveryAddressOption, "different")
-    //         })
-    //     }
-    // } else {
-    //     pageContent = textContent.confirmAddress.agent
-    // }
 
     let defaultTitle = ''
     let pageHeader = ''
@@ -87,59 +47,31 @@ function createModel(errors, data) {
             break;
     }
 
-    let errorList = null
-    // if (errors) {
-    //     errorList = []
-    //     const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
-    //     const fields = ['addressLine1', 'town', 'postcode']
-    //     fields.forEach(field => {
-    //         const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-    //         if (fieldError) {
-    //             errorList.push({
-    //                 text: fieldError,
-    //                 href: `#${field}`
-    //             })
-    //         }
-    //     })
-    // }
-
-    const model = {        
-        backLink: `${previousPath}/${data.partyType}`,
+    const model = {
+        backLink: `${previousPath}/${data.contactType}`,
         pageHeader: pageHeader,
-        formActionPage: `${currentPath}/${data.partyType}`,
-        // ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
+        formActionPage: `${currentPath}/${data.contactType}`,
+        pageTitle: defaultTitle,
         addressLine1: data.addressLine1,
         addressLine2: data.addressLine2,
-        town: data.town,
-        county: data.county,
+        addressLine3: data.addressLine3,
+        addressLine4: data.addressLine4,
         postcode: data.postcode,
+        country: data.country,
+        showCountry: data.country && data.contactType !== 'delivery',
         changeAddressLinkText: pageContent.changeAddressLinkText,
-        changeAddressLink: `/postcode/${data.partyType}`,
-        // inputDeliveryAddressOptions: {
-        //     idPrefix: "deliveryAddressOption",
-        //     name: "deliveryAddressOption",
-        //     fieldset: {
-        //         legend: {
-        //             text: pageContent.heading,
-        //             isPageHeading: true,
-        //             classes: "govuk-fieldset__legend--l"
-        //         }
-        //     },
-        //     items: deliveryAddressOptionItems,
-        //     errorMessage: getFieldError(errorList, '#deliveryAddressOption')
-        // }
+        changeAddressLink: `/postcode/${data.contactType}`,
     }
     return { ...commonContent, ...model }
 }
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             failAction: (request, h, error) => {
                 console.log(error)
@@ -150,7 +82,7 @@ module.exports = [{
         const appData = getAppData(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+            validateAppData(appData, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
@@ -158,12 +90,10 @@ module.exports = [{
         }
 
         const pageData = {
-            partyType: request.params.partyType,
+            contactType: request.params.contactType,
             isAgent: appData?.isAgent,
             permitType: appData?.permitType,
-            //deliveryAddressOption: appData?.deliveryAddressOption,
-            ...appData[request.params.partyType].address,
-            //agentAddressSummary: null// appData[agent]?.address.addressSummary 
+            ...appData[request.params.contactType].address,
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -171,95 +101,35 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             options: { abortEarly: false },
-            // payload: Joi.object({
-            //     deliveryAddressOption: Joi.string().valid(...deliveryAddressOptions).allow(null)
-            // }),
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
                 const pageData = {
-                    partyType: request.params.partyType,
+                    contactType: request.params.contactType,
                     isAgent: appData?.isAgent,
                     permitType: appData?.permitType,
-                    //deliveryAddressOption: request.payload.deliveryAddressOption,
-                    ...appData[request.params.partyType].address,
-                    //agentAddressSummary: null// appData[agent]?.address.addressSummary 
+                    ...appData[request.params.contactType].address,
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {
-            // const appData = getAppData(request)
-            // const partyType = request.params.partyType
-            // const deliveryAddressOption = request.payload.deliveryAddressOption
-            //let nextPath = null
-            //let deliveryAddress = null
-
-            const nextPath = request.params.partyType === 'agent' ? `${urlPrefix}/contact-details/applicant` : `${urlPrefix}/species-name`
-
-            // switch (partyType) {
-            //     case 'agent':
-            //         nextPath = `${urlPrefix}/contact-details/applicant`
-            //         break;
-
-            //     case 'applicant':
-                    
-            //         if (appData.isAgent === true) { //Agent Led
-            //             if (deliveryAddressOption === 'this') {
-            //                 deliveryAddress = { ...appData.applicant.address }
-            //                 nextPath = `${urlPrefix}/species-name`
-            //                 break;
-            //             }
-            //             if (deliveryAddressOption === 'agent') {
-            //                 deliveryAddress = { ...appData.agent.address }
-            //                 nextPath = `${urlPrefix}/species-name`
-            //                 break;
-            //             }
-            //             if (deliveryAddressOption === 'different') {
-            //                 deliveryAddress = null
-            //                 nextPath = `${urlPrefix}/postcode/delivery`
-            //                 break;
-            //             }
-            //             throw "Invalid delivery address option"
-            //         } else { //Applicant
-            //             if (deliveryAddressOption === 'this') {
-            //                 deliveryAddress = { ...appData.applicant.address }
-            //                 nextPath = `${urlPrefix}/species-name`
-            //                 break;
-            //             }
-            //             if (deliveryAddressOption === 'different') {
-            //                 deliveryAddress = null
-            //                 nextPath = `${urlPrefix}/postcode/delivery`
-            //                 break;
-            //             }
-            //             throw "Invalid delivery address option"
-            //         }
-            //         break;
-            //     default:
-            //         throw 'Invalid party type'
-            // }
-
-            // const newAppData = {
-            //     deliveryAddress: deliveryAddress,
-            //     deliveryAddressOption: request.payload.deliveryAddressOption
-            // }
-
-            // try {
-            //     setAppData(request, newAppData, `${pageId}/${partyType}`)
-            // }
-            // catch (err) {
-            //     console.log(err);
-            //     return h.redirect(`${invalidAppDataPath}/`)
-            // }
-
-            return h.redirect(nextPath)            
+            let nextPath = ''
+            if (request.params.contactType === 'agent') {
+                nextPath = `${urlPrefix}/contact-details/applicant`
+            } else if (request.params.contactType === 'applicant') {
+                nextPath = `${urlPrefix}/select-delivery-address`
+            } else {
+                nextPath = `${urlPrefix}/species-name`
+            }
+            return h.redirect(nextPath)
         }
     },
 }

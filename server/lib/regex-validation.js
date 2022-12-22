@@ -4,11 +4,11 @@ const PHONE_REGEX = /^[0-9\{\[\(\)\}\]— +]+$/
 const NAME_REGEX = /^[a-zA-Z' ,’-]+$/
 const BUSINESSNAME_REGEX = /^[a-zA-Z0-9' ,’-]+$/
 const NUMBER_REGEX = /^\d+$/
-//const ADDRESS_REGEX = /^[a-zA-Z0-9' -]*$/
-//const TOWN_REGEX = /^[a-zA-Z -]+$/
-const ADDRESS_REGEX = /^[a-zA-Z0-9' -]+$/
+const TOWN_COUNTY_REGEX = /^[a-zA-Z',.&’ -]+$/
+const ADDRESS_REGEX = /^[a-zA-Z0-9',.&’ -]+$/
 const SOURCECODE_REGEX = /^[a-zA-Z]+$/
 const COMMENTS_REGEX = /^[a-zA-Z0-9' ,.’£$%&*=+#@\{\[\(\)\}\]\/\\\-\—]+$/
+
 
 module.exports = {
   POSTCODE_REGEX,
@@ -17,7 +17,7 @@ module.exports = {
   NAME_REGEX,
   BUSINESSNAME_REGEX,
   NUMBER_REGEX,
-  //TOWN_REGEX,
+  TOWN_COUNTY_REGEX,
   ADDRESS_REGEX,
   SOURCECODE_REGEX,
   COMMENTS_REGEX

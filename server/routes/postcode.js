@@ -6,8 +6,9 @@ const { POSTCODE_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'postcode'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/contact-details`
-const partyTypes = ['agent', 'applicant']
+const previousPathContactDetails = `${urlPrefix}/contact-details`
+const previousPathSelectDeliveryAddress = `${urlPrefix}/select-delivery-address`
+const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
 
@@ -15,15 +16,19 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
+    let backLink = `${previousPathContactDetails}/${data.contactType}`
 
-    if(data.partyType === 'applicant'){
+    if(data.contactType === 'applicant'){
         if(data.isAgent){
             pageContent = {...textContent.postcode.common, ...textContent.postcode.agentLed}
         } else {
             pageContent = {...textContent.postcode.common, ...textContent.postcode.applicant}
         }
-    } else {
+    } else if (data.contactType === 'agent') {
         pageContent = {...textContent.postcode.common, ...textContent.postcode.agent}
+    } else {
+        pageContent = {...textContent.postcode.common, ...textContent.postcode.delivery}
+        backLink = previousPathSelectDeliveryAddress
     }
 
     let defaultTitle = ''
@@ -70,13 +75,13 @@ function createModel(errors, data) {
     }
     
     const model = {
-        backLink: `${previousPath}/${data.partyType}`,
+        backLink: backLink,
         pageHeader: pageHeader,
-        formActionPage: `${currentPath}/${data.partyType}`,
+        formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
         linkTextEnterAddress: pageContent.linkTextEnterAddress,
-        linkUrlEnterAddress: `/enter-address/${data.partyType}`,
+        linkUrlEnterAddress: `/enter-address/${data.contactType}`,
         buttonFindAddress: pageContent.buttonFindAddress,
         inputPostcode: {
             label: {
@@ -95,11 +100,11 @@ function createModel(errors, data) {
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             failAction: (request, h, error) => {
                 console.log(error)
@@ -110,7 +115,7 @@ module.exports = [{
         const appData = getAppData(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+            validateAppData(appData, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
@@ -118,10 +123,10 @@ module.exports = [{
         }
 
         const pageData = { 
-            partyType: request.params.partyType, 
+            contactType: request.params.contactType, 
             isAgent: appData?.isAgent, 
             permitType: appData?.permitType, 
-            postcode: appData[request.params.partyType].addressSearchData?.postcode 
+            postcode: appData[request.params.contactType]?.addressSearchData?.postcode 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -129,11 +134,11 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             options: { abortEarly: false },
             payload: Joi.object({
@@ -142,7 +147,7 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
                 const pageData = { 
-                    partyType: request.params.partyType, 
+                    contactType: request.params.contactType, 
                     isAgent: appData?.isAgent, 
                     permitType: appData?.permitType, 
                     ...request.payload 
@@ -152,29 +157,26 @@ module.exports = [{
             }
         },
         handler: async (request, h) => {
-            const partyType = request.params.partyType
+            const contactType = request.params.contactType
 
 
             const appData = {
-                [partyType]: {
-                    addressSearchData: {
-                        property: null,
-                        street: null,    
-                        town: null,                    
+                [contactType]: {
+                    addressSearchData: {               
                         postcode: request.payload.postcode.trim()
                     }
                 }
             }
 
             try {
-                setAppData(request, appData, `${pageId}/${partyType}`)
+                setAppData(request, appData, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${partyType}`)
+            return h.redirect(`${nextPath}/${contactType}`)
         }
     },
 }]

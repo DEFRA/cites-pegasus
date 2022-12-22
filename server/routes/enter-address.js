@@ -2,12 +2,12 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
-const { ADDRESS_REGEX } = require('../lib/regex-validation')
+const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/postcode`
-const partyTypes = ['agent', 'applicant']
+const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
 
@@ -16,40 +16,43 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
 
-    if (data.partyType === 'applicant') {
+    if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = textContent.enterAddress.agentLed
+            pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.agentLed }
         } else {
-            pageContent = textContent.enterAddress.applicant
+            pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.applicant }
         }
+    } else if (data.contactType === 'agent') {
+        pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.agent }
     } else {
-        pageContent = textContent.enterAddress.agent
+        pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.delivery }
     }
 
     let defaultTitle = ''
     let pageHeader = ''
-    let errorMessages = null
+    let pageBody = ''
+    let errorMessages = pageContent.errorMessages
 
     switch (data.permitType) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
-            errorMessages = pageContent.errorMessagesImport
+            pageBody = pageContent.pageBodyImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
-            errorMessages = pageContent.errorMessagesExport
+            pageBody = pageContent.pageBodyExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
-            errorMessages = pageContent.errorMessagesReexport
+            pageBody = pageContent.pageBodyReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
-            errorMessages = pageContent.errorMessagesArticle10
+            pageBody = pageContent.pageBodyArticle10
             break;
     }
 
@@ -57,7 +60,7 @@ function createModel(errors, data) {
     if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
-        const fields = ['addressLine1', 'town', 'postcode']
+        const fields = ['addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode', 'country']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
             if (fieldError) {
@@ -70,13 +73,13 @@ function createModel(errors, data) {
     }
 
     const model = {
-        backLink: `${previousPath}/${data.partyType}`,
+        backLink: `${previousPath}/${data.contactType}`,
         pageHeader: pageHeader,
-        pageBody: pageContent.pageBody,
-        formActionPage: `${currentPath}/${data.partyType}`,
+        pageBody: pageBody,
+        formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
-
+        internationalAddress: data.contactType !== 'delivery',
         inputAddressLine1: {
             label: {
                 text: pageContent.inputLabelAddressLine1
@@ -95,25 +98,25 @@ function createModel(errors, data) {
             ...(data.addressLine2 ? { value: data.addressLine2 } : {}),
             errorMessage: getFieldError(errorList, '#addressLine2')
         },
-        inputTown: {
+        inputAddressLine3: {
             label: {
-                text: pageContent.inputLabelTown
+                text: pageContent.inputLabelAddressLine3
             },
-            id: "town",
-            name: "town",
+            id: "addressLine3",
+            name: "addressLine3",
             classes: "govuk-!-width-two-thirds",
-            ...(data.town ? { value: data.town } : {}),
-            errorMessage: getFieldError(errorList, '#town')
+            ...(data.addressLine3 ? { value: data.addressLine3 } : {}),
+            errorMessage: getFieldError(errorList, '#addressLine3')
         },
-        inputCounty: {
+        inputAddressLine4: {
             label: {
-                text: pageContent.inputLabelCounty
+                text: pageContent.inputLabelAddressLine4
             },
-            id: "county",
-            name: "county",
+            id: "addressLine4",
+            name: "addressLine4",
             classes: "govuk-!-width-two-thirds",
-            ...(data.county ? { value: data.county } : {}),
-            errorMessage: getFieldError(errorList, '#county')
+            ...(data.addressLine4 ? { value: data.addressLine4 } : {}),
+            errorMessage: getFieldError(errorList, '#addressLine4')
         },
         inputPostcode: {
             label: {
@@ -124,6 +127,16 @@ function createModel(errors, data) {
             classes: "govuk-input--width-10",
             ...(data.postcode ? { value: data.postcode } : {}),
             errorMessage: getFieldError(errorList, '#postcode')
+        },
+        inputCountry: {
+            label: {
+                text: pageContent.inputLabelCountry
+            },
+            id: "country",
+            name: "country",
+            classes: "govuk-!-width-two-thirds",
+            ...(data.country ? { value: data.country } : {}),
+            errorMessage: getFieldError(errorList, '#country')
         }
     }
     return { ...commonContent, ...model }
@@ -131,11 +144,11 @@ function createModel(errors, data) {
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             failAction: (request, h, error) => {
                 console.log(error)
@@ -146,7 +159,7 @@ module.exports = [{
         const appData = getAppData(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+            validateAppData(appData, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
@@ -154,10 +167,10 @@ module.exports = [{
         }
 
         const pageData = {
-            partyType: request.params.partyType, 
-            isAgent: appData?.isAgent, 
-            permitType: appData?.permitType, 
-            ...appData[request.params.partyType].address 
+            contactType: request.params.contactType,
+            isAgent: appData?.isAgent,
+            permitType: appData?.permitType,
+            ...appData[request.params.contactType]?.address
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -165,57 +178,73 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
-            options: { abortEarly: false },
-            payload: Joi.object({
-                addressLine1: Joi.string().regex(ADDRESS_REGEX),
-                addressLine2: Joi.string().regex(ADDRESS_REGEX).optional().allow('',null),
-                town: Joi.string().regex(ADDRESS_REGEX),
-                county: Joi.string().regex(ADDRESS_REGEX).optional().allow('',null),
-                postcode: Joi.string().regex(ADDRESS_REGEX)
-            }),
-            failAction: (request, h, err) => {
-                const appData = getAppData(request);
-                const pageData = { 
-                    partyType: request.params.partyType, 
-                    isAgent: appData?.isAgent, 
-                    permitType: appData?.permitType, 
-                    ...request.payload 
-                }
-                
-                return h.view(pageId, createModel(err, pageData)).takeover()
-            }
+            //Payload validation done in handler section as contactType can't be accessed here
         },
         handler: async (request, h) => {
-            const partyType = request.params.partyType
+            const contactType = request.params.contactType
+            const ukAddressSchema = Joi.object({
+                addressLine1: Joi.string().max(150).regex(ADDRESS_REGEX),
+                addressLine2: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
+                addressLine3: Joi.string().max(150).regex(TOWN_COUNTY_REGEX),
+                addressLine4: Joi.string().max(150).regex(TOWN_COUNTY_REGEX).optional().allow('', null),
+                postcode: Joi.string().max(50).regex(POSTCODE_REGEX)
+            })
+
+            const internationalAddressSchema = Joi.object({
+                addressLine1: Joi.string().max(150).required(),
+                addressLine2: Joi.string().max(150).required(),
+                addressLine3: Joi.string().max(150).optional().allow('', null),
+                addressLine4: Joi.string().max(150).optional().allow('', null),
+                postcode: Joi.string().max(50).optional().allow('', null),
+                country: Joi.string().required().max(150)
+            })
+
+            const payloadSchema = contactType === 'delivery' ? ukAddressSchema : internationalAddressSchema
+
+            const result = payloadSchema.validate(request.payload, { abortEarly: false })
+
+            if (result.error) {
+                const appData = getAppData(request);
+                const pageData = {
+                    contactType: request.params.contactType,
+                    isAgent: appData?.isAgent,
+                    permitType: appData?.permitType,
+                    ...request.payload
+                }
+
+                return h.view(pageId, createModel(result.error, pageData)).takeover()
+            }
+
 
             const appData = {
-                [partyType]: {
+                [contactType]: {
                     address: {
                         addressLine1: request.payload.addressLine1.trim(),
                         addressLine2: request.payload.addressLine2.trim(),
-                        town: request.payload.town.trim(),
-                        county: request.payload.county.trim(),
+                        addressLine3: request.payload.addressLine3.trim(),
+                        addressLine4: request.payload.addressLine4.trim(),
                         postcode: request.payload.postcode.trim(),
+                        country: request.payload.country ? request.payload.country.trim() : 'UK',
                         uprn: null
                     }
                 }
             }
 
             try {
-                setAppData(request, appData, `${pageId}/${partyType}`)
+                setAppData(request, appData, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${partyType}`)
+            return h.redirect(`${nextPath}/${contactType}`)
         }
     },
 }

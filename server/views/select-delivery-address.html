@@ -6,54 +6,47 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 
 {% block beforeContent %}
-  {# {{ govukBackLink({
+  {{ govukBackLink({
     text: backLinkButton,
     href: backLink,
 	  attributes: {id: 'linkBack'}
-  }) }} #}
+  }) }}
 
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        {# {{govukErrorSummary ({
+        {{govukErrorSummary ({
         "titleText": errorSummaryTitle,
         "errorList": errorList
-        }) }} #}
+        }) }}
       </div>
     </div>
   {% endif %}
 
 {% endblock %}
 
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-      {% call govukFieldset({
+        {% call govukFieldset({
           legend: {
             text: pageHeader,
             classes: "govuk-fieldset__legend--l",
             isPageHeading: true
           }
         }) %}
-        <p>
-        {% if addressLine1 %}<br>{{addressLine1}}{% endif %}
-        {% if addressLine2 %}<br>{{addressLine2}}{% endif %}
-        {% if town %}<br>{{town}}{% endif %}
-        {% if county %}<br>{{county}}{% endif %}
-        {% if postcode %}<br>{{postcode}}{% endif %}</p>
-        
+
         {{ govukRadios(inputDeliveryAddressOptions) }}
 
         {{ govukButton({
-        text: confirmButton,
-        type: "submit"
-      }) }}
-      <p class="govuk-body">
+          text: confirmButton,
+          type: "submit"
+        }) }}
+        <p class="govuk-body">
           <a href="{{changeAddressLink}}">{{changeAddressLinkText}}</a>
         </p>
-      {% endcall %}
+        {% endcall %}
       </form>
     </div>
   </div>

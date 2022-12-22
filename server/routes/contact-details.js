@@ -6,7 +6,7 @@ const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
-const partyTypes = ['agent', 'applicant']
+const contactTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/postcode`
 const invalidAppDataPath = urlPrefix
 
@@ -15,7 +15,7 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     
     let pageContent = null
-    if(data.partyType === 'applicant'){
+    if(data.contactType === 'applicant'){
         if(data.isAgent){
             pageContent = textContent.contactDetails.agentLed
         } else {
@@ -25,7 +25,7 @@ function createModel(errors, data) {
         pageContent = textContent.contactDetails.agent
     }
 
-    let previousPath = data.partyType === 'applicant' && data.isAgent ? `${urlPrefix}/confirm-address/agent` : `${urlPrefix}/agent`
+    let previousPath = data.contactType === 'applicant' && data.isAgent ? `${urlPrefix}/confirm-address/agent` : `${urlPrefix}/agent`
 
     let defaultTitle = ''
     let pageHeader = ''
@@ -68,7 +68,7 @@ function createModel(errors, data) {
     const model = {
         backLink: previousPath,
         pageHeader: pageHeader,
-        formActionPage: `${currentPath}/${data.partyType}`,
+        formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
 
@@ -116,22 +116,22 @@ function createModel(errors, data) {
 
 module.exports = [{
     method: 'GET',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     handler: async (request, h) => {
         const appData = getAppData(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.partyType}`)
+            validateAppData(appData, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
             return h.redirect(`${invalidAppDataPath}/`)
         }
         const pageData = { 
-            partyType: request.params.partyType, 
+            contactType: request.params.contactType, 
             isAgent: appData?.isAgent, 
             permitType: appData?.permitType,
-            ...appData[request.params.partyType] 
+            ...appData[request.params.contactType] 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -139,7 +139,7 @@ module.exports = [{
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             })
 
         }
@@ -147,11 +147,11 @@ module.exports = [{
 },
 {
     method: 'POST',
-    path: `${currentPath}/{partyType}`,
+    path: `${currentPath}/{contactType}`,
     options: {
         validate: {
             params: Joi.object({
-                partyType: Joi.string().valid(...partyTypes)
+                contactType: Joi.string().valid(...contactTypes)
             }),
             options: { abortEarly: false },
             payload: Joi.object({
@@ -162,7 +162,7 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
                 const pageData = { 
-                    partyType: request.params.partyType, 
+                    contactType: request.params.contactType, 
                     isAgent: appData?.isAgent, 
                     permitType: appData?.permitType,
                     ...request.payload 
@@ -174,7 +174,7 @@ module.exports = [{
         handler: async (request, h) => {
             const { fullName, businessName, email } = request.payload
             const contactDetails = {
-                [request.params.partyType]: {
+                [request.params.contactType]: {
                     fullName: fullName.trim(),
                     businessName: businessName.trim(),
                     email: email.trim()
@@ -182,14 +182,14 @@ module.exports = [{
             }
 
             try {
-                setAppData(request, contactDetails, `${pageId}/${request.params.partyType}`)
+                setAppData(request, contactDetails, `${pageId}/${request.params.contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidAppDataPath}/`)
             }
 
-            return h.redirect(`${nextPath}/${request.params.partyType}`)
+            return h.redirect(`${nextPath}/${request.params.contactType}`)
         }
     },
 }]
