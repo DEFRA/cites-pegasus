@@ -1,6 +1,10 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const {
+  findErrorList,
+  getFieldError,
+  isChecked
+} = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const { SOURCECODE_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
@@ -9,6 +13,7 @@ const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
 const nextPath = `${urlPrefix}/purpose-code`
+const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -250,16 +255,26 @@ module.exports = [
     },
     handler: async (request, h) => {
       const appData = getAppData(request)
-      // validateAppData(appData, `${pageId}/${request.params.speciesType}`)
+
+      try {
+        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
 
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
         speciesName: appData.species[request.params.speciesIndex]?.speciesName,
         quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+        unitOfMeasurement:
+          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
         kingdom: appData.species[request.params.speciesIndex]?.kingdom,
-        sourceCode: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]?.sourceCode,
+        sourceCode:
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.sourceCode,
         anotherSourceCodeForI:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
@@ -336,13 +351,18 @@ module.exports = [
             sourceCode = request.payload.sourceCode
         }
 
-        let enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+        let enterAReason =
+          request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sourceCode = sourceCode
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].enterAReason = enterAReason
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].sourceCode = sourceCode
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].enterAReason = enterAReason
 
         setAppData(request, { species: appData.species })
-        
+
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
