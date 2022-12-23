@@ -1,5 +1,5 @@
-const Joi = require('@hapi/joi');
-const textContent = require('./text-content.json');
+const Joi = require("@hapi/joi")
+const textContent = require("./text-content.json")
 
 const searchAddressSchema = Joi.object({
   defaultTitleImport: Joi.string().required(),
@@ -94,6 +94,34 @@ const confirmAddressSchema = Joi.object({
   pageHeaderReexport: Joi.string().required(),
   pageHeaderArticle10: Joi.string().required(),
   changeAddressLinkText: Joi.string()
+})
+
+const sourceCodeSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  heading: Joi.string().required(),
+  radioOptionW: Joi.string().required(),
+  radioOptionWHint: Joi.string().required(),
+  radioOptionR: Joi.string().allow("", null),
+  radioOptionRHint: Joi.string().allow("", null),
+  radioOptionD: Joi.string().required(),
+  radioOptionDHint: Joi.string().required(),
+  radioOptionC: Joi.string().allow("", null),
+  radioOptionCHint: Joi.string().allow("", null),
+  radioOptionF: Joi.string().allow("", null),
+  radioOptionFHint: Joi.string().allow("", null),
+  radioOptionI: Joi.string().required(),
+  radioOptionIHint: Joi.string().required(),
+  inputLabelEnterAnotherSourceCode: Joi.string().required(),
+  radioOptionO: Joi.string().required(),
+  radioOptionOHint: Joi.string().required(),
+  radioOptionX: Joi.string().required(),
+  radioOptionXHint: Joi.string().required(),
+  radioOptionA: Joi.string().allow("", null),
+  radioOptionAHint: Joi.string().allow("", null),
+  radioOptionU: Joi.string().required(),
+  radioOptionUHint: Joi.string().required(),
+  characterCountLabelEnterAReason: Joi.string().required(),
+  dividerText: Joi.string().required()
 })
 
 const schema = Joi.object().keys({
@@ -227,6 +255,10 @@ const schema = Joi.object().keys({
     unitOfMeasurementPrompt: Joi.string().required(),
     unitsOfMeasurement: Joi.array().items(Joi.object())
   }),
+  sourceCode: Joi.object({
+    animal: sourceCodeSchema,
+    plant: sourceCodeSchema
+  }),
   purposeCode: Joi.object({
     defaultTitle: Joi.string().required(),
     heading: Joi.string().required(),
@@ -256,7 +288,6 @@ const schema = Joi.object().keys({
     radioOptionZHint: Joi.string().required(),
   }),
 })
-
 
 // Validate config
 const { error, value } = schema.validate(textContent)

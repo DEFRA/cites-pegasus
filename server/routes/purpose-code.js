@@ -10,8 +10,8 @@ const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/source`
-const nextPath = `${urlPrefix}/specimen-details` //TO DO
+const previousPath = `${urlPrefix}/source-code`
+const nextPath = `${urlPrefix}/specimen-details/` //TO DO
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -38,7 +38,7 @@ function createModel(errors, data) {
 
   const speciesName = data.speciesName
   const quantity = data.quantity
-  const specimenIndex = data.specimenIndex
+  const specimenIndex = data.specimenIndex + 1
   const unitOfMeasurement = data.unitOfMeasurement
 
   const captionText = (unitOfMeasurement === "noOfSpecimens"
@@ -46,7 +46,7 @@ function createModel(errors, data) {
     : `${speciesName}`)
 
   const model = {
-    backLink: previousPath,
+    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -199,10 +199,10 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        speciesName: appData?.speciesName,
-        quantity: appData?.quantity,
-        unitOfMeasurement: appData?.unitOfMeasurement,
-        purposeCode: appData?.purposeCode,
+        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+        quantity: appData.species[request.params.speciesIndex]?.quantity,
+        unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,    
+        purposeCode: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]?.purposeCode,
         ...appData[request.params.speciesIndex],
         ...appData[request.params.specimenIndex]
       }
@@ -229,9 +229,9 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName: appData?.speciesName,
-            quantity: appData?.quantity,
-            unitOfMeasurement: appData?.unitOfMeasurement,
+            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+            quantity: appData.species[request.params.speciesIndex]?.quantity,
+            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
             ...appData[request.params.speciesIndex],
             ...appData[request.params.specimenIndex]
           }
@@ -239,9 +239,15 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        setAppData(request, {
-          purposeCode: request.payload.purposeCode
-        })
+        const specimensData = getAppData(request)
+        const specimenData =
+          specimensData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]
+
+          specimenData.purposeCode= request.payload.purposeCode
+          
+        setAppData(request, specimenData)
 
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
