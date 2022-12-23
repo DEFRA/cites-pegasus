@@ -14,6 +14,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/confirm-address/delivery`
 const nextPath = `${urlPrefix}/source-code/0/0`
 const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET` //TODO
+const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -99,7 +100,14 @@ module.exports = [
     path: currentPath,
     handler: async (request, h) => {
       const appData = getAppData(request)
-      // validateAppData(appData, pageId) //TODO
+
+      try {
+        validateAppData(appData, `${pageId}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
+
       const pageData = {
         speciesName: appData?.speciesName,
         quantity: appData?.quantity,
@@ -154,6 +162,16 @@ module.exports = [
             appData.species[0].specimens.push({ specimenIndex: i })
           }
         }
+
+
+
+        try {
+          setAppData(request, appData, `${pageId}`)
+      }
+      catch (err) {
+          console.log(err);
+          return h.redirect(`${invalidAppDataPath}/`)
+      }
 
         if (speciesData?.scientificname) {
           setAppData(request, appData)

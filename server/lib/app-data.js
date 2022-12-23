@@ -82,6 +82,8 @@ function getAppFlow(appData) {
                 appFlow.push('confirm-address/delivery')
             }            
         }
+        if (appData?.delivery?.address) { 
+            appFlow.push('species-name') }
     }
     //console.log(appFlow)
     return appFlow
