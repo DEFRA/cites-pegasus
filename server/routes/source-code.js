@@ -1,10 +1,6 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const { SOURCECODE_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
@@ -263,13 +259,9 @@ module.exports = [
         specimenIndex: request.params.specimenIndex,
         speciesName: appData.species[request.params.speciesIndex]?.speciesName,
         quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement:
-          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+        unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
         kingdom: appData.species[request.params.speciesIndex]?.kingdom,
-        sourceCode:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]?.sourceCode,
+        sourceCode: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]?.sourceCode,
         anotherSourceCodeForI:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
@@ -332,11 +324,9 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const specimensData = getAppData(request)
-        const specimenData =
-          specimensData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]
+        const appData = getAppData(request)
+
+        //const specimenData = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
         let sourceCode = ""
         switch (request.payload.sourceCode) {
           case "I":
@@ -349,13 +339,13 @@ module.exports = [
             sourceCode = request.payload.sourceCode
         }
 
-        let enterAReason =
-          request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+        let enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
-        specimenData.sourceCode = sourceCode
-        specimenData.enterAReason = enterAReason
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sourceCode = sourceCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].enterAReason = enterAReason
 
-        setAppData(request, specimenData)
+        setAppData(request, { species: appData.species })
+        
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
