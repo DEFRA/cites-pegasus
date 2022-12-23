@@ -87,12 +87,19 @@ function getAppFlow(appData) {
             appFlow.push("species-name")
           }
       
-          if (appData?.species) {
-              appData.species.array.forEach((species, specimen) => {
-                 appFlow.push(`source-code/${species.index}/${specimen.index}`) 
-              });
+        //   if (appData?.species) {
+        //       appData.species.forEach((species, specimen) => {
+        //          appFlow.push("source-code/" + species.index + "/" + specimen.index) 
+        //       });
             
-          }
+        //   }
+
+         //   if (appData?.species) {
+        //       appData.species.array.forEach((species, specimen) => {
+        //          appFlow.push(`purpose-code/${species.index}/${specimen.index}`) 
+        //       });
+            
+        //   }
     }
     //console.log(appFlow)
     return appFlow

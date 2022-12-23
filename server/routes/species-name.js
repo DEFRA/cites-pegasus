@@ -27,7 +27,10 @@ function createModel(errors, data) {
     if (e.value === data.unitOfMeasurement) e.selected = "true"
   })
 
-  const previousPath = data.deliveryAddressOption === 'different' ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`
+  const previousPath =
+    data.deliveryAddressOption === "different"
+      ? `${urlPrefix}/confirm-address/delivery`
+      : `${urlPrefix}/select-delivery-address`
 
   let errorList = null
   if (errors) {
@@ -147,6 +150,9 @@ module.exports = [
           request,
           request.payload.speciesName
         )
+        // const previousAppData = getAppData(request)
+
+        // const quantity = previousAppData?.species[0].quantity
 
         const appData = {
           species: [
@@ -166,16 +172,26 @@ module.exports = [
             appData.species[0].specimens.push({ specimenIndex: i })
           }
         }
+        appData.species[0].specimens.push({ specimenIndex: 0 })
 
+        // if (request.payload.unitOfMeasurement === "noOfSpecimens" && quantity <= request.payload.quantity) {
+        //   for (let i = 0; i < request.payload.quantity; i++) {
+        //     appData.species[0].specimens.push({ specimenIndex: i })
+        //   }
+        // } else if (request.payload.unitOfMeasurement === "noOfSpecimens" && quantity > request.payload.quantity) {
 
+        //   for (let i = 0; i < quantity; i++) {
+        //     appData.species[0].specimens.push({ specimenIndex: i })
+        //   }
+        // }
+        // appData.species[0].specimens.push({ specimenIndex: 0 })
 
         try {
           setAppData(request, appData, `${pageId}`)
-      }
-      catch (err) {
-          console.log(err);
+        } catch (err) {
+          console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
-      }
+        }
 
         if (speciesData?.scientificname) {
           setAppData(request, appData)

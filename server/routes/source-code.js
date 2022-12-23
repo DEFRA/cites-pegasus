@@ -256,12 +256,12 @@ module.exports = [
     handler: async (request, h) => {
       const appData = getAppData(request)
 
-      try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
-      }
+      // try {
+      //   validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+      // } catch (err) {
+      //   console.log(err)
+      //   return h.redirect(`${invalidAppDataPath}/`)
+      // }
 
       const pageData = {
         speciesIndex: request.params.speciesIndex,
@@ -362,6 +362,14 @@ module.exports = [
         ].enterAReason = enterAReason
 
         setAppData(request, { species: appData.species })
+
+        //   try {
+        //     setAppData(request, appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        // }
+        // catch (err) {
+        //     console.log(err);
+        //     return h.redirect(`${invalidAppDataPath}/`)
+        // }
 
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
