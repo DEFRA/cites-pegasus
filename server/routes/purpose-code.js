@@ -10,7 +10,7 @@ const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/source-code/`
+const previousPath = `${urlPrefix}/source-code`
 const nextPath = `${urlPrefix}/specimen-details/` //TO DO
 
 function createModel(errors, data) {
