@@ -239,15 +239,11 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const specimensData = getAppData(request)
-        const specimenData =
-          specimensData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]
+        const appData = getAppData(request)
 
-          specimenData.purposeCode= request.payload.purposeCode
-          
-        setAppData(request, specimenData)
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].purposeCode = request.payload.purposeCode
+        
+        setAppData(request, { species: appData.species })
 
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`

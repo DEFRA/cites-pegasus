@@ -13,8 +13,6 @@ const nextPath = `${urlPrefix}/purpose-code`
 function createModel(errors, data) {
   const commonContent = textContent.common
 
-  console.log("DATA>>>>", data)
-
   const pageContent =
     data.kingdom === "Animalia"
       ? textContent.sourceCode.animal
@@ -265,11 +263,11 @@ module.exports = [
         anotherSourceCodeForI:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.sourceCode,
+          ]?.anotherSourceCodeForI,
         anotherSourceCodeForO:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.sourceCode,
+          ]?.anotherSourceCodeForI,
         enterAReason:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
@@ -326,7 +324,6 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        //const specimenData = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
         let sourceCode = ""
         switch (request.payload.sourceCode) {
           case "I":
