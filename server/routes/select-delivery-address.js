@@ -15,18 +15,20 @@ function createModel(errors, data) {
     const pageContent = textContent.selectDeliveryAddress;
 
     const applicantAddressSummary = getAddressSummary(data.applicantAddress)
-    const agentAddressSummary = getAddressSummary(data.agentAddress)
+    const agentAddressSummary = data.agentAddress ? getAddressSummary(data.agentAddress) : ''
 
     let deliveryAddressOptionItems = [{
         value: "applicant",
-        text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
+        //text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
+        text: applicantAddressSummary,
         checked: isChecked(data.deliveryAddressOption, "applicant")
     }]
 
     if (data.isAgent) {
         deliveryAddressOptionItems.push({
             value: "agent",
-            text: `${pageContent.radioOptionDeliverToAgentAddress} ${agentAddressSummary}`,
+            //text: `${pageContent.radioOptionDeliverToAgentAddress} ${agentAddressSummary}`,
+            text: agentAddressSummary,
             checked: isChecked(data.deliveryAddressOption, "agent")
         })
     }
@@ -96,7 +98,7 @@ module.exports = [{
         const pageData = {
             isAgent: appData?.isAgent,
             permitType: appData?.permitType,
-            deliveryAddressOption: appData?.deliveryAddressOption || null,
+            deliveryAddressOption: appData?.delivery?.addressOption || null,
             applicantAddress: appData.applicant.address,
             agentAddress: appData.agent?.address
         }
@@ -119,7 +121,7 @@ module.exports = [{
                 const pageData = {
                     isAgent: appData?.isAgent,
                     permitType: appData?.permitType,
-                    deliveryAddressOption: appData?.deliveryAddressOption,
+                    deliveryAddressOption: appData?.delivery?.addressOption,
                     applicantAddress: appData.applicant.address,
                     agentAddress: appData.agent?.address
                 }
