@@ -201,6 +201,18 @@ const getErrorMessage = (errorList, href) => {
     : null
 }
 
+const getAddressSummary = (address) => {
+  const addressComponents = [
+      address.addressLine1, 
+      address.addressLine2, 
+      address.addressLine3, 
+      address.addressLine4,
+      address.postcode,
+      address.country
+  ].filter(Boolean)
+
+  return addressComponents.join(', ')
+}
 
 module.exports = {
   isChecked,
@@ -220,4 +232,5 @@ module.exports = {
   //   getErrorList
   getFieldError,
   getErrorMessage,
+  getAddressSummary
 }

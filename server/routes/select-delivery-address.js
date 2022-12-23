@@ -2,6 +2,7 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -11,55 +12,38 @@ const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
-    const pageContent = textContent.pageContent;
-    
+    const pageContent = textContent.selectDeliveryAddress;
+
+    const applicantAddressSummary = getAddressSummary(data.applicantAddress)
+    const agentAddressSummary = data.agentAddress ? getAddressSummary(data.agentAddress) : ''
+
     let deliveryAddressOptionItems = [{
-            value: "applicant",
-            text: pageContent.radioOptionDeliverToApplicantAddress,
-            checked: isChecked(data.deliveryAddressOption, "applicant")
-        }]
-    
-        if (data.isAgent) {
-            deliveryAddressOptionItems.push({
-                value: "agent",
-                text: `${pageContent.radioOptionDeliverToAgentAddress} ${data.agentAddressSummary}`,
-                checked: isChecked(data.deliveryAddressOption, "agent")
-            })
-        }
+        value: "applicant",
+        //text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
+        text: applicantAddressSummary,
+        checked: isChecked(data.deliveryAddressOption, "applicant")
+    }]
 
+    if (data.isAgent) {
         deliveryAddressOptionItems.push({
-            value: "different",
-            text: pageContent.radioOptionDeliverToDifferentAddress,
-            checked: isChecked(data.deliveryAddressOption, "different")
+            value: "agent",
+            //text: `${pageContent.radioOptionDeliverToAgentAddress} ${agentAddressSummary}`,
+            text: agentAddressSummary,
+            checked: isChecked(data.deliveryAddressOption, "agent")
         })
-    
-    
-    let defaultTitle = ''
-    let pageHeader = ''
-
-    switch (data.permitType) {
-        case 'import':
-            defaultTitle = pageContent.defaultTitleImport
-            pageHeader = pageContent.pageHeaderImport
-            break;
-        case 'export':
-            defaultTitle = pageContent.defaultTitleExport
-            pageHeader = pageContent.pageHeaderExport
-            break;
-        case 'reexport':
-            defaultTitle = pageContent.defaultTitleReexport
-            pageHeader = pageContent.pageHeaderReexport
-            break;
-        case 'article10':
-            defaultTitle = pageContent.defaultTitleArticle10
-            pageHeader = pageContent.pageHeaderArticle10
-            break;
     }
+
+    deliveryAddressOptionItems.push({
+        value: "different",
+        text: pageContent.radioOptionDeliverToDifferentAddress,
+        checked: isChecked(data.deliveryAddressOption, "different")
+    })
+
 
     let errorList = null
     if (errors) {
         errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
         const fields = ['deliveryAddressOption']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
@@ -72,12 +56,12 @@ function createModel(errors, data) {
         })
     }
 
-    const model = {        
+    const model = {
         backLink: previousPath,
-        pageHeader: pageHeader,
+        pageHeader: pageContent.pageHeader,
         formActionPage: currentPath,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
         changeAddressLinkText: pageContent.changeAddressLinkText,
         changeAddressLink: `/postcode/delivery`,
         inputDeliveryAddressOptions: {
@@ -114,9 +98,9 @@ module.exports = [{
         const pageData = {
             isAgent: appData?.isAgent,
             permitType: appData?.permitType,
-            deliveryAddressOption: appData?.deliveryAddressOption,
-            applicantAddress: appData[applicant].address,
-            agentAddress: appData[agent]?.address            
+            deliveryAddressOption: appData?.delivery?.addressOption || null,
+            applicantAddress: appData.applicant.address,
+            agentAddress: appData.agent?.address
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -129,17 +113,17 @@ module.exports = [{
         validate: {
             options: { abortEarly: false },
             payload: Joi.object({
-                deliveryAddressOption: Joi.string().valid(...deliveryAddressOptions)
+                deliveryAddressOption: Joi.string().required().valid(...deliveryAddressOptions)
             }),
             failAction: (request, h, err) => {
                 const appData = getAppData(request);
-                                
+
                 const pageData = {
                     isAgent: appData?.isAgent,
                     permitType: appData?.permitType,
-                    deliveryAddressOption: appData?.deliveryAddressOption,
-                    applicantAddress: appData[applicant].address,
-                    agentAddress: appData[agent]?.address            
+                    deliveryAddressOption: appData?.delivery?.addressOption,
+                    applicantAddress: appData.applicant.address,
+                    agentAddress: appData.agent?.address
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
@@ -150,65 +134,41 @@ module.exports = [{
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
 
-            const nextPath = deliveryAddressOption === 'agent' ? `${urlPrefix}/contact-details/applicant` : `${urlPrefix}/species-name`
+            let nextPath = `${urlPrefix}/species-name`
 
-            // switch (contactType) {
-            //     case 'agent':
-            //         nextPath = `${urlPrefix}/contact-details/applicant`
-            //         break;
+            switch (deliveryAddressOption) {
+                case 'applicant':
+                    deliveryAddress = { ...appData.applicant.address }
+                    break;
+                case 'agent':
+                    deliveryAddress = { ...appData.agent.address }
+                    break;
+                case 'different':
+                    deliveryAddress = null
+                    nextPath = `${urlPrefix}/postcode/delivery`
+                    break;
+                default:
+                    throw "Invalid delivery address option"
 
-            //     case 'applicant':
-                    
-            //         if (appData.isAgent === true) { //Agent Led
-            //             if (deliveryAddressOption === 'this') {
-            //                 deliveryAddress = { ...appData.applicant.address }
-            //                 nextPath = `${urlPrefix}/species-name`
-            //                 break;
-            //             }
-            //             if (deliveryAddressOption === 'agent') {
-            //                 deliveryAddress = { ...appData.agent.address }
-            //                 nextPath = `${urlPrefix}/species-name`
-            //                 break;
-            //             }
-            //             if (deliveryAddressOption === 'different') {
-            //                 deliveryAddress = null
-            //                 nextPath = `${urlPrefix}/postcode/delivery`
-            //                 break;
-            //             }
-            //             throw "Invalid delivery address option"
-            //         } else { //Applicant
-            //             if (deliveryAddressOption === 'this') {
-            //                 deliveryAddress = { ...appData.applicant.address }
-            //                 nextPath = `${urlPrefix}/species-name`
-            //                 break;
-            //             }
-            //             if (deliveryAddressOption === 'different') {
-            //                 deliveryAddress = null
-            //                 nextPath = `${urlPrefix}/postcode/delivery`
-            //                 break;
-            //             }
-            //             throw "Invalid delivery address option"
-            //         }
-            //         break;
-            //     default:
-            //         throw 'Invalid party type'
-            // }
+            }
 
-            // const newAppData = {
-            //     deliveryAddress: deliveryAddress,
-            //     deliveryAddressOption: request.payload.deliveryAddressOption
-            // }
+            const newAppData = {
+                delivery: {
+                    address: deliveryAddress,
+                    addressOption: request.payload.deliveryAddressOption,
+                    addressSearchData: null
+                }
+            }
 
-            // try {
-            //     setAppData(request, newAppData, `${pageId}/${contactType}`)
-            // }
-            // catch (err) {
-            //     console.log(err);
-            //     return h.redirect(`${invalidAppDataPath}/`)
-            // }
+            try {
+                setAppData(request, newAppData, `${pageId}`)
+            }
+            catch (err) {
+                console.log(err);
+                return h.redirect(`${invalidAppDataPath}/`)
+            }
 
-            return h.redirect(nextPath)            
+            return h.redirect(nextPath)
         }
-    },
-}
-]
+    }
+}]

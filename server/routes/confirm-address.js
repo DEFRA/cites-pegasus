@@ -23,7 +23,17 @@ function createModel(errors, data) {
         pageContent = { ...textContent.confirmAddress.common, ...textContent.confirmAddress.delivery }
     }
 
-    let previousPath = data.uprn ? `${urlPrefix}/select-address` : `${urlPrefix}/enter-address`
+    let previousPath = ''
+    if (!data.addressOption || data.addressOption === 'different'){
+        previousPath = data.address.uprn ? `${urlPrefix}/select-address/${data.contactType}` : `${urlPrefix}/enter-address/${data.contactType}`
+    } else {
+        previousPath = `${urlPrefix}/select-delivery-address`
+    }
+
+
+    // if(!data.addressSearchData){
+    //     previousPath = data.address.uprn ? `${urlPrefix}/select-address` : `${urlPrefix}/enter-address`
+    // }
 
     let defaultTitle = ''
     let pageHeader = ''
@@ -48,17 +58,17 @@ function createModel(errors, data) {
     }
 
     const model = {
-        backLink: `${previousPath}/${data.contactType}`,
+        backLink: previousPath,
         pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
         pageTitle: defaultTitle,
-        addressLine1: data.addressLine1,
-        addressLine2: data.addressLine2,
-        addressLine3: data.addressLine3,
-        addressLine4: data.addressLine4,
-        postcode: data.postcode,
-        country: data.country,
-        showCountry: data.country && data.contactType !== 'delivery',
+        addressLine1: data.address.addressLine1,
+        addressLine2: data.address.addressLine2,
+        addressLine3: data.address.addressLine3,
+        addressLine4: data.address.addressLine4,
+        postcode: data.address.postcode,
+        country: data.address.country,
+        showCountry: data.address.country && data.contactType !== 'delivery',
         changeAddressLinkText: pageContent.changeAddressLinkText,
         changeAddressLink: `/postcode/${data.contactType}`,
     }
@@ -93,7 +103,7 @@ module.exports = [{
             contactType: request.params.contactType,
             isAgent: appData?.isAgent,
             permitType: appData?.permitType,
-            ...appData[request.params.contactType].address,
+            ...appData[request.params.contactType],
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -114,7 +124,7 @@ module.exports = [{
                     contactType: request.params.contactType,
                     isAgent: appData?.isAgent,
                     permitType: appData?.permitType,
-                    ...appData[request.params.contactType].address,
+                    ...appData[request.params.contactType],
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()

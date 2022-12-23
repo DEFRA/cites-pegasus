@@ -73,6 +73,7 @@ function getAppFlow(appData) {
             }
         }
         if (appData?.applicant?.address) {            
+            appFlow.push('select-delivery-address')
             appFlow.push('postcode/delivery')
             appFlow.push('enter-address/delivery')
             if(appData?.delivery?.addressSearchData?.postcode) {
