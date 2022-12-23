@@ -11,7 +11,6 @@ const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/confirm-address/delivery`
 const nextPath = `${urlPrefix}/source-code/0/0`
 const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET` //TODO
 const invalidAppDataPath = urlPrefix
@@ -27,6 +26,8 @@ function createModel(errors, data) {
   unitsOfMeasurement.forEach((e) => {
     if (e.value === data.unitOfMeasurement) e.selected = "true"
   })
+
+  const previousPath = data.deliveryAddressOption === 'different' ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`
 
   let errorList = null
   if (errors) {
@@ -111,7 +112,8 @@ module.exports = [
       const pageData = {
         speciesName: appData?.speciesName,
         quantity: appData?.quantity,
-        unitOfMeasurement: appData?.unitOfMeasurement
+        unitOfMeasurement: appData?.unitOfMeasurement,
+        deliveryAddressOption: appData?.delivery?.addressOption
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -129,10 +131,12 @@ module.exports = [
           unitOfMeasurement: Joi.string()
         }),
         failAction: (request, h, err) => {
+          const appData = getAppData(request)
           const pageData = {
             speciesName: request.payload.speciesName,
             quantity: request.payload.quantity,
-            unitOfMeasurement: request.payload.unitOfMeasurement
+            unitOfMeasurement: request.payload.unitOfMeasurement,
+            deliveryAddressOption: appData?.delivery?.addressOption
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }

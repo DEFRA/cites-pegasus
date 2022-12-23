@@ -241,7 +241,8 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     radioOptionDeliverToApplicantAddress: Joi.string().required(),
     radioOptionDeliverToAgentAddress: Joi.string().required(),
-    radioOptionDeliverToDifferentAddress: Joi.string().required()
+    radioOptionDeliverToDifferentAddress: Joi.string().required(),
+    errorMessages: Joi.object()
   }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
