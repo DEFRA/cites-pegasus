@@ -1,12 +1,12 @@
- const textContent = require('../content/text-content.json')
+const textContent = require("../content/text-content.json")
 
-function isChecked (data, option) {
+function isChecked(data, option) {
   return !!data && data.includes(option)
 }
 
-function setLabelData (data, labelData) {
+function setLabelData(data, labelData) {
   return labelData.map((label) => {
-    if (typeof (label) === 'string' && label !== 'divider') {
+    if (typeof label === "string" && label !== "divider") {
       return {
         value: label,
         text: label,
@@ -14,8 +14,8 @@ function setLabelData (data, labelData) {
         selected: data === label
       }
     }
-    if (label === 'divider') {
-      return { divider: 'or' }
+    if (label === "divider") {
+      return { divider: "or" }
     }
 
     const { text, value, hint } = label
@@ -107,7 +107,6 @@ function setLabelData (data, labelData) {
 //   return errorObject
 // }
 
-
 // function getGrantValues (projectCost) {
 //   const calculatedGrant = Number(GRANT_PERCENTAGE * projectCost / 100).toFixed(2)
 //   const remainingCost = Number(projectCost - calculatedGrant).toFixed(2)
@@ -154,21 +153,26 @@ function setLabelData (data, labelData) {
 //   )))
 // }
 
-function findErrorList ({ details }, inputFields, errorMessages) {
-  const errorCodes = inputFields.map(input => {
-    const foundErrorList = details.filter(({ context: { label: valLabel } }) => (valLabel === input))
+function findErrorList({ details }, inputFields, errorMessages) {
+  const errorCodes = inputFields.map((input) => {
+    const foundErrorList = details.filter(
+      ({ context: { label: valLabel } }) => valLabel === input
+    )
 
-    if (foundErrorList.length === 0) { return null }
+    if (foundErrorList.length === 0) {
+      return null
+    }
 
-    const { type, context: { label } } = foundErrorList[0]
-    return (`error.${label}.${type}`)
+    const {
+      type,
+      context: { label }
+    } = foundErrorList[0]
+    return `error.${label}.${type}`
   })
 
-  return errorCodes.map(err => (
-    err === null
-      ? null
-      : errorMessages[err] ?? err
-  ))
+  return errorCodes.map((err) =>
+    err === null ? null : errorMessages[err] ?? err
+  )
 }
 
 // const getErrorList = (fields, err, phoneErrors) => {
@@ -188,11 +192,13 @@ function findErrorList ({ details }, inputFields, errorMessages) {
 
 const getFieldError = (errorList, href) => {
   const err = getErrorMessage(errorList, href)
-  return err ? {text: err} : null
+  return err ? { text: err } : null
 }
 
 const getErrorMessage = (errorList, href) => {
-  return errorList && errorList.some(err => err.href === href) ? errorList.find(err => err.href === href).text : null
+  return errorList && errorList.some((err) => err.href === href)
+    ? errorList.find((err) => err.href === href).text
+    : null
 }
 
 const getAddressSummary = (address) => {
@@ -209,21 +215,21 @@ const getAddressSummary = (address) => {
 }
 
 module.exports = {
-   isChecked,
-   setLabelData,
-   //   formInputObject,
-   //   getPostCodeHtml,
-   //   errorExtractor,
-   //   getErrorMessage,
-   //   getGrantValues,
-   //   formatUKCurrency,
-   //   itemInObject,
-   //   fetchObjectItem,
-   //   fetchListObjectItems,
+  isChecked,
+  setLabelData,
+  //   formInputObject,
+  //   getPostCodeHtml,
+  //   errorExtractor,
+  //   getErrorMessage,
+  //   getGrantValues,
+  //   formatUKCurrency,
+  //   itemInObject,
+  //   fetchObjectItem,
+  //   fetchListObjectItems,
   findErrorList,
-//   formatApplicationCode,
-//   getSbiHtml,
-//   getErrorList
+  //   formatApplicationCode,
+  //   getSbiHtml,
+  //   getErrorList
   getFieldError,
   getErrorMessage,
   getAddressSummary
