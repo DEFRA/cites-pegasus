@@ -146,13 +146,7 @@ module.exports = [
       },
 
       handler: async (request, h) => {
-        const speciesData = await getSpecies(
-          request,
-          request.payload.speciesName
-        )
-        // const previousAppData = getAppData(request)
-
-        // const quantity = previousAppData?.species[0].quantity
+        const speciesData = await getSpecies(request, request.payload.speciesName)
 
         const appData = {
           species: [
@@ -167,6 +161,18 @@ module.exports = [
           ]
         }
 
+
+        const previousAppData = getAppData(request)
+
+        if (previousAppData?.species) {
+           if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && previousAppData?.species[0]?.quantity > request.payload.quantity){
+            for (let i = 0; i < previousAppData?.species[0]?.quantity - request.payload.quantity; i++) {
+              previousAppData.species[0].specimens.pop()
+            }
+          }
+        }
+
+
         if (request.payload.unitOfMeasurement === "noOfSpecimens") {
           for (let i = 0; i < request.payload.quantity; i++) {
             appData.species[0].specimens.push({ specimenIndex: i })
@@ -174,18 +180,6 @@ module.exports = [
         } else {
           appData.species[0].specimens.push({ specimenIndex: 0 })
         }
-
-        // if (request.payload.unitOfMeasurement === "noOfSpecimens" && quantity <= request.payload.quantity) {
-        //   for (let i = 0; i < request.payload.quantity; i++) {
-        //     appData.species[0].specimens.push({ specimenIndex: i })
-        //   }
-        // } else if (request.payload.unitOfMeasurement === "noOfSpecimens" && quantity > request.payload.quantity) {
-
-        //   for (let i = 0; i < quantity; i++) {
-        //     appData.species[0].specimens.push({ specimenIndex: i })
-        //   }
-        // }
-        // appData.species[0].specimens.push({ specimenIndex: 0 })
 
         try {
           if (speciesData?.scientificname) {
@@ -203,3 +197,4 @@ module.exports = [
     }
   }
 ]
+
