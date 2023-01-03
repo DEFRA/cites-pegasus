@@ -171,8 +171,9 @@ module.exports = [
           for (let i = 0; i < request.payload.quantity; i++) {
             appData.species[0].specimens.push({ specimenIndex: i })
           }
+        } else {
+          appData.species[0].specimens.push({ specimenIndex: 0 })
         }
-        appData.species[0].specimens.push({ specimenIndex: 0 })
 
         // if (request.payload.unitOfMeasurement === "noOfSpecimens" && quantity <= request.payload.quantity) {
         //   for (let i = 0; i < request.payload.quantity; i++) {
@@ -187,17 +188,17 @@ module.exports = [
         // appData.species[0].specimens.push({ specimenIndex: 0 })
 
         try {
-          setAppData(request, appData, `${pageId}`)
+          if (speciesData?.scientificname) {
+            setAppData(request, appData, `${pageId}`)
+            return h.redirect(nextPath)
+          }
+          return h.redirect(unknownSpeciesPath)
+         
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        if (speciesData?.scientificname) {
-          setAppData(request, appData)
-          return h.redirect(nextPath)
-        }
-        return h.redirect(unknownSpeciesPath)
       }
     }
   }

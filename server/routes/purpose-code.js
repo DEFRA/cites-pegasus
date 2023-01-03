@@ -255,13 +255,9 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].purposeCode = request.payload.purposeCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].purposeCode = request.payload.purposeCode
 
-        setAppData(request, { species: appData.species })
-
-          try {
+        try {
             setAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
         }
         catch (err) {

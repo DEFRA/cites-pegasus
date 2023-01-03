@@ -357,10 +357,8 @@ module.exports = [
         appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sourceCode = sourceCode
         appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].enterAReason = enterAReason
 
-        setAppData(request, { species: appData.species })
-
-          try {
-            setAppData(request, appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        try {
+            setAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
         }
         catch (err) {
             console.log(err);
