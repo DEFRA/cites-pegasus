@@ -86,20 +86,20 @@ function getAppFlow(appData) {
         if (appData?.delivery?.address) {
             appFlow.push("species-name")
           }
-      
-        //   if (appData?.species) {
-        //       appData.species.forEach((species, specimen) => {
-        //          appFlow.push("source-code/" + species.index + "/" + specimen.index) 
-        //       });
-            
-        //   }
-
-         //   if (appData?.species) {
-        //       appData.species.array.forEach((species, specimen) => {
-        //          appFlow.push(`purpose-code/${species.index}/${specimen.index}`) 
-        //       });
-            
-        //   }
+        if (appData?.species?.length > 0) {
+            appData.species.forEach((species, speciesindex) => {
+              species.specimens.forEach((specimen, specimenindex) => {
+                appFlow.push(`source-code/${speciesindex}/${specimenindex}`)
+              })
+            })
+          }
+        if (appData?.species?.length > 0) {
+            appData.species.forEach((species, speciesindex) => {
+              species.specimens.forEach((specimen, specimenindex) => {
+                appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
+              })
+            })
+          }
     }
     //console.log(appFlow)
     return appFlow
