@@ -44,20 +44,24 @@ function createModel(errors, isAgent) {
     backLink: previousPath,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
+    pageHeader: pageContent.pageHeader,
+    pageBody1: pageContent.pageBody1,
+    pageBody2: pageContent.pageBody2,
+    bulletListItems: pageContent.bulletListItems,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     inputIsAgent: {
       id: "isAgent",
       name: "isAgent",
       classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: pageContent.radioHeaderAgent,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
+      // fieldset: {
+      //   legend: {
+      //     text: pageContent.radioHeaderAgent,
+      //     isPageHeading: true,
+      //     classes: "govuk-fieldset__legend--l"
+      //   }
+      // },
       hint: {
-        text: pageContent.radioHeaderAgentHint
+        text: pageContent.radioIsAgentHint
       },
       items: setLabelData(isAgentRadioVal, [commonContent.radioOptionYes, commonContent.radioOptionNo]),
       errorMessage: getFieldError(errorList, '#isAgent')
