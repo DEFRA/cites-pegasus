@@ -96,10 +96,9 @@ function getAppFlow(appData) {
         if (appData?.species?.length > 0) {
             appData.species.forEach((species, speciesindex) => {
               species.specimens.forEach((specimen, specimenindex) => {
-                // console.log("specimeennnn", specimen)
-                // if(specimen.sourcecode){
+                if(specimen.sourceCode){
                     appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
-                
+                }
               })
             })
           }
