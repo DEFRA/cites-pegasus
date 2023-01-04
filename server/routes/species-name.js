@@ -112,10 +112,15 @@ module.exports = [
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
+      const speciesName =  appData.species ? appData?.species[0]?.speciesName : ""
+      const quantity = appData.species ? appData?.species[0]?.quantity : ""
+      const unitOfMeasurement = appData.species ? appData?.species[0]?.unitOfMeasurement : ""
+
+
       const pageData = {
-        speciesName: appData?.speciesName,
-        quantity: appData?.quantity,
-        unitOfMeasurement: appData?.unitOfMeasurement,
+        speciesName:  speciesName,
+        quantity: quantity,
+        unitOfMeasurement: unitOfMeasurement,
         deliveryAddressOption: appData?.delivery?.addressOption
       }
 
@@ -165,11 +170,15 @@ module.exports = [
         const previousAppData = getAppData(request)
 
         if (previousAppData?.species) {
-           if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && previousAppData?.species[0]?.quantity > request.payload.quantity){
+          if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && request.payload.unitOfMeasurement !== "noOfSpecimens"){
+            for (let i = 0; i < previousAppData?.species[0]?.quantity; i++) {
+              previousAppData.species[0].specimens.pop()
+            }
+          } else if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && previousAppData?.species[0]?.quantity > request.payload.quantity){
             for (let i = 0; i < previousAppData?.species[0]?.quantity - request.payload.quantity; i++) {
               previousAppData.species[0].specimens.pop()
             }
-          }
+          } 
         }
 
 
