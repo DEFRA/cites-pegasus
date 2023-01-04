@@ -174,8 +174,10 @@ const schema = Joi.object().keys({
   }),
   agent: Joi.object({
     defaultTitle: Joi.string().required(),
-    radioHeaderAgent: Joi.string().required(),
-    radioHeaderAgentHint: Joi.string().required()
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),
+    bulletListItems: Joi.array().items(Joi.object().keys({bulletListItem: Joi.string().required()})),
+    pageBody2: Joi.string().required()
   }),
   contactDetails: Joi.object({
     agent: contactDetailsSchema,

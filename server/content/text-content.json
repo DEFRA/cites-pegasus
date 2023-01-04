@@ -85,8 +85,13 @@
     },
     "agent": {
         "defaultTitle": "Are you applying on behalf of someone else?",
-        "radioHeaderAgent": "Are you applying on behalf of someone else?",
-        "radioHeaderAgentHint": "This includes if you’re completing this application as an agent or on behalf of someone else. For example, a friend, family member or business."
+        "pageHeader": "Are you applying on behalf of someone else?",
+        "pageBody1": "Select ‘yes’ if you are completing this application:",
+        "bulletListItems": [
+            {"bulletListItem" : "as an agent"},
+            {"bulletListItem" : "for a friend or family member"}
+        ],
+        "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for."
     },
     "contactDetails": {
         "agent": {
