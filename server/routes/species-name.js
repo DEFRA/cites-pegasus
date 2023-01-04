@@ -6,13 +6,14 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
+const { setYarValue } = require("../lib/session")
 const { getSpecies } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPath = `${urlPrefix}/source-code/0/0`
-const unknownSpeciesPath = `${urlPrefix}/UNKNOWN-SPECIES-NOT-DONE-YET` //TODO
+const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -160,10 +161,13 @@ module.exports = [
         }
 
         if (speciesData?.scientificname) {
+          setYarValue(request, 'unknownSpeciesName', null)
           setAppData(request, appData)
           return h.redirect(nextPath)
+        } else {
+          setYarValue(request, 'unknownSpeciesName', request.payload.speciesName)
+          return h.redirect(unknownSpeciesPath)
         }
-        return h.redirect(unknownSpeciesPath)
       }
     }
   }
