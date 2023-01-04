@@ -8,6 +8,7 @@ const routes = [].concat(
   require('../routes/postcode'),
   require('../routes/select-address'),
   require('../routes/species-name'),
+  require('../routes/could-not-confirm'),
   require('../routes/enter-address'),
   require('../routes/purpose-code'),
   require('../routes/confirm-address'),
