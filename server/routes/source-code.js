@@ -257,7 +257,10 @@ module.exports = [
       const appData = getAppData(request)
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        validateAppData(
+          appData,
+          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        )
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
@@ -330,8 +333,7 @@ module.exports = [
             unitOfMeasurement:
               appData.species[request.params.speciesIndex]?.unitOfMeasurement,
             kingdom: appData.species[request.params.speciesIndex]?.kingdom,
-            ...appData[request.params.speciesIndex],
-            ...appData[request.params.specimenIndex]
+            ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -339,21 +341,39 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        const enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
-        const anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI : ""
-        const anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO : ""
+        const enterAReason =
+          request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+        const anotherSourceCodeForI =
+          request.payload.sourceCode === "I"
+            ? request.payload.anotherSourceCodeForI
+            : ""
+        const anotherSourceCodeForO =
+          request.payload.sourceCode === "O"
+            ? request.payload.anotherSourceCodeForO
+            : ""
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sourceCode = request.payload.sourceCode
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].anotherSourceCodeForI = anotherSourceCodeForI
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].anotherSourceCodeForO = anotherSourceCodeForO
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].enterAReason = enterAReason
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].sourceCode = request.payload.sourceCode
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].anotherSourceCodeForI = anotherSourceCodeForI
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].anotherSourceCodeForO = anotherSourceCodeForO
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].enterAReason = enterAReason
 
         try {
-            setAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-        }
-        catch (err) {
-            console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+          setAppData(
+            request,
+            { species: appData.species },
+            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          )
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidAppDataPath}/`)
         }
 
         return h.redirect(

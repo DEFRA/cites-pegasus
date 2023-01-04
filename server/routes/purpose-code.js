@@ -246,8 +246,6 @@ module.exports = [
             quantity: appData.species[request.params.speciesIndex]?.quantity,
             unitOfMeasurement:
               appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            ...appData[request.params.speciesIndex],
-            ...appData[request.params.specimenIndex]
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
