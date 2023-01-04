@@ -25,7 +25,7 @@ function createModel(errors, data) {
         pageContent = textContent.contactDetails.agent
     }
 
-    let previousPath = data.contactType === 'applicant' && data.isAgent ? `${urlPrefix}/confirm-address/agent` : `${urlPrefix}/agent`
+    let previousPath = data.contactType === 'applicant' && data.isAgent ? `${urlPrefix}/confirm-address/agent` : `${urlPrefix}/applying-on-behalf`
 
     let defaultTitle = ''
     let pageHeader = ''

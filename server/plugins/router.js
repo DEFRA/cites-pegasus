@@ -3,7 +3,7 @@ const routes = [].concat(
   require('../routes/apply-cites-permit'),
   require('../routes/cannot-use-service'),
   require('../routes/permit-type'),
-  require('../routes/agent'),
+  require('../routes/applying-on-behalf'),
   require('../routes/contact-details'),
   require('../routes/postcode'),
   require('../routes/select-address'),

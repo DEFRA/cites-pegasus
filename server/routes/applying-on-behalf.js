@@ -4,7 +4,7 @@ const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-fu
 const { setAppData, getAppData, validateAppData } = require('../lib/app-data')
 
 const textContent = require('../content/text-content')
-const pageId = 'agent'
+const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/`
@@ -12,7 +12,7 @@ const invalidAppDataPath = urlPrefix
 
 function createModel(errors, isAgent) {
   const commonContent = textContent.common;
-  const pageContent = textContent.agent;
+  const pageContent = textContent.applyingOnBehalf;
 
   let isAgentRadioVal = null
   switch (isAgent) {

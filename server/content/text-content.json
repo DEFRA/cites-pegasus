@@ -83,7 +83,7 @@
         "linkUrl": "/",
         "finishButtonUrl": "/"
     },
-    "agent": {
+    "applyingOnBehalf": {
         "defaultTitle": "Are you applying on behalf of someone else?",
         "pageHeader": "Are you applying on behalf of someone else?",
         "pageBody1": "Select ‘yes’ if you are completing this application:",
