@@ -256,6 +256,12 @@ const schema = Joi.object().keys({
     unitOfMeasurementPrompt: Joi.string().required(),
     unitsOfMeasurement: Joi.array().items(Joi.object())
   }),
+  couldNotConfirm: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    bodyText1: Joi.string().required(),
+    bodyText2: Joi.string().required()
+  }),
   sourceCode: Joi.object({
     animal: sourceCodeSchema,
     plant: sourceCodeSchema

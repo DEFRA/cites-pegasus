@@ -453,6 +453,12 @@
         }
       ]
     },
+    "couldNotConfirm": {
+        "defaultTitle": "We could not confirm the scientific name",
+        "pageHeader": "We could not confirm the scientific name",
+        "bodyText1": "We could not confirm the scientific name ‘",
+        "bodyText2": "’ on the species list. You can <a class='govuk-link' href='https://speciesplus.net/' target='_blank'>check scientific names on species+</a> "
+    },
     "sourceCode": {
       "animal": {
         "defaultTitle": "What is the source code?",
