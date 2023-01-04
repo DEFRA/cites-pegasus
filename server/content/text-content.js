@@ -172,7 +172,7 @@ const schema = Joi.object().keys({
     linkUrl: Joi.string().uri({ allowRelative: true }).required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
   }),
-  agent: Joi.object({
+  applyingOnBehalf: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody1: Joi.string().required(),
