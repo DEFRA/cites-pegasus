@@ -229,7 +229,7 @@ function createModel(errors, data) {
           label: {
             classes: "govuk-!-font-weight-bold"
           },
-          checked: isChecked(data.sourceCode, "C"),
+          checked: isChecked(data.sourceCode, "U"),
           conditional: {
             html: sourceCharacterCount
           }
@@ -282,7 +282,7 @@ module.exports = [
         anotherSourceCodeForO:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.anotherSourceCodeForI,
+          ]?.anotherSourceCodeForO,
         enterAReason:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
@@ -339,22 +339,13 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        let sourceCode = ""
-        switch (request.payload.sourceCode) {
-          case "I":
-            sourceCode = request.payload.anotherSourceCodeForI
-            break
-          case "O":
-            sourceCode = request.payload.anotherSourceCodeForO
-            break
-          default:
-            sourceCode = request.payload.sourceCode
-        }
+        const enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+        const anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI : ""
+        const anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO : ""
 
-        let enterAReason =
-          request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
-
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sourceCode = sourceCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sourceCode = request.payload.sourceCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].anotherSourceCodeForI = anotherSourceCodeForI
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].anotherSourceCodeForO = anotherSourceCodeForO
         appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].enterAReason = enterAReason
 
         try {

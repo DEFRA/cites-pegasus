@@ -171,7 +171,7 @@ module.exports = [
 
         if (previousAppData?.species) {
           if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && request.payload.unitOfMeasurement !== "noOfSpecimens"){
-            for (let i = 0; i < previousAppData?.species[0]?.quantity; i++) {
+            for (let i = 0; i < (previousAppData?.species[0]?.quantity - 1); i++) {
               previousAppData.species[0].specimens.pop()
             }
           } else if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && previousAppData?.species[0]?.quantity > request.payload.quantity){
