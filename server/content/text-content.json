@@ -137,7 +137,10 @@
             "inputLabelBusinessName": "Business name (optional)",
             "inputHintBusinessName": "If the importer is a business, give the business name.",
             "inputLabelEmail": "Email address",
-            "inputHintEmail": "We will only use this to send the importer a copy of the application. "
+            "inputHintEmailImport": "We will only use the importer’s email address to contact them about the application.",
+            "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
+            "inputHintEmailReexport": "We will only use the re-exporter's email address to contact them about the application.",
+            "inputHintEmailArticle10": "We will only use the applicant’s email address to contact them about the application."
         }
     },
     "postcode": {

@@ -34,18 +34,22 @@ function createModel(errors, data) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
+            inputHintEmail = pageContent.inputHintEmailImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
+            inputHintEmail = pageContent.inputHintEmailExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
+            inputHintEmail = pageContent.inputHintEmailReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
+            inputHintEmail = pageContent.inputHintEmailArticle10
             break;
     }
 
