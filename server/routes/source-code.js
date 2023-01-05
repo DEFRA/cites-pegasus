@@ -147,7 +147,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "R")
         },
-        data.kingdom === "Animalia" && {
+        {
           value: "D",
           text: pageContent.radioOptionD,
           hint: { text: pageContent.radioOptionDHint },
@@ -156,7 +156,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "D")
         },
-        {
+        data.kingdom === "Animalia" && {
           value: "C",
           text: pageContent.radioOptionC,
           hint: { text: pageContent.radioOptionCHint },
