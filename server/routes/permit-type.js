@@ -6,7 +6,7 @@ const textContent = require('../content/text-content')
 const pageId = 'permit-type'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/apply-cites-permit`
-const nextPath = `${urlPrefix}/agent`
+const nextPath = `${urlPrefix}/applying-on-behalf`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 
 function createModel(errors, permitType) {

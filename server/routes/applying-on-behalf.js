@@ -4,7 +4,7 @@ const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-fu
 const { setAppData, getAppData, validateAppData } = require('../lib/app-data')
 
 const textContent = require('../content/text-content')
-const pageId = 'agent'
+const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/`
@@ -12,7 +12,7 @@ const invalidAppDataPath = urlPrefix
 
 function createModel(errors, isAgent) {
   const commonContent = textContent.common;
-  const pageContent = textContent.agent;
+  const pageContent = textContent.applyingOnBehalf;
 
   let isAgentRadioVal = null
   switch (isAgent) {
@@ -44,20 +44,24 @@ function createModel(errors, isAgent) {
     backLink: previousPath,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
+    pageHeader: pageContent.pageHeader,
+    pageBody1: pageContent.pageBody1,
+    pageBody2: pageContent.pageBody2,
+    bulletListItems: pageContent.bulletListItems,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     inputIsAgent: {
       id: "isAgent",
       name: "isAgent",
       classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: pageContent.radioHeaderAgent,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
+      // fieldset: {
+      //   legend: {
+      //     text: pageContent.radioHeaderAgent,
+      //     isPageHeading: true,
+      //     classes: "govuk-fieldset__legend--l"
+      //   }
+      // },
       hint: {
-        text: pageContent.radioHeaderAgentHint
+        text: pageContent.radioIsAgentHint
       },
       items: setLabelData(isAgentRadioVal, [commonContent.radioOptionYes, commonContent.radioOptionNo]),
       errorMessage: getFieldError(errorList, '#isAgent')

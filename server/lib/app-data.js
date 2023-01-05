@@ -45,7 +45,7 @@ function getAppFlow(appData) {
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (appData?.permitType === 'other') { appFlow.push('cannot-use-service') }
     if (appData?.permitType && appData?.permitType !== 'other') { 
-        appFlow.push('agent')
+        appFlow.push('applying-on-behalf')
         if (appData?.isAgent === true) { 
             appFlow.push('contact-details/agent') 
             if (appData?.agent?.fullName) {

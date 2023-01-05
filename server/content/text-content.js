@@ -172,10 +172,12 @@ const schema = Joi.object().keys({
     linkUrl: Joi.string().uri({ allowRelative: true }).required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
   }),
-  agent: Joi.object({
+  applyingOnBehalf: Joi.object({
     defaultTitle: Joi.string().required(),
-    radioHeaderAgent: Joi.string().required(),
-    radioHeaderAgentHint: Joi.string().required()
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),
+    bulletListItems: Joi.array().items(Joi.object().keys({bulletListItem: Joi.string().required()})),
+    pageBody2: Joi.string().required()
   }),
   contactDetails: Joi.object({
     agent: contactDetailsSchema,
@@ -255,6 +257,14 @@ const schema = Joi.object().keys({
     selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
     unitsOfMeasurement: Joi.array().items(Joi.object())
+  }),
+  couldNotConfirm: Joi.object({
+    pageTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    bodyText1: Joi.string().required(),
+    bodyText2: Joi.string().required(),
+    linkText: Joi.string().required(),
+    linkUrl: Joi.string().required()
   }),
   sourceCode: Joi.object({
     animal: sourceCodeSchema,
