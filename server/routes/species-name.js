@@ -13,6 +13,7 @@ const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPath = `${urlPrefix}/source-code/0/0`
+const invalidAppDataPath = urlPrefix
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 
 function createModel(errors, data) {
@@ -27,7 +28,10 @@ function createModel(errors, data) {
     if (e.value === data.unitOfMeasurement) e.selected = "true"
   })
 
-  const previousPath = data.deliveryAddressOption === 'different' ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`
+  const previousPath =
+    data.deliveryAddressOption === "different"
+      ? `${urlPrefix}/confirm-address/delivery`
+      : `${urlPrefix}/select-delivery-address`
 
   let errorList = null
   if (errors) {
@@ -101,11 +105,23 @@ module.exports = [
     path: currentPath,
     handler: async (request, h) => {
       const appData = getAppData(request)
-      // validateAppData(appData, pageId) //TODO
+
+      try {
+        validateAppData(appData, `${pageId}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
+
+      const speciesName =  appData.species ? appData?.species[0]?.speciesName : ""
+      const quantity = appData.species ? appData?.species[0]?.quantity : ""
+      const unitOfMeasurement = appData.species ? appData?.species[0]?.unitOfMeasurement : ""
+
+
       const pageData = {
-        speciesName: appData?.speciesName,
-        quantity: appData?.quantity,
-        unitOfMeasurement: appData?.unitOfMeasurement,
+        speciesName:  speciesName,
+        quantity: quantity,
+        unitOfMeasurement: unitOfMeasurement,
         deliveryAddressOption: appData?.delivery?.addressOption
       }
 
@@ -136,10 +152,7 @@ module.exports = [
       },
 
       handler: async (request, h) => {
-        const speciesData = await getSpecies(
-          request,
-          request.payload.speciesName
-        )
+        const speciesData = await getSpecies(request, request.payload.speciesName)
 
         const appData = {
           species: [
@@ -154,21 +167,47 @@ module.exports = [
           ]
         }
 
+
+        const previousAppData = getAppData(request)
+
+        if (previousAppData?.species) {
+          if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && request.payload.unitOfMeasurement !== "noOfSpecimens"){
+            for (let i = 0; i < (previousAppData?.species[0]?.quantity - 1); i++) {
+              previousAppData.species[0].specimens.pop()
+            }
+          } else if (previousAppData?.species[0]?.unitOfMeasurement === "noOfSpecimens" && previousAppData?.species[0]?.quantity > request.payload.quantity){
+            for (let i = 0; i < previousAppData?.species[0]?.quantity - request.payload.quantity; i++) {
+              previousAppData.species[0].specimens.pop()
+            }
+          } 
+        }
+
+
         if (request.payload.unitOfMeasurement === "noOfSpecimens") {
           for (let i = 0; i < request.payload.quantity; i++) {
             appData.species[0].specimens.push({ specimenIndex: i })
           }
+        } else {
+          appData.species[0].specimens.push({ specimenIndex: 0 })
         }
 
-        if (speciesData?.scientificname) {
-          setYarValue(request, 'unknownSpeciesName', null)
-          setAppData(request, appData)
-          return h.redirect(nextPath)
-        } else {
-          setYarValue(request, 'unknownSpeciesName', request.payload.speciesName)
-          return h.redirect(unknownSpeciesPath)
+        try {
+          if (speciesData?.scientificname) {
+            setYarValue(request, 'unknownSpeciesName', null)
+            setAppData(request, appData)
+            return h.redirect(nextPath)
+          } else {
+            setYarValue(request, 'unknownSpeciesName', request.payload.speciesName)
+            return h.redirect(unknownSpeciesPath)
+          }       
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidAppDataPath}/`)
         }
+
+        
       }
     }
   }
 ]
+

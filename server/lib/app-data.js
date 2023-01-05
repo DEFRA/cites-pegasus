@@ -83,6 +83,25 @@ function getAppFlow(appData) {
                 appFlow.push('confirm-address/delivery')
             }            
         }
+        if (appData?.delivery?.address) {
+            appFlow.push("species-name")
+          }
+        if (appData?.species?.length > 0) {
+            appData.species.forEach((species, speciesindex) => {
+              species.specimens.forEach((specimen, specimenindex) => {
+                appFlow.push(`source-code/${speciesindex}/${specimenindex}`)
+              })
+            })
+          }
+        if (appData?.species?.length > 0) {
+            appData.species.forEach((species, speciesindex) => {
+              species.specimens.forEach((specimen, specimenindex) => {
+                if(specimen.sourceCode){
+                    appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
+                }
+              })
+            })
+          }
     }
     //console.log(appFlow)
     return appFlow

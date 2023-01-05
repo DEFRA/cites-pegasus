@@ -12,6 +12,7 @@ const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPath = `${urlPrefix}/specimen-details/` //TO DO
+const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -41,9 +42,10 @@ function createModel(errors, data) {
   const specimenIndex = data.specimenIndex + 1
   const unitOfMeasurement = data.unitOfMeasurement
 
-  const captionText = (unitOfMeasurement === "noOfSpecimens"
-    ? `${speciesName} (${specimenIndex} of ${quantity})`
-    : `${speciesName}`)
+  const captionText =
+    unitOfMeasurement === "noOfSpecimens"
+      ? `${speciesName} (${specimenIndex} of ${quantity})`
+      : `${speciesName}`
 
   const model = {
     backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -194,17 +196,25 @@ module.exports = [
     },
     handler: async (request, h) => {
       const appData = getAppData(request)
-      // validateAppData(appData, pageId)
+
+      try {
+        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
 
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
         speciesName: appData.species[request.params.speciesIndex]?.speciesName,
         quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,    
-        purposeCode: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]?.purposeCode,
-        ...appData[request.params.speciesIndex],
-        ...appData[request.params.specimenIndex]
+        unitOfMeasurement:
+          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+        purposeCode:
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.purposeCode,
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -229,11 +239,11 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+            speciesName:
+              appData.species[request.params.speciesIndex]?.speciesName,
             quantity: appData.species[request.params.speciesIndex]?.quantity,
-            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            ...appData[request.params.speciesIndex],
-            ...appData[request.params.specimenIndex]
+            unitOfMeasurement:
+              appData.species[request.params.speciesIndex]?.unitOfMeasurement,
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -242,8 +252,14 @@ module.exports = [
         const appData = getAppData(request)
 
         appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].purposeCode = request.payload.purposeCode
-        
-        setAppData(request, { species: appData.species })
+
+        try {
+            setAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        }
+        catch (err) {
+            console.log(err);
+            return h.redirect(`${invalidAppDataPath}/`)
+        }
 
         return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
