@@ -215,8 +215,6 @@ module.exports = [
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
           ]?.purposeCode,
-        ...appData[request.params.speciesIndex],
-        ...appData[request.params.specimenIndex]
       }
 
       return h.view(pageId, createModel(null, pageData))

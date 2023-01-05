@@ -290,8 +290,6 @@ module.exports = [
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
           ]?.enterAReason,
-        ...appData[request.params.speciesIndex],
-        ...appData[request.params.specimenIndex]
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -345,11 +343,11 @@ module.exports = [
           request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
         const anotherSourceCodeForI =
           request.payload.sourceCode === "I"
-            ? request.payload.anotherSourceCodeForI
+            ? request.payload.anotherSourceCodeForI.toUpperCase()
             : ""
         const anotherSourceCodeForO =
           request.payload.sourceCode === "O"
-            ? request.payload.anotherSourceCodeForO
+            ? request.payload.anotherSourceCodeForO.toUpperCase()
             : ""
 
         appData.species[request.params.speciesIndex].specimens[
