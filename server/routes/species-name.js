@@ -6,7 +6,6 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
-const { setYarValue } = require("../lib/session")
 const { getSpecies } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
@@ -113,15 +112,12 @@ module.exports = [
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
-      const speciesName =  appData.species ? appData?.species[0]?.speciesName : ""
-      const quantity = appData.species ? appData?.species[0]?.quantity : ""
-      const unitOfMeasurement = appData.species ? appData?.species[0]?.unitOfMeasurement : ""
-
+      const species = appData?.species && appData?.species[0] ? appData?.species[0] : null
 
       const pageData = {
-        speciesName:  speciesName,
-        quantity: quantity,
-        unitOfMeasurement: unitOfMeasurement,
+        speciesName: species?.speciesSearchData,
+        quantity: species?.quantity,
+        unitOfMeasurement: species?.unitOfMeasurement,
         deliveryAddressOption: appData?.delivery?.addressOption
       }
 
@@ -159,6 +155,7 @@ module.exports = [
             {
               speciesIndex: 0,
               speciesName: speciesData?.scientificname,
+              speciesSearchData: request.payload.speciesName,
               quantity: request.payload.quantity,
               unitOfMeasurement: request.payload.unitOfMeasurement,
               kingdom: speciesData?.kingdom,
@@ -166,7 +163,6 @@ module.exports = [
             }
           ]
         }
-
 
         const previousAppData = getAppData(request)
 
@@ -192,14 +188,14 @@ module.exports = [
         }
 
         try {
+          setAppData(request, appData)
+
           if (speciesData?.scientificname) {
-            setYarValue(request, 'unknownSpeciesName', null)
-            setAppData(request, appData)
             return h.redirect(nextPath)
-          } else {
-            setYarValue(request, 'unknownSpeciesName', request.payload.speciesName)
-            return h.redirect(unknownSpeciesPath)
           }       
+
+          return h.redirect(`${unknownSpeciesPath}/0`)//TODO This will need to be the species index
+
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)

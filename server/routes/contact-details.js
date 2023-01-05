@@ -34,21 +34,25 @@ function createModel(errors, data) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
+            inputHintBusinessName = pageContent.inputHintBusinessNameImport
             inputHintEmail = pageContent.inputHintEmailImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
+            inputHintBusinessName = pageContent.inputHintBusinessNameExport
             inputHintEmail = pageContent.inputHintEmailExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
+            inputHintBusinessName = pageContent.inputHintBusinessNameReexport
             inputHintEmail = pageContent.inputHintEmailReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
+            inputHintBusinessName = pageContent.inputHintBusinessNameArticle10
             inputHintEmail = pageContent.inputHintEmailArticle10
             break;
     }
@@ -92,7 +96,7 @@ function createModel(errors, data) {
                 text: pageContent.inputLabelBusinessName,
             },
             hint: {
-                text: pageContent.inputHintBusinessName
+                text: inputHintBusinessName
             },
             id: "businessName",
             name: "businessName",
@@ -106,7 +110,7 @@ function createModel(errors, data) {
                 text: pageContent.inputLabelEmail,
             },
             hint: {
-                text: pageContent.inputHintEmail
+                text: inputHintEmail
             },
             id: "email",
             name: "email",

@@ -105,9 +105,15 @@
             "pageHeaderArticle10": "Enter your contact details",
             "inputLabelFullName": "Full name",
             "inputLabelBusinessName": "Business name (optional)",
-            "inputHintBusinessName": "If you are a business, give the business name.",
+            "inputHintBusinessNameImport": "If you are a business, give the business name.",
+            "inputHintBusinessNameExport": "If you are a business, give the business name.",
+            "inputHintBusinessNameReexport": "If you are a business, give the business name.",
+            "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
             "inputLabelEmail": "Email address",
-            "inputHintEmail": "We will only use this to send you a copy of the application. "
+            "inputHintEmailImport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailExport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
         },
         "applicant": {
             "defaultTitleImport": "Enter your contact details",
@@ -120,9 +126,15 @@
             "pageHeaderArticle10": "Enter your contact details",
             "inputLabelFullName": "Full name",
             "inputLabelBusinessName": "Business name (optional)",
-            "inputHintBusinessName": "If you are a business, give the business name.",
+            "inputHintBusinessNameImport": "If you are a business, give the business name.",
+            "inputHintBusinessNameExport": "If you are a business, give the business name.",
+            "inputHintBusinessNameReexport": "If you are a business, give the business name.",
+            "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
             "inputLabelEmail": "Email address",
-            "inputHintEmail": "We will only use this to send you a copy of the application. "
+            "inputHintEmailImport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailExport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
         },
         "agentLed": {
             "defaultTitleImport": "Enter the importer's contact details",
@@ -135,7 +147,10 @@
             "pageHeaderArticle10": "Enter the applicant's contact details",
             "inputLabelFullName": "Full name",
             "inputLabelBusinessName": "Business name (optional)",
-            "inputHintBusinessName": "If the importer is a business, give the business name.",
+            "inputHintBusinessNameImport": "If the importer is a business, give the business name.",
+            "inputHintBusinessNameExport": "If the exporter is a business, give the business name.",
+            "inputHintBusinessNameReexport": "If the re-exporter is a business, give the business name.",
+            "inputHintBusinessNameArticle10": "If the applicant is a business, give the business name.",
             "inputLabelEmail": "Email address",
             "inputHintEmailImport": "We will only use the importer’s email address to contact them about the application.",
             "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
