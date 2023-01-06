@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -137,7 +137,7 @@ module.exports = [{
             } else if (request.params.contactType === 'applicant') {
                 nextPath = `${urlPrefix}/select-delivery-address`
             } else {
-                nextPath = `${urlPrefix}/species-name`
+                nextPath = `${urlPrefix}/species-name/0`
             }
             return h.redirect(nextPath)
         }

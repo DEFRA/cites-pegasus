@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
@@ -134,7 +134,7 @@ module.exports = [{
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
 
-            let nextPath = `${urlPrefix}/species-name`
+            let nextPath = `${urlPrefix}/species-name/0`
 
             switch (deliveryAddressOption) {
                 case 'applicant':
@@ -161,7 +161,7 @@ module.exports = [{
             }
 
             try {
-                setAppData(request, newAppData, `${pageId}`)
+                mergeAppData(request, newAppData, `${pageId}`)
             }
             catch (err) {
                 console.log(err);
