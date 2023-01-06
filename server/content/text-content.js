@@ -304,6 +304,14 @@ const schema = Joi.object().keys({
     radioOptionZ: Joi.string().required(),
     radioOptionZHint: Joi.string().required(),
   }),
+  useCertificateFor: Joi.object({
+    defaultTitle: Joi.string().required(),
+    heading: Joi.string().required(),
+    radioOptionOne: Joi.string().required(),
+    radioOptionTwo: Joi.string().required(),
+    radioOptionThree: Joi.string().required(),
+    radioOptionQFour: Joi.string().required(),
+  }),
 })
 
 // Validate config
