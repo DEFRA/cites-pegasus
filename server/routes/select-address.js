@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressesByPostcode } = require('../services/address-service')
 const textContent = require('../content/text-content')
@@ -121,7 +121,7 @@ module.exports = [{
                 }
             }
 
-            setAppData(request, newAppData, `${pageId}/${contactType}`)
+            mergeAppData(request, newAppData, `${pageId}/${contactType}`)
 
             const response = await getAddressesByPostcode(searchData.postcode)
             const pageData = {
@@ -141,7 +141,7 @@ module.exports = [{
                 }
             }
 
-            setAppData(request, newAppData, `${pageId}/${contactType}`)
+            mergeAppData(request, newAppData, `${pageId}/${contactType}`)
 
             return h.view(pageId, createModel(null, pageData));
         }
@@ -219,7 +219,7 @@ module.exports = [{
                     }
                 }
 
-                setAppData(request, newAppData, `${pageId}/${contactType}`)
+                mergeAppData(request, newAppData, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);

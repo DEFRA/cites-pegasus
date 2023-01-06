@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, setAppData, validateAppData } = require('../lib/app-data')
+const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'contact-details'
@@ -182,7 +182,7 @@ module.exports = [{
             }
 
             try {
-                setAppData(request, contactDetails, `${pageId}/${request.params.contactType}`)
+                mergeAppData(request, contactDetails, `${pageId}/${request.params.contactType}`)
             }
             catch (err) {
                 console.log(err);

@@ -264,7 +264,8 @@ const schema = Joi.object().keys({
     bodyText1: Joi.string().required(),
     bodyText2: Joi.string().required(),
     linkText: Joi.string().required(),
-    linkUrl: Joi.string().required()
+    linkUrl: Joi.string().required(),
+    searchAgainButton: Joi.string().required()
   }),
   sourceCode: Joi.object({
     animal: sourceCodeSchema,
