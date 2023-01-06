@@ -68,7 +68,7 @@ async function getSpecies(request, speciesName) {
   const accessToken = await getAccessToken(request)
 
   try {
-    const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName}')`
+    const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
     const { res, payload } = await Wreck.get(url, { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
     
     if(payload.cites_species_response){

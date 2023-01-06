@@ -23,6 +23,16 @@ function mergeAppData(request, data, path) {
     return mergedAppData
 }
 
+function setAppData(request, data, path) {
+    const existingAppData = getAppData(request)
+    if (path) { validateAppData(existingAppData, path) }
+
+    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
+
+    setYarValue(request, 'appData', data)
+    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
+}
+
 function clearAppData(request) {
     setYarValue(request, 'appData', null)
 }
@@ -112,6 +122,7 @@ function getAppFlow(appData) {
 }
 
 module.exports = {
+    setAppData,
     mergeAppData,
     getAppData,
     clearAppData,
