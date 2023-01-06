@@ -10,7 +10,7 @@ const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/purpose-code`
-const nextPath = `${urlPrefix}/specimen-details/` //TO DO
+const nextPath = `${urlPrefix}/specimen-type` //TO DO
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -43,7 +43,6 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    captionText: captionText,
 
     inputUseCertificateFor: {
       idPrefix: "useCertificateFor",
@@ -111,15 +110,15 @@ module.exports = [
     handler: async (request, h) => {
       const appData = getAppData(request)
 
-    //   try {
-    //     validateAppData(
-    //       appData,
-    //       `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-    //     )
-    //   } catch (err) {
-    //     console.log(err)
-    //     return h.redirect(`${invalidAppDataPath}/`)
-    //   }
+      try {
+        validateAppData(
+          appData,
+          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        )
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
 
       const pageData = {
         speciesIndex: request.params.speciesIndex,

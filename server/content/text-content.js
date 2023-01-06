@@ -310,7 +310,7 @@ const schema = Joi.object().keys({
     radioOptionOne: Joi.string().required(),
     radioOptionTwo: Joi.string().required(),
     radioOptionThree: Joi.string().required(),
-    radioOptionQFour: Joi.string().required(),
+    radioOptionFour: Joi.string().required(),
   }),
 })
 

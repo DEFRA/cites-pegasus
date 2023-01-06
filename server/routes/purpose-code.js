@@ -11,7 +11,8 @@ const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
-const nextPath = `${urlPrefix}/specimen-details/` //TO DO
+const article10Path = `${urlPrefix}/use-certificate-for`// TO DO
+const nextPath = `${urlPrefix}/specimen-type` //TO DO
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -263,19 +264,23 @@ module.exports = [
         ].purposeCode = request.payload.purposeCode
 
         try {
-          setAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          setAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
           )
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
+                 
         }
-
-        return h.redirect(
+    
+        if (appData.permitType === "article10"){
+          return h.redirect(
+            `${article10Path}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          )
+        } else {
+           return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
+        }
       }
     }
   }
