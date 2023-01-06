@@ -57,9 +57,15 @@ const contactDetailsSchema = Joi.object({
   pageHeaderArticle10: Joi.string().required(),
   inputLabelFullName: Joi.string().required(),
   inputLabelBusinessName: Joi.string().required(),
-  inputHintBusinessName: Joi.string().required(),
+  inputHintBusinessNameImport: Joi.string().required(),
+  inputHintBusinessNameExport: Joi.string().required(),
+  inputHintBusinessNameReexport: Joi.string().required(),
+  inputHintBusinessNameArticle10: Joi.string().required(),
   inputLabelEmail: Joi.string().required(),
-  inputHintEmail: Joi.string().required(),
+  inputHintEmailImport: Joi.string().required(),
+  inputHintEmailExport: Joi.string().required(),
+  inputHintEmailReexport: Joi.string().required(),
+  inputHintEmailArticle10: Joi.string().required(),
 })
 
 const enterAddressSchema = Joi.object({
