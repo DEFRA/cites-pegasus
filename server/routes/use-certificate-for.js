@@ -57,7 +57,7 @@ function createModel(errors, data) {
       items: [
         {
           value: "to prove that you legally acquired a specimen",
-          text: pageContent.radioOptionOne,
+          text: pageContent.radioOptionLegally,
           checked: isChecked(
             data.useCertificateFor,
             "to prove that you legally acquired a specimen"
@@ -65,7 +65,7 @@ function createModel(errors, data) {
         },
         {
           value: "to use the specimen for commercial activities",
-          text: pageContent.radioOptionTwo,
+          text: pageContent.radioOptionCommercialActivities,
           checked: isChecked(
             data.useCertificateFor,
             "to use the specimen for commercial activities"
@@ -74,7 +74,7 @@ function createModel(errors, data) {
         {
           value:
             "to use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
-          text: pageContent.radioOptionThree,
+          text: pageContent.radioOptionOther,
           checked: isChecked(
             data.useCertificateFor,
             "to use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes"
@@ -82,7 +82,7 @@ function createModel(errors, data) {
         },
         {
           value: "to move a live specimen within Great Britain",
-          text: pageContent.radioOptionFour,
+          text: pageContent.radioOptionMoveALiveSpecimen,
           checked: isChecked(
             data.useCertificateFor,
             "to move a live specimen within Great Britain"
@@ -123,10 +123,10 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        // useCertificateFor:
-        //   appData.species[request.params.speciesIndex].specimens[
-        //     request.params.specimenIndex
-        //   ]?.useCertificateFor
+        useCertificateFor:
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]?.useCertificateFor
       }
 
       return h.view(pageId, createModel(null, pageData))
