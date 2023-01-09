@@ -163,7 +163,7 @@ module.exports = [{
             const appData = {
                 [contactType]: {
                     addressSearchData: {               
-                        postcode: request.payload.postcode.trim()
+                        postcode: request.payload.postcode.trim().toUpperCase()
                     }
                 }
             }
