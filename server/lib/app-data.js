@@ -111,16 +111,7 @@ function getAppFlow(appData) {
             })
         }
         
-
-        // if (appData?.species?.length > 0) {
-        //     appData.species.forEach((species, speciesindex) => {
-        //         species.specimens.forEach((specimen, specimenindex) => {
-        //             if (specimen.purposeCode && appData.permitType === "article10") {
-        //                 appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
-        //             }
-        //         })
-        //     })
-        // }
+        
         // if (appData?.species?.length > 0) {
         //     appData.species.forEach((species, speciesindex) => {
         //         species.specimens.forEach((specimen, specimenindex) => {

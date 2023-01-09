@@ -5,7 +5,7 @@ const {
   getFieldError,
   isChecked
 } = require("../lib/helper-functions")
-const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
+const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -123,10 +123,10 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        useCertificateFor:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]?.useCertificateFor
+        // useCertificateFor:
+        //   appData.species[request.params.speciesIndex].specimens[
+        //     request.params.specimenIndex
+        //   ]?.useCertificateFor
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -167,7 +167,7 @@ module.exports = [
         ].useCertificateFor = request.payload.useCertificateFor
 
         try {
-          setAppData(
+          mergeAppData(
             request,
             { species: appData.species },
             `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
