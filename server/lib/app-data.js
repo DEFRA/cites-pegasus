@@ -5,7 +5,7 @@ const lodash = require('lodash')
 
 function getAppData(request) {
     const session = getYarValue(request, 'appData')
-    return session
+    return lodash.cloneDeep(session)
 }
 
 function mergeAppData(request, data, path) {
