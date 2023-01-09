@@ -88,8 +88,12 @@
         "pageHeader": "Are you applying on behalf of someone else?",
         "pageBody1": "Select ‘yes’ if you are completing this application:",
         "bulletListItems": [
-            {"bulletListItem" : "as an agent"},
-            {"bulletListItem" : "for a friend or family member"}
+            {
+                "bulletListItem": "as an agent"
+            },
+            {
+                "bulletListItem": "for a friend or family member"
+            }
         ],
         "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for."
     },
@@ -380,7 +384,7 @@
             "pageHeaderImport": "Confirm the address",
             "pageHeaderExport": "Confirm the address",
             "pageHeaderReexport": "Confirm the address",
-            "pageHeaderArticle10": "Confirm the address"            
+            "pageHeaderArticle10": "Confirm the address"
         },
         "applicant": {
             "defaultTitleImport": "Confirm the importer’s address",
@@ -414,67 +418,67 @@
         }
     },
     "selectDeliveryAddress": {
-      "defaultTitle": "Select the delivery address",
-      "pageHeader": "Select the delivery address",
-      "radioOptionDeliverToApplicantAddress": "Deliver the permit to",
-      "radioOptionDeliverToAgentAddress": "Deliver the permit to",
-      "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
-      "errorMessages": {
-          "error.deliveryAddressOption.any.required": "Select the delivery address"
-      }
+        "defaultTitle": "Select the delivery address",
+        "pageHeader": "Select the delivery address",
+        "radioOptionDeliverToApplicantAddress": "Deliver the permit to",
+        "radioOptionDeliverToAgentAddress": "Deliver the permit to",
+        "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
+        "errorMessages": {
+            "error.deliveryAddressOption.any.required": "Select the delivery address"
+        }
     },
     "speciesName": {
-      "defaultTitle": "What is the scientific name of the species?",
-      "pageHeader": "What is the scientific name of the species?",
-      "bodyText": "You can ",
-      "bodyLinkText": "search for the scientific name on species+.",
-      "bodyLinkUrl": "https://speciesplus.net/",
-      "inputLabelSpeciesName": "Scientific name",
-      "inputLabelQuantity": "Quantity",
-      "selectLabelUnitOfMeasurement": "Unit of measurement",
-      "unitOfMeasurementPrompt": "Choose unit of measurement",
-      "unitsOfMeasurement": [
-        {
-          "text": "Number of specimens",
-          "value": "noOfSpecimens"
-        },
-        {
-          "text": "cm3",
-          "value": "cm3"
-        },
-        {
-          "text": "g",
-          "value": "g"
-        },
-        {
-          "text": "Kg",
-          "value": "Kg"
-        },
-        {
-          "text": "l",
-          "value": "l"
-        },
-        {
-          "text": "m",
-          "value": "m"
-        },
-        {
-          "text": "m2",
-          "value": "m2"
-        },
-        {
-          "text": "m3",
-          "value": "m3"
-        },
-        {
-          "text": "ml",
-          "value": "ml"
-        },
-        {
-          "text": "tonne",
-          "value": "tonne"
-        }
-      ]
+        "defaultTitle": "What is the scientific name of the species?",
+        "pageHeader": "What is the scientific name of the species?",
+        "bodyText": "You can ",
+        "bodyLinkText": "search for the scientific name on species+.",
+        "bodyLinkUrl": "https://speciesplus.net/",
+        "inputLabelSpeciesName": "Scientific name",
+        "inputLabelQuantity": "Quantity",
+        "selectLabelUnitOfMeasurement": "Unit of measurement",
+        "unitOfMeasurementPrompt": "Choose unit of measurement",
+        "unitsOfMeasurement": [
+            {
+                "text": "Number of specimens",
+                "value": "noOfSpecimens"
+            },
+            {
+                "text": "cm3",
+                "value": "cm3"
+            },
+            {
+                "text": "g",
+                "value": "g"
+            },
+            {
+                "text": "Kg",
+                "value": "Kg"
+            },
+            {
+                "text": "l",
+                "value": "l"
+            },
+            {
+                "text": "m",
+                "value": "m"
+            },
+            {
+                "text": "m2",
+                "value": "m2"
+            },
+            {
+                "text": "m3",
+                "value": "m3"
+            },
+            {
+                "text": "ml",
+                "value": "ml"
+            },
+            {
+                "text": "tonne",
+                "value": "tonne"
+            }
+        ]
     },
     "couldNotConfirm": {
         "pageTitle": "We could not confirm the scientific name",
@@ -486,87 +490,100 @@
         "searchAgainButton": "Search again"
     },
     "sourceCode": {
-      "animal": {
-        "defaultTitle": "What is the source code?",
-        "heading": "What is the source code?",
-        "radioOptionW": "W",
-        "radioOptionWHint": "From the wild",
-        "radioOptionR": "R",
-        "radioOptionRHint": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
-        "radioOptionD": "D",
-        "radioOptionDHint": "Animals bred in captivity for commercial purposes",
-        "radioOptionC": "C",
-        "radioOptionCHint": "Animals bred in captivity for non-commercial purposes",
-        "radioOptionF": "F",
-        "radioOptionFHint": "Animals born in captivity that do not meet the Commission Regulation criteria",
-        "radioOptionI": "I",
-        "radioOptionIHint": "Confiscated or seized",
-        "inputLabelEnterAnotherSourceCode": "Enter another source code",
-        "radioOptionO": "O",
-        "radioOptionOHint": "Pre-convention",
-        "radioOptionX": "X",
-        "radioOptionXHint": "Taken from the marine environment",
-        "radioOptionA": "",
-        "radioOptionAHint": "",
-        "radioOptionU": "U",
-        "radioOptionUHint": "I do not know",
-        "characterCountLabelEnterAReason": "Enter a reason",
-        "dividerText": "Or"
-      },
-      "plant": {
-        "defaultTitle": "What is the source code?",
-        "heading": "What is the source code?",
-        "radioOptionW": "W",
-        "radioOptionWHint": "From the wild",
-        "radioOptionD": "D",
-        "radioOptionDHint": "Plants artificially propagated for commercial purposes",
-        "radioOptionA": "A",
-        "radioOptionAHint": "Plants artificially propagated for non-commercial purposes",
-        "radioOptionI": "I",
-        "radioOptionIHint": "Confiscated or seized",
-        "inputLabelEnterAnotherSourceCode": "Enter another source code",
-        "radioOptionO": "O",
-        "radioOptionOHint": "Pre-convention",
-        "radioOptionX": "X",
-        "radioOptionXHint": "Taken from the marine environment",
-        "radioOptionR": "",
-        "radioOptionRHint": "",
-        "radioOptionC": "",
-        "radioOptionCHint": "",
-        "radioOptionF": "",
-        "radioOptionFHint": "",
-        "radioOptionU": "U",
-        "radioOptionUHint": "I do not know",
-        "characterCountLabelEnterAReason": "Enter a reason",
-        "dividerText": "Or"
-      }
+        "animal": {
+            "defaultTitle": "What is the source code?",
+            "heading": "What is the source code?",
+            "radioOptionW": "W",
+            "radioOptionWHint": "From the wild",
+            "radioOptionR": "R",
+            "radioOptionRHint": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
+            "radioOptionD": "D",
+            "radioOptionDHint": "Animals bred in captivity for commercial purposes",
+            "radioOptionC": "C",
+            "radioOptionCHint": "Animals bred in captivity for non-commercial purposes",
+            "radioOptionF": "F",
+            "radioOptionFHint": "Animals born in captivity that do not meet the Commission Regulation criteria",
+            "radioOptionI": "I",
+            "radioOptionIHint": "Confiscated or seized",
+            "inputLabelEnterAnotherSourceCode": "Enter another source code",
+            "radioOptionO": "O",
+            "radioOptionOHint": "Pre-convention",
+            "radioOptionX": "X",
+            "radioOptionXHint": "Taken from the marine environment",
+            "radioOptionA": "",
+            "radioOptionAHint": "",
+            "radioOptionU": "U",
+            "radioOptionUHint": "I do not know",
+            "characterCountLabelEnterAReason": "Enter a reason",
+            "dividerText": "Or"
+        },
+        "plant": {
+            "defaultTitle": "What is the source code?",
+            "heading": "What is the source code?",
+            "radioOptionW": "W",
+            "radioOptionWHint": "From the wild",
+            "radioOptionD": "D",
+            "radioOptionDHint": "Plants artificially propagated for commercial purposes",
+            "radioOptionA": "A",
+            "radioOptionAHint": "Plants artificially propagated for non-commercial purposes",
+            "radioOptionI": "I",
+            "radioOptionIHint": "Confiscated or seized",
+            "inputLabelEnterAnotherSourceCode": "Enter another source code",
+            "radioOptionO": "O",
+            "radioOptionOHint": "Pre-convention",
+            "radioOptionX": "X",
+            "radioOptionXHint": "Taken from the marine environment",
+            "radioOptionR": "",
+            "radioOptionRHint": "",
+            "radioOptionC": "",
+            "radioOptionCHint": "",
+            "radioOptionF": "",
+            "radioOptionFHint": "",
+            "radioOptionU": "U",
+            "radioOptionUHint": "I do not know",
+            "characterCountLabelEnterAReason": "Enter a reason",
+            "dividerText": "Or"
+        }
     },
     "purposeCode": {
-      "defaultTitle": "What is the purpose code?",
-      "heading": "What is the purpose code?",
-      "radioOptionB": "B",
-      "radioOptionBHint": "Breeding in captivity or artificial propagation",
-      "radioOptionE": "E",
-      "radioOptionEHint": "Educational",
-      "radioOptionG": "G",
-      "radioOptionGHint": "Botanical gardens",
-      "radioOptionH": "H",
-      "radioOptionHHint": "Hunting trophies",
-      "radioOptionL": "L",
-      "radioOptionLHint": "Enforcement",
-      "radioOptionM": "M",
-      "radioOptionMHint": "Bio-medical research",
-      "radioOptionN": "N",
-      "radioOptionNHint": "Reintroduction or introduction into the wild",
-      "radioOptionP": "P",
-      "radioOptionPHint": "Personal",
-      "radioOptionQ": "Q",
-      "radioOptionQHint": "Circuses and travelling exhibitions",
-      "radioOptionS": "S",
-      "radioOptionSHint": "Scientific",
-      "radioOptionT": "T",
-      "radioOptionTHint": "Commercial",
-      "radioOptionZ": "Z",
-      "radioOptionZHint": "Zoos"
+        "defaultTitle": "What is the purpose code?",
+        "heading": "What is the purpose code?",
+        "radioOptionB": "B",
+        "radioOptionBHint": "Breeding in captivity or artificial propagation",
+        "radioOptionE": "E",
+        "radioOptionEHint": "Educational",
+        "radioOptionG": "G",
+        "radioOptionGHint": "Botanical gardens",
+        "radioOptionH": "H",
+        "radioOptionHHint": "Hunting trophies",
+        "radioOptionL": "L",
+        "radioOptionLHint": "Enforcement",
+        "radioOptionM": "M",
+        "radioOptionMHint": "Bio-medical research",
+        "radioOptionN": "N",
+        "radioOptionNHint": "Reintroduction or introduction into the wild",
+        "radioOptionP": "P",
+        "radioOptionPHint": "Personal",
+        "radioOptionQ": "Q",
+        "radioOptionQHint": "Circuses and travelling exhibitions",
+        "radioOptionS": "S",
+        "radioOptionSHint": "Scientific",
+        "radioOptionT": "T",
+        "radioOptionTHint": "Commercial",
+        "radioOptionZ": "Z",
+        "radioOptionZHint": "Zoos"
+    },
+    "specimenType": {
+        "defaultTitle": "What best describes the specimen?",
+        "pageHeader": "What best describes the specimen?",
+        "radioOptionAnimalLiving": "A living animal",
+        "radioOptionAnimalPart": "An animal part or derivative",
+        "radioOptionAnimalWorked": "A worked item or finished product",
+        "radioOptionAnimalCoral": "Coral",
+        "radioOptionPlantLiving": "A living plant",
+        "radioOptionPlantProduct": "A plant product",
+        "radioOptionPlantProductHint": "Any plant body or part that was removed from its natural habitat to make a product. For example, seeds, fruits, roots, stems, flowers or leaves, including extracts or powders.",
+        "radioOptionPlantWorked": "A worked item or finished product",
+        "radioOptionPlantWorkedHint": "A worked item or finished product"
     }
 }

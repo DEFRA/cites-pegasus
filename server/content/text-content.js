@@ -305,6 +305,19 @@ const schema = Joi.object().keys({
     radioOptionZ: Joi.string().required(),
     radioOptionZHint: Joi.string().required(),
   }),
+  specimenType: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionAnimalLiving: Joi.string().required(),
+    radioOptionAnimalPart: Joi.string().required(),
+    radioOptionAnimalWorked: Joi.string().required(),
+    radioOptionAnimalCoral: Joi.string().required(),
+    radioOptionPlantLiving: Joi.string().required(),
+    radioOptionPlantProduct: Joi.string().required(),
+    radioOptionPlantProductHint: Joi.string().required(),
+    radioOptionPlantWorked: Joi.string().required(),
+    radioOptionPlantWorkedHint: Joi.string().required()
+  })
 })
 
 // Validate config

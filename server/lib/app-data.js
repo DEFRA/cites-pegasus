@@ -103,6 +103,9 @@ function getAppFlow(appData) {
                         if (specimen.sourceCode) {
                             appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
                         }
+                        if (specimen.purposeCode) {
+                            appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
+                        }
                     })
                 }
             })
