@@ -483,7 +483,8 @@
         "bodyText1": "We could not confirm the scientific name ‘",
         "bodyText2": "’ on the species list. You can ",
         "linkText": "check scientific names on species+ (opens in a new tab)",
-        "linkUrl": "https://speciesplus.net/"
+        "linkUrl": "https://speciesplus.net/",
+        "searchAgainButton": "Search again"
     },
     "sourceCode": {
       "animal": {

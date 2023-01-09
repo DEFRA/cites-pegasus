@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
-const { setAppData, getAppData, validateAppData } = require('../lib/app-data')
+const { mergeAppData, getAppData, validateAppData } = require('../lib/app-data')
 
 const textContent = require('../content/text-content')
 const pageId = 'applying-on-behalf'
@@ -113,7 +113,7 @@ module.exports = [{
       try {
         agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
 
-        setAppData(request, agentData, pageId)        
+        mergeAppData(request, agentData, pageId)        
       }
       catch (err){
         console.log(err);

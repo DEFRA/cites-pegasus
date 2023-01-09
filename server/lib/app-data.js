@@ -5,16 +5,10 @@ const lodash = require('lodash')
 
 function getAppData(request) {
     const session = getYarValue(request, 'appData')
-    // const emptyAppData = {
-    //     permitType: null,
-    //     isAgent: null,
-    //     agent: null,
-    //     applicant: null
-    // }
-    return session// || emptyAppData
+    return session
 }
 
-function setAppData(request, data, path) {
+function mergeAppData(request, data, path) {
     const existingAppData = getAppData(request)
     if (path) { validateAppData(existingAppData, path) }
 
@@ -27,6 +21,16 @@ function setAppData(request, data, path) {
     console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedAppData, null, 4))//TODO Remove this
 
     return mergedAppData
+}
+
+function setAppData(request, data, path) {
+    const existingAppData = getAppData(request)
+    if (path) { validateAppData(existingAppData, path) }
+
+    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
+
+    setYarValue(request, 'appData', data)
+    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
 }
 
 function clearAppData(request) {
@@ -83,37 +87,49 @@ function getAppFlow(appData) {
                 appFlow.push('confirm-address/delivery')
             }
         }
-        if (appData?.delivery?.address) {
-            appFlow.push("species-name")
-        }
+        // if (appData?.delivery?.address) {
+        //     appFlow.push("species-name/0")
+        // }
         if (appData?.species?.length > 0) {
             appData.species.forEach((species, speciesindex) => {
+                appFlow.push(`species-name/${speciesindex}`)
                 if (species.speciesName) {
                     species.specimens.forEach((specimen, specimenindex) => {
                         appFlow.push(`source-code/${speciesindex}/${specimenindex}`)
                     })
                 }
+                if (species.specimens) {
+                    species.specimens.forEach((specimen, specimenindex) => {
+                        if (specimen.sourceCode) {
+                            appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
+                        }
+                        if (specimen.purposeCode && appData.permitType === "article10") {
+                            appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
+                        }
+                    })
+                }
             })
         }
-        if (appData?.species?.length > 0) {
-            appData.species.forEach((species, speciesindex) => {
-                species.specimens.forEach((specimen, specimenindex) => {
-                    if (specimen.sourceCode) {
-                        appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
-                    }
-                })
-            })
-        }
+        
 
-        if (appData?.species?.length > 0) {
-            appData.species.forEach((species, speciesindex) => {
-                species.specimens.forEach((specimen, specimenindex) => {
-                    if (specimen.purposeCode && appData.permitType === "article10") {
-                        appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
-                    }
-                })
-            })
-        }
+        // if (appData?.species?.length > 0) {
+        //     appData.species.forEach((species, speciesindex) => {
+        //         species.specimens.forEach((specimen, specimenindex) => {
+        //             if (specimen.purposeCode && appData.permitType === "article10") {
+        //                 appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
+        //             }
+        //         })
+        //     })
+        // }
+        // if (appData?.species?.length > 0) {
+        //     appData.species.forEach((species, speciesindex) => {
+        //         species.specimens.forEach((specimen, specimenindex) => {
+        //             if (specimen.sourceCode) {
+        //                 appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
+        //             }
+        //         })
+        //     })
+        // }
     }
     //console.log(appFlow)
     return appFlow
@@ -121,6 +137,7 @@ function getAppFlow(appData) {
 
 module.exports = {
     setAppData,
+    mergeAppData,
     getAppData,
     clearAppData,
     validateAppData

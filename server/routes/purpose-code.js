@@ -5,7 +5,7 @@ const {
   getFieldError,
   isChecked
 } = require("../lib/helper-functions")
-const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
+const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 
 const textContent = require("../content/text-content")
 const pageId = "purpose-code"
@@ -264,12 +264,11 @@ module.exports = [
         ].purposeCode = request.payload.purposeCode
 
         try {
-          setAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-          )
-        } catch (err) {
+          mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        } 
+        catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
-                 
         }
     
         if (appData.permitType === "article10"){

@@ -5,11 +5,11 @@ const { getYarValue } = require("../lib/session")
 const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'could-not-confirm'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/species-name`
 
-function createModel(unknownSpeciesName){
+function createModel(unknownSpeciesName, speciesIndex){
   const commonContent = textContent.common;
   const pageContent = textContent.couldNotConfirm;
+  const previousPath = `${urlPrefix}/species-name/${speciesIndex}`
 
   return { ...commonContent, ...pageContent, backLink: previousPath, unknownSpeciesName: unknownSpeciesName }
 }
@@ -27,6 +27,6 @@ module.exports = [{
   handler: (request, h) => {
     const appData = getAppData(request)
     const unknownSpeciesName = appData.species[request.params.speciesIndex].speciesSearchData
-    return h.view(pageId, createModel(unknownSpeciesName));  
+    return h.view(pageId, createModel(unknownSpeciesName, request.params.speciesIndex));  
   }
 }]

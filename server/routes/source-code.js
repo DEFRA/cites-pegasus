@@ -5,29 +5,28 @@ const {
   getFieldError,
   isChecked
 } = require("../lib/helper-functions")
-const { getAppData, setAppData, validateAppData } = require("../lib/app-data")
+const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const { SOURCECODE_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/species-name`
 const nextPath = `${urlPrefix}/purpose-code`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-
+  
   const pageContent =
     data.kingdom === "Animalia"
-      ? textContent.sourceCode.animal
-      : textContent.sourceCode.plant
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
+    ? textContent.sourceCode.animal
+    : textContent.sourceCode.plant
+    
+    let errorList = null
+    if (errors) {
+      errorList = []
+      const mergedErrorMessages = {
+        ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
     const fields = [
@@ -46,21 +45,21 @@ function createModel(errors, data) {
       }
     })
   }
-
+  
   const speciesName = data.speciesName
   const quantity = data.quantity
   const specimenIndex = data.specimenIndex + 1
   const unitOfMeasurement = data.unitOfMeasurement
-
+  
   const captionText =
-    unitOfMeasurement === "noOfSpecimens"
-      ? `${speciesName} (${specimenIndex} of ${quantity})`
-      : `${speciesName}`
-
+  unitOfMeasurement === "noOfSpecimens"
+  ? `${speciesName} (${specimenIndex} of ${quantity})`
+  : `${speciesName}`
+  
   var renderString =
     "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
-
+  
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
       id: "anotherSourceCodeForI",
@@ -72,52 +71,52 @@ function createModel(errors, data) {
       ...(data.anotherSourceCodeForI
         ? { value: data.anotherSourceCodeForI }
         : {}),
-      errorMessage: getFieldError(errorList, "#anotherSourceCodeForI")
-    }
-  })
-
-  const sourceInputForO = nunjucks.renderString(renderString, {
-    input: {
-      id: "anotherSourceCodeForO",
-      name: "anotherSourceCodeForO",
-      classes: "govuk-input govuk-input--width-2",
-      label: {
-        text: pageContent.inputLabelEnterAnotherSourceCode
-      },
-      ...(data.anotherSourceCodeForO
-        ? { value: data.anotherSourceCodeForO }
-        : {}),
-      errorMessage: getFieldError(errorList, "#anotherSourceCodeForO")
-    }
-  })
-
-  var renderString =
-    "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n"
-  renderString = renderString + " {{govukCharacterCount(input)}}"
-
-  const sourceCharacterCount = nunjucks.renderString(renderString, {
-    input: {
-      id: "enterAReason",
-      name: "enterAReason",
-      maxlength: 150,
-      classes: "govuk-textarea govuk-js-character-count",
-      label: {
+        errorMessage: getFieldError(errorList, "#anotherSourceCodeForI")
+      }
+    })
+    
+    const sourceInputForO = nunjucks.renderString(renderString, {
+      input: {
+        id: "anotherSourceCodeForO",
+        name: "anotherSourceCodeForO",
+        classes: "govuk-input govuk-input--width-2",
+        label: {
+          text: pageContent.inputLabelEnterAnotherSourceCode
+        },
+        ...(data.anotherSourceCodeForO
+          ? { value: data.anotherSourceCodeForO }
+          : {}),
+          errorMessage: getFieldError(errorList, "#anotherSourceCodeForO")
+        }
+      })
+      
+      var renderString =
+      "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n"
+      renderString = renderString + " {{govukCharacterCount(input)}}"
+      
+      const sourceCharacterCount = nunjucks.renderString(renderString, {
+        input: {
+          id: "enterAReason",
+          name: "enterAReason",
+          maxlength: 150,
+          classes: "govuk-textarea govuk-js-character-count",
+          label: {
         text: pageContent.characterCountLabelEnterAReason
       },
       ...(data.enterAReason ? { value: data.enterAReason } : {}),
       errorMessage: getFieldError(errorList, "#enterAReason")
     }
   })
-
+  
   const model = {
-    backLink: previousPath,
+    backLink: `${urlPrefix}/species-name/${data.speciesIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    ? commonContent.errorSummaryTitlePrefix + errorList[0].text
+    : pageContent.defaultTitle,
     captionText: captionText,
-
+    
     inputSourceCode: {
       idPrefix: "sourceCode",
       name: "sourceCode",
@@ -364,7 +363,7 @@ module.exports = [
         ].enterAReason = enterAReason
 
         try {
-          setAppData(
+          mergeAppData(
             request,
             { species: appData.species },
             `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
