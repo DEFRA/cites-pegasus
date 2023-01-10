@@ -49,43 +49,43 @@ function createModel(errors, data) {
       name: "useCertificateFor",
       fieldset: {
         legend: {
-          text: pageContent.heading,
+          text: pageContent.pageHeader,
           isPageHeading: true,
           classes: "govuk-fieldset__legend--l"
         }
       },
       items: [
         {
-          value: "to prove that you legally acquired a specimen",
-          text: pageContent.radioOptionLegally,
+          value: "legallyAcquired",
+          text: pageContent.radioOptionLegallyAcquired,
           checked: isChecked(
             data.useCertificateFor,
-            "to prove that you legally acquired a specimen"
+            "legallyAcquired"
           )
         },
         {
-          value: "to use the specimen for commercial activities",
+          value: "commercialActivities",
           text: pageContent.radioOptionCommercialActivities,
           checked: isChecked(
             data.useCertificateFor,
-            "to use the specimen for commercial activities"
+            "commercialActivities"
           )
         },
         {
           value:
-            "to use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
+            "other",
           text: pageContent.radioOptionOther,
           checked: isChecked(
             data.useCertificateFor,
-            "to use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes"
+            "other"
           )
         },
         {
-          value: "to move a live specimen within Great Britain",
+          value: "moveALiveSpecimen",
           text: pageContent.radioOptionMoveALiveSpecimen,
           checked: isChecked(
             data.useCertificateFor,
-            "to move a live specimen within Great Britain"
+            "moveALiveSpecimen"
           )
         }
       ],
@@ -126,7 +126,7 @@ module.exports = [
         useCertificateFor:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.useCertificateFor
+          ].useCertificateFor
       }
 
       return h.view(pageId, createModel(null, pageData))

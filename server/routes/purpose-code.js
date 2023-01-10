@@ -62,7 +62,7 @@ function createModel(errors, data) {
       name: "purposeCode",
       fieldset: {
         legend: {
-          text: pageContent.heading,
+          text: pageContent.pageHeader,
           isPageHeading: true,
           classes: "govuk-fieldset__legend--l"
         }

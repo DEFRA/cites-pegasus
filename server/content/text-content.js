@@ -104,7 +104,7 @@ const confirmAddressSchema = Joi.object({
 
 const sourceCodeSchema = Joi.object({
   defaultTitle: Joi.string().required(),
-  heading: Joi.string().required(),
+  pageHeader: Joi.string().required(),
   radioOptionW: Joi.string().required(),
   radioOptionWHint: Joi.string().required(),
   radioOptionR: Joi.string().allow("", null),
@@ -157,7 +157,7 @@ const schema = Joi.object().keys({
   }),
   permitType: Joi.object({
     defaultTitle: Joi.string().required(),
-    heading: Joi.string().required(),
+    pageHeader: Joi.string().required(),
     radioOptionImport: Joi.string().required(),
     radioOptionImportHint: Joi.string().required(),
     radioOptionExport: Joi.string().required(),
@@ -279,7 +279,7 @@ const schema = Joi.object().keys({
   }),
   purposeCode: Joi.object({
     defaultTitle: Joi.string().required(),
-    heading: Joi.string().required(),
+    pageHeader: Joi.string().required(),
     radioOptionB: Joi.string().required(),
     radioOptionBHint: Joi.string().required(),
     radioOptionE: Joi.string().required(),
@@ -307,8 +307,8 @@ const schema = Joi.object().keys({
   }),
   useCertificateFor: Joi.object({
     defaultTitle: Joi.string().required(),
-    heading: Joi.string().required(),
-    radioOptionLegally: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionLegallyAcquired: Joi.string().required(),
     radioOptionCommercialActivities: Joi.string().required(),
     radioOptionOther: Joi.string().required(),
     radioOptionMoveALiveSpecimen: Joi.string().required(),

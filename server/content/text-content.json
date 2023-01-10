@@ -63,7 +63,7 @@
     },
     "permitType": {
         "defaultTitle": "What type of permit or certificate are you applying for?",
-        "heading": "What type of permit or certificate are you applying for?",
+        "pageHeader": "What type of permit or certificate are you applying for?",
         "radioOptionImport": "Import",
         "radioOptionImportHint": "To move a species into Great Britain from another country.",
         "radioOptionExport": "Export",
@@ -489,7 +489,7 @@
     "sourceCode": {
       "animal": {
         "defaultTitle": "What is the source code?",
-        "heading": "What is the source code?",
+        "pageHeader": "What is the source code?",
         "radioOptionW": "W",
         "radioOptionWHint": "From the wild",
         "radioOptionR": "R",
@@ -516,7 +516,7 @@
       },
       "plant": {
         "defaultTitle": "What is the source code?",
-        "heading": "What is the source code?",
+        "pageHeader": "What is the source code?",
         "radioOptionW": "W",
         "radioOptionWHint": "From the wild",
         "radioOptionD": "D",
@@ -544,7 +544,7 @@
     },
     "purposeCode": {
       "defaultTitle": "What is the purpose code?",
-      "heading": "What is the purpose code?",
+      "pageHeader": "What is the purpose code?",
       "radioOptionB": "B",
       "radioOptionBHint": "Breeding in captivity or artificial propagation",
       "radioOptionE": "E",
@@ -572,8 +572,8 @@
     },
     "useCertificateFor": {
         "defaultTitle": "What will you use the certificate for?",
-       "heading": "What will you use the certificate for?",
-        "radioOptionLegally": "To prove that you legally acquired a specimen",
+        "pageHeader": "What will you use the certificate for?",
+        "radioOptionLegallyAcquired": "To prove that you legally acquired a specimen",
         "radioOptionCommercialActivities": "To use the specimen for commercial activities",
         "radioOptionOther": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
         "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain"

@@ -39,7 +39,7 @@ function createModel(errors, permitType) {
       name: "permitType",
       fieldset: {
         legend: {
-          text: pageContent.heading,
+          text: pageContent.pageHeader,
           isPageHeading: true,
           classes: "govuk-fieldset__legend--l"
         }
