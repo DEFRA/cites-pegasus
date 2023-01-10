@@ -305,6 +305,14 @@ const schema = Joi.object().keys({
     radioOptionZ: Joi.string().required(),
     radioOptionZHint: Joi.string().required(),
   }),
+  useCertificateFor: Joi.object({
+    defaultTitle: Joi.string().required(),
+    heading: Joi.string().required(),
+    radioOptionLegally: Joi.string().required(),
+    radioOptionCommercialActivities: Joi.string().required(),
+    radioOptionOther: Joi.string().required(),
+    radioOptionMoveALiveSpecimen: Joi.string().required(),
+  }),
   specimenType: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

@@ -103,13 +103,19 @@ function getAppFlow(appData) {
                         if (specimen.sourceCode) {
                             appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
                         }
-                        if (specimen.purposeCode) {
-                            appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
+                        if (specimen.purposeCode){
+                            if (appData.permitType === "article10") {
+                                appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
+                            } else {
+                                appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
+                            }
                         }
                     })
                 }
             })
         }
+        
+        
         // if (appData?.species?.length > 0) {
         //     appData.species.forEach((species, speciesindex) => {
         //         species.specimens.forEach((specimen, specimenindex) => {

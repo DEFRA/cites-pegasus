@@ -199,7 +199,10 @@ module.exports = [
       const appData = getAppData(request)
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        validateAppData(
+          appData,
+          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        )
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
@@ -215,7 +218,7 @@ module.exports = [
         purposeCode:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.purposeCode,
+          ]?.purposeCode
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -245,6 +248,10 @@ module.exports = [
             quantity: appData.species[request.params.speciesIndex]?.quantity,
             unitOfMeasurement:
               appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+            purposeCode:
+              appData.species[request.params.speciesIndex].specimens[
+                request.params.specimenIndex
+              ]?.purposeCode
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -252,16 +259,18 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].purposeCode = request.payload.purposeCode
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].purposeCode = request.payload.purposeCode
 
         try {
-            mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-        }
+          mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        } 
         catch (err) {
-            console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+          console.log(err)
+          return h.redirect(`${invalidAppDataPath}/`)
         }
-
+    
         if (appData.permitType === "article10"){
           return h.redirect(
             `${article10Path}/${request.params.speciesIndex}/${request.params.specimenIndex}`
