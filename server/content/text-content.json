@@ -49,7 +49,8 @@
             "error.enterAReason.string.empty": "Enter a reason",
             "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
             "error.enterAReason.string.max": "Reason must be 150 characters or less",
-            "error.purposeCode.any.required": "Select the purpose code"
+            "error.purposeCode.any.required": "Select the purpose code",
+            "error.useCertificateFor.any.required": "Select what you will use the certificate for"
         }
     },
     "applyCitesPermit": {
@@ -568,5 +569,13 @@
       "radioOptionTHint": "Commercial",
       "radioOptionZ": "Z",
       "radioOptionZHint": "Zoos"
-    }
+    },
+    "useCertificateFor": {
+        "defaultTitle": "What will you use the certificate for?",
+       "heading": "What will you use the certificate for?",
+        "radioOptionLegally": "To prove that you legally acquired a specimen",
+        "radioOptionCommercialActivities": "To use the specimen for commercial activities",
+        "radioOptionOther": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
+        "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain"
+      }
 }
