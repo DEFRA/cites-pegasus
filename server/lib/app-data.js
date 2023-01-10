@@ -106,6 +106,9 @@ function getAppFlow(appData) {
                         if (specimen.purposeCode && appData.permitType === "article10") {
                             appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
                         }
+                        if (specimen.purposeCode) {
+                            appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                        }
                     })
                 }
             })

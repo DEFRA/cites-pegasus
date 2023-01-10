@@ -50,7 +50,11 @@
             "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
             "error.enterAReason.string.max": "Reason must be 150 characters or less",
             "error.purposeCode.any.required": "Select the purpose code",
-            "error.useCertificateFor.any.required": "Select what you will use the certificate for"
+            "error.useCertificateFor.any.required": "Select what you will use the certificate for",
+            "error.tradeTermCode.any.required": "Select yes if you know the trade term code",
+            "error.enterTradeTermCode.string.empty": "Enter the trade term code",
+            "error.enterTradeTermCode.string.length": "Trade term code must be 3 characters",
+            "error.enterTradeTermCode.string.pattern.base": "Enter a trade term code using letters a to z"
         }
     },
     "applyCitesPermit": {
@@ -577,5 +581,11 @@
         "radioOptionCommercialActivities": "To use the specimen for commercial activities",
         "radioOptionOther": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
         "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain"
+      },
+      "tradeTermCode": {
+        "defaultTitle": "Do you know the trade term code?",
+        "pageHeader": "Do you know the trade term code?",
+        "inputLabelTradeCode": "Enter the trade term code",
+        "inputLabelTradeCodeHint": "For example, ‘LIV’ for live animals"
       }
 }

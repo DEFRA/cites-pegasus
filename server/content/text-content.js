@@ -313,6 +313,12 @@ const schema = Joi.object().keys({
     radioOptionOther: Joi.string().required(),
     radioOptionMoveALiveSpecimen: Joi.string().required(),
   }),
+  tradeTermCode: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelTradeCode: Joi.string().required(),
+    inputLabelTradeCodeHint: Joi.string().required(),
+  }),
 })
 
 // Validate config

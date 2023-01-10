@@ -11,7 +11,7 @@ const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
-const article10Path = `${urlPrefix}/use-certificate-for`// TO DO
+const article10Path = `${urlPrefix}/use-certificate-for`
 const nextPath = `${urlPrefix}/specimen-type` //TO DO
 const invalidAppDataPath = urlPrefix
 
