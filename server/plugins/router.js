@@ -13,6 +13,7 @@ const routes = [].concat(
   require('../routes/purpose-code'),
   require('../routes/confirm-address'),
   require('../routes/source-code'),
+  require('../routes/specimen-type'),
   require('../routes/select-delivery-address'),
   require('../routes/use-certificate-for'),
   require('../routes/public'),
