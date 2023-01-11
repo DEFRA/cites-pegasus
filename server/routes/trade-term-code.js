@@ -6,7 +6,7 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
-const { CODEINPUT_REGEX } = require("../lib/regex-validation")
+const { ALFA_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "trade-term-code"
@@ -167,7 +167,7 @@ module.exports = [
           isTradeTermCode: Joi.boolean().required(),
           tradeTermCode: Joi.when("isTradeTermCode", {
             is: true,
-            then: Joi.string().length(3).regex(CODEINPUT_REGEX).required()
+            then: Joi.string().length(3).regex(ALFA_REGEX).required()
           })
         }),
 
@@ -190,7 +190,7 @@ module.exports = [
         const appData = getAppData(request)
 
         const tradeTermCode = request.payload.isTradeTermCode
-          ? request.payload.tradeTermCode
+          ? request.payload.tradeTermCode.toUpperCase()
           : ""
 
         appData.species[request.params.speciesIndex].specimens[

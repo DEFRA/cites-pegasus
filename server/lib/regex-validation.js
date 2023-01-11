@@ -7,7 +7,7 @@ const BUSINESSNAME_REGEX = /^[a-zA-Z0-9' ,’-]+$/
 const NUMBER_REGEX = /^\d+$/
 const TOWN_COUNTY_REGEX = /^[a-zA-Z',.&’ -]+$/
 const ADDRESS_REGEX = /^[a-zA-Z0-9',.&’ -]+$/
-const CODEINPUT_REGEX = /^[a-zA-Z]+$/
+const ALFA_REGEX = /^[a-zA-Z]+$/
 const COMMENTS_REGEX = /^[a-zA-Z0-9' ,.’£$%&*=+#@\{\[\(\)\}\]\/\\\-\—]+$/
 
 
@@ -20,6 +20,6 @@ module.exports = {
   NUMBER_REGEX,
   TOWN_COUNTY_REGEX,
   ADDRESS_REGEX,
-  CODEINPUT_REGEX,
+  ALFA_REGEX,
   COMMENTS_REGEX
 }
