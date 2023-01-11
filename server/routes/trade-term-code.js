@@ -3,11 +3,10 @@ const urlPrefix = require("../../config/config").urlPrefix
 const {
   findErrorList,
   getFieldError,
-  setLabelData,
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
-const { SOURCECODE_REGEX } = require("../lib/regex-validation")
+const { CODEINPUT_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "trade-term-code"
@@ -19,16 +18,6 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.tradeTermCode
-
-//   let isTradeTermCodeRadioVal = null
-//   switch (isTradeTermCode) {
-//     case true:
-//       isTradeTermCodeRadioVal = commonContent.radioOptionYes
-//       break;
-//     case false:
-//       isTradeTermCodeRadioVal = commonContent.radioOptionNo
-//       break;
-//   }
 
   let errorList = null
   if (errors) {
@@ -113,7 +102,7 @@ function createModel(errors, data) {
           checked: isChecked(data.isTradeTermCode, false)
         }
       ],
-    // items: setLabelData(isTradeTermCodeRadioVal, [commonContent.radioOptionYes, commonContent.radioOptionNo], tradeTermCodeInput),
+
       errorMessage: getFieldError(errorList, "#isTradeTermCode")
     }
   }
@@ -175,10 +164,10 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isTradeTermCode: Joi.string().required(),
+          isTradeTermCode: Joi.boolean().required(),
           tradeTermCode: Joi.when("isTradeTermCode", {
-            is: "true",
-            then: Joi.string().length(3).regex(SOURCECODE_REGEX).required()
+            is: true,
+            then: Joi.string().length(3).regex(CODEINPUT_REGEX).required()
           })
         }),
 
@@ -200,10 +189,9 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        const tradeTermCode =
-          request.payload.isTradeTermCode 
-            ? request.payload.tradeTermCode
-            : ""
+        const tradeTermCode = request.payload.isTradeTermCode
+          ? request.payload.tradeTermCode
+          : ""
 
         appData.species[request.params.speciesIndex].specimens[
           request.params.specimenIndex
