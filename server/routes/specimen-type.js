@@ -10,7 +10,6 @@ const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/purpose-code`
 const nextPath = `${urlPrefix}/trade-term-code`
 const invalidAppDataPath = urlPrefix
 
@@ -47,14 +46,61 @@ function createModel(errors, data) {
       ? `${speciesName} (${specimenNo} of ${quantity})`
       : `${speciesName}`
 
+  let radioOptions = null
+
+  if (data.kingdom === "Animalia") {
+    radioOptions = [
+      {
+        value: "animalLiving",
+        text: pageContent.radioOptionAnimalLiving,
+        checked: isChecked(data.specimenType, "animalLiving")
+      },
+      {
+        value: "animalPart",
+        text: pageContent.radioOptionAnimalPart,
+        checked: isChecked(data.specimenType, "animalPart")
+      },
+      {
+        value: "animalWorked",
+        text: pageContent.radioOptionAnimalWorked,
+        checked: isChecked(data.specimenType, "animalWorked")
+      },
+      {
+        value: "animalCoral",
+        text: pageContent.radioOptionAnimalCoral,
+        checked: isChecked(data.specimenType, "animalCoral")
+      }
+    ]
+  } else {
+    radioOptions = [
+      {
+        value: "plantLiving",
+        text: pageContent.radioOptionPlantLiving,
+        checked: isChecked(data.specimenType, "plantLiving")
+      },
+      {
+        value: "plantProduct",
+        text: pageContent.radioOptionPlantProduct,
+        hint: { text: pageContent.radioOptionPlantProductHint },
+        checked: isChecked(data.specimenType, "plantProduct")
+      },
+      {
+        value: "plantWorked",
+        text: pageContent.radioOptionPlantWorked,
+        hint: { text: pageContent.radioOptionPlantWorkedHint },
+        checked: isChecked(data.specimenType, "plantWorked")
+      }
+    ]
+  }
+
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: data.permitType === 'article10' ? `${urlPrefix}/use-certificate-for/${data.speciesIndex}/${data.specimenIndex}` : `${urlPrefix}/purpose-code/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    // captionText: captionText,
+    captionText: captionText,
 
     inputSpecimenType: {
       idPrefix: "specimenType",
@@ -66,48 +112,27 @@ function createModel(errors, data) {
           classes: "govuk-fieldset__legend--l"
         }
       },
-      items: [
-        {
-          value: "animalLiving",
-          text: pageContent.radioOptionAnimalLiving,
-          //hint: { text: pageContent.radioOptionBHint },
-          // label: {
-          //   classes: "govuk-!-font-weight-bold"
-          // },
-          checked: isChecked(data.specimenType, "animalLiving")
-        },
-        {
-          value: "animalPart",
-          text: pageContent.radioOptionAnimalPart,
-          //hint: { text: pageContent.radioOptionBHint },
-          // label: {
-          //   classes: "govuk-!-font-weight-bold"
-          // },
-          checked: isChecked(data.specimenType, "animalPart")
-        },
-        {
-          value: "animalWorked",
-          text: pageContent.radioOptionAnimalWorked,
-          //hint: { text: pageContent.radioOptionBHint },
-          // label: {
-          //   classes: "govuk-!-font-weight-bold"
-          // },
-          checked: isChecked(data.specimenType, "animalWorked")
-        },
-        {
-          value: "animalCoral",
-          text: pageContent.radioOptionAnimalCoral,
-          //hint: { text: pageContent.radioOptionBHint },
-          // label: {
-          //   classes: "govuk-!-font-weight-bold"
-          // },
-          checked: isChecked(data.specimenType, "animalCoral")
-        }
-      ],
+      items: radioOptions,
       errorMessage: getFieldError(errorList, "#specimenType")
     }
   }
   return { ...commonContent, ...model }
+}
+
+function failAction(request, h, err) {
+  const appData = getAppData(request)
+  const pageData = {
+    permitType: appData.permitType,
+    speciesIndex: request.params.speciesIndex,
+    specimenIndex: request.params.specimenIndex,
+    speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+    quantity: appData.species[request.params.speciesIndex]?.quantity,
+    unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+    kingdom: appData.species[request.params.speciesIndex].kingdom,
+    specimenType: request.payload.specimenType
+  }
+
+  return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
 module.exports = [
@@ -133,11 +158,13 @@ module.exports = [
       }
 
       const pageData = {
+        permitType: appData.permitType,
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
         speciesName: appData.species[request.params.speciesIndex]?.speciesName,
         quantity: appData.species[request.params.speciesIndex]?.quantity,
         unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+        kingdom: appData.species[request.params.speciesIndex].kingdom,
         specimenType: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType
       }
 
@@ -156,24 +183,25 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          specimenType: Joi.string().required().valid('animalXLiving', 'animalPart', 'animalWorked', 'animalCoral')
+          specimenType: Joi.string().required().valid('animalLiving', 'animalPart', 'animalWorked', 'animalCoral', 'plantLiving', 'plantWorked', 'plantProduct')
         }),
-        failAction: (request, h, err) => {
-          const appData = getAppData(request)
-          const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
-            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-            quantity: appData.species[request.params.speciesIndex]?.quantity,
-            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            specimenType: request.payload.specimenType
-          }
-
-          return h.view(pageId, createModel(err, pageData)).takeover()
-        }
+        failAction: failAction
       },
       handler: async (request, h) => {
         const appData = getAppData(request)
+
+        const animalSchema = Joi.string().required().valid('animalLiving', 'animalPart', 'animalWorked', 'animalCoral')
+        const plantSchema = Joi.string().required().valid('plantLiving', 'plantWorked', 'plantProduct')
+
+        const payloadSchema = Joi.object({
+          specimenType: appData.species[request.params.speciesIndex].kingdom === 'Animalia' ? animalSchema : plantSchema
+        })
+
+        const result = payloadSchema.validate(request.payload, { abortEarly: false })
+
+        if (result.error) {
+          return failAction(request, h, result.error)          
+        }
 
         appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType = request.payload.specimenType
 
