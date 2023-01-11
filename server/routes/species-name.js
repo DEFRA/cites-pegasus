@@ -201,7 +201,11 @@ module.exports = [
           for (let i = 0; i < previousAppDataSpecies.quantity - request.payload.quantity; i++) {
             newAppDataSpecies.specimens.pop()
           }
-        }
+        } else if ((previousAppDataSpecies.kingdom === "Animalia" && speciesData.kingdom !== "Animalia") || (previousAppDataSpecies.kingdom === "Plantae" && speciesData.kingdom !== "Plantae")) {
+          //If switching from noOfSpecimens to a measurement, remove all specimens except one
+          for (let i = 0; i < (previousAppDataSpecies.quantity); i++) {
+            newAppDataSpecies.specimens.pop()
+          }
 
         if (request.payload.unitOfMeasurement === "noOfSpecimens") {
           //Add new specimens to match the quantity
