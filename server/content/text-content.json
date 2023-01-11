@@ -603,6 +603,12 @@
         "defaultTitle": "Do you know the trade term code?",
         "pageHeader": "Do you know the trade term code?",
         "inputLabelTradeCode": "Enter the trade term code",
-        "inputLabelTradeCodeHint": "For example, ‘LIV’ for live animals"
+        "inputLabelTradeCodeHint": "For example, ‘LIV’ for live animals",
+        "errorMessages": {
+            "error.isTradeTermCode.any.required": "Select yes if you know the trade term code",
+            "error.tradeTermCode.string.empty": "Enter the trade term code",
+            "error.tradeTermCode.string.length": "Trade term code must be 3 characters",
+            "error.tradeTermCode.string.pattern.base": "Enter a trade term code using letters a to z"
+        }
       }
 }

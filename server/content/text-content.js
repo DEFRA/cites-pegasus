@@ -331,6 +331,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     inputLabelTradeCode: Joi.string().required(),
     inputLabelTradeCodeHint: Joi.string().required(),
+    errorMessages: Joi.object()
   })
 })
 
