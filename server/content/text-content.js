@@ -166,7 +166,10 @@ const schema = Joi.object().keys({
     radioOptionReexportHint: Joi.string().required(),
     radioOptionArticle10: Joi.string().required(),
     radioOptionArticle10Hint: Joi.string().required(),
-    radioOptionOther: Joi.string().required()
+    radioOptionOther: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.permitType.any.required": Joi.string().required()
+    })
   }),
   cannotUseService: Joi.object({
     pageTitle: Joi.string().required(),
@@ -182,19 +185,31 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody1: Joi.string().required(),
-    bulletListItems: Joi.array().items(Joi.object().keys({bulletListItem: Joi.string().required()})),
-    pageBody2: Joi.string().required()
+    bulletListItems: Joi.array().items(Joi.object().keys({ bulletListItem: Joi.string().required() })),
+    pageBody2: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isAgent.any.required": Joi.string().required()
+    }).required()
   }),
   contactDetails: Joi.object({
     agent: contactDetailsSchema,
     applicant: contactDetailsSchema,
-    agentLed: contactDetailsSchema
+    agentLed: contactDetailsSchema,
+    errorMessages: Joi.object({
+      "error.fullName.string.empty": Joi.string().required(),
+      "error.fullName.string.pattern.base": Joi.string().required(),
+      "error.businessName.string.pattern.base": Joi.string().required(),
+      "error.email.string.email": Joi.string().required()
+    }).required()
   }),
   postcode: Joi.object({
     common: Joi.object({
       buttonFindAddress: Joi.string().required(),
       linkTextEnterAddress: Joi.string().required(),
       inputLabelPostcode: Joi.string().required(),
+      errorMessages: Joi.object({
+        "error.postcode.string.empty": Joi.string().required()
+      }).required()
     }),
     agent: postcodeSchema,
     applicant: postcodeSchema,
@@ -214,7 +229,10 @@ const schema = Joi.object().keys({
       selectAddressPromptNoResults: Joi.string().required(),
       selectAddressPromptSingle: Joi.string().required(),
       selectAddressPromptMultiple: Joi.string().required(),
-      changePostcodeLinkText: Joi.string().required()
+      changePostcodeLinkText: Joi.string().required(),
+      errorMessages: Joi.object({
+        "error.address.string.empty": Joi.string().required()
+      }).required()
     }),
     agent: selectAddressSchema,
     applicant: selectAddressSchema,
@@ -229,7 +247,22 @@ const schema = Joi.object().keys({
       inputLabelAddressLine4: Joi.string().required(),
       inputLabelPostcode: Joi.string().required(),
       inputLabelCountry: Joi.string().required(),
-    }),
+      errorMessages: Joi.object({
+        "error.addressLine1.string.empty": Joi.string().required(),
+        "error.addressLine1.string.max": Joi.string().required(),
+        "error.addressLine2.string.empty": Joi.string().required(),
+        "error.addressLine2.string.max": Joi.string().required(),
+        "error.addressLine3.string.empty": Joi.string().required(),
+        "error.addressLine3.string.max": Joi.string().required(),
+        "error.addressLine4.string.empty": Joi.string().required(),
+        "error.addressLine4.string.max": Joi.string().required(),
+        "error.postcode.string.empty": Joi.string().required(),
+        "error.postcode.string.max": Joi.string().required(),
+        "error.postcode.string.pattern.base": Joi.string().required(),
+        "error.country.string.empty": Joi.string().required(),
+        "error.country.string.max": Joi.string().required(),
+      }).required()
+    }).required(),
     agent: enterAddressSchema,
     applicant: enterAddressSchema,
     agentLed: enterAddressSchema,
@@ -238,7 +271,7 @@ const schema = Joi.object().keys({
   confirmAddress: Joi.object({
     common: Joi.object({
       changeAddressLinkText: Joi.string().required()
-    }),
+    }).required(),
     agent: confirmAddressSchema,
     applicant: confirmAddressSchema,
     agentLed: confirmAddressSchema,
@@ -262,7 +295,14 @@ const schema = Joi.object().keys({
     inputLabelQuantity: Joi.string().required(),
     selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object())
+    unitsOfMeasurement: Joi.array().items(Joi.object()),
+    errorMessages: Joi.object({
+      "error.speciesName.string.empty": Joi.string().required(),
+      "error.unitOfMeasurement.string.empty": Joi.string().required(),
+      "error.quantity.number.base": Joi.string().required(),
+      "error.quantity.number.min": Joi.string().required(),
+      "error.quantity.number.max": Joi.string().required()
+    }).required()
   }),
   couldNotConfirm: Joi.object({
     pageTitle: Joi.string().required(),
@@ -328,7 +368,7 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       "error.specimenType.any.only": Joi.string().required(),
       "error.specimenType.any.required": Joi.string().required()
-    }),
+    }).required(),
   })
 })
 

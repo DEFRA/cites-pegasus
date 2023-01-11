@@ -14,31 +14,6 @@
         "radioOptionYes": "Yes",
         "radioOptionNo": "No",
         "errorMessages": {
-            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for ",
-            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else",
-            "error.fullName.string.empty": "Full name is required",
-            "error.fullName.string.pattern.base": "Full name is invalid",
-            "error.businessName.string.pattern.base": "Business name is invalid",
-            "error.email.string.email": "Email format is invalid",
-            "error.addressLine1.string.empty": "Enter the address line 1",
-            "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
-            "error.addressLine2.string.empty": "Enter the address line 2",
-            "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
-            "error.addressLine3.string.empty": "Enter the address line 3",
-            "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
-            "error.addressLine4.string.empty": "Enter the address line 4",
-            "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
-            "error.postcode.string.empty": "Enter a postal or zip code",
-            "error.postcode.string.max": "Enter a real postal or zip code",
-            "error.postcode.string.pattern.base": "Enter a real postal or zip code",
-            "error.country.string.empty": "Enter the country",
-            "error.country.string.max": "Country must be 150 characters or less",
-            "error.speciesName.string.empty": "Enter the scientific name",
-            "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
-            "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
-            "error.quantity.number.min": "Quantity must be more than 0.0001",
-            "error.quantity.number.max": "Quantity must be less than 1000000",
-            "error.address.string.empty": "Select an address",
             "error.sourceCode.any.required": "Select the source code",
             "error.anotherSourceCodeForI.string.empty": "Enter another source code",
             "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
@@ -72,7 +47,10 @@
         "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
         "radioOptionArticle10": "Article 10",
         "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
-        "radioOptionOther": "Other"
+        "radioOptionOther": "Other",
+        "errorMessages": {
+            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for "
+        }
     },
     "cannotUseService": {
         "pageTitle": "You cannot use this service yet",
@@ -96,7 +74,10 @@
                 "bulletListItem": "for a friend or family member"
             }
         ],
-        "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for."
+        "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for.",
+        "errorMessages": {
+            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else"
+        }
     },
     "contactDetails": {
         "agent": {
@@ -161,13 +142,22 @@
             "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
             "inputHintEmailReexport": "We will only use the re-exporter's email address to contact them about the application.",
             "inputHintEmailArticle10": "We will only use the applicant’s email address to contact them about the application."
+        },
+        "errorMessages": {
+            "error.fullName.string.empty": "Full name is required",
+            "error.fullName.string.pattern.base": "Full name is invalid",
+            "error.businessName.string.pattern.base": "Business name is invalid",
+            "error.email.string.email": "Email format is invalid"
         }
     },
     "postcode": {
         "common": {
             "buttonFindAddress": "Find address",
             "linkTextEnterAddress": "Enter address manually",
-            "inputLabelPostcode": "Postcode"
+            "inputLabelPostcode": "Postcode",
+            "errorMessages": {
+                "error.postcode.string.empty": "Enter your postcode"
+            }
         },
         "agent": {
             "defaultTitleImport": "What is your address?",
@@ -274,7 +264,10 @@
             "selectAddressPromptNoResults": "No addresses found",
             "selectAddressPromptSingle": "1 address found",
             "selectAddressPromptMultiple": "addresses found",
-            "changePostcodeLinkText": "Change postcode"
+            "changePostcodeLinkText": "Change postcode",
+            "errorMessages": {
+                "error.address.string.empty": "Select an address"
+            }
         },
         "agent": {
             "enterManualAddressLinkText": "Enter your address manually"
@@ -296,7 +289,22 @@
             "inputLabelAddressLine3": "Address line 3 (optional)",
             "inputLabelAddressLine4": "Address line 4 (optional)",
             "inputLabelPostcode": "Postal or zip code (if your country has one)",
-            "inputLabelCountry": "Country"
+            "inputLabelCountry": "Country",
+            "errorMessages": {
+                "error.addressLine1.string.empty": "Enter the address line 1",
+                "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+                "error.addressLine2.string.empty": "Enter the address line 2",
+                "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+                "error.addressLine3.string.empty": "Enter the address line 3",
+                "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+                "error.addressLine4.string.empty": "Enter the address line 4",
+                "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+                "error.postcode.string.empty": "Enter a postal or zip code",
+                "error.postcode.string.max": "Enter a real postal or zip code",
+                "error.postcode.string.pattern.base": "Enter a real postal or zip code",
+                "error.country.string.empty": "Enter the country",
+                "error.country.string.max": "Country must be 150 characters or less"
+            }
         },
         "agent": {
             "defaultTitleImport": "Enter your address",
@@ -479,7 +487,14 @@
                 "text": "tonne",
                 "value": "tonne"
             }
-        ]
+        ],
+        "errorMessages": {
+            "error.speciesName.string.empty": "Enter the scientific name",
+            "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
+            "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
+            "error.quantity.number.min": "Quantity must be more than 0.0001",
+            "error.quantity.number.max": "Quantity must be less than 1000000"
+        }
     },
     "couldNotConfirm": {
         "pageTitle": "We could not confirm the scientific name",
