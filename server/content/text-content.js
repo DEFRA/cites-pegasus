@@ -324,7 +324,11 @@ const schema = Joi.object().keys({
     radioOptionPlantProduct: Joi.string().required(),
     radioOptionPlantProductHint: Joi.string().required(),
     radioOptionPlantWorked: Joi.string().required(),
-    radioOptionPlantWorkedHint: Joi.string().required()
+    radioOptionPlantWorkedHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.specimenType.any.only": Joi.string().required(),
+      "error.specimenType.any.required": Joi.string().required()
+    }),
   }),
   tradeTermCode: Joi.object({
     defaultTitle: Joi.string().required(),
