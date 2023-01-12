@@ -328,7 +328,7 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       "error.specimenType.any.only": Joi.string().required(),
       "error.specimenType.any.required": Joi.string().required()
-    }),
+    }).required()
   }),
   tradeTermCode: Joi.object({
     defaultTitle: Joi.string().required(),

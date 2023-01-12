@@ -206,6 +206,7 @@ module.exports = [
           for (let i = 0; i < (previousAppDataSpecies.quantity); i++) {
             newAppDataSpecies.specimens.pop()
           }
+        }
 
         if (request.payload.unitOfMeasurement === "noOfSpecimens") {
           //Add new specimens to match the quantity
@@ -233,5 +234,6 @@ module.exports = [
       }
     }
   }
+
 ]
 

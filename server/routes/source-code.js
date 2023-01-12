@@ -6,7 +6,7 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
-const { ALFA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
+const { ALPHA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "source-code"
@@ -307,11 +307,11 @@ module.exports = [
           sourceCode: Joi.string().required(),
           anotherSourceCodeForI: Joi.when("sourceCode", {
             is: "I",
-            then: Joi.string().length(1).regex(ALFA_REGEX).required()
+            then: Joi.string().length(1).regex(ALPHA_REGEX).required()
           }),
           anotherSourceCodeForO: Joi.when("sourceCode", {
             is: "O",
-            then: Joi.string().length(1).regex(ALFA_REGEX).required()
+            then: Joi.string().length(1).regex(ALPHA_REGEX).required()
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
