@@ -60,7 +60,7 @@ function createModel(errors, data) {
     let errorList = null
     if(errors){
         errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...textContent.contactDetails.errorMessages, ...pageContent.errorMessages }
         const fields = ['fullName', 'businessName', 'email']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
