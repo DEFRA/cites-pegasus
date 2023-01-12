@@ -6,18 +6,18 @@ const {
   isChecked
 } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
-
+const { ALPHA_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
-const pageId = "purpose-code"
+const nunjucks = require("nunjucks")
+const pageId = "trade-term-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/source-code`
-const article10Path = `${urlPrefix}/use-certificate-for`
-const nextPath = `${urlPrefix}/specimen-type` //TO DO
+const previousPath = `${urlPrefix}/specimen-type`
+const nextPath = `${urlPrefix}/unique-identification-mark` //TO DO
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.purposeCode
+  const pageContent = textContent.tradeTermCode
 
   let errorList = null
   if (errors) {
@@ -26,7 +26,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["purposeCode"]
+    const fields = ["isTradeTermCode", "tradeTermCode"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -48,6 +48,26 @@ function createModel(errors, data) {
       ? `${speciesName} (${specimenIndex} of ${quantity})`
       : `${speciesName}`
 
+  var renderString =
+    "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
+  renderString = renderString + " {{govukInput(input)}}"
+
+  const tradeTermCodeInput = nunjucks.renderString(renderString, {
+    input: {
+      id: "tradeTermCode",
+      name: "tradeTermCode",
+      classes: "govuk-input govuk-input--width-2",
+      label: {
+        text: pageContent.inputLabelTradeCode
+      },
+      hint: {
+        text: pageContent.inputLabelTradeCodeHint
+      },
+      ...(data.tradeTermCode ? { value: data.tradeTermCode } : {}),
+      errorMessage: getFieldError(errorList, "#tradeTermCode")
+    }
+  })
+
   const model = {
     backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -57,9 +77,9 @@ function createModel(errors, data) {
       : pageContent.defaultTitle,
     captionText: captionText,
 
-    inputPurposeCode: {
-      idPrefix: "purposeCode",
-      name: "purposeCode",
+    inputIsTradeTermCode: {
+      idPrefix: "isTradeTermCode",
+      name: "isTradeTermCode",
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
@@ -69,115 +89,21 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: "B",
-          text: pageContent.radioOptionB,
-          hint: { text: pageContent.radioOptionBHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "B")
+          value: true,
+          text: commonContent.radioOptionYes,
+          checked: isChecked(data.isTradeTermCode, true),
+          conditional: {
+            html: tradeTermCodeInput
+          }
         },
         {
-          value: "E",
-          text: pageContent.radioOptionE,
-          hint: { text: pageContent.radioOptionEHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "E")
-        },
-        {
-          value: "G",
-          text: pageContent.radioOptionG,
-          hint: { text: pageContent.radioOptionGHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "G")
-        },
-        {
-          value: "H",
-          text: pageContent.radioOptionH,
-          hint: { text: pageContent.radioOptionHHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "H")
-        },
-        {
-          value: "L",
-          text: pageContent.radioOptionL,
-          hint: { text: pageContent.radioOptionLHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "L")
-        },
-        {
-          value: "M",
-          text: pageContent.radioOptionM,
-          hint: { text: pageContent.radioOptionMHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "M")
-        },
-        {
-          value: "N",
-          text: pageContent.radioOptionN,
-          hint: { text: pageContent.radioOptionNHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "N")
-        },
-        {
-          value: "P",
-          text: pageContent.radioOptionP,
-          hint: { text: pageContent.radioOptionPHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "P")
-        },
-        {
-          value: "Q",
-          text: pageContent.radioOptionQ,
-          hint: { text: pageContent.radioOptionQHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "Q")
-        },
-        {
-          value: "S",
-          text: pageContent.radioOptionS,
-          hint: { text: pageContent.radioOptionSHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "S")
-        },
-        {
-          value: "T",
-          text: pageContent.radioOptionT,
-          hint: { text: pageContent.radioOptionTHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "T")
-        },
-        {
-          value: "Z",
-          text: pageContent.radioOptionZ,
-          hint: { text: pageContent.radioOptionZHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "Z")
+          value: false,
+          text: commonContent.radioOptionNo,
+          checked: isChecked(data.isTradeTermCode, false)
         }
       ],
-      errorMessage: getFieldError(errorList, "#purposeCode")
+
+      errorMessage: getFieldError(errorList, "#isTradeTermCode")
     }
   }
   return { ...commonContent, ...model }
@@ -215,16 +141,18 @@ module.exports = [
         quantity: appData.species[request.params.speciesIndex]?.quantity,
         unitOfMeasurement:
           appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-        purposeCode:
+        isTradeTermCode:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.purposeCode
+          ].isTradeTermCode,
+        tradeTermCode:
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ].tradeTermCode
       }
-
       return h.view(pageId, createModel(null, pageData))
     }
   },
-
   {
     method: "POST",
     path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
@@ -236,8 +164,13 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          purposeCode: Joi.string().required()
+          isTradeTermCode: Joi.boolean().required(),
+          tradeTermCode: Joi.when("isTradeTermCode", {
+            is: true,
+            then: Joi.string().length(3).regex(ALPHA_REGEX).required()
+          })
         }),
+
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
@@ -248,10 +181,7 @@ module.exports = [
             quantity: appData.species[request.params.speciesIndex]?.quantity,
             unitOfMeasurement:
               appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            purposeCode:
-              appData.species[request.params.speciesIndex].specimens[
-                request.params.specimenIndex
-              ]?.purposeCode
+            ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -259,27 +189,31 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
+        const tradeTermCode = request.payload.isTradeTermCode
+          ? request.payload.tradeTermCode.toUpperCase()
+          : ""
+
         appData.species[request.params.speciesIndex].specimens[
           request.params.specimenIndex
-        ].purposeCode = request.payload.purposeCode
+        ].isTradeTermCode = request.payload.isTradeTermCode
+        appData.species[request.params.speciesIndex].specimens[
+          request.params.specimenIndex
+        ].tradeTermCode = tradeTermCode
 
         try {
-          mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-        } 
-        catch (err) {
+          mergeAppData(
+            request,
+            { species: appData.species },
+            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          )
+        } catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
         }
-    
-        if (appData.permitType === "article10"){
-          return h.redirect(
-            `${article10Path}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-          )
-        } else {
-           return h.redirect(
+
+        return h.redirect(
           `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
-        }
       }
     }
   }

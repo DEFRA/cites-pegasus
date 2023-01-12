@@ -16,6 +16,7 @@ const routes = [].concat(
   require('../routes/specimen-type'),
   require('../routes/select-delivery-address'),
   require('../routes/use-certificate-for'),
+  require('../routes/trade-term-code'),
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc')
