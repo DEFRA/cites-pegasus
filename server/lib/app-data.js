@@ -113,6 +113,9 @@ function getAppFlow(appData) {
                                 appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
                             }
                         }
+                        if (specimen.specimenType) {
+                            appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                        }
                     })
                 }
             })
