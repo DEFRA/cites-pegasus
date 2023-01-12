@@ -236,7 +236,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          purposeCode: Joi.string().required()
+          purposeCode: Joi.string().valid("B", "E", "G", "H","L", "M", "N", "P", "Q", "S", "T", "Z" ).required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)

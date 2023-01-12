@@ -202,7 +202,7 @@ module.exports = [
             newAppDataSpecies.specimens.pop()
           }
         } else if ((previousAppDataSpecies.kingdom === "Animalia" && speciesData.kingdom !== "Animalia") || (previousAppDataSpecies.kingdom === "Plantae" && speciesData.kingdom !== "Plantae")) {
-          //If switching from noOfSpecimens to a measurement, remove all specimens except one
+          //If switching from Animalia to a Plantea, remove all specimens except one
           for (let i = 0; i < (previousAppDataSpecies.quantity); i++) {
             newAppDataSpecies.specimens.pop()
           }
@@ -219,7 +219,7 @@ module.exports = [
         try {
           setAppData(request, newAppData)
 
-          if (speciesData?.scientificname) {
+          if (speciesData?.scientificname && (speciesData.kingdom === "Animalia" || speciesData.kingdom === "Plantea")) {
             const nextPath = `${urlPrefix}/source-code/${request.params.speciesIndex}/0`
             return h.redirect(nextPath)
           }
