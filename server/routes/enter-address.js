@@ -10,7 +10,7 @@ const previousPath = `${urlPrefix}/postcode`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
-
+const lodash = require('lodash')
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -18,16 +18,16 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.agentLed }
+            pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.agentLed )
         } else {
-            pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.applicant }
+            pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.applicant )
         }
     } else if (data.contactType === 'agent') {
-        pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.agent }
+        pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.agent )
     } else {
-        pageContent = { ...textContent.enterAddress.common, ...textContent.enterAddress.delivery }
+        pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.delivery)
     }
-
+    
     let defaultTitle = ''
     let pageHeader = ''
     let pageBody = ''
@@ -59,7 +59,7 @@ function createModel(errors, data) {
     let errorList = null
     if (errors) {
         errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }
         const fields = ['addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode', 'country']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]

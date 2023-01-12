@@ -12,6 +12,7 @@ const previousPathPostcode = `${urlPrefix}/postcode`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidAppDataPath = urlPrefix
+const lodash = require('lodash')
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -19,14 +20,14 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.agentLed }
+            pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.agentLed )
         } else {
-            pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.applicant }
+            pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.applicant )
         }
     } else if (data.contactType === 'agent') {
-        pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.agent }
+        pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.agent )
     } else {
-        pageContent = { ...textContent.selectAddress.common, ...textContent.selectAddress.delivery }
+        pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.delivery )
     }
 
     let errorList = null

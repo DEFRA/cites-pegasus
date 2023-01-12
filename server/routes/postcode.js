@@ -11,7 +11,7 @@ const previousPathSelectDeliveryAddress = `${urlPrefix}/select-delivery-address`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/select-address`
 const invalidAppDataPath = urlPrefix
-
+const lodash = require('lodash')
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -20,14 +20,14 @@ function createModel(errors, data) {
 
     if(data.contactType === 'applicant'){
         if(data.isAgent){
-            pageContent = {...textContent.postcode.common, ...textContent.postcode.agentLed}
+            pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.agentLed)
         } else {
-            pageContent = {...textContent.postcode.common, ...textContent.postcode.applicant}
+            pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.applicant)
         }
     } else if (data.contactType === 'agent') {
-        pageContent = {...textContent.postcode.common, ...textContent.postcode.agent}
+        pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.agent)
     } else {
-        pageContent = {...textContent.postcode.common, ...textContent.postcode.delivery}
+        pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.delivery)
         backLink = previousPathSelectDeliveryAddress
     }
 
@@ -61,7 +61,7 @@ function createModel(errors, data) {
     let errorList = null
     if(errors){
         errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...errorMessages }
+        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }
         const fields = ['postcode']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
