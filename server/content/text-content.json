@@ -76,7 +76,8 @@
         ],
         "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for.",
         "errorMessages": {
-            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else"
+            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else",
+            "error.isAgent.any.only": "Select yes if you are applying on behalf of someone else"
         }
     },
     "contactDetails": {

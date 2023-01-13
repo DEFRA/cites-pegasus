@@ -101,14 +101,14 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        isAgent: Joi.string().required()
+        isAgent: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo)
       }),
       failAction: (request, h, err) => {
         return h.view(pageId, createModel(err, request.payload.isAgent)).takeover()
       }
     },
     handler: async (request, h) => {
-      const isAgent = request.payload.isAgent === 'Yes';
+      const isAgent = request.payload.isAgent === textContent.common.radioOptionYes;
 
       try {
         agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 

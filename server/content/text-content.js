@@ -188,7 +188,8 @@ const schema = Joi.object().keys({
     bulletListItems: Joi.array().items(Joi.object().keys({ bulletListItem: Joi.string().required() })),
     pageBody2: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.isAgent.any.required": Joi.string().required()
+      "error.isAgent.any.required": Joi.string().required(),
+      "error.isAgent.any.only": Joi.string().required()
     }).required()
   }),
   contactDetails: Joi.object({
