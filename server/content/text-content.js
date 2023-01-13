@@ -404,7 +404,36 @@ const schema = Joi.object().keys({
       "error.tradeTermCode.string.length": Joi.string().required(),
       "error.tradeTermCode.string.pattern.base": Joi.string().required(),
     }).required()
-  })
+  }),
+  enterAddress: Joi.object({
+    common: Joi.object({
+      inputLabelAddressLine1: Joi.string().required(),
+      inputLabelAddressLine2: Joi.string().required(),
+      inputLabelAddressLine3: Joi.string().required(),
+      inputLabelAddressLine4: Joi.string().required(),
+      inputLabelPostcode: Joi.string().required(),
+      inputLabelCountry: Joi.string().required(),
+      errorMessages: Joi.object({
+        "error.addressLine1.string.empty": Joi.string().required(),
+        "error.addressLine1.string.max": Joi.string().required(),
+        "error.addressLine2.string.empty": Joi.string().required(),
+        "error.addressLine2.string.max": Joi.string().required(),
+        "error.addressLine3.string.empty": Joi.string().required(),
+        "error.addressLine3.string.max": Joi.string().required(),
+        "error.addressLine4.string.empty": Joi.string().required(),
+        "error.addressLine4.string.max": Joi.string().required(),
+        "error.postcode.string.empty": Joi.string().required(),
+        "error.postcode.string.max": Joi.string().required(),
+        "error.postcode.string.pattern.base": Joi.string().required(),
+        "error.country.string.empty": Joi.string().required(),
+        "error.country.string.max": Joi.string().required(),
+      }).required()
+    }).required(),
+    agent: enterAddressSchema,
+    applicant: enterAddressSchema,
+    agentLed: enterAddressSchema,
+    delivery: enterAddressSchema
+  }),
 })
 
 // Validate config

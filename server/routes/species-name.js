@@ -204,14 +204,8 @@ module.exports = [
         newAppDataSpecies.unitOfMeasurement = request.payload.unitOfMeasurement
         newAppDataSpecies.kingdom = speciesData?.kingdom
 
-         if (
-          (previousAppDataSpecies.kingdom === "Animalia" &&
-            speciesData.kingdom !== "Animalia") ||
-          (previousAppDataSpecies.kingdom === "Plantae" &&
-            speciesData.kingdom !== "Plantae") ||
-          previousAppDataSpecies.speciesName !== request.payload.speciesName
-        ) {
-          //If switching from an Animalia to a Plantea or changing speciesName , remove all specimens
+         if (previousAppDataSpecies.speciesName !== request.payload.speciesName) {
+          //If changing speciesName , remove all specimens
           for (let i = 0; i < previousAppDataSpecies.quantity; i++) {
             newAppDataSpecies.specimens.pop()
           }
