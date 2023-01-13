@@ -5,7 +5,12 @@ const {
   getFieldError,
   isChecked
 } = require("../lib/helper-functions")
-const { getAppData, setAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const {
+  getAppData,
+  setAppData,
+  mergeAppData,
+  validateAppData
+} = require("../lib/app-data")
 const { getSpecies } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
@@ -116,12 +121,15 @@ module.exports = [
       }
 
       if (appData.species.length < request.params.speciesIndex) {
-        console.log('Invalid species index')
+        console.log("Invalid species index")
         return h.redirect(invalidAppDataPath)
       }
 
       if (appData.species.length < request.params.speciesIndex + 1) {
-        appData.species.push({ speciesIndex: request.params.speciesIndex, specimens: [{ specimenIndex: 0 }] })
+        appData.species.push({
+          speciesIndex: request.params.speciesIndex,
+          specimens: [{ specimenIndex: 0 }]
+        })
 
         try {
           mergeAppData(request, appData)
@@ -179,11 +187,16 @@ module.exports = [
       },
 
       handler: async (request, h) => {
-        const speciesData = await getSpecies(request, request.payload.speciesName)
+        const speciesData = await getSpecies(
+          request,
+          request.payload.speciesName
+        )
         const previousAppData = getAppData(request)
         const newAppData = lodash.cloneDeep(previousAppData)
-        const newAppDataSpecies = newAppData.species[request.params.speciesIndex]
-        const previousAppDataSpecies = previousAppData?.species[request.params.speciesIndex]
+        const newAppDataSpecies =
+          newAppData.species[request.params.speciesIndex]
+        const previousAppDataSpecies =
+          previousAppData?.species[request.params.speciesIndex]
 
         newAppDataSpecies.speciesName = speciesData?.scientificname
         newAppDataSpecies.speciesSearchData = request.payload.speciesName
@@ -191,23 +204,37 @@ module.exports = [
         newAppDataSpecies.unitOfMeasurement = request.payload.unitOfMeasurement
         newAppDataSpecies.kingdom = speciesData?.kingdom
 
-        if (previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" && request.payload.unitOfMeasurement !== "noOfSpecimens") {
+         if (
+          (previousAppDataSpecies.kingdom === "Animalia" &&
+            speciesData.kingdom !== "Animalia") ||
+          (previousAppDataSpecies.kingdom === "Plantae" &&
+            speciesData.kingdom !== "Plantae") ||
+          previousAppDataSpecies.speciesName !== request.payload.speciesName
+        ) {
+          //If switching from an Animalia to a Plantea or changing speciesName , remove all specimens
+          for (let i = 0; i < previousAppDataSpecies.quantity; i++) {
+            newAppDataSpecies.specimens.pop()
+          }
+        } else if (
+          previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" &&
+          request.payload.unitOfMeasurement !== "noOfSpecimens"
+        ) {
           //If switching from noOfSpecimens to a measurement, remove all specimens except one
-          for (let i = 0; i < (previousAppDataSpecies.quantity - 1); i++) {
+          for (let i = 0; i < previousAppDataSpecies.quantity - 1; i++) {
             newAppDataSpecies.specimens.pop()
           }
-        } else if (previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" && previousAppDataSpecies.quantity > request.payload.quantity) {
+        } else if (
+          previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" &&
+          previousAppDataSpecies.quantity > request.payload.quantity
+        ) {
           //If reducing the noOfSpecimens, remove all surplus specimens until the number equals the quantity
-          for (let i = 0; i < previousAppDataSpecies.quantity - request.payload.quantity; i++) {
-            newAppDataSpecies.specimens.pop()
-          }
-        } else if ((previousAppDataSpecies.kingdom === "Animalia" && speciesData.kingdom !== "Animalia") || (previousAppDataSpecies.kingdom === "Plantae" && speciesData.kingdom !== "Plantae")) {
-          //If switching from Animalia to a Plantea, remove all specimens except one
-          for (let i = 0; i < (previousAppDataSpecies.quantity); i++) {
+          for (
+            let i = 0;
+            i < previousAppDataSpecies.quantity - request.payload.quantity; i++) {
             newAppDataSpecies.specimens.pop()
           }
         }
-
+        
         if (request.payload.unitOfMeasurement === "noOfSpecimens") {
           //Add new specimens to match the quantity
           for (let i = 0; i < request.payload.quantity; i++) {
@@ -220,13 +247,18 @@ module.exports = [
         try {
           setAppData(request, newAppData)
 
-          if (speciesData?.scientificname && (speciesData.kingdom === "Animalia" || speciesData.kingdom === "Plantea")) {
+          if (
+            speciesData?.scientificname &&
+            (speciesData.kingdom === "Animalia" ||
+              speciesData.kingdom === "Plantae")
+          ) {
             const nextPath = `${urlPrefix}/source-code/${request.params.speciesIndex}/0`
             return h.redirect(nextPath)
           }
 
-          return h.redirect(`${unknownSpeciesPath}/${request.params.speciesIndex}`)
-
+          return h.redirect(
+            `${unknownSpeciesPath}/${request.params.speciesIndex}`
+          )
         } catch (err) {
           console.log(err)
           return h.redirect(invalidAppDataPath)
@@ -234,6 +266,4 @@ module.exports = [
       }
     }
   }
-
 ]
-

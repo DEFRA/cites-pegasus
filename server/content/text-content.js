@@ -127,7 +127,19 @@ const sourceCodeSchema = Joi.object({
   radioOptionU: Joi.string().required(),
   radioOptionUHint: Joi.string().required(),
   characterCountLabelEnterAReason: Joi.string().required(),
-  dividerText: Joi.string().required()
+  dividerText: Joi.string().required(),
+  errorMessages: Joi.object({
+    "error.sourceCode.any.required": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.empty": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.length": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.pattern.base": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.empty": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.length": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.pattern.base": Joi.string().required(),
+    "error.enterAReason.string.empty": Joi.string().required(),
+    "error.enterAReason.string.pattern.base": Joi.string().required(),
+    "error.enterAReason.string.max": Joi.string().required(),
+  })
 })
 
 const schema = Joi.object().keys({
@@ -344,6 +356,9 @@ const schema = Joi.object().keys({
     radioOptionTHint: Joi.string().required(),
     radioOptionZ: Joi.string().required(),
     radioOptionZHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.purposeCode.any.required": Joi.string().required(),
+    }).required()
   }),
   useCertificateFor: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -352,6 +367,9 @@ const schema = Joi.object().keys({
     radioOptionCommercialActivities: Joi.string().required(),
     radioOptionOther: Joi.string().required(),
     radioOptionMoveALiveSpecimen: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.useCertificateFor.any.required": Joi.string().required(),
+    }).required()
   }),
   specimenType: Joi.object({
     defaultTitle: Joi.string().required(),

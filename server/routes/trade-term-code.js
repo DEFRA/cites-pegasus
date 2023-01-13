@@ -144,11 +144,11 @@ module.exports = [
         isTradeTermCode:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ].isTradeTermCode,
+          ]?.isTradeTermCode,
         tradeTermCode:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ].tradeTermCode
+          ]?.tradeTermCode
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -193,12 +193,9 @@ module.exports = [
           ? request.payload.tradeTermCode.toUpperCase()
           : ""
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].isTradeTermCode = request.payload.isTradeTermCode
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].tradeTermCode = tradeTermCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].isTradeTermCode = request.payload.isTradeTermCode
+
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode = tradeTermCode
 
         try {
           mergeAppData(
