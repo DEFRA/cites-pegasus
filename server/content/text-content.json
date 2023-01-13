@@ -38,7 +38,8 @@
         "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
         "radioOptionOther": "Other",
         "errorMessages": {
-            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for "
+            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
+            "error.permitType.any.only": "Select the type of permit or certificate that you are applying for"
         }
     },
     "cannotUseService": {
@@ -65,7 +66,8 @@
         ],
         "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for.",
         "errorMessages": {
-            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else"
+            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else",
+            "error.isAgent.any.only": "Select yes if you are applying on behalf of someone else"
         }
     },
     "contactDetails": {
@@ -422,7 +424,8 @@
         "radioOptionDeliverToAgentAddress": "Deliver the permit to",
         "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
         "errorMessages": {
-            "error.deliveryAddressOption.any.required": "Select the delivery address"
+            "error.deliveryAddressOption.any.required": "Select the delivery address",
+            "error.deliveryAddressOption.any.only": "Select the delivery address"
         }
     },
     "speciesName": {

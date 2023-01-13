@@ -10,7 +10,8 @@ const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
-const nextPath = `${urlPrefix}/trade-term-code`
+const nextPathTradeTerm = `${urlPrefix}/trade-term-code`
+const nextPathCreatedDate = `${urlPrefix}/created-date`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -212,8 +213,11 @@ module.exports = [
           console.log(err);
           return h.redirect(`${invalidAppDataPath}/`)
         }
+        if(request.payload.specimenType === 'animalWorked' || request.payload.specimenType === 'plantWorked'){
+          return h.redirect(`${nextPathCreatedDate}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        }
 
-        return h.redirect(`${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        return h.redirect(`${nextPathTradeTerm}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
       }
     }
   }
