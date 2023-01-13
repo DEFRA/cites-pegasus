@@ -49,7 +49,8 @@
         "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
         "radioOptionOther": "Other",
         "errorMessages": {
-            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for "
+            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
+            "error.permitType.any.only": "Select the type of permit or certificate that you are applying for"
         }
     },
     "cannotUseService": {
@@ -434,7 +435,8 @@
         "radioOptionDeliverToAgentAddress": "Deliver the permit to",
         "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
         "errorMessages": {
-            "error.deliveryAddressOption.any.required": "Select the delivery address"
+            "error.deliveryAddressOption.any.required": "Select the delivery address",
+            "error.deliveryAddressOption.any.only": "Select the delivery address"
         }
     },
     "speciesName": {

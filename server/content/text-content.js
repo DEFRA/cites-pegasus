@@ -168,7 +168,8 @@ const schema = Joi.object().keys({
     radioOptionArticle10Hint: Joi.string().required(),
     radioOptionOther: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.permitType.any.required": Joi.string().required()
+      "error.permitType.any.required": Joi.string().required(),
+      "error.permitType.any.only": Joi.string().required()
     })
   }),
   cannotUseService: Joi.object({
@@ -284,7 +285,10 @@ const schema = Joi.object().keys({
     radioOptionDeliverToApplicantAddress: Joi.string().required(),
     radioOptionDeliverToAgentAddress: Joi.string().required(),
     radioOptionDeliverToDifferentAddress: Joi.string().required(),
-    errorMessages: Joi.object()
+    errorMessages: Joi.object({
+      "error.deliveryAddressOption.any.required": Joi.string().required(),
+      "error.deliveryAddressOption.any.only": Joi.string().required()
+    }).required()
   }),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),

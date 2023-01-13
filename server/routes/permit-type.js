@@ -98,7 +98,7 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        permitType: Joi.string().required()
+        permitType: Joi.string().required().valid('import', 'export', 'reexport', 'article10', 'other')
       }),
       failAction: (request, h, err) => {
         return h.view(pageId, createModel(err, request.payload.permitType)).takeover()
