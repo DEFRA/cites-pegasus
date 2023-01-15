@@ -348,34 +348,11 @@ module.exports = [
           .required()
           .valid("W", "D", "A", "I", "O", "X", "U")
 
-        const payloadSchema = Joi.object({
-          sourceCode:
-            appData.species[request.params.speciesIndex].kingdom === "Animalia"
-              ? animalSchema
-              : plantSchema,
-          anotherSourceCodeForI: Joi.when("sourceCode", {
-            is: "I",
-            then: Joi.string().length(1).regex(ALPHA_REGEX).required()
-          }),
-          anotherSourceCodeForO: Joi.when("sourceCode", {
-            is: "O",
-            then: Joi.string().length(1).regex(ALPHA_REGEX).required()
-          }),
-          enterAReason: Joi.when("sourceCode", {
-            is: "U",
-            then: Joi.string().min(1).max(151).regex(COMMENTS_REGEX).required()
-          })
-        })
+        const payloadSchema = appData.species[request.params.speciesIndex].kingdom === "Animalia" ? animalSchema : plantSchema
+       
 
-        const result = payloadSchema.validate(
-          {
-            sourceCode: request.payload.sourceCode,
-            anotherSourceCodeForI: request.payload.anotherSourceCodeForI,
-            anotherSourceCodeForO: request.payload.anotherSourceCodeForO,
-            enterAReason: request.payload.enterAReason
-          },
-          { abortEarly: false }
-        )
+        const result = payloadSchema.validate(request.payload.sourceCode, { abortEarly: false })
+
 
         if (result.error) {
           return failAction(request, h, result.error)
