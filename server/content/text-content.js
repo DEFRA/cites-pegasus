@@ -17,7 +17,7 @@ const searchAddressSchema = Joi.object({
   errorMessagesImport: Joi.object(),
   errorMessagesExport: Joi.object(),
   errorMessagesReexport: Joi.object(),
-  errorMessagesArticle10: Joi.object(),
+  errorMessagesArticle10: Joi.object()
 })
 
 const selectAddressSchema = Joi.object({
@@ -43,7 +43,7 @@ const postcodeSchema = Joi.object({
   errorMessagesImport: Joi.object(),
   errorMessagesExport: Joi.object(),
   errorMessagesReexport: Joi.object(),
-  errorMessagesArticle10: Joi.object(),
+  errorMessagesArticle10: Joi.object()
 })
 
 const contactDetailsSchema = Joi.object({
@@ -65,7 +65,7 @@ const contactDetailsSchema = Joi.object({
   inputHintEmailImport: Joi.string().required(),
   inputHintEmailExport: Joi.string().required(),
   inputHintEmailReexport: Joi.string().required(),
-  inputHintEmailArticle10: Joi.string().required(),
+  inputHintEmailArticle10: Joi.string().required()
 })
 
 const enterAddressSchema = Joi.object({
@@ -127,7 +127,19 @@ const sourceCodeSchema = Joi.object({
   radioOptionU: Joi.string().required(),
   radioOptionUHint: Joi.string().required(),
   characterCountLabelEnterAReason: Joi.string().required(),
-  dividerText: Joi.string().required()
+  dividerText: Joi.string().required(),
+  errorMessages: Joi.object({
+    "error.sourceCode.any.required": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.empty": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.length": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.pattern.base": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.empty": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.length": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.pattern.base": Joi.string().required(),
+    "error.enterAReason.string.empty": Joi.string().required(),
+    "error.enterAReason.string.pattern.base": Joi.string().required(),
+    "error.enterAReason.string.max": Joi.string().required()
+  })
 })
 
 const schema = Joi.object().keys({
@@ -146,7 +158,7 @@ const schema = Joi.object().keys({
     radioOptionYes: Joi.string().required(),
     radioOptionNo: Joi.string().required(),
     errorMessages: Joi.object()
-  }),
+  }).required(),
   applyCitesPermit: Joi.object({
     pageTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -154,7 +166,7 @@ const schema = Joi.object().keys({
     pageBody2: Joi.string().required(),
     bullet1: Joi.string().required(),
     bullet2: Joi.string().required()
-  }),
+  }).required(),
   permitType: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -171,7 +183,7 @@ const schema = Joi.object().keys({
       "error.permitType.any.required": Joi.string().required(),
       "error.permitType.any.only": Joi.string().required()
     })
-  }),
+  }).required(),
   cannotUseService: Joi.object({
     pageTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -181,18 +193,20 @@ const schema = Joi.object().keys({
     linkText: Joi.string().required(),
     linkUrl: Joi.string().uri({ allowRelative: true }).required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
-  }),
+  }).required(),
   applyingOnBehalf: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody1: Joi.string().required(),
-    bulletListItems: Joi.array().items(Joi.object().keys({ bulletListItem: Joi.string().required() })),
+    bulletListItems: Joi.array().items(
+      Joi.object().keys({ bulletListItem: Joi.string().required() })
+    ),
     pageBody2: Joi.string().required(),
     errorMessages: Joi.object({
       "error.isAgent.any.required": Joi.string().required(),
       "error.isAgent.any.only": Joi.string().required()
     }).required()
-  }),
+  }).required(),
   contactDetails: Joi.object({
     agent: contactDetailsSchema,
     applicant: contactDetailsSchema,
@@ -203,7 +217,7 @@ const schema = Joi.object().keys({
       "error.businessName.string.pattern.base": Joi.string().required(),
       "error.email.string.email": Joi.string().required()
     }).required()
-  }),
+  }).required(),
   postcode: Joi.object({
     common: Joi.object({
       buttonFindAddress: Joi.string().required(),
@@ -212,17 +226,17 @@ const schema = Joi.object().keys({
       errorMessages: Joi.object({
         "error.postcode.string.empty": Joi.string().required()
       }).required()
-    }),
+    }).required(),
     agent: postcodeSchema,
     applicant: postcodeSchema,
     agentLed: postcodeSchema,
     delivery: postcodeSchema
-  }),
+  }).required(),
   searchAddress: Joi.object({
     agent: searchAddressSchema,
     applicant: searchAddressSchema,
     agentLed: searchAddressSchema
-  }),
+  }).required(),
   selectAddress: Joi.object({
     common: Joi.object({
       defaultTitle: Joi.string().required(),
@@ -235,12 +249,12 @@ const schema = Joi.object().keys({
       errorMessages: Joi.object({
         "error.address.string.empty": Joi.string().required()
       }).required()
-    }),
+    }).required(),
     agent: selectAddressSchema,
     applicant: selectAddressSchema,
     agentLed: selectAddressSchema,
     delivery: selectAddressSchema
-  }),
+  }).required(),
   enterAddress: Joi.object({
     common: Joi.object({
       inputLabelAddressLine1: Joi.string().required(),
@@ -262,14 +276,14 @@ const schema = Joi.object().keys({
         "error.postcode.string.max": Joi.string().required(),
         "error.postcode.string.pattern.base": Joi.string().required(),
         "error.country.string.empty": Joi.string().required(),
-        "error.country.string.max": Joi.string().required(),
+        "error.country.string.max": Joi.string().required()
       }).required()
     }).required(),
     agent: enterAddressSchema,
     applicant: enterAddressSchema,
     agentLed: enterAddressSchema,
     delivery: enterAddressSchema
-  }),
+  }).required(),
   confirmAddress: Joi.object({
     common: Joi.object({
       changeAddressLinkText: Joi.string().required()
@@ -278,7 +292,7 @@ const schema = Joi.object().keys({
     applicant: confirmAddressSchema,
     agentLed: confirmAddressSchema,
     delivery: confirmAddressSchema
-  }),
+  }).required(),
   selectDeliveryAddress: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -289,7 +303,7 @@ const schema = Joi.object().keys({
       "error.deliveryAddressOption.any.required": Joi.string().required(),
       "error.deliveryAddressOption.any.only": Joi.string().required()
     }).required()
-  }),
+  }).required(),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -308,7 +322,7 @@ const schema = Joi.object().keys({
       "error.quantity.number.min": Joi.string().required(),
       "error.quantity.number.max": Joi.string().required()
     }).required()
-  }),
+  }).required(),
   couldNotConfirm: Joi.object({
     pageTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -317,11 +331,11 @@ const schema = Joi.object().keys({
     linkText: Joi.string().required(),
     linkUrl: Joi.string().required(),
     searchAgainButton: Joi.string().required()
-  }),
+  }).required(),
   sourceCode: Joi.object({
     animal: sourceCodeSchema,
     plant: sourceCodeSchema
-  }),
+  }).required(),
   purposeCode: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -349,7 +363,10 @@ const schema = Joi.object().keys({
     radioOptionTHint: Joi.string().required(),
     radioOptionZ: Joi.string().required(),
     radioOptionZHint: Joi.string().required(),
-  }),
+    errorMessages: Joi.object({
+      "error.purposeCode.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   useCertificateFor: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -357,7 +374,10 @@ const schema = Joi.object().keys({
     radioOptionCommercialActivities: Joi.string().required(),
     radioOptionOther: Joi.string().required(),
     radioOptionMoveALiveSpecimen: Joi.string().required(),
-  }),
+    errorMessages: Joi.object({
+      "error.useCertificateFor.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   specimenType: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -374,7 +394,7 @@ const schema = Joi.object().keys({
       "error.specimenType.any.only": Joi.string().required(),
       "error.specimenType.any.required": Joi.string().required()
     }).required()
-  }),
+  }).required(),
   tradeTermCode: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -384,9 +404,9 @@ const schema = Joi.object().keys({
       "error.isTradeTermCode.any.required": Joi.string().required(),
       "error.tradeTermCode.string.empty": Joi.string().required(),
       "error.tradeTermCode.string.length": Joi.string().required(),
-      "error.tradeTermCode.string.pattern.base": Joi.string().required(),
+      "error.tradeTermCode.string.pattern.base": Joi.string().required()
     }).required()
-  })
+  }).required()
 })
 
 // Validate config

@@ -14,18 +14,7 @@
         "radioOptionYes": "Yes",
         "radioOptionNo": "No",
         "errorMessages": {
-            "error.sourceCode.any.required": "Select the source code",
-            "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-            "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-            "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-            "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-            "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-            "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
-            "error.enterAReason.string.empty": "Enter a reason",
-            "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
-            "error.enterAReason.string.max": "Reason must be 150 characters or less",
-            "error.purposeCode.any.required": "Select the purpose code",
-            "error.useCertificateFor.any.required": "Select what you will use the certificate for"
+            
         }
     },
     "applyCitesPermit": {
@@ -534,7 +523,19 @@
             "radioOptionU": "U",
             "radioOptionUHint": "I do not know",
             "characterCountLabelEnterAReason": "Enter a reason",
-            "dividerText": "Or"
+            "dividerText": "Or",
+            "errorMessages": {
+                "error.sourceCode.any.required": "Select the source code",
+                "error.anotherSourceCodeForI.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+                "error.anotherSourceCodeForO.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+                "error.enterAReason.string.empty": "Enter a reason",
+                "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.enterAReason.string.max": "Reason must be 150 characters or less"
+            }
         },
         "plant": {
             "defaultTitle": "What is the source code?",
@@ -561,7 +562,19 @@
             "radioOptionU": "U",
             "radioOptionUHint": "I do not know",
             "characterCountLabelEnterAReason": "Enter a reason",
-            "dividerText": "Or"
+            "dividerText": "Or",
+            "errorMessages": {
+                "error.sourceCode.any.required": "Select the source code",
+                "error.anotherSourceCodeForI.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+                "error.anotherSourceCodeForO.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+                "error.enterAReason.string.empty": "Enter a reason",
+                "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.enterAReason.string.max": "Reason must be 150 characters or less"
+            }
         }
     },
     "purposeCode": {
@@ -590,7 +603,10 @@
         "radioOptionT": "T",
         "radioOptionTHint": "Commercial",
         "radioOptionZ": "Z",
-        "radioOptionZHint": "Zoos"
+        "radioOptionZHint": "Zoos",
+        "errorMessages": {
+            "error.purposeCode.any.required": "Select the purpose code"
+        }
     },
     "useCertificateFor": {
         "defaultTitle": "What will you use the certificate for?",
@@ -598,7 +614,10 @@
         "radioOptionLegallyAcquired": "To prove that you legally acquired a specimen",
         "radioOptionCommercialActivities": "To use the specimen for commercial activities",
         "radioOptionOther": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
-        "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain"
+        "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain",
+        "errorMessages": {
+            "error.useCertificateFor.any.required": "Select what you will use the certificate for"
+        }
     },
     "specimenType": {
         "defaultTitle": "What best describes the specimen?",

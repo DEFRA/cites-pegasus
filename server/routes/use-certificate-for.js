@@ -144,7 +144,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          useCertificateFor: Joi.string().required()
+          useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "other", "moveALiveSpecimen").required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)

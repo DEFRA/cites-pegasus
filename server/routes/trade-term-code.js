@@ -18,6 +18,17 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.tradeTermCode
+  
+  let isTradeTermCodeRadioVal = null
+  switch (data.isTradeTermCode) {
+    case true:
+      isTradeTermCodeRadioVal = commonContent.radioOptionYes
+      break;
+    case false:
+      isTradeTermCodeRadioVal = commonContent.radioOptionNo
+      break;
+  }
+
 
   let errorList = null
   if (errors) {
@@ -89,17 +100,17 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: true,
+          value: "Yes",
           text: commonContent.radioOptionYes,
-          checked: isChecked(data.isTradeTermCode, true),
+          checked: isChecked(isTradeTermCodeRadioVal, "Yes"),
           conditional: {
             html: tradeTermCodeInput
           }
         },
         {
-          value: false,
+          value: "No",
           text: commonContent.radioOptionNo,
-          checked: isChecked(data.isTradeTermCode, false)
+          checked: isChecked(isTradeTermCodeRadioVal, "No")
         }
       ],
 
@@ -164,9 +175,9 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isTradeTermCode: Joi.boolean().required(),
+          isTradeTermCode: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo),
           tradeTermCode: Joi.when("isTradeTermCode", {
-            is: true,
+            is: "Yes",
             then: Joi.string().length(3).regex(ALPHA_REGEX).required()
           })
         }),
@@ -188,19 +199,18 @@ module.exports = [
       },
       handler: async (request, h) => {
         const appData = getAppData(request)
+        const isTradeTermCode = request.payload.isTradeTermCode === textContent.common.radioOptionYes;
 
         const tradeTermCode = request.payload.isTradeTermCode
           ? request.payload.tradeTermCode.toUpperCase()
           : ""
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].isTradeTermCode = request.payload.isTradeTermCode
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].tradeTermCode = tradeTermCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].isTradeTermCode = isTradeTermCode
+
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode = tradeTermCode
 
         try {
+
           mergeAppData(
             request,
             { species: appData.species },
