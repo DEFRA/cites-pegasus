@@ -17,11 +17,8 @@ const routes = [].concat(
   require('../routes/select-delivery-address'),
   require('../routes/use-certificate-for'),
   require('../routes/trade-term-code'),
-<<<<<<< HEAD
   require('../routes/created-date'),
-=======
   require('../routes/unique-identification-mark'),
->>>>>>> main
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc')

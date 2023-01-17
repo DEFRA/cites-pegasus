@@ -7,11 +7,10 @@ const {
 } = require("../lib/helper-functions")
 const {
   getAppData,
-  setAppData,
   mergeAppData,
   validateAppData
 } = require("../lib/app-data")
-const { DATE_REGEX } = require("../lib/regex-validation")
+// const { DATE_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "created-date"
@@ -182,7 +181,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          createdDate: Joi.date().max("now").regex(DATE_REGEX).required(),
+          createdDate: Joi.date().max("now").required(),
           isExactDateUnknown: Joi.string().required(),
           enterAnApproximateDate: Joi.when("isExactDateUnknown", {
             is: true,

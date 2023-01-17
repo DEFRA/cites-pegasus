@@ -407,7 +407,6 @@ const schema = Joi.object().keys({
       "error.tradeTermCode.string.pattern.base": Joi.string().required()
     }).required()
   }).required(),
-<<<<<<< HEAD
   createdDate: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -420,14 +419,15 @@ const schema = Joi.object().keys({
       "error.createdDate.string.max": Joi.string().required(),
       "error.createdDate.string.pattern.base": Joi.string().required(),
       "error.createdDate.string.format": Joi.string().required(),
-      "error.enterAnApproximateDate.string.empty": Joi.string().required(),
-=======
+      "error.enterAnApproximateDate.string.empty": Joi.string().required()
+    }).required()
+  }).required(),
   uniqueIdentificationMark: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     inputLabelUniqueIdentificationMark: Joi.string().required(),
     radioOptionMicrochipNumber: Joi.string().required(),
-    radioOptionClosedRingNumber: Joi.string().required(),    
+    radioOptionClosedRingNumber: Joi.string().required(),
     radioOptionSplitRingNumber: Joi.string().required(),
     radioOptionOtherRingNumber: Joi.string().required(),
     radioOptionCableTie: Joi.string().required(),
@@ -436,8 +436,7 @@ const schema = Joi.object().keys({
     radioOptionSwissInstitue: Joi.string().required(),
     radioOptionSerialNumber: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.uniqueIdentificationMark.string.empty": Joi.string().required()      
->>>>>>> main
+      "error.uniqueIdentificationMark.string.empty": Joi.string().required()
     }).required()
   }).required()
 })
