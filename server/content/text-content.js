@@ -427,7 +427,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     inputLabelUniqueIdentificationMark: Joi.string().required(),
     radioOptionMicrochipNumber: Joi.string().required(),
-    radioOptionClosedRingNumber: Joi.string().required(),
+    radioOptionClosedRingNumber: Joi.string().required(),    
     radioOptionSplitRingNumber: Joi.string().required(),
     radioOptionOtherRingNumber: Joi.string().required(),
     radioOptionCableTie: Joi.string().required(),
@@ -436,7 +436,7 @@ const schema = Joi.object().keys({
     radioOptionSwissInstitue: Joi.string().required(),
     radioOptionSerialNumber: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.uniqueIdentificationMark.string.empty": Joi.string().required()
+      "error.uniqueIdentificationMark.string.empty": Joi.string().required()      
     }).required()
   }).required()
 })
