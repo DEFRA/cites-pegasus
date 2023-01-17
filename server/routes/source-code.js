@@ -60,6 +60,8 @@ function createModel(errors, data) {
     "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
 
+  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+  
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
       id: "anotherSourceCodeForI",
