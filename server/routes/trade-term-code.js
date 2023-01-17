@@ -1,10 +1,6 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
+const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const { ALPHA_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
@@ -18,22 +14,7 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.tradeTermCode
-  
-  let isTradeTermCodeRadioVal = null
-  switch (data.isTradeTermCode) {
-    case true:
-      isTradeTermCodeRadioVal = commonContent.radioOptionYes
-      break
-    case "Yes":
-      isTradeTermCodeRadioVal = commonContent.radioOptionYes
-      break
-    case false:
-      isTradeTermCodeRadioVal = commonContent.radioOptionNo
-      break
-    case "No":
-      isTradeTermCodeRadioVal = commonContent.radioOptionNo
-      break
-  }
+
   let errorList = null
   if (errors) {
     errorList = []
@@ -104,20 +85,19 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: "Yes",
+          value: true,
           text: commonContent.radioOptionYes,
-          checked: isChecked(isTradeTermCodeRadioVal, "Yes"),
+          checked: data.isTradeTermCode,
           conditional: {
             html: tradeTermCodeInput
           }
         },
         {
-          value: "No",
+          value: false,
           text: commonContent.radioOptionNo,
-          checked: isChecked(isTradeTermCodeRadioVal, "No")
+          checked: data.isTradeTermCode === false
         }
       ],
-
       errorMessage: getFieldError(errorList, "#isTradeTermCode")
     }
   }
@@ -179,15 +159,26 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isTradeTermCode: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo),
+          isTradeTermCode: Joi.boolean().required(),
           tradeTermCode: Joi.when("isTradeTermCode", {
-            is: "Yes",
+            is: true,
             then: Joi.string().length(3).regex(ALPHA_REGEX).required()
           })
         }),
 
         failAction: (request, h, err) => {
           const appData = getAppData(request)
+
+          let isTradeTermCode = null
+          switch (request.payload.isTradeTermCode) {
+            case "true":
+              isTradeTermCode = true
+              break
+            case "false":
+              isTradeTermCode = false
+              break
+          }
+
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
@@ -196,29 +187,33 @@ module.exports = [
             quantity: appData.species[request.params.speciesIndex]?.quantity,
             unitOfMeasurement:
               appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            ...request.payload
+            isTradeTermCode: isTradeTermCode,
+            tradeTermCode: request.payload.tradeTermCode
           }
+
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
         const appData = getAppData(request)
-        const isTradeTermCode = request.payload.isTradeTermCode === textContent.common.radioOptionYes;
 
-        if (appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode && request.payload.isTradeTermCode === "No") {
-          appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode === ""
-        } 
+        const specimen =
+          appData.species[request.params.speciesIndex].specimens[
+            request.params.specimenIndex
+          ]
 
-        const tradeTermCode = request.payload.isTradeTermCode === "Yes"
+        if (!request.payload.isTradeTermCode) {
+          specimen.tradeTermCode = ""
+        }
+
+        const tradeTermCode = request.payload.isTradeTermCode
           ? request.payload.tradeTermCode.toUpperCase()
           : ""
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].isTradeTermCode = isTradeTermCode
-
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode = tradeTermCode
+        specimen.isTradeTermCode = request.payload.isTradeTermCode
+        specimen.tradeTermCode = tradeTermCode
 
         try {
-
           mergeAppData(
             request,
             { species: appData.species },

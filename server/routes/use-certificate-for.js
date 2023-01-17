@@ -147,14 +147,10 @@ module.exports = [
           useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "other", "moveALiveSpecimen").required()
         }),
         failAction: (request, h, err) => {
-          const appData = getAppData(request)
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            useCertificateFor:
-              appData.species[request.params.speciesIndex].specimens[
-                request.params.specimenIndex
-              ]?.useCertificateFor
+            ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }

@@ -6,14 +6,18 @@ const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/purpose-code`
-const nextPath = `${urlPrefix}/specimen-type` //TO DO
+const previousPath = `${urlPrefix}/trade-term-code`
+const nextPathLivingAnimal = `${urlPrefix}/describe-living-animal`
+const nextPathGeneric = `${urlPrefix}/describe-specimen`
+
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
+
+  
   const commonContent = textContent.common
   const pageContent = textContent.uniqueIdentificationMark
-
+  
   let errorList = null
   if (errors) {
     errorList = []
@@ -21,7 +25,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["uniqueIdentificationMark"]
+    const fields = ["uniqueIdentificationMark", "cableTieInput", "closedRingNumberInput", "huntingTrophyInput", "labelInput", "microchipNumberInput", "otherRingNumberInput", "serialNumberInput", "splitRingNumberInput", "swissInstituteInput", "unmarked" ]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -32,7 +36,7 @@ function createModel(errors, data) {
       }
     })
   }
-
+  
   let radioOptions = [
     { text: pageContent.radioOptionMicrochipNumber, value: 'microchipNumber' },
     { text: pageContent.radioOptionClosedRingNumber, value: 'closedRingNumber' },
@@ -44,9 +48,10 @@ function createModel(errors, data) {
     { text: pageContent.radioOptionSwissInstitue, value: 'swissInstitute' },
     { text: pageContent.radioOptionSerialNumber, value: 'serialNumber' }
   ]
-
+  
+  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x))
-
+  
   const model = {
     backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -55,8 +60,8 @@ function createModel(errors, data) {
 
 
     inputUniqueIdentificationMark: {
-      idPrefix: "uniqueIdentificationMark",
-      name: "uniqueIdentificationMark",
+      idPrefix: "uniqueIdentificationMarkType",
+      name: "uniqueIdentificationMarkType",
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
@@ -65,7 +70,7 @@ function createModel(errors, data) {
         }
       },
       items: radioItems,
-      errorMessage: getFieldError(errorList, "#uniqueIdentificationMark")
+      errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType")
     }
   }
   return { ...commonContent, ...model }
@@ -142,55 +147,61 @@ module.exports = [
 
       return h.view(pageId, createModel(null, pageData))
     }
-  }//,
-  // {
-  //   method: "POST",
-  //   path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
-  //   options: {
-  //     validate: {
-  //       params: Joi.object({
-  //         speciesIndex: Joi.number().required(),
-  //         specimenIndex: Joi.number().required()
-  //       }),
-  //       options: { abortEarly: false },
-  //       payload: Joi.object({
-  //         useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "other", "moveALiveSpecimen").required()
-  //       }),
-  //       failAction: (request, h, err) => {
-  //         const appData = getAppData(request)
-  //         const pageData = {
-  //           speciesIndex: request.params.speciesIndex,
-  //           specimenIndex: request.params.specimenIndex,
-  //           useCertificateFor:
-  //             appData.species[request.params.speciesIndex].specimens[
-  //               request.params.specimenIndex
-  //             ]?.useCertificateFor
-  //         }
-  //         return h.view(pageId, createModel(err, pageData)).takeover()
-  //       }
-  //     },
-  //     handler: async (request, h) => {
-  //       const appData = getAppData(request)
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          speciesIndex: Joi.number().required(),
+          specimenIndex: Joi.number().required()
+        }),
+        options: { abortEarly: false },
+        payload: Joi.object({
+          uniqueIdentificationMarkType: Joi.string().required().valid("microchipNumber", "closedRingNumber", "splitRingNumber", "otherRingNumber", "cableTie", "huntingTrophy", "label", "swissInstitute", "serialNumber", "unmarked"),
+          cableTieInput: Joi.string().optional(),
+          closedRingNumberInput: Joi.string().optional(),
+          huntingTrophyInput: Joi.string().optional(),
+          labelInput: Joi.string().optional(),
+          microchipNumberInput: Joi.string().optional(),
+          otherRingNumberInput: Joi.string().optional(),
+          serialNumberInput: Joi.string().optional(),
+          splitRingNumberInput: Joi.string().optional(),
+          swissInstituteInput: Joi.string().optional()
+        }),
+        failAction: (request, h, err) => {
+          var uniqueIdentificationMark = request.payload[request.payload.uniqueIdentificationMarkType + 'Input']
+          const pageData = {
+            speciesIndex: request.params.speciesIndex,
+            specimenIndex: request.params.specimenIndex,
+            uniqueIdentificationMark: request.payload[request.payload.uniqueIdentificationMarkType + 'Input'],
+            uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType
+          }
+          return h.view(pageId, createModel(err, pageData)).takeover()
+        }
+      },
+      handler: async (request, h) => {
+        // const appData = getAppData(request)
 
-  //       appData.species[request.params.speciesIndex].specimens[
-  //         request.params.specimenIndex
-  //       ].useCertificateFor = request.payload.useCertificateFor
+        // appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].useCertificateFor = request.payload.useCertificateFor
 
-  //       try {
-  //         mergeAppData(
-  //           request,
-  //           { species: appData.species },
-  //           `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-  //         )
-  //       } catch (err) {
-  //         console.log(err)
-  //         return h.redirect(`${invalidAppDataPath}/`)
-  //       }
+        // try {
+        //   mergeAppData(
+        //     request,
+        //     { species: appData.species },
+        //     `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        //   )
+        // } catch (err) {
+        //   console.log(err)
+        //   return h.redirect(`${invalidAppDataPath}/`)
+        // }
 
-  //       return h.redirect(
-  //         `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-  //       )
-  //     }
-  //   }
-  // }
+//TODO If Specimen type == living animal then       
+        return h.redirect(`${nextPathLivingAnimal}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+//TODO else 
+//        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+      }
+    }
+  }
 ]
