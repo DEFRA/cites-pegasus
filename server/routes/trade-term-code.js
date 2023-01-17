@@ -12,7 +12,7 @@ const nunjucks = require("nunjucks")
 const pageId = "trade-term-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
-const nextPath = `${urlPrefix}/unique-identification-mark` //TO DO
+const nextPath = `${urlPrefix}/unique-identification-mark`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {

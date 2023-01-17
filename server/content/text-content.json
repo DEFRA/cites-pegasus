@@ -647,5 +647,22 @@
             "error.tradeTermCode.string.length": "Trade term code must be 3 characters",
             "error.tradeTermCode.string.pattern.base": "Enter a trade term code using letters a to z"
         }
+    },
+    "uniqueIdentificationMark": {
+        "defaultTitle": "What is the specimen’s unique identification mark?",
+        "pageHeader": "What is the specimen’s unique identification mark? ",
+        "inputLabelUniqueIdentificationMark": "Enter the unique identification mark",
+        "radioOptionMicrochipNumber": "Microchip number",
+        "radioOptionClosedRingNumber": "Closed ring number",
+        "radioOptionSplitRingNumber" : "Split ring number",
+        "radioOptionOtherRingNumber": "Other type of metal ring",
+        "radioOptionCableTie": "Cable tie",
+        "radioOptionHuntingTrophy": "Hunting trophy",
+        "radioOptionLabel": "Label",
+        "radioOptionSwissInstitue": "Swiss institute",
+        "radioOptionSerialNumber": "Serial number",
+        "errorMessages": {
+            "error.uniqueIdentificationMark.string.empty": "Enter the unique identification mark "
+        }
     }
 }

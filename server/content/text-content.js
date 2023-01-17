@@ -406,6 +406,23 @@ const schema = Joi.object().keys({
       "error.tradeTermCode.string.length": Joi.string().required(),
       "error.tradeTermCode.string.pattern.base": Joi.string().required()
     }).required()
+  }).required(),
+  uniqueIdentificationMark: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelUniqueIdentificationMark: Joi.string().required(),
+    radioOptionMicrochipNumber: Joi.string().required(),
+    radioOptionClosedRingNumber: Joi.string().required(),    
+    radioOptionSplitRingNumber: Joi.string().required(),
+    radioOptionOtherRingNumber: Joi.string().required(),
+    radioOptionCableTie: Joi.string().required(),
+    radioOptionHuntingTrophy: Joi.string().required(),
+    radioOptionLabel: Joi.string().required(),
+    radioOptionSwissInstitue: Joi.string().required(),
+    radioOptionSerialNumber: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.uniqueIdentificationMark.string.empty": Joi.string().required()      
+    }).required()
   }).required()
 })
 
