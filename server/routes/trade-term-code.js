@@ -12,7 +12,7 @@ const nunjucks = require("nunjucks")
 const pageId = "trade-term-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
-const nextPath = `${urlPrefix}/unique-identification-mark` //TO DO
+const nextPath = `${urlPrefix}/unique-identification-mark`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -23,13 +23,17 @@ function createModel(errors, data) {
   switch (data.isTradeTermCode) {
     case true:
       isTradeTermCodeRadioVal = commonContent.radioOptionYes
-      break;
+      break
+    case "Yes":
+      isTradeTermCodeRadioVal = commonContent.radioOptionYes
+      break
     case false:
       isTradeTermCodeRadioVal = commonContent.radioOptionNo
-      break;
+      break
+    case "No":
+      isTradeTermCodeRadioVal = commonContent.radioOptionNo
+      break
   }
-
-
   let errorList = null
   if (errors) {
     errorList = []
@@ -201,7 +205,11 @@ module.exports = [
         const appData = getAppData(request)
         const isTradeTermCode = request.payload.isTradeTermCode === textContent.common.radioOptionYes;
 
-        const tradeTermCode = request.payload.isTradeTermCode
+        if (appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode && request.payload.isTradeTermCode === "No") {
+          appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].tradeTermCode === ""
+        } 
+
+        const tradeTermCode = request.payload.isTradeTermCode === "Yes"
           ? request.payload.tradeTermCode.toUpperCase()
           : ""
 
