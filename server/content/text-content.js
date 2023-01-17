@@ -406,6 +406,21 @@ const schema = Joi.object().keys({
       "error.tradeTermCode.string.length": Joi.string().required(),
       "error.tradeTermCode.string.pattern.base": Joi.string().required()
     }).required()
+  }).required(),
+  createdDate: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageHeaderHint: Joi.string().required(),
+    checkboxLabelIsExactDateUnknown: Joi.string().required(),
+    inputLabelEnterAnApproximateDate: Joi.string().required(),
+    inputLabelHintEnterAnApproximateDate: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.createdDate.string.empty": Joi.string().required(),
+      "error.createdDate.string.max": Joi.string().required(),
+      "error.createdDate.string.pattern.base": Joi.string().required(),
+      "error.createdDate.string.format": Joi.string().required(),
+      "error.enterAnApproximateDate.string.empty": Joi.string().required(),
+    }).required()
   }).required()
 })
 

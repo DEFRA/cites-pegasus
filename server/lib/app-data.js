@@ -114,7 +114,11 @@ function getAppFlow(appData) {
                             }
                         }
                         if (specimen.specimenType) {
-                            appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            if(specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
+                                appFlow.push(`created-date/${speciesindex}/${specimenindex}`)
+                            } else {
+                                appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            }
                         }
                     })
                 }
