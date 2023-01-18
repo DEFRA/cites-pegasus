@@ -243,15 +243,11 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName:
-              appData.species[request.params.speciesIndex]?.speciesName,
+            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
             quantity: appData.species[request.params.speciesIndex]?.quantity,
-            unitOfMeasurement:
-              appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            purposeCode:
-              appData.species[request.params.speciesIndex].specimens[
-                request.params.specimenIndex
-              ]?.purposeCode
+            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+            ...request.payload
+            
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -259,9 +255,7 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].purposeCode = request.payload.purposeCode
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].purposeCode = request.payload.purposeCode
 
         try {
           mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
