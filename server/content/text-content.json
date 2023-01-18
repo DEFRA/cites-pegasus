@@ -13,9 +13,7 @@
         "errorSummaryTitle": "There is a problem",
         "radioOptionYes": "Yes",
         "radioOptionNo": "No",
-        "errorMessages": {
-            
-        }
+        "errorMessages": {}
     },
     "applyCitesPermit": {
         "pageTitle": "Apply for a CITES permit",
@@ -654,15 +652,45 @@
         "inputLabelUniqueIdentificationMark": "Enter the unique identification mark",
         "radioOptionMicrochipNumber": "Microchip number",
         "radioOptionClosedRingNumber": "Closed ring number",
-        "radioOptionSplitRingNumber" : "Split ring number",
+        "radioOptionSplitRingNumber": "Split ring number",
         "radioOptionOtherRingNumber": "Other type of metal ring",
         "radioOptionCableTie": "Cable tie",
         "radioOptionHuntingTrophy": "Hunting trophy",
         "radioOptionLabel": "Label",
         "radioOptionSwissInstitue": "Swiss institute",
         "radioOptionSerialNumber": "Serial number",
+        "radioOptionDivider": "or",
+        "radioOptionUnmarked": "The specimen is not marked",
         "errorMessages": {
-            "error.uniqueIdentificationMark.string.empty": "Enter the unique identification mark "
+            "error.uniqueIdentificationMarkType.any.required": "Select the specimen's unique identification mark",
+            "error.uniqueIdentificationMarkType.any.only": "Select the specimen's unique identification mark",
+            "error.inputCR.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputCR.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputCR.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputCT.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputCT.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputCT.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputHU.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputHU.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputHU.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputLB.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputLB.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputLB.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputMC.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputMC.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputMC.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputOT.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputOT.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputOT.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputSN.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputSN.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputSN.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputSR.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputSR.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputSR.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputSI.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputSI.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"            
         }
     }
 }

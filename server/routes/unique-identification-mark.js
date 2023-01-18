@@ -14,10 +14,10 @@ const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
 
-  
+
   const commonContent = textContent.common
   const pageContent = textContent.uniqueIdentificationMark
-  
+
   let errorList = null
   if (errors) {
     errorList = []
@@ -25,7 +25,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["uniqueIdentificationMark", "cableTieInput", "closedRingNumberInput", "huntingTrophyInput", "labelInput", "microchipNumberInput", "otherRingNumberInput", "serialNumberInput", "splitRingNumberInput", "swissInstituteInput", "unmarked" ]
+    const fields = ["uniqueIdentificationMarkType", "inputCT", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -36,22 +36,26 @@ function createModel(errors, data) {
       }
     })
   }
-  
+
   let radioOptions = [
-    { text: pageContent.radioOptionMicrochipNumber, value: 'microchipNumber' },
-    { text: pageContent.radioOptionClosedRingNumber, value: 'closedRingNumber' },
-    { text: pageContent.radioOptionSplitRingNumber , value: 'splitRingNumber' },
-    { text: pageContent.radioOptionOtherRingNumber, value: 'otherRingNumber' },
-    { text: pageContent.radioOptionCableTie, value: 'cableTie' },
-    { text: pageContent.radioOptionHuntingTrophy, value: 'huntingTrophy' },
-    { text: pageContent.radioOptionLabel, value: 'label' },
-    { text: pageContent.radioOptionSwissInstitue, value: 'swissInstitute' },
-    { text: pageContent.radioOptionSerialNumber, value: 'serialNumber' }
+    { text: pageContent.radioOptionMicrochipNumber, value: 'MC', hasMark: true },
+    { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasMark: true },
+    { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasMark: true },
+    { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasMark: true },
+    { text: pageContent.radioOptionCableTie, value: 'CT', hasMark: true },
+    { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasMark: true },
+    { text: pageContent.radioOptionLabel, value: 'LB', hasMark: true },
+    { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasMark: true },
+    { text: pageContent.radioOptionSerialNumber, value: 'SN', hasMark: true },
+    { text: pageContent.radioOptionDivider, value: null, hasMark: false},
+    { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasMark: false }
   ]
-  
+
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x))
-  
+  const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
+
+
+
   const model = {
     backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -77,11 +81,17 @@ function createModel(errors, data) {
 }
 
 
-function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, radioOption) {
+function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, radioOption, errorList) {
+
+  if(!radioOption.value){
+    return {
+      divider: radioOption.text
+    }
+  }
 
   const checked = uniqueIdentificationMarkType ? isChecked(uniqueIdentificationMarkType, radioOption.value) : false
 
-  const html = getInputUniqueIdentificationMark(radioOption.value + 'Input', checked ? uniqueIdentificationMark : null)
+  const html = radioOption.hasMark ? getInputUniqueIdentificationMark('input' + radioOption.value, checked ? uniqueIdentificationMark : null, errorList) : ""
 
   return {
     value: radioOption.value,
@@ -93,21 +103,28 @@ function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, ra
   }
 }
 
-function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark) {
+function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, errorList) {
   var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
   const inputModel = {
     input: {
       id: inputId,
       name: inputId,
-      classes: "govuk-input govuk-input--width-2",
+      classes: "govuk-input govuk-input--width-10",
       label: { text: textContent.uniqueIdentificationMark.inputLabelUniqueIdentificationMark },
-      ...(uniqueIdentificationMark ? { value: uniqueIdentificationMark } : {})//,
-      //errorMessage: getFieldError(errorList, "#" + inputId)
+      ...(uniqueIdentificationMark ? { value: uniqueIdentificationMark } : {}),
+      errorMessage: getFieldError(errorList, "#" + inputId)
     }
   }
 
   return nunjucks.renderString(renderString, inputModel)
+}
+
+const getUniqueIdentificationMarkInputSchema = (uniqueIdentificationMarkType) => {
+  return Joi.when('uniqueIdentificationMarkType', {
+    is: uniqueIdentificationMarkType,
+    then: Joi.string().required().min(3).max(150)
+  });
 }
 
 module.exports = [
@@ -140,9 +157,9 @@ module.exports = [
         specimenIndex: request.params.specimenIndex,
         uniqueIdentificationMarkType: 'closedRingNumber',
         uniqueIdentificationMark: 'abcd1234'
-          // appData.species[request.params.speciesIndex].specimens[
-          //   request.params.specimenIndex
-          // ].uniqueIdentificationMark
+        // appData.species[request.params.speciesIndex].specimens[
+        //   request.params.specimenIndex
+        // ].uniqueIdentificationMark
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -159,23 +176,23 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          uniqueIdentificationMarkType: Joi.string().required().valid("microchipNumber", "closedRingNumber", "splitRingNumber", "otherRingNumber", "cableTie", "huntingTrophy", "label", "swissInstitute", "serialNumber", "unmarked"),
-          cableTieInput: Joi.string().optional(),
-          closedRingNumberInput: Joi.string().optional(),
-          huntingTrophyInput: Joi.string().optional(),
-          labelInput: Joi.string().optional(),
-          microchipNumberInput: Joi.string().optional(),
-          otherRingNumberInput: Joi.string().optional(),
-          serialNumberInput: Joi.string().optional(),
-          splitRingNumberInput: Joi.string().optional(),
-          swissInstituteInput: Joi.string().optional()
+          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CT", "HU", "LB", "SI", "SN", "unmarked"),
+          inputCT: getUniqueIdentificationMarkInputSchema("CT"),
+          inputCR: getUniqueIdentificationMarkInputSchema("CR"),
+          inputHU: getUniqueIdentificationMarkInputSchema("HU"),
+          inputLB: getUniqueIdentificationMarkInputSchema("LB"),
+          inputMC: getUniqueIdentificationMarkInputSchema("MC"),
+          inputOT: getUniqueIdentificationMarkInputSchema("OT"),
+          inputSN: getUniqueIdentificationMarkInputSchema("SN"),
+          inputSR: getUniqueIdentificationMarkInputSchema("SR"),
+          inputSI: getUniqueIdentificationMarkInputSchema("SI"),
         }),
         failAction: (request, h, err) => {
-          var uniqueIdentificationMark = request.payload[request.payload.uniqueIdentificationMarkType + 'Input']
+          var uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            uniqueIdentificationMark: request.payload[request.payload.uniqueIdentificationMarkType + 'Input'],
+            uniqueIdentificationMark: uniqueIdentificationMark,
             uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -197,10 +214,10 @@ module.exports = [
         //   return h.redirect(`${invalidAppDataPath}/`)
         // }
 
-//TODO If Specimen type == living animal then       
+        //TODO If Specimen type == living animal then       
         return h.redirect(`${nextPathLivingAnimal}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-//TODO else 
-//        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        //TODO else 
+        //        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
       }
     }
   }
