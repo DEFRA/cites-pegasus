@@ -1,23 +1,15 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
-const {
-  getAppData,
-  mergeAppData,
-  validateAppData
-} = require("../lib/app-data")
+const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 // const { DATE_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
-const nextPath = `${urlPrefix}/trade-term-code`
 const previousPath = `${urlPrefix}/specimen-type`
-const invalidAppDataPath = `${urlPrefix}/`
+const nextPath = `${urlPrefix}/trade-term-code`
+const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -60,6 +52,8 @@ function createModel(errors, data) {
     "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
 
+  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+
   const enterAnApproximateDateInput = nunjucks.renderString(renderString, {
     input: {
       id: "enterAnApproximateDate",
@@ -100,6 +94,20 @@ function createModel(errors, data) {
       hint: {
         text: pageContent.pageHeaderHint
       },
+      items: [
+        {
+          name: "day",
+          value: "6"
+        },
+        {
+          name: "month",
+          value: "3"
+        },
+        {
+          name: "year",
+          value: "2076"
+        }
+      ],
       errorMessage: getFieldError(errorList, "#createdDate")
     },
 
@@ -191,6 +199,15 @@ module.exports = [
 
         failAction: (request, h, err) => {
           const appData = getAppData(request)
+
+          console.log("APPDATA>>>>", appData)
+
+          const payload = request.payload
+
+
+          console.log("payload>>>>", payload)
+
+
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
@@ -201,31 +218,27 @@ module.exports = [
               appData.species[request.params.speciesIndex]?.unitOfMeasurement,
             ...request.payload
           }
+
+          console.log("PAGEDATA>>>", pageData)
+
+
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        // createdDate
-        //   isExactDateUnknown
-        //   enterAnApproximateDate
+        const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
 
         const enterAnApproximateDate = request.payload.isExactDateUnknown
           ? request.payload.enterAnApproximateDate
           : ""
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].createdDate = request.payload.createdDate
+        specimen.createdDate = request.payload.createdDate
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].isExactDateUnknown = request.payload.isExactDateUnknown
+        specimen.isExactDateUnknown = request.payload.isExactDateUnknown
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].enterAnApproximateDate = enterAnApproximateDate
+        specimen.enterAnApproximateDate = enterAnApproximateDate
 
         try {
           mergeAppData(
