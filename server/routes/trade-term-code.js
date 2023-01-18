@@ -197,21 +197,14 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        const specimen =
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]
+        const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
 
         if (!request.payload.isTradeTermCode) {
           specimen.tradeTermCode = ""
         }
 
-        const tradeTermCode = request.payload.isTradeTermCode
-          ? request.payload.tradeTermCode.toUpperCase()
-          : ""
-
         specimen.isTradeTermCode = request.payload.isTradeTermCode
-        specimen.tradeTermCode = tradeTermCode
+        specimen.tradeTermCode = request.payload.isTradeTermCode ? request.payload.tradeTermCode.toUpperCase() : ""
 
         try {
           mergeAppData(
