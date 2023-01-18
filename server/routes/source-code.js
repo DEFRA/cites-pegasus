@@ -60,6 +60,8 @@ function createModel(errors, data) {
     "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
 
+  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+  
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
       id: "anotherSourceCodeForI",
@@ -358,29 +360,13 @@ module.exports = [
           return failAction(request, h, result.error)
         }
 
-        const enterAReason =
-          request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
-        const anotherSourceCodeForI =
-          request.payload.sourceCode === "I"
-            ? request.payload.anotherSourceCodeForI.toUpperCase()
-            : ""
-        const anotherSourceCodeForO =
-          request.payload.sourceCode === "O"
-            ? request.payload.anotherSourceCodeForO.toUpperCase()
-            : ""
+        const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
+  
+        specimen.sourceCode = request.payload.sourceCode
+        specimen.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
+        specimen.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
+        specimen.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].sourceCode = request.payload.sourceCode
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].anotherSourceCodeForI = anotherSourceCodeForI
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].anotherSourceCodeForO = anotherSourceCodeForO
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].enterAReason = enterAReason
 
         try {
           mergeAppData(
