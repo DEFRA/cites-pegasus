@@ -7,7 +7,8 @@ const textContent = require("../content/text-content")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
-const nextPath = `${urlPrefix}/importer-exporter-details` //TO DO
+const nextPathImporterDetails = `${urlPrefix}/importer-exporter-details` //TO DO
+const nextPathArticle10 = `${urlPrefix}/acquired-date` //TO DO
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -153,9 +154,16 @@ module.exports = [
             return h.redirect(`${invalidAppDataPath}/`)
           }
   
-          return h.redirect(
-            `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+
+          if (appData.permitType === "article10"){
+            return h.redirect(
+              `${nextPathArticle10}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+            )
+          } else {
+             return h.redirect(
+            `${nextPathImporterDetails}/${request.params.speciesIndex}/${request.params.specimenIndex}`
           )
+          }
       }
     }
   }
