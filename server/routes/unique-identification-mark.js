@@ -142,25 +142,23 @@ module.exports = [
     handler: async (request, h) => {
       const appData = getAppData(request)
 
-      //TODO - ADD ROUTE VALIDATION
-      // try {
-      //   validateAppData(
-      //     appData,
-      //     `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-      //   )
-      // } catch (err) {
-      //   console.log(err)
-      //   return h.redirect(`${invalidAppDataPath}/`)
-      // }
+      try {
+        validateAppData(
+          appData,
+          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        )
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidAppDataPath}/`)
+      }
+
+      const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
 
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        uniqueIdentificationMarkType: 'closedRingNumber',
-        uniqueIdentificationMark: 'abcd1234'
-        // appData.species[request.params.speciesIndex].specimens[
-        //   request.params.specimenIndex
-        // ].uniqueIdentificationMark
+        uniqueIdentificationMarkType: specimen.uniqueIdentificationMarkType,
+        uniqueIdentificationMark: specimen.uniqueIdentificationMark        
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -200,25 +198,29 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        // const appData = getAppData(request)
+        const appData = getAppData(request)
 
-        // appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].useCertificateFor = request.payload.useCertificateFor
+        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]
 
-        // try {
-        //   mergeAppData(
-        //     request,
-        //     { species: appData.species },
-        //     `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        //   )
-        // } catch (err) {
-        //   console.log(err)
-        //   return h.redirect(`${invalidAppDataPath}/`)
-        // }
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].uniqueIdentificationMark = uniqueIdentificationMark || ""
 
-        //TODO If Specimen type == living animal then       
-        // return h.redirect(`${nextPathLivingAnimal}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-        //TODO else 
-               return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        try {
+          mergeAppData(
+            request,
+            { species: appData.species },
+            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          )
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidAppDataPath}/`)
+        }
+
+        if(appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType === 'animalLiving'){
+          return h.redirect(`${nextPathLivingAnimal}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        } else {
+          return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        }
       }
     }
   }

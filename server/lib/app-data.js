@@ -103,11 +103,11 @@ function getAppFlow(appData) {
                         if (specimen.sourceCode) {
                             appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
                         }
-                        if (specimen.purposeCode){
+                        if (specimen.purposeCode) {
                             if (appData.permitType === "article10") {
                                 appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
-                                if(specimen.useCertificateFor){
-                                    appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)    
+                                if (specimen.useCertificateFor) {
+                                    appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
                                 }
                             } else {
                                 appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
@@ -116,17 +116,25 @@ function getAppFlow(appData) {
                         if (specimen.specimenType) {
                             appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
                         }
-                        //TO DO  should be this condition when data session sorted out 
-                        // if (specimen.specimenType !== "animalLiving" && specimen.uniqueIdentificationMark) {
-                        if (specimen.specimenType !== "animalLiving") {
-                            appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
+
+                        if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {
+                            appFlow.push(`unique-identification-mark/${speciesindex}/${specimenindex}`)
                         }
+
+                        if (specimen.uniqueIdentificationMarkType) {
+                            if (specimen.specimenType === "animalLiving") {
+                                appFlow.push(`describe-living-animal/${speciesindex}/${specimenindex}`)
+                            } else {
+                                appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
+                            }
+                        }
+
                     })
                 }
             })
         }
-        
-        
+
+
         // if (appData?.species?.length > 0) {
         //     appData.species.forEach((species, speciesindex) => {
         //         species.specimens.forEach((specimen, specimenindex) => {
