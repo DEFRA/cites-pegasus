@@ -692,5 +692,21 @@
             "error.inputSI.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"            
         }
+    },
+    "describeLivingAnimal": {
+        "defaultTitle": "Describe the ",
+        "pageHeader": "Describe the ",
+        "inputLabelSex": "What sex is the specimen?",
+        "inputLabelUndeterminedSexReason": "Enter a reason",
+        "inputLabelDateOfBirth": "When was the specimen’s date of birth?",
+        "inputLabelDescription": "Other description",
+        "inputHintDescription": "Include anything else that helps to describe the specimen.",
+        "radioOptionSexMale": "Male",
+        "radioOptionSexFemale": "Female",
+        "radioOptionSexUndetermined": "Not known",
+        "errorMessages": {
+            "error.sex.any.required": "Select the specimen's sex",
+            "error.sex.any.only": "Select the specimen's sex"         
+        }
     }
 }

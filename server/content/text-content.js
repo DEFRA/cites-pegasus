@@ -451,9 +451,25 @@ const schema = Joi.object().keys({
       "error.inputSR.string.min": Joi.string().required(),
       "error.inputSI.string.empty": Joi.string().required(),
       "error.inputSI.string.max": Joi.string().required(),
-      "error.inputSI.string.min": Joi.string().required()      
+      "error.inputSI.string.min": Joi.string().required()
     }).required()
-  }).required()
+  }).required(),
+  describeLivingAnimal: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelSex: Joi.string().required(),
+    inputLabelDateOfBirth: Joi.string().required(),
+    inputLabelUndeterminedSexReason: Joi.string().required(),
+    inputLabelDescription: Joi.string().required(),
+    inputHintDescription: Joi.string().required(),
+    radioOptionSexMale: Joi.string().required(),
+    radioOptionSexFemale: Joi.string().required(),
+    radioOptionSexUndetermined: Joi.string().required(),
+    errorMessages: Joi.object().keys({
+      'error.sex.any.required': Joi.string().required(),
+      'error.sex.any.only': Joi.string().required()
+    }).required()
+  })
 })
 
 // Validate config

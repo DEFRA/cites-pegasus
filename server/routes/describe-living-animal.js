@@ -4,19 +4,15 @@ const { findErrorList, getFieldError, isChecked } = require('../lib/helper-funct
 const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
-const pageId = 'unique-identification-mark'
+const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/trade-term-code`
-const nextPathLivingAnimal = `${urlPrefix}/describe-living-animal`
-const nextPathGeneric = `${urlPrefix}/describe-specimen`
-
+const previousPath = `${urlPrefix}/unique-identification-mark`
+const nextPath = `${urlPrefix}/importer-exporter`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
-
-
   const commonContent = textContent.common
-  const pageContent = textContent.uniqueIdentificationMark
+  const pageContent = textContent.describeLivingAnimal
 
   let errorList = null
   if (errors) {
@@ -25,7 +21,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["uniqueIdentificationMarkType", "inputCT", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI"]
+    const fields = ["sex", "undeterminedSexReason"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -38,60 +34,55 @@ function createModel(errors, data) {
   }
 
   let radioOptions = [
-    { text: pageContent.radioOptionMicrochipNumber, value: 'MC', hasInput: true },
-    { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasInput: true },
-    { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasInput: true },
-    { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasInput: true },
-    { text: pageContent.radioOptionCableTie, value: 'CT', hasInput: true },
-    { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasInput: true },
-    { text: pageContent.radioOptionLabel, value: 'LB', hasInput: true },
-    { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasInput: true },
-    { text: pageContent.radioOptionSerialNumber, value: 'SN', hasInput: true },
-    { text: pageContent.radioOptionDivider, value: null, hasInput: false},
-    { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasInput: false }
+    { text: pageContent.radioOptionSexMale, value: 'Female', hasInput: false },
+    { text: pageContent.radioOptionSexFemale, value: 'Male', hasInput: false },
+    { text: pageContent.radioOptionSexUndetermined, value: 'Undetermined', hasInput: true }
   ]
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
-
-
+  const radioItems = radioOptions.map(x => x = getRadioItem(data.sex, data.undeterminedSexReason, x, errorList))
 
   const model = {
     backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-
-
-    inputUniqueIdentificationMark: {
-      idPrefix: "uniqueIdentificationMarkType",
-      name: "uniqueIdentificationMarkType",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
+    pageHeader: pageContent.pageHeader + data.speciesName,
+    speciesName: data.speciesName,
+    inputLabelSex: pageContent.inputLabelSex,
+    inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
+    inputLabelDescription: pageContent.inputLabelDescription,
+    inputSex: {
+      idPrefix: "sex",
+      name: "sex",
       items: radioItems,
-      errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType")
+      errorMessage: getFieldError(errorList, "#sex")
+    },
+    inputDateOfBirth: {
+      id: "dateOfBirth",
+      namePrefix: "dateOfBirth",
+      hint: {
+        text: "For example, 27 3 2007"
+      }
+    },
+    inputDescription: {
+      name: "description",
+      id: "description",
+      maxlength: 200,
+      hint: {
+        text: pageContent.inputHintDescription
+      }
     }
   }
   return { ...commonContent, ...model }
 }
 
 
-function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, radioOption, errorList) {
+function getRadioItem(sex, undeterminedSexReason, radioOption, errorList) {
 
-  if(!radioOption.value){
-    return {
-      divider: radioOption.text
-    }
-  }
+  const checked = sex ? isChecked(sex, radioOption.value) : false
 
-  const checked = uniqueIdentificationMarkType ? isChecked(uniqueIdentificationMarkType, radioOption.value) : false
-
-  const html = radioOption.hasInput ? getInputUniqueIdentificationMark('input' + radioOption.value, checked ? uniqueIdentificationMark : null, errorList) : ""
+  const html = radioOption.hasInput ? getUndeterminedSexReason('input' + radioOption.value, checked ? undeterminedSexReason : null, errorList) : ""
 
   return {
     value: radioOption.value,
@@ -103,7 +94,7 @@ function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, ra
   }
 }
 
-function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, errorList) {
+function getUndeterminedSexReason(inputId, undeterminedSexReason, errorList) {
   var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
   const inputModel = {
@@ -111,20 +102,13 @@ function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, err
       id: inputId,
       name: inputId,
       classes: "govuk-input govuk-input--width-10",
-      label: { text: textContent.uniqueIdentificationMark.inputLabelUniqueIdentificationMark },
-      ...(uniqueIdentificationMark ? { value: uniqueIdentificationMark } : {}),
+      label: { text: textContent.describeLivingAnimal.inputLabelUndeterminedSexReason },
+      ...(undeterminedSexReason ? { value: undeterminedSexReason } : {}),
       errorMessage: getFieldError(errorList, "#" + inputId)
     }
   }
 
   return nunjucks.renderString(renderString, inputModel)
-}
-
-const getUniqueIdentificationMarkInputSchema = (uniqueIdentificationMarkType) => {
-  return Joi.when('uniqueIdentificationMarkType', {
-    is: uniqueIdentificationMarkType,
-    then: Joi.string().required().min(3).max(150)
-  });
 }
 
 module.exports = [
@@ -142,7 +126,6 @@ module.exports = [
     handler: async (request, h) => {
       const appData = getAppData(request)
 
-      //TODO - ADD ROUTE VALIDATION
       // try {
       //   validateAppData(
       //     appData,
@@ -156,6 +139,7 @@ module.exports = [
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
+        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
         uniqueIdentificationMarkType: 'closedRingNumber',
         uniqueIdentificationMark: 'abcd1234'
         // appData.species[request.params.speciesIndex].specimens[
@@ -177,24 +161,18 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CT", "HU", "LB", "SI", "SN", "unmarked"),
-          inputCT: getUniqueIdentificationMarkInputSchema("CT"),
-          inputCR: getUniqueIdentificationMarkInputSchema("CR"),
-          inputHU: getUniqueIdentificationMarkInputSchema("HU"),
-          inputLB: getUniqueIdentificationMarkInputSchema("LB"),
-          inputMC: getUniqueIdentificationMarkInputSchema("MC"),
-          inputOT: getUniqueIdentificationMarkInputSchema("OT"),
-          inputSN: getUniqueIdentificationMarkInputSchema("SN"),
-          inputSR: getUniqueIdentificationMarkInputSchema("SR"),
-          inputSI: getUniqueIdentificationMarkInputSchema("SI"),
+          sex: Joi.string().required().valid("Male", "Female", "Undetermined"),
+          undeterminedSexReason: Joi.when('sex', {
+            is: "Undetermined",
+            then: Joi.string().required().min(3).max(50)
+          })
         }),
         failAction: (request, h, err) => {
-          var uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            uniqueIdentificationMark: uniqueIdentificationMark,
-            uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType
+            sex: request.payload.sex,
+            undeterminedSexReason: request.payload.undeterminedSexReason
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -216,7 +194,7 @@ module.exports = [
         // }
 
         //TODO If Specimen type == living animal then       
-        return h.redirect(`${nextPathLivingAnimal}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        return h.redirect(`${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
         //TODO else 
         //        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
       }
