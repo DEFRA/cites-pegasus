@@ -7,12 +7,13 @@ const textContent = require("../content/text-content")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
-const nextPath = `${urlPrefix}/importer-exporter-details` //TO DO
+const nextPathImporterDetails = `${urlPrefix}/importer-exporter-details` //TO DO
+const nextPathArticle10 = `${urlPrefix}/acquired-date` //TO DO
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.describeSpecimen
+  const pageContent = textContent.specimenDescriptionGeneric
 
   let errorList = null
   if (errors) {
@@ -21,7 +22,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["describeSpecimen"]
+    const fields = ["specimenDescriptionGeneric"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -52,9 +53,9 @@ function createModel(errors, data) {
       : `${pageContent.defaultTitle} ${speciesName}`,
     captionText: captionText,
 
-    inputDescribeSpecimen: {
-      id: "describeSpecimen",
-      name: "describeSpecimen",
+    inputSpecimenDescriptionGeneric: {
+      id: "specimenDescriptionGeneric",
+      name: "specimenDescriptionGeneric",
       maxlength: 448,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
@@ -62,8 +63,8 @@ function createModel(errors, data) {
         isPageHeading: true,
         classes: "govuk-label--l"
       },
-      ...(data.describeSpecimen ? { value: data.describeSpecimen } : {}),
-      errorMessage: getFieldError(errorList, "#describeSpecimen")
+      ...(data.specimenDescriptionGeneric ? { value: data.specimenDescriptionGeneric } : {}),
+      errorMessage: getFieldError(errorList, "#specimenDescriptionGeneric")
     }
   }
   return { ...commonContent, ...model }
@@ -101,10 +102,10 @@ module.exports = [
         quantity: appData.species[request.params.speciesIndex]?.quantity,
         unitOfMeasurement:
           appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-       describeSpecimen:
+       specimenDescriptionGeneric:
           appData.species[request.params.speciesIndex].specimens[
             request.params.specimenIndex
-          ]?.describeSpecimen
+          ]?.specimenDescriptionGeneric
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -122,7 +123,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-           describeSpecimen: Joi.string().min(5).max(449).regex(COMMENTS_REGEX).required()
+           specimenDescriptionGeneric: Joi.string().min(5).max(449).regex(COMMENTS_REGEX).required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
@@ -140,7 +141,7 @@ module.exports = [
       handler: async (request, h) => {
         const appData = getAppData(request)
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].describeSpecimen = request.payload.describeSpecimen
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenDescriptionGeneric = request.payload.specimenDescriptionGeneric
 
         try {
             mergeAppData(
@@ -153,9 +154,16 @@ module.exports = [
             return h.redirect(`${invalidAppDataPath}/`)
           }
   
-          return h.redirect(
-            `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+
+          if (appData.permitType === "article10"){
+            return h.redirect(
+              `${nextPathArticle10}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+            )
+          } else {
+             return h.redirect(
+            `${nextPathImporterDetails}/${request.params.speciesIndex}/${request.params.specimenIndex}`
           )
+          }
       }
     }
   }
