@@ -11,8 +11,8 @@ const textContent = require("../content/text-content")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
-const article10Path = `${urlPrefix}/use-certificate-for`
-const nextPath = `${urlPrefix}/specimen-type` //TO DO
+const nextPathArticle10 = `${urlPrefix}/use-certificate-for`
+const nextPathSpecimenType = `${urlPrefix}/specimen-type` //TO DO
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -267,11 +267,11 @@ module.exports = [
     
         if (appData.permitType === "article10"){
           return h.redirect(
-            `${article10Path}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+            `${nextPathArticle10}/${request.params.speciesIndex}/${request.params.specimenIndex}`
           )
         } else {
            return h.redirect(
-          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          `${nextPathSpecimenType}/${request.params.speciesIndex}/${request.params.specimenIndex}`
         )
         }
       }
