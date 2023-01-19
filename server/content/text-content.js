@@ -454,6 +454,16 @@ const schema = Joi.object().keys({
       "error.inputSI.string.min": Joi.string().required()
     }).required()
   }).required(),
+  describeSpecimen: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.describeSpecimen.string.empty": Joi.string().required(),
+      "error.describeSpecimen.string.pattern.base": Joi.string().required(),
+      "error.describeSpecimen.string.min": Joi.string().required(),
+      "error.describeSpecimen.string.max": Joi.string().required()
+    }).required()
+  }).required(),
   describeLivingAnimal: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

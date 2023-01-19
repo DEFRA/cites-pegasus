@@ -18,6 +18,7 @@ const routes = [].concat(
   require('../routes/use-certificate-for'),
   require('../routes/trade-term-code'),
   require('../routes/unique-identification-mark'),
+  require('../routes/describe-specimen'),
   require('../routes/describe-living-animal'),
   require('../routes/public'),
   require('../routes/test'),
