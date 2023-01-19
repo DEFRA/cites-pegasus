@@ -427,7 +427,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     inputLabelUniqueIdentificationMark: Joi.string().required(),
     radioOptionMicrochipNumber: Joi.string().required(),
-    radioOptionClosedRingNumber: Joi.string().required(),    
+    radioOptionClosedRingNumber: Joi.string().required(),
     radioOptionSplitRingNumber: Joi.string().required(),
     radioOptionOtherRingNumber: Joi.string().required(),
     radioOptionCableTie: Joi.string().required(),
@@ -435,10 +435,67 @@ const schema = Joi.object().keys({
     radioOptionLabel: Joi.string().required(),
     radioOptionSwissInstitue: Joi.string().required(),
     radioOptionSerialNumber: Joi.string().required(),
+    radioOptionDivider: Joi.string().required(),
+    radioOptionUnmarked: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.uniqueIdentificationMark.string.empty": Joi.string().required()      
+      "error.uniqueIdentificationMarkType.any.required": Joi.string().required(),
+      "error.uniqueIdentificationMarkType.any.only": Joi.string().required(),
+      "error.inputCR.string.empty": Joi.string().required(),
+      "error.inputCR.string.max": Joi.string().required(),
+      "error.inputCR.string.min": Joi.string().required(),
+      "error.inputCT.string.empty": Joi.string().required(),
+      "error.inputCT.string.max": Joi.string().required(),
+      "error.inputCT.string.min": Joi.string().required(),
+      "error.inputHU.string.empty": Joi.string().required(),
+      "error.inputHU.string.max": Joi.string().required(),
+      "error.inputHU.string.min": Joi.string().required(),
+      "error.inputLB.string.empty": Joi.string().required(),
+      "error.inputLB.string.max": Joi.string().required(),
+      "error.inputLB.string.min": Joi.string().required(),
+      "error.inputMC.string.empty": Joi.string().required(),
+      "error.inputMC.string.max": Joi.string().required(),
+      "error.inputMC.string.min": Joi.string().required(),
+      "error.inputOT.string.empty": Joi.string().required(),
+      "error.inputOT.string.max": Joi.string().required(),
+      "error.inputOT.string.min": Joi.string().required(),
+      "error.inputSN.string.empty": Joi.string().required(),
+      "error.inputSN.string.max": Joi.string().required(),
+      "error.inputSN.string.min": Joi.string().required(),
+      "error.inputSR.string.empty": Joi.string().required(),
+      "error.inputSR.string.max": Joi.string().required(),
+      "error.inputSR.string.min": Joi.string().required(),
+      "error.inputSI.string.empty": Joi.string().required(),
+      "error.inputSI.string.max": Joi.string().required(),
+      "error.inputSI.string.min": Joi.string().required()
     }).required()
-  }).required()
+  }).required(),
+  describeSpecimen: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.describeSpecimen.string.empty": Joi.string().required(),
+      "error.describeSpecimen.string.pattern.base": Joi.string().required(),
+      "error.describeSpecimen.string.min": Joi.string().required(),
+      "error.describeSpecimen.string.max": Joi.string().required()
+    }).required()
+  }).required(),
+  describeLivingAnimal: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelSex: Joi.string().required(),
+    inputLabelDateOfBirth: Joi.string().required(),
+    inputLabelUndeterminedSexReason: Joi.string().required(),
+    inputLabelDescription: Joi.string().required(),
+    inputHintDescription: Joi.string().required(),
+    inputLabelParentDetails: Joi.string().required(),
+    radioOptionSexMale: Joi.string().required(),
+    radioOptionSexFemale: Joi.string().required(),
+    radioOptionSexUndetermined: Joi.string().required(),
+    errorMessages: Joi.object().keys({
+      'error.sex.any.required': Joi.string().required(),
+      'error.sex.any.only': Joi.string().required()
+    }).required()
+  })
 })
 
 // Validate config

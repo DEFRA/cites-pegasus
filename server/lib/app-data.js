@@ -120,6 +120,11 @@ function getAppFlow(appData) {
                                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
                             }
                         }
+                        //TO DO  should be this condition when data session sorted out 
+                        // if (specimen.specimenType !== "animalLiving" && specimen.uniqueIdentificationMark) {
+                        if (specimen.specimenType !== "animalLiving") {
+                            appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
+                        }
                     })
                 }
             })
