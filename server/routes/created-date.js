@@ -74,7 +74,7 @@ function createModel(errors, data) {
 
   const model = {
     backLink: previousPath,
-    formActionPage: `${currentPath}/${data.speciesIndex}`,
+    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -97,17 +97,18 @@ function createModel(errors, data) {
       items: [
         {
           name: "day",
-          value: "6"
+          classes: "govuk-input--width-2",
         },
         {
           name: "month",
-          value: "3"
+          classes: "govuk-input--width-2",
         },
         {
           name: "year",
-          value: "2076"
+          classes: "govuk-input--width-4",
         }
       ],
+      ...(data.createdDate ? { value: data.createdDate } : {}),
       errorMessage: getFieldError(errorList, "#createdDate")
     },
 
@@ -230,15 +231,11 @@ module.exports = [
 
         const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
 
-        const enterAnApproximateDate = request.payload.isExactDateUnknown
-          ? request.payload.enterAnApproximateDate
-          : ""
-
         specimen.createdDate = request.payload.createdDate
 
         specimen.isExactDateUnknown = request.payload.isExactDateUnknown
 
-        specimen.enterAnApproximateDate = enterAnApproximateDate
+        specimen.enterAnApproximateDate = request.payload.isExactDateUnknown ? request.payload.enterAnApproximateDate : ""
 
         try {
           mergeAppData(
@@ -258,3 +255,11 @@ module.exports = [
     }
   }
 ]
+
+
+// ...(data.createdDay ? { value: data.createdDay } : {}),
+// ...(data.createdMonth ? { value: data.createdMonth } : {}),
+// ...(data.createdYear ? { value: data.createdYear } : {}),
+// createdDay: Joi.number().required(),
+//           createdMonth: Joi.number().required(),
+//           createdYear: Joi.number().required(),
