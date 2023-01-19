@@ -690,33 +690,34 @@
             "error.inputSR.string.min": "Unique identification mark must be 3 characters or more",
             "error.inputSI.string.empty": "Enter the specimen's unique identification mark",
             "error.inputSI.string.max": "Unique identification mark must be 150 characters or less",
-            "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"            
-        },
-        "describeSpecimen": {
-            "defaultTitle": "Description",
-            "pageHeader": "Describe ",
-            "errorMessages": {
-              "error.describeSpecimen.string.empty": "Enter a description",
-              "error.describeSpecimen.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
-              "error.describeSpecimen.string.min": "Description must be 5 characters or more",
-              "error.describeSpecimen.string.max": "Description must be 448 characters or less"
-            }
-          }
-        },
-        "describeLivingAnimal": {
-            "defaultTitle": "Describe the ",
-            "pageHeader": "Describe the ",
-            "inputLabelSex": "What sex is the specimen?",
-            "inputLabelUndeterminedSexReason": "Enter a reason",
-            "inputLabelDateOfBirth": "When was the specimen’s date of birth?",
-            "inputLabelDescription": "Other description",
-            "inputHintDescription": "Include anything else that helps to describe the specimen.",
-            "radioOptionSexMale": "Male",
-            "radioOptionSexFemale": "Female",
-            "radioOptionSexUndetermined": "Not known",
-            "errorMessages": {
-                "error.sex.any.required": "Select the specimen's sex",
-                "error.sex.any.only": "Select the specimen's sex"         
-            }
+            "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"
+        }
+    },
+    "describeSpecimen": {
+        "defaultTitle": "Description",
+        "pageHeader": "Describe ",
+        "errorMessages": {
+            "error.describeSpecimen.string.empty": "Enter a description",
+            "error.describeSpecimen.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+            "error.describeSpecimen.string.min": "Description must be 5 characters or more",
+            "error.describeSpecimen.string.max": "Description must be 448 characters or less"
+        }
+    },
+    "describeLivingAnimal": {
+        "defaultTitle": "Describe the ",
+        "pageHeader": "Describe the ",
+        "inputLabelSex": "What sex is the specimen?",
+        "inputLabelUndeterminedSexReason": "Enter a reason",
+        "inputLabelDateOfBirth": "When was the specimen’s date of birth?",
+        "inputLabelDescription": "Other description",
+        "inputHintDescription": "Include anything else that helps to describe the specimen.",
+        "inputLabelParentDetails": "Parent details",
+        "radioOptionSexMale": "Male",
+        "radioOptionSexFemale": "Female",
+        "radioOptionSexUndetermined": "Not known",
+        "errorMessages": {
+            "error.sex.any.required": "Select the specimen's sex",
+            "error.sex.any.only": "Select the specimen's sex"
         }
     }
+}

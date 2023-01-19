@@ -472,6 +472,7 @@ const schema = Joi.object().keys({
     inputLabelUndeterminedSexReason: Joi.string().required(),
     inputLabelDescription: Joi.string().required(),
     inputHintDescription: Joi.string().required(),
+    inputLabelParentDetails: Joi.string().required(),
     radioOptionSexMale: Joi.string().required(),
     radioOptionSexFemale: Joi.string().required(),
     radioOptionSexUndetermined: Joi.string().required(),

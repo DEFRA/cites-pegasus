@@ -52,6 +52,8 @@ function createModel(errors, data) {
     inputLabelSex: pageContent.inputLabelSex,
     inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
     inputLabelDescription: pageContent.inputLabelDescription,
+    inputLabelParentDetails: pageContent.inputLabelParentDetails,
+    showParentDetails: data.permitType === 'article10',
     inputSex: {
       idPrefix: "sex",
       name: "sex",
@@ -140,11 +142,10 @@ module.exports = [
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
         speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-        uniqueIdentificationMarkType: 'closedRingNumber',
-        uniqueIdentificationMark: 'abcd1234'
-        // appData.species[request.params.speciesIndex].specimens[
-        //   request.params.specimenIndex
-        // ].uniqueIdentificationMark
+        permitType: appData.permitType,
+        sex: null,
+        undeterminedSexReason: ""
+//        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sex
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -171,6 +172,8 @@ module.exports = [
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
+            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+            permitType: appData.permitType,
             sex: request.payload.sex,
             undeterminedSexReason: request.payload.undeterminedSexReason
           }
