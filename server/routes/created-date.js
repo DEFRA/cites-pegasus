@@ -118,8 +118,9 @@ function createModel(errors, data) {
       classes: "govuk-checkboxes--small",
       items: [
         {
-          value: "isExactDateUnknown",
+          value: true,
           text: pageContent.checkboxLabelIsExactDateUnknown,
+          checked: data.isExactDateUnknown,
           conditional: {
             html: enterAnApproximateDateInput
           }
@@ -191,7 +192,7 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           createdDate: Joi.date().max("now").required(),
-          isExactDateUnknown: Joi.string().required(),
+          isExactDateUnknown: Joi.boolean().allow(),
           enterAnApproximateDate: Joi.when("isExactDateUnknown", {
             is: true,
             then: Joi.string().required()
