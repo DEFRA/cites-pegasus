@@ -38,17 +38,17 @@ function createModel(errors, data) {
   }
 
   let radioOptions = [
-    { text: pageContent.radioOptionMicrochipNumber, value: 'MC', hasMark: true },
-    { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasMark: true },
-    { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasMark: true },
-    { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasMark: true },
-    { text: pageContent.radioOptionCableTie, value: 'CT', hasMark: true },
-    { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasMark: true },
-    { text: pageContent.radioOptionLabel, value: 'LB', hasMark: true },
-    { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasMark: true },
-    { text: pageContent.radioOptionSerialNumber, value: 'SN', hasMark: true },
-    { text: pageContent.radioOptionDivider, value: null, hasMark: false},
-    { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasMark: false }
+    { text: pageContent.radioOptionMicrochipNumber, value: 'MC', hasInput: true },
+    { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasInput: true },
+    { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasInput: true },
+    { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasInput: true },
+    { text: pageContent.radioOptionCableTie, value: 'CT', hasInput: true },
+    { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasInput: true },
+    { text: pageContent.radioOptionLabel, value: 'LB', hasInput: true },
+    { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasInput: true },
+    { text: pageContent.radioOptionSerialNumber, value: 'SN', hasInput: true },
+    { text: pageContent.radioOptionDivider, value: null, hasInput: false},
+    { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasInput: false }
   ]
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
@@ -91,7 +91,7 @@ function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, ra
 
   const checked = uniqueIdentificationMarkType ? isChecked(uniqueIdentificationMarkType, radioOption.value) : false
 
-  const html = radioOption.hasMark ? getInputUniqueIdentificationMark('input' + radioOption.value, checked ? uniqueIdentificationMark : null, errorList) : ""
+  const html = radioOption.hasInput ? getInputUniqueIdentificationMark('input' + radioOption.value, checked ? uniqueIdentificationMark : null, errorList) : ""
 
   return {
     value: radioOption.value,
@@ -142,6 +142,7 @@ module.exports = [
     handler: async (request, h) => {
       const appData = getAppData(request)
 
+      //TODO - ADD ROUTE VALIDATION
       // try {
       //   validateAppData(
       //     appData,
