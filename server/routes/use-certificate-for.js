@@ -10,7 +10,7 @@ const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/purpose-code`
-const nextPath = `${urlPrefix}/specimen-type` //TO DO
+const nextPath = `${urlPrefix}/specimen-type`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {

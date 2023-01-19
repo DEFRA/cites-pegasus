@@ -11,6 +11,7 @@ const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
+const previousPath = `${urlPrefix}/species-name`
 const nextPath = `${urlPrefix}/purpose-code`
 const invalidAppDataPath = urlPrefix
 
@@ -111,7 +112,7 @@ function createModel(errors, data) {
   })
 
   const model = {
-    backLink: `${urlPrefix}/species-name/${data.speciesIndex}`,
+    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList

@@ -114,7 +114,16 @@ function getAppFlow(appData) {
                             }
                         }
                         if (specimen.specimenType) {
-                            appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            if(specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
+                                appFlow.push(`created-date/${speciesindex}/${specimenindex}`)
+                            } else {
+                                appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            }
+                        }
+                        //TO DO  should be this condition when data session sorted out 
+                        // if (specimen.specimenType !== "animalLiving" && specimen.uniqueIdentificationMark) {
+                        if (specimen.specimenType !== "animalLiving") {
+                            appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
                         }
 
                         if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {
