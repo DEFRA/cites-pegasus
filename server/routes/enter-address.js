@@ -13,19 +13,21 @@ const invalidAppDataPath = urlPrefix
 const lodash = require('lodash')
 
 function createModel(errors, data) {
-    const commonContent = textContent.common;
+    const commonContent =  textContent.common;
     let pageContent = null
+
+    const enterAddressText = lodash.cloneDeep(textContent.enterAddress) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.agentLed )
+            pageContent = lodash.merge(enterAddressText.common, enterAddressText.agentLed )
         } else {
-            pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.applicant )
+            pageContent = lodash.merge(enterAddressText.common, enterAddressText.applicant )
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.agent )
+        pageContent = lodash.merge(enterAddressText.common, enterAddressText.agent )
     } else {
-        pageContent = lodash.merge(textContent.enterAddress.common, textContent.enterAddress.delivery)
+        pageContent = lodash.merge(enterAddressText.common, enterAddressText.delivery)
     }
     
     let defaultTitle = ''

@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+  {% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+        "titleText": errorSummaryTitle,
+        "errorList": errorList
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        {{pageHeader}}
+      </h1>
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+        {% call govukFieldset({
+          legend: {
+            text: heading,
+            classes: "govuk-fieldset__legend--m",
+            isPageHeading: true
+          }
+        }) %}
+        <p>
+          {{ govukInput(inputCountry) }}
+          {% endcall %}
+
+          {% call govukFieldset({
+          legend: {
+            text: headingAddress,
+            classes: "govuk-fieldset__legend--m",
+            isPageHeading: false
+          }
+        }) %}
+          <p>
+            {{ govukInput(inputFullName) }}
+            {{ govukInput(inputAddressLine1) }}
+            {{ govukInput(inputAddressLine2) }}
+            {{ govukInput(inputAddressLine3) }}
+            {{ govukInput(inputAddressLine4) }}
+            {{ govukInput(inputPostcode) }}
+            {% endcall %}
+
+            {{ govukButton({
+              text: continueButton,
+              type: "submit"
+            }) }}
+          </form>
+        </div>
+      </div>
+    {% endblock %}

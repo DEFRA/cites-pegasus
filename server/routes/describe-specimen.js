@@ -7,8 +7,8 @@ const textContent = require("../content/text-content")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
-const nextPathImporterDetails = `${urlPrefix}/importer-exporter-details` //TO DO
-const nextPathArticle10 = `${urlPrefix}/acquired-date` //TO DO
+const nextPathImporterDetails = `${urlPrefix}/importer-exporter`
+const nextPathArticle10 = `${urlPrefix}/acquired-date`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {

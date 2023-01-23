@@ -18,16 +18,18 @@ function createModel(errors, data) {
     let pageContent = null
     let backLink = `${previousPathContactDetails}/${data.contactType}`
 
+    const postcodeText = lodash.cloneDeep(textContent.postcode) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+
     if(data.contactType === 'applicant'){
         if(data.isAgent){
-            pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.agentLed)
+            pageContent = lodash.merge(postcodeText.common, postcodeText.agentLed)
         } else {
-            pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.applicant)
+            pageContent = lodash.merge(postcodeText.common, postcodeText.applicant)
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.agent)
+        pageContent = lodash.merge(postcodeText.common, postcodeText.agent)
     } else {
-        pageContent = lodash.merge(textContent.postcode.common, textContent.postcode.delivery)
+        pageContent = lodash.merge(postcodeText.common, postcodeText.delivery)
         backLink = previousPathSelectDeliveryAddress
     }
 

@@ -21,6 +21,7 @@ const routes = [].concat(
   require('../routes/unique-identification-mark'),
   require('../routes/describe-specimen'),
   require('../routes/describe-living-animal'),
+  require('../routes/importer-exporter'),
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc')

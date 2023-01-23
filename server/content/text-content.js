@@ -87,7 +87,24 @@ const enterAddressSchema = Joi.object({
   inputLabelAddressLine4: Joi.string(),
   inputLabelPostcode: Joi.string(),
   inputLabelCountry: Joi.string(),
-  errorMessages: Joi.object()
+  errorMessages: Joi.object({
+    'error.addressLine1.string.empty': Joi.string(),
+    'error.addressLine1.string.max': Joi.string(),
+    'error.addressLine1.string.pattern.base': Joi.string(),
+    'error.addressLine2.string.empty': Joi.string(),
+    'error.addressLine2.string.max': Joi.string(),
+    'error.addressLine2.string.pattern.base': Joi.string(),
+    'error.addressLine3.string.empty': Joi.string(),
+    'error.addressLine3.string.max': Joi.string(),
+    'error.addressLine3.string.pattern.base': Joi.string(),
+    'error.addressLine4.string.max': Joi.string(),
+    'error.addressLine4.string.pattern.base': Joi.string(),
+    'error.postcode.string.empty': Joi.string(),
+    'error.postcode.string.max': Joi.string(),
+    'error.postcode.string.pattern.base': Joi.string(),
+    'error.country.string.empty': Joi.string(),
+    'error.country.string.max': Joi.string()
+  })
 })
 
 const confirmAddressSchema = Joi.object({
@@ -495,7 +512,37 @@ const schema = Joi.object().keys({
       'error.sex.any.required': Joi.string().required(),
       'error.sex.any.only': Joi.string().required()
     }).required()
-  })
+  }),
+  importerExporter: Joi.object({
+    defaultTitleImport: Joi.string().required(),
+    defaultTitleNonImport: Joi.string().required(),
+    pageHeaderImport: Joi.string().required(),
+    pageHeaderNonImport: Joi.string().required(),
+    headingImport: Joi.string().required(),
+    headingNonImport: Joi.string().required(),
+    inputLabelCountry: Joi.string().required(),
+    headingAddress: Joi.string().required(),
+    inputLabelFullName: Joi.string().required(),
+    inputLabelAddressLine1: Joi.string().required(),
+    inputLabelAddressLine2: Joi.string(),
+    inputLabelAddressLine3: Joi.string(),
+    inputLabelAddressLine4: Joi.string(),
+    inputLabelPostcode: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.name.string.empty": Joi.string().required(),
+      "error.name.string.max": Joi.string().required(),
+      "error.name.string.pattern.base": Joi.string().required(),
+      "error.addressLine1.string.empty": Joi.string().required(),
+      "error.addressLine1.string.max": Joi.string().required(),
+      "error.addressLine2.string.empty": Joi.string().required(),
+      "error.addressLine2.string.max": Joi.string().required(),
+      "error.addressLine3.string.max": Joi.string().required(),
+      "error.addressLine4.string.max": Joi.string().required(),
+      "error.postcode.string.max": Joi.string().required(),
+      "error.country.string.empty": Joi.string().required(),
+      "error.country.string.max": Joi.string().required()
+    }).required()
+  }).required()
 })
 
 // Validate config

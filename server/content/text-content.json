@@ -654,13 +654,13 @@
         "inputLabelEnterAnApproximateDate": "Enter an approximate date or period of time",
         "inputLabelHintEnterAnApproximateDate": "For example, ‘1950’ or ‘15th century’",
         "errorMessages": {
-          "error.createdDate.string.empty": "Enter the date the worked item or finished product was created, or select I do not know the exact date",
-          "error.createdDate.string.max": "The date the worked item or finished product was created must be in the past",
-          "error.createdDate.string.pattern.base": "The date the worked item or finished product was created must include a year",
-          "error.createdDate.string.format": "The date the worked item or finished product was created must be a real date",
-          "error.enterAnApproximateDate.string.empty": "Enter an approximate date or period of time"
+            "error.createdDate.string.empty": "Enter the date the worked item or finished product was created, or select I do not know the exact date",
+            "error.createdDate.string.max": "The date the worked item or finished product was created must be in the past",
+            "error.createdDate.string.pattern.base": "The date the worked item or finished product was created must include a year",
+            "error.createdDate.string.format": "The date the worked item or finished product was created must be a real date",
+            "error.enterAnApproximateDate.string.empty": "Enter an approximate date or period of time"
         }
-      },
+    },
     "uniqueIdentificationMark": {
         "defaultTitle": "What is the specimen’s unique identification mark?",
         "pageHeader": "What is the specimen’s unique identification mark? ",
@@ -709,14 +709,14 @@
         }
     },
     "specimenDescriptionGeneric": {
-      "defaultTitle": "Description",
-      "pageHeader": "Describe the",
-      "errorMessages": {
-        "error.specimenDescriptionGeneric.string.empty": "Enter a description",
-        "error.specimenDescriptionGeneric.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
-        "error.specimenDescriptionGeneric.string.min": "Description must be 5 characters or more",
-        "error.specimenDescriptionGeneric.string.max": "Description must be 448 characters or less"
-      }
+        "defaultTitle": "Description",
+        "pageHeader": "Describe the",
+        "errorMessages": {
+            "error.specimenDescriptionGeneric.string.empty": "Enter a description",
+            "error.specimenDescriptionGeneric.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+            "error.specimenDescriptionGeneric.string.min": "Description must be 5 characters or more",
+            "error.specimenDescriptionGeneric.string.max": "Description must be 448 characters or less"
+        }
     },
     "describeLivingAnimal": {
         "defaultTitle": "Describe the ",
@@ -733,6 +733,36 @@
         "errorMessages": {
             "error.sex.any.required": "Select the specimen's sex",
             "error.sex.any.only": "Select the specimen's sex"
+        }
+    },
+    "importerExporter": {
+        "defaultTitleImport": "Exporter or re-exporter’s contact details",
+        "defaultTitleNonImport": "Importer’s contact details ",
+        "pageHeaderImport": "Exporter or re-exporter’s details",
+        "pageHeaderNonImport": "Importer’s details",
+        "headingImport": "Country of export or re-export",
+        "headingNonImport": "Country of import",
+        "inputLabelCountry": "Country",
+        "headingAddress": "Address",
+        "inputLabelFullName": "Full name",
+        "inputLabelAddressLine1": "Address line 1",
+        "inputLabelAddressLine2": "Address line 2",
+        "inputLabelAddressLine3": "Address line 3 (optional)",
+        "inputLabelAddressLine4": "Address line 4 (optional)",
+        "inputLabelPostcode": "Postal or zip code (if your country has one)",
+        "errorMessages": {
+            "error.name.string.empty": "Enter the full name",
+            "error.name.string.max": "Full name must be 150 characters or less",
+            "error.name.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
+            "error.addressLine1.string.empty": "Enter the address line 1",
+            "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+            "error.addressLine2.string.empty": "Enter the address line 2",
+            "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+            "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+            "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+            "error.postcode.string.max": "Postal or zip code must be 50 characters or less",
+            "error.country.string.empty": "Select a country",
+            "error.country.string.max": "Country must be 150 characters or less"
         }
     }
 }

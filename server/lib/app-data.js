@@ -114,16 +114,11 @@ function getAppFlow(appData) {
                             }
                         }
                         if (specimen.specimenType) {
-                            if(specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
+                            if (specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
                                 appFlow.push(`created-date/${speciesindex}/${specimenindex}`)
                             } else {
                                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
                             }
-                        }
-                        //TO DO  should be this condition when data session sorted out 
-                        // if (specimen.specimenType !== "animalLiving" && specimen.uniqueIdentificationMark) {
-                        if (specimen.specimenType !== "animalLiving") {
-                            appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
                         }
 
                         if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {
@@ -137,7 +132,14 @@ function getAppFlow(appData) {
                                 appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
                             }
                         }
+                        if (specimen.specimenDescriptionGeneric || specimen.specimenDescriptionLivingAnimal) {
+                            if (appData.permitType === "article10") {
+                                appFlow.push(`acquired-date/${speciesindex}/${specimenindex}`)
+                            } else {
+                                appFlow.push(`importer-exporter/${speciesindex}/${specimenindex}`)
 
+                            }
+                        }
                     })
                 }
             })

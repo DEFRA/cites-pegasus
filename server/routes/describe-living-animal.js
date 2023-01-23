@@ -181,20 +181,20 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        // const appData = getAppData(request)
+        const appData = getAppData(request)
 
-        // appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].useCertificateFor = request.payload.useCertificateFor
+        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenDescriptionLivingAnimal  = request.payload.description
 
-        // try {
-        //   mergeAppData(
-        //     request,
-        //     { species: appData.species },
-        //     `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        //   )
-        // } catch (err) {
-        //   console.log(err)
-        //   return h.redirect(`${invalidAppDataPath}/`)
-        // }
+        try {
+          mergeAppData(
+            request,
+            { species: appData.species },
+            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          )
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidAppDataPath}/`)
+        }
 
         //TODO If Specimen type == living animal then       
         return h.redirect(`${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`)

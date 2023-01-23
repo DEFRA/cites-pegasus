@@ -18,16 +18,18 @@ function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
 
+    const selectAddressText = lodash.cloneDeep(textContent.selectAddress) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.agentLed )
+            pageContent = lodash.merge(selectAddressText.common, selectAddressText.agentLed )
         } else {
-            pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.applicant )
+            pageContent = lodash.merge(selectAddressText.common, selectAddressText.applicant )
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.agent )
+        pageContent = lodash.merge(selectAddressText.common, selectAddressText.agent )
     } else {
-        pageContent = lodash.merge(textContent.selectAddress.common, textContent.selectAddress.delivery )
+        pageContent = lodash.merge(selectAddressText.common, selectAddressText.delivery )
     }
 
     let errorList = null
