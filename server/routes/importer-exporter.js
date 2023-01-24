@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
@@ -10,29 +10,39 @@ const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathRemarks = `${urlPrefix}/remarks`
-
+const lodash = require('lodash')
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
 
   const commonContent = textContent.common
-  const pageContent = textContent.importerExporter
+  //const pageContent = textContent.importerExporter
 
-  let defaultTitle = ''
-  let pageHeader = ''
-  let heading = ''
+  // let defaultTitle = ''
+  // let pageHeader = ''
+  // let heading = ''
 
-  switch (data.permitType) {
-    case 'import':
-      defaultTitle = pageContent.defaultTitleImport
-      pageHeader = pageContent.pageHeaderImport
-      heading = pageContent.headingImport
-      break;
-    default:
-      defaultTitle = pageContent.defaultTitleNonImport
-      pageHeader = pageContent.pageHeaderNonImport
-      heading = pageContent.headingNonImport
-      break;
+  // switch (data.permitType) {
+  //   case 'import':
+  //     defaultTitle = pageContent.defaultTitleImport
+  //     pageHeader = pageContent.pageHeaderImport
+  //     heading = pageContent.headingImport
+  //     break;
+  //   default:
+  //     defaultTitle = pageContent.defaultTitleNonImport
+  //     pageHeader = pageContent.pageHeaderNonImport
+  //     heading = pageContent.headingNonImport
+  //     break;
+  // }
+
+  let pageContent = null
+
+  const importerExporterText = lodash.cloneDeep(textContent.importerExporter) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+
+  if (data.permitType === 'import') {
+    pageContent = lodash.merge(importerExporterText.common, importerExporterText.exporterDetails)
+  } else {
+    pageContent = lodash.merge(importerExporterText.common, importerExporterText.importerDetails)
   }
 
   let errorList = null
@@ -58,9 +68,9 @@ function createModel(errors, data) {
     backLink: `${previousPathDescribeLivingAnimal}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
-    pageHeader: pageHeader,
-    heading: heading,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageHeader: pageContent.pageHeader,
+    heading: pageContent.heading,
     headingAddress: pageContent.headingAddress,
     inputCountry: {
       label: {
@@ -172,6 +182,7 @@ module.exports = [
       }
 
       return h.view(pageId, createModel(null, pageData))
+
     }
   },
   {
@@ -217,7 +228,7 @@ module.exports = [
           postcode: request.payload.postcode.trim()
         }
 
-        appData.species[request.params.speciesIndex].importerExporterDetails = importerExporterDetails        
+        appData.species[request.params.speciesIndex].importerExporterDetails = importerExporterDetails
 
         try {
           mergeAppData(

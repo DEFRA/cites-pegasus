@@ -119,6 +119,26 @@ const confirmAddressSchema = Joi.object({
   changeAddressLinkText: Joi.string()
 })
 
+const importerExporterDetailsSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  heading: Joi.string().required(),
+  errorMessages: Joi.object({
+    "error.name.string.empty": Joi.string().required(),
+    "error.name.string.max": Joi.string().optional(),
+    "error.name.string.pattern.base": Joi.string().optional(),
+    "error.addressLine1.string.empty": Joi.string().optional(),
+    "error.addressLine1.string.max": Joi.string().optional(),
+    "error.addressLine2.string.empty": Joi.string().optional(),
+    "error.addressLine2.string.max": Joi.string().optional(),
+    "error.addressLine3.string.max": Joi.string().optional(),
+    "error.addressLine4.string.max": Joi.string().optional(),
+    "error.postcode.string.max": Joi.string().optional(),
+    "error.country.string.empty": Joi.string().optional(),
+    "error.country.string.max": Joi.string().optional()
+  }).required()
+}).required()
+
 const sourceCodeSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   pageHeader: Joi.string().required(),
@@ -512,36 +532,33 @@ const schema = Joi.object().keys({
       'error.sex.any.required': Joi.string().required(),
       'error.sex.any.only': Joi.string().required()
     }).required()
-  }),
+  }).required(),
   importerExporter: Joi.object({
-    defaultTitleImport: Joi.string().required(),
-    defaultTitleNonImport: Joi.string().required(),
-    pageHeaderImport: Joi.string().required(),
-    pageHeaderNonImport: Joi.string().required(),
-    headingImport: Joi.string().required(),
-    headingNonImport: Joi.string().required(),
-    inputLabelCountry: Joi.string().required(),
-    headingAddress: Joi.string().required(),
-    inputLabelFullName: Joi.string().required(),
-    inputLabelAddressLine1: Joi.string().required(),
-    inputLabelAddressLine2: Joi.string(),
-    inputLabelAddressLine3: Joi.string(),
-    inputLabelAddressLine4: Joi.string(),
-    inputLabelPostcode: Joi.string().required(),
-    errorMessages: Joi.object({
-      "error.name.string.empty": Joi.string().required(),
-      "error.name.string.max": Joi.string().required(),
-      "error.name.string.pattern.base": Joi.string().required(),
-      "error.addressLine1.string.empty": Joi.string().required(),
-      "error.addressLine1.string.max": Joi.string().required(),
-      "error.addressLine2.string.empty": Joi.string().required(),
-      "error.addressLine2.string.max": Joi.string().required(),
-      "error.addressLine3.string.max": Joi.string().required(),
-      "error.addressLine4.string.max": Joi.string().required(),
-      "error.postcode.string.max": Joi.string().required(),
-      "error.country.string.empty": Joi.string().required(),
-      "error.country.string.max": Joi.string().required()
-    }).required()
+    common: Joi.object({
+      inputLabelCountry: Joi.string().required(),
+      headingAddress: Joi.string().required(),
+      inputLabelFullName: Joi.string().required(),
+      inputLabelAddressLine1: Joi.string().required(),
+      inputLabelAddressLine2: Joi.string(),
+      inputLabelAddressLine3: Joi.string(),
+      inputLabelAddressLine4: Joi.string(),
+      inputLabelPostcode: Joi.string().required(),
+      errorMessages: Joi.object({
+        "error.name.string.max": Joi.string().required(),
+        "error.name.string.pattern.base": Joi.string().required(),
+        "error.addressLine1.string.empty": Joi.string().required(),
+        "error.addressLine1.string.max": Joi.string().required(),
+        "error.addressLine2.string.empty": Joi.string().required(),
+        "error.addressLine2.string.max": Joi.string().required(),
+        "error.addressLine3.string.max": Joi.string().required(),
+        "error.addressLine4.string.max": Joi.string().required(),
+        "error.postcode.string.max": Joi.string().required(),
+        "error.country.string.empty": Joi.string().required(),
+        "error.country.string.max": Joi.string().required()
+      }).required()
+    }).required(),
+    importerDetails: importerExporterDetailsSchema,
+    exporterDetails: importerExporterDetailsSchema
   }).required()
 })
 
@@ -549,8 +566,8 @@ const schema = Joi.object().keys({
 const { error, value } = schema.validate(textContent)
 
 // Throw if config is invalid
-if (error) {
-  throw new Error(`The text-content.json file is invalid. ${error.message}`)
-}
+if(error) {
+    throw new Error(`The text-content.json file is invalid. ${error.message}`)
+  }
 
 module.exports = value

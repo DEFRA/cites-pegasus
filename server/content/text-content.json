@@ -112,14 +112,14 @@
             "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
         },
         "agentLed": {
-            "defaultTitleImport": "Enter the importer's contact details",
-            "defaultTitleExport": "Enter the exporter's contact details",
-            "defaultTitleReexport": "Enter the re-exporter's contact details",
-            "defaultTitleArticle10": "Enter the applicant's contact details",
-            "pageHeaderImport": "Enter the importer's contact details",
-            "pageHeaderExport": "Enter the exporter's contact details",
-            "pageHeaderReexport": "Enter the re-exporter's contact details",
-            "pageHeaderArticle10": "Enter the applicant's contact details",
+            "defaultTitleImport": "Enter the importer’s contact details",
+            "defaultTitleExport": "Enter the exporter’s contact details",
+            "defaultTitleReexport": "Enter the re-exporter’s contact details",
+            "defaultTitleArticle10": "Enter the applicant’s contact details",
+            "pageHeaderImport": "Enter the importer’s contact details",
+            "pageHeaderExport": "Enter the exporter’s contact details",
+            "pageHeaderReexport": "Enter the re-exporter’s contact details",
+            "pageHeaderArticle10": "Enter the applicant’s contact details",
             "inputLabelFullName": "Full name",
             "inputLabelBusinessName": "Business name (optional)",
             "inputHintBusinessNameImport": "If the importer is a business, give the business name.",
@@ -129,7 +129,7 @@
             "inputLabelEmail": "Email address",
             "inputHintEmailImport": "We will only use the importer’s email address to contact them about the application.",
             "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
-            "inputHintEmailReexport": "We will only use the re-exporter's email address to contact them about the application.",
+            "inputHintEmailReexport": "We will only use the re-exporter’s email address to contact them about the application.",
             "inputHintEmailArticle10": "We will only use the applicant’s email address to contact them about the application."
         },
         "errorMessages": {
@@ -310,28 +310,28 @@
             "pageBodyArticle10": "If you are a business, enter the business address."
         },
         "applicant": {
-            "defaultTitleImport": "Enter the importer's address",
-            "defaultTitleExport": "Enter the exporter's address",
-            "defaultTitleReexport": "Enter the re-exporter's address",
-            "defaultTitleArticle10": "Enter the applicant's address",
-            "pageHeaderImport": "Enter the importer's address",
-            "pageHeaderExport": "Enter the exporter's address",
-            "pageHeaderReexport": "Enter the re-exporter's address",
-            "pageHeaderArticle10": "Enter the applicant's address",
+            "defaultTitleImport": "Enter the importer’s address",
+            "defaultTitleExport": "Enter the exporter’s address",
+            "defaultTitleReexport": "Enter the re-exporter’s address",
+            "defaultTitleArticle10": "Enter the applicant’s address",
+            "pageHeaderImport": "Enter the importer’s address",
+            "pageHeaderExport": "Enter the exporter’s address",
+            "pageHeaderReexport": "Enter the re-exporter’s address",
+            "pageHeaderArticle10": "Enter the applicant’s address",
             "pageBodyImport": "If the importer is a business, give the business address.",
             "pageBodyExport": "If the exporter is a business, give the business address.",
             "pageBodyReexport": "If the re-exporter is a business, give the business address.",
             "pageBodyArticle10": "If the applicant is a business, give the business address."
         },
         "agentLed": {
-            "defaultTitleImport": "Enter the importer's address",
-            "defaultTitleExport": "Enter the exporter's address",
-            "defaultTitleReexport": "Enter the re-exporter's address",
-            "defaultTitleArticle10": "Enter the applicant's address",
-            "pageHeaderImport": "Enter the importer's address",
-            "pageHeaderExport": "Enter the exporter's address",
-            "pageHeaderReexport": "Enter the re-exporter's address",
-            "pageHeaderArticle10": "Enter the applicant's address",
+            "defaultTitleImport": "Enter the importer’s address",
+            "defaultTitleExport": "Enter the exporter’s address",
+            "defaultTitleReexport": "Enter the re-exporter’s address",
+            "defaultTitleArticle10": "Enter the applicant’s address",
+            "pageHeaderImport": "Enter the importer’s address",
+            "pageHeaderExport": "Enter the exporter’s address",
+            "pageHeaderReexport": "Enter the re-exporter’s address",
+            "pageHeaderArticle10": "Enter the applicant’s address",
             "pageBodyImport": "If the importer is a business, give the business address.",
             "pageBodyExport": "If the exporter is a business, give the business address.",
             "pageBodyReexport": "If the re-exporter is a business, give the business address.",
@@ -388,21 +388,21 @@
             "defaultTitleImport": "Confirm the importer’s address",
             "defaultTitleExport": "Confirm the exporter’s address",
             "defaultTitleReexport": "Confirm the re-exporter’s address",
-            "defaultTitleArticle10": "Confirm the applicant's address",
+            "defaultTitleArticle10": "Confirm the applicant’s address",
             "pageHeaderImport": "Confirm the importer’s address ",
             "pageHeaderExport": "Confirm the exporter’s address",
             "pageHeaderReexport": "Confirm the re-exporter’s address",
-            "pageHeaderArticle10": "Confirm the applicant's address"
+            "pageHeaderArticle10": "Confirm the applicant’s address"
         },
         "agentLed": {
             "defaultTitleImport": "Confirm the importer’s address",
             "defaultTitleExport": "Confirm the exporter’s address",
             "defaultTitleReexport": "Confirm the re-exporter’s address",
-            "defaultTitleArticle10": "Confirm the applicant's address",
+            "defaultTitleArticle10": "Confirm the applicant’s address",
             "pageHeaderImport": "Confirm the importer’s address ",
             "pageHeaderExport": "Confirm the exporter’s address",
             "pageHeaderReexport": "Confirm the re-exporter’s address",
-            "pageHeaderArticle10": "Confirm the applicant's address"
+            "pageHeaderArticle10": "Confirm the applicant’s address"
         },
         "delivery": {
             "defaultTitleImport": "Confirm the delivery address",
@@ -677,33 +677,33 @@
         "radioOptionDivider": "or",
         "radioOptionUnmarked": "The specimen is not marked",
         "errorMessages": {
-            "error.uniqueIdentificationMarkType.any.required": "Select the specimen's unique identification mark",
-            "error.uniqueIdentificationMarkType.any.only": "Select the specimen's unique identification mark",
-            "error.inputCR.string.empty": "Enter the specimen's unique identification mark",
+            "error.uniqueIdentificationMarkType.any.required": "Select the specimen’s unique identification mark",
+            "error.uniqueIdentificationMarkType.any.only": "Select the specimen’s unique identification mark",
+            "error.inputCR.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputCR.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputCR.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputCT.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputCT.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputCT.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputCT.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputHU.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputHU.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputHU.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputHU.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputLB.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputLB.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputLB.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputLB.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputMC.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputMC.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputMC.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputMC.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputOT.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputOT.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputOT.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputOT.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputSN.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputSN.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputSN.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputSN.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputSR.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputSR.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputSR.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputSR.string.min": "Unique identification mark must be 3 characters or more",
-            "error.inputSI.string.empty": "Enter the specimen's unique identification mark",
+            "error.inputSI.string.empty": "Enter the specimen’s unique identification mark",
             "error.inputSI.string.max": "Unique identification mark must be 150 characters or less",
             "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"
         }
@@ -731,38 +731,49 @@
         "radioOptionSexFemale": "Female",
         "radioOptionSexUndetermined": "Not known",
         "errorMessages": {
-            "error.sex.any.required": "Select the specimen's sex",
-            "error.sex.any.only": "Select the specimen's sex"
+            "error.sex.any.required": "Select the specimen’s sex",
+            "error.sex.any.only": "Select the specimen’s sex"
         }
     },
     "importerExporter": {
-        "defaultTitleImport": "Exporter or re-exporter’s contact details",
-        "defaultTitleNonImport": "Importer’s contact details ",
-        "pageHeaderImport": "Exporter or re-exporter’s details",
-        "pageHeaderNonImport": "Importer’s details",
-        "headingImport": "Country of export or re-export",
-        "headingNonImport": "Country of import",
-        "inputLabelCountry": "Country",
-        "headingAddress": "Address",
-        "inputLabelFullName": "Full name",
-        "inputLabelAddressLine1": "Address line 1",
-        "inputLabelAddressLine2": "Address line 2",
-        "inputLabelAddressLine3": "Address line 3 (optional)",
-        "inputLabelAddressLine4": "Address line 4 (optional)",
-        "inputLabelPostcode": "Postal or zip code (if your country has one)",
-        "errorMessages": {
-            "error.name.string.empty": "Enter the full name",
-            "error.name.string.max": "Full name must be 150 characters or less",
-            "error.name.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
-            "error.addressLine1.string.empty": "Enter the address line 1",
-            "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
-            "error.addressLine2.string.empty": "Enter the address line 2",
-            "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
-            "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
-            "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
-            "error.postcode.string.max": "Postal or zip code must be 50 characters or less",
-            "error.country.string.empty": "Select a country",
-            "error.country.string.max": "Country must be 150 characters or less"
-        }
+        "common": {
+            "inputLabelCountry": "Country",
+            "headingAddress": "Address",
+            "inputLabelFullName": "Full name",
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2",
+            "inputLabelAddressLine3": "Address line 3 (optional)",
+            "inputLabelAddressLine4": "Address line 4 (optional)",
+            "inputLabelPostcode": "Postal or zip code (if your country has one)",
+            "errorMessages": {
+                "error.name.string.max": "Full name must be 150 characters or less",
+                "error.name.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine1.string.empty": "Enter the address line 1",
+                "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+                "error.addressLine2.string.empty": "Enter the address line 2",
+                "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+                "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+                "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+                "error.postcode.string.max": "Postal or zip code must be 50 characters or less",
+                "error.country.string.empty": "Select a country",
+                "error.country.string.max": "Country must be 150 characters or less"
+            }
+        },
+        "importerDetails": {
+            "defaultTitle": "Importer’s contact details ",
+            "pageHeader": "Importer’s details",
+            "heading": "Country of import",
+            "errorMessages": {
+                "error.name.string.empty": "Enter the importer’s full name"
+            }
+        },
+        "exporterDetails": {
+            "defaultTitle": "Exporter or re-exporter’s contact details",
+            "pageHeader": "Exporter or re-exporter’s details",
+            "heading": "Country of export or re-export",
+            "errorMessages": {
+                "error.name.string.empty": "Enter the exporter’s full name"
+            }
+        }        
     }
 }
