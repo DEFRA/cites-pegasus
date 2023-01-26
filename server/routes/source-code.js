@@ -112,7 +112,7 @@ function createModel(errors, data) {
   })
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.speciesIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList

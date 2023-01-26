@@ -208,6 +208,7 @@ module.exports = [
           //If changing speciesName , remove all specimens
           for (let i = 0; i < previousAppDataSpecies.quantity; i++) {
             newAppDataSpecies.specimens.pop()
+            //TODO - NEED TO LEAVE EMPTY SPECIMENS HERE FOR THE NEXT PAGE TO WORK.  BUT THIS IS ALL DUE TO CHANGE SOON SO NOT WORTH DOING AT THE MOMENT
           }
         } else if (
           previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" &&
