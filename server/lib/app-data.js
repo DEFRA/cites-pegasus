@@ -119,6 +119,10 @@ function getAppFlow(appData) {
                             } else {
                                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
                             }
+
+                            if (specimen.createdDate) {
+                                appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            }
                         }
 
                         if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {

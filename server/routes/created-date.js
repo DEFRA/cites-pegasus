@@ -2,9 +2,10 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
-// const { DATE_REGEX } = require("../lib/regex-validation")
+const { isValidDate, isPastDate } = require("../lib/validators")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
+const value = require("../content/text-content")
 const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
@@ -14,8 +15,14 @@ const invalidAppDataPath = urlPrefix
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.createdDate
+  const speciesName = data.speciesName
+  const quantity = data.quantity
+  const specimenIndex = data.specimenIndex + 1
+  const unitOfMeasurement = data.unitOfMeasurement
 
+  let createdDateErrors = []
   let errorList = null
+
   if (errors) {
     errorList = []
     const mergedErrorMessages = {
@@ -24,8 +31,11 @@ function createModel(errors, data) {
     }
     const fields = [
       "createdDate",
+      "createdDate-day",
+      "createdDate-month",
+      "createdDate-year",
       "isExactDateUnknown",
-      "enterAnApproximateDate"
+      "approximateDate"
     ]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
@@ -38,10 +48,28 @@ function createModel(errors, data) {
     })
   }
 
-  const speciesName = data.speciesName
-  const quantity = data.quantity
-  const specimenIndex = data.specimenIndex + 1
-  const unitOfMeasurement = data.unitOfMeasurement
+  if (errorList) {
+    const createdDateFields = [
+      "createdDate",
+      "createdDate-day",
+      "createdDate-month",
+      "createdDate-year"
+    ]
+    createdDateFields.forEach((field) => {
+      const error = getFieldError(errorList, "#" + field)
+      if (error) {
+        createdDateErrors.push({ field: field, message: error.text })
+      }
+    })
+  }
+
+  const createdDateErrorMessage = createdDateErrors.map(item => { return item.message }).join('</p> <p class="govuk-error-message">')
+
+  const createdDateComponents = [
+    { name: 'day', value: data.createdDateDay },
+    { name: 'month', value: data.createdDateMonth },
+    { name: 'year', value: data.createdDateYear }
+  ]
 
   const captionText =
     unitOfMeasurement === "noOfSpecimens"
@@ -54,36 +82,37 @@ function createModel(errors, data) {
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
-  const enterAnApproximateDateInput = nunjucks.renderString(renderString, {
+  const approximateDateInput = nunjucks.renderString(renderString, {
     input: {
-      id: "enterAnApproximateDate",
-      name: "enterAnApproximateDate",
+      id: "approximateDate",
+      name: "approximateDate",
       classes: "govuk-input govuk-!-width-two-thirds",
       label: {
-        text: pageContent.inputLabelEnterAnApproximateDate
+        text: pageContent.inputLabelApproximateDate
       },
       hint: {
-        text: pageContent.inputLabelHintEnterAnApproximateDate
+        text: pageContent.inputLabelHintApproximateDate
       },
-      ...(data.enterAnApproximateDate
-        ? { value: data.enterAnApproximateDate }
+      ...(data.approximateDate
+        ? { value: data.approximateDate }
         : {}),
-      errorMessage: getFieldError(errorList, "#enterAnApproximateDate")
+      errorMessage: getFieldError(errorList, "#approximateDate")
     }
   })
 
+
+
   const model = {
-    backLink: previousPath,
+    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     captionText: captionText,
 
     inputCreatedDate: {
-      idPrefix: "createdDate",
+      id: "createdDate",
       name: "createdDate",
+      namePrefix: "createdDate",
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
@@ -94,22 +123,8 @@ function createModel(errors, data) {
       hint: {
         text: pageContent.pageHeaderHint
       },
-      items: [
-        {
-          name: "day",
-          classes: "govuk-input--width-2",
-        },
-        {
-          name: "month",
-          classes: "govuk-input--width-2",
-        },
-        {
-          name: "year",
-          classes: "govuk-input--width-4",
-        }
-      ],
-      ...(data.createdDate ? { value: data.createdDate } : {}),
-      errorMessage: getFieldError(errorList, "#createdDate")
+      items: getCreatedDateInputGroupItems(createdDateComponents, createdDateErrors),
+      errorMessage: createdDateErrorMessage ? { html: createdDateErrorMessage } : null
     },
 
     checkboxIsExactDateUnknown: {
@@ -122,7 +137,7 @@ function createModel(errors, data) {
           text: pageContent.checkboxLabelIsExactDateUnknown,
           checked: data.isExactDateUnknown,
           conditional: {
-            html: enterAnApproximateDateInput
+            html: approximateDateInput
           }
         }
       ],
@@ -130,6 +145,55 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getCreatedDateInputGroupItems(components, createdDateErrors) {
+
+  return components.map(component => {
+    let classes = component.name === 'year' ? 'govuk-input--width-4' : 'govuk-input--width-2'
+    const inputError = createdDateErrors.filter(item => item.field === 'createdDate-' + component.name || item.field === 'createdDate')
+    if (inputError.length) {
+      classes += ' govuk-input--error'
+    }
+    return { name: component.name, classes: classes, value: component.value }
+  })
+}
+
+function createdDateValidator(value, helpers){
+  const {
+    "createdDate-day": day,
+    "createdDate-month": month,
+    "createdDate-year": year,
+    isExactDateUnknown } = value
+
+  if (!isExactDateUnknown) {
+
+    if (!day && !month && !year) {
+      return helpers.error('any.empty', { customLabel: 'createdDate' });
+    }
+
+    if (!day) {
+      return helpers.error('any.empty', { customLabel: 'createdDate-day' });
+    }
+
+    if (!month) {
+      return helpers.error('any.empty', { customLabel: 'createdDate-month' });
+    }
+
+    if (!year) {
+      return helpers.error('any.empty', { customLabel: 'createdDate-year' });
+    }
+
+    if (!isValidDate(day, month, year)) {
+      return helpers.error('any.invalid', { customLabel: 'createdDate' });
+    } else {
+      const date = new Date(year, month - 1, day);
+      if (!isPastDate(date, true)) {
+        return helpers.error('any.future', { customLabel: 'createdDate' });
+      }
+    }
+  }
+  return value
 }
 
 module.exports = [
@@ -157,6 +221,8 @@ module.exports = [
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
+      const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
+
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
@@ -164,18 +230,11 @@ module.exports = [
         quantity: appData.species[request.params.speciesIndex]?.quantity,
         unitOfMeasurement:
           appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-        createdDate:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].createdDate,
-        isExactDateUnknown:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].isExactDateUnknown,
-        enterAnApproximateDate:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].enterAnApproximateDate
+        createdDateDay: specimen.createdDate?.day,
+        createdDateMonth: specimen.createdDate?.month,
+        createdDateYear: specimen.createdDate?.year,
+        isExactDateUnknown: specimen.createdDate?.isExactDateUnknown,
+        approximateDate: specimen.createdDate?.approximateDate
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -191,38 +250,33 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          createdDate: Joi.date().max("now").required(),
-          isExactDateUnknown: Joi.boolean().allow(),
-          enterAnApproximateDate: Joi.when("isExactDateUnknown", {
+          isExactDateUnknown: Joi.boolean().default(false),//.allow(null),
+          approximateDate: Joi.when("isExactDateUnknown", {
             is: true,
             then: Joi.string().required()
-          })
-        }),
-
+          }),
+          "createdDate-day": Joi.any().optional(),
+          "createdDate-month": Joi.any().optional(),
+          "createdDate-year": Joi.any().optional(),
+        }).custom(createdDateValidator),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
 
-          console.log("APPDATA>>>>", appData)
-
-          const payload = request.payload
-
-
-          console.log("payload>>>>", payload)
+          const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
 
 
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName:
-              appData.species[request.params.speciesIndex]?.speciesName,
+            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
             quantity: appData.species[request.params.speciesIndex]?.quantity,
-            unitOfMeasurement:
-              appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-            ...request.payload
+            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+            createdDateDay: day,
+            createdDateMonth: month,
+            createdDateYear: year,
+            isExactDateUnknown: isExactDateUnknown,
+            approximateDate: approximateDate
           }
-
-          console.log("PAGEDATA>>>", pageData)
-
 
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -231,13 +285,11 @@ module.exports = [
         const appData = getAppData(request)
 
         const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
-
-        specimen.createdDate = request.payload.createdDate
-
-        specimen.isExactDateUnknown = request.payload.isExactDateUnknown
-
-        specimen.enterAnApproximateDate = request.payload.isExactDateUnknown ? request.payload.enterAnApproximateDate : ""
-
+        const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
+        specimen.createdDate = isExactDateUnknown
+              ? { day: null, month: null, year: null, isExactDateUnknown: isExactDateUnknown, approximateDate: approximateDate } 
+              : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
+        
         try {
           mergeAppData(
             request,
@@ -257,10 +309,3 @@ module.exports = [
   }
 ]
 
-
-// ...(data.createdDay ? { value: data.createdDay } : {}),
-// ...(data.createdMonth ? { value: data.createdMonth } : {}),
-// ...(data.createdYear ? { value: data.createdYear } : {}),
-// createdDay: Joi.number().required(),
-//           createdMonth: Joi.number().required(),
-//           createdYear: Joi.number().required(),

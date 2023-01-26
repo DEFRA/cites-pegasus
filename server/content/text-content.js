@@ -449,14 +449,16 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     pageHeaderHint: Joi.string().required(),
     checkboxLabelIsExactDateUnknown: Joi.string().required(),
-    inputLabelEnterAnApproximateDate: Joi.string().required(),
-    inputLabelHintEnterAnApproximateDate: Joi.string().required(),
+    inputLabelApproximateDate: Joi.string().required(),
+    inputLabelHintApproximateDate: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.createdDate.string.empty": Joi.string().required(),
-      "error.createdDate.string.max": Joi.string().required(),
-      "error.createdDate.string.pattern.base": Joi.string().required(),
-      "error.createdDate.string.format": Joi.string().required(),
-      "error.enterAnApproximateDate.string.empty": Joi.string().required()
+      "error.createdDate.any.empty": Joi.string().required(),
+      "error.createdDate.any.future": Joi.string().required(),
+      "error.createdDate.any.invalid": Joi.string().required(),
+      "error.createdDate-day.any.empty": Joi.string().required(),
+      "error.createdDate-month.any.empty": Joi.string().required(),
+      "error.createdDate-year.any.empty": Joi.string().required(),
+      "error.approximateDate.string.empty": Joi.string().required()
     }).required()
   }).required(),
   uniqueIdentificationMark: Joi.object({

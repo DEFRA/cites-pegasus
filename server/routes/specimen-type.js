@@ -204,7 +204,13 @@ module.exports = [
           return failAction(request, h, result.error)          
         }
 
+        const isWorkedItem = request.payload.specimenType === 'animalWorked' || request.payload.specimenType === 'plantWorked'
+
         appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType = request.payload.specimenType
+
+        if(!isWorkedItem){
+          appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].createdDate = null
+        }
 
         try {
           mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
@@ -213,7 +219,8 @@ module.exports = [
           console.log(err);
           return h.redirect(`${invalidAppDataPath}/`)
         }
-        if(request.payload.specimenType === 'animalWorked' || request.payload.specimenType === 'plantWorked'){
+
+        if(isWorkedItem){
           return h.redirect(`${nextPathCreatedDate}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
         }
 

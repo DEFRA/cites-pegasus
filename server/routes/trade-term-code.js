@@ -7,7 +7,8 @@ const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "trade-term-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/specimen-type`
+const previousPathSpecimenType = `${urlPrefix}/specimen-type`
+const previousPathCreatedDate = `${urlPrefix}/created-date`
 const nextPath = `${urlPrefix}/unique-identification-mark`
 const invalidAppDataPath = urlPrefix
 
@@ -67,7 +68,7 @@ function createModel(errors, data) {
   })
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: data.createdDate ? `${previousPathCreatedDate}/${data.speciesIndex}/${data.specimenIndex}` : `${previousPathSpecimenType}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -131,21 +132,17 @@ module.exports = [
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
+      const species = appData.species[request.params.speciesIndex]
+
       const pageData = {
         speciesIndex: request.params.speciesIndex,
         specimenIndex: request.params.specimenIndex,
-        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-        quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement:
-          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-        isTradeTermCode:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].isTradeTermCode,
-        tradeTermCode:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].tradeTermCode
+        speciesName: species?.speciesName,
+        quantity: species?.quantity,
+        unitOfMeasurement: species?.unitOfMeasurement,
+        isTradeTermCode: species.specimens[request.params.specimenIndex].isTradeTermCode,
+        tradeTermCode: species.specimens[request.params.specimenIndex].tradeTermCode,
+        createdDate: species.specimens[request.params.specimenIndex].createdDate
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -181,16 +178,17 @@ module.exports = [
               break
           }
 
+          const species = appData.species[request.params.speciesIndex]
+
           const pageData = {
             speciesIndex: request.params.speciesIndex,
             specimenIndex: request.params.specimenIndex,
-            speciesName:
-              appData.species[request.params.speciesIndex]?.speciesName,
-            quantity: appData.species[request.params.speciesIndex]?.quantity,
-            unitOfMeasurement:
-              appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+            speciesName: species?.speciesName,
+            quantity: species?.quantity,
+            unitOfMeasurement: species?.unitOfMeasurement,
             isTradeTermCode: isTradeTermCode,
-            tradeTermCode: request.payload.tradeTermCode
+            tradeTermCode: request.payload.tradeTermCode,
+            createdDate: species.specimens[request.params.specimenIndex].createdDate
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()

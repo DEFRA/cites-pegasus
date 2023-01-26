@@ -651,14 +651,16 @@
         "pageHeader": "When was the worked item or finished product created?",
         "pageHeaderHint": "For example, 27 3 2007",
         "checkboxLabelIsExactDateUnknown": "I do not know the exact date",
-        "inputLabelEnterAnApproximateDate": "Enter an approximate date or period of time",
-        "inputLabelHintEnterAnApproximateDate": "For example, ‘1950’ or ‘15th century’",
+        "inputLabelApproximateDate": "Enter an approximate date or period of time",
+        "inputLabelHintApproximateDate": "For example, ‘1950’ or ‘15th century’",
         "errorMessages": {
-            "error.createdDate.string.empty": "Enter the date the worked item or finished product was created, or select I do not know the exact date",
-            "error.createdDate.string.max": "The date the worked item or finished product was created must be in the past",
-            "error.createdDate.string.pattern.base": "The date the worked item or finished product was created must include a year",
-            "error.createdDate.string.format": "The date the worked item or finished product was created must be a real date",
-            "error.enterAnApproximateDate.string.empty": "Enter an approximate date or period of time"
+            "error.createdDate.any.empty": "Enter the date the worked item or finished product was created, or select I do not know the exact date",
+            "error.createdDate.any.future": "The date the worked item or finished product was created must be in the past",
+            "error.createdDate.any.invalid": "The date the worked item or finished product was created must be a real date ",
+            "error.createdDate-day.any.empty": "error.createdDate-day.any.empty",
+            "error.createdDate-month.any.empty": "error.createdDate-month.any.empty",
+            "error.createdDate-year.any.empty": "The date the worked item or finished product was created must include a year",
+            "error.approximateDate.string.empty":"Enter an approximate date or period of time "
         }
     },
     "uniqueIdentificationMark": {
