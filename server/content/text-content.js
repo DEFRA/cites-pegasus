@@ -456,7 +456,10 @@ const schema = Joi.object().keys({
       "error.createdDate.any.future": Joi.string().required(),
       "error.createdDate.any.invalid": Joi.string().required(),
       "error.createdDate-day.any.empty": Joi.string().required(),
+      "error.createdDate-day-month.any.empty": Joi.string().required(),
+      "error.createdDate-day-year.any.empty": Joi.string().required(),
       "error.createdDate-month.any.empty": Joi.string().required(),
+      "error.createdDate-month-year.any.empty": Joi.string().required(),
       "error.createdDate-year.any.empty": Joi.string().required(),
       "error.approximateDate.string.empty": Joi.string().required()
     }).required()

@@ -32,7 +32,10 @@ function createModel(errors, data) {
     const fields = [
       "createdDate",
       "createdDate-day",
+      "createdDate-day-month",
+      "createdDate-day-year",
       "createdDate-month",
+      "createdDate-month-year",
       "createdDate-year",
       "isExactDateUnknown",
       "approximateDate"
@@ -52,7 +55,10 @@ function createModel(errors, data) {
     const createdDateFields = [
       "createdDate",
       "createdDate-day",
+      "createdDate-day-month",
+      "createdDate-day-year",
       "createdDate-month",
+      "createdDate-month-year",
       "createdDate-year"
     ]
     createdDateFields.forEach((field) => {
@@ -151,7 +157,7 @@ function getCreatedDateInputGroupItems(components, createdDateErrors) {
 
   return components.map(component => {
     let classes = component.name === 'year' ? 'govuk-input--width-4' : 'govuk-input--width-2'
-    const inputError = createdDateErrors.filter(item => item.field === 'createdDate-' + component.name || item.field === 'createdDate')
+    const inputError = createdDateErrors.filter(item => item.field.includes('-' + component.name) || item.field === 'createdDate')
     if (inputError.length) {
       classes += ' govuk-input--error'
     }
@@ -170,6 +176,18 @@ function createdDateValidator(value, helpers){
 
     if (!day && !month && !year) {
       return helpers.error('any.empty', { customLabel: 'createdDate' });
+    }
+
+    if (!day && !month) {
+      return helpers.error('any.empty', { customLabel: 'createdDate-day-month' });
+    }
+
+    if (!day && !year) {
+      return helpers.error('any.empty', { customLabel: 'createdDate-day-year' });
+    }
+
+    if (!month && !year) {
+      return helpers.error('any.empty', { customLabel: 'createdDate-month-year' });
     }
 
     if (!day) {

@@ -7,7 +7,8 @@ const nunjucks = require("nunjucks")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
-const nextPath = `${urlPrefix}/importer-exporter`
+const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
+const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -196,8 +197,11 @@ module.exports = [
           return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        //TODO If Specimen type == living animal then       
-        return h.redirect(`${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        if(appData.permitType === 'article10'){
+          return h.redirect(`${nextPathAcquiredDate}/${request.params.speciesIndex}/${request.params.specimenIndex}`)  
+        } else {
+          return h.redirect(`${nextPathImporterExporter}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        }
         //TODO else 
         //        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
       }
