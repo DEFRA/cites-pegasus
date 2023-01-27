@@ -1,21 +1,13 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
-const {
-  getAppData,
-  setAppData,
-  mergeAppData,
-  validateAppData
-} = require("../lib/app-data")
+const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getAppData, setAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const { getSpecies } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
+const nextPath = `${urlPrefix}/source-code`
 const invalidAppDataPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 
@@ -23,18 +15,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.speciesName
 
-  const unitsOfMeasurement = lodash.cloneDeep([
-    { text: pageContent.unitOfMeasurementPrompt, value: null },
-    ...pageContent.unitsOfMeasurement
-  ])
-  unitsOfMeasurement.forEach((e) => {
-    if (e.value === data.unitOfMeasurement) e.selected = "true"
-  })
-
-  const previousPath =
-    data.deliveryAddressOption === "different"
-      ? `${urlPrefix}/confirm-address/delivery`
-      : `${urlPrefix}/select-delivery-address`
+  const previousPath = data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`
 
   let errorList = null
   if (errors) {
@@ -43,7 +24,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["speciesName", "quantity", "unitOfMeasurement"]
+    const fields = ["speciesName"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -59,7 +40,7 @@ function createModel(errors, data) {
     backLink: previousPath,
     pageHeader: pageContent.pageHeader,
     speciesName: data.speciesName,
-    formActionPage: `${currentPath}/${data.speciesIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -68,7 +49,7 @@ function createModel(errors, data) {
     bodyText: pageContent.bodyText,
     bodyLinkText: pageContent.bodyLinkText,
     bodyLinkUrl: pageContent.bodyLinkUrl,
-    speciesNameError: getFieldError(errorList, "#speciesName"),
+    bodyText2: pageContent.bodyText2,
     inputSpeciesName: {
       label: {
         text: pageContent.inputLabelSpeciesName
@@ -78,25 +59,6 @@ function createModel(errors, data) {
       classes: "govuk-!-width-two-thirds",
       ...(data.speciesName ? { value: data.speciesName } : {}),
       errorMessage: getFieldError(errorList, "#speciesName")
-    },
-    inputQuantity: {
-      label: {
-        text: pageContent.inputLabelQuantity
-      },
-      id: "quantity",
-      name: "quantity",
-      classes: "govuk-input--width-4",
-      ...(data.quantity ? { value: data.quantity } : {}),
-      errorMessage: getFieldError(errorList, "#quantity")
-    },
-    selectUnitOfMeasurement: {
-      label: {
-        text: pageContent.selectLabelUnitOfMeasurement
-      },
-      id: "unitOfMeasurement",
-      name: "unitOfMeasurement",
-      items: unitsOfMeasurement,
-      errorMessage: getFieldError(errorList, "#unitOfMeasurement")
     }
   }
   return { ...commonContent, ...model }
@@ -105,31 +67,29 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().min(0).required()
+          applicationIndex: Joi.number().min(0).required()
         })
       }
     },
     handler: async (request, h) => {
+      const { applicationIndex } = request.params
       const appData = getAppData(request)
 
-      if (!appData?.species) {
-        appData.species = []
+      if (!appData?.applications) {
+        appData.applications = []
       }
 
-      if (appData.species.length < request.params.speciesIndex) {
-        console.log("Invalid species index")
+      if (appData.applications.length < applicationIndex) {
+        console.log("Invalid application index")
         return h.redirect(invalidAppDataPath)
       }
 
-      if (appData.species.length < request.params.speciesIndex + 1) {
-        appData.species.push({
-          speciesIndex: request.params.speciesIndex,
-          specimens: [{ specimenIndex: 0 }]
-        })
+      if (appData.applications.length < applicationIndex + 1) {
+        appData.applications.push({ applicationIndex: applicationIndex })
 
         try {
           mergeAppData(request, appData)
@@ -140,20 +100,16 @@ module.exports = [
       }
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}`)
+        validateAppData(appData, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(invalidAppDataPath)
       }
 
-      const species = appData?.species[request.params.speciesIndex]
-
       const pageData = {
-        speciesName: species?.speciesSearchData,
-        quantity: species?.quantity,
-        unitOfMeasurement: species?.unitOfMeasurement,
-        deliveryAddressOption: appData?.delivery?.addressOption,
-        speciesIndex: request.params.speciesIndex
+        speciesName: appData.applications[applicationIndex].species.speciesSearchData,
+        deliveryAddressOption: appData.delivery.addressOption,
+        applicationIndex: applicationIndex
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -161,103 +117,67 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         options: { abortEarly: false },
         params: Joi.object({
-          speciesIndex: Joi.number().min(0).required()
+          applicationIndex: Joi.number().min(0).required()
         }),
         payload: Joi.object({
-          speciesName: Joi.string().required(),
-          quantity: Joi.number().required().min(0.0001).max(1000000),
-          unitOfMeasurement: Joi.string()
+          speciesName: Joi.string().required()
         }),
         failAction: (request, h, err) => {
           const appData = getAppData(request)
           const pageData = {
             speciesName: request.payload.speciesName,
-            quantity: request.payload.quantity,
-            unitOfMeasurement: request.payload.unitOfMeasurement,
             deliveryAddressOption: appData?.delivery?.addressOption,
-            speciesIndex: request.params.speciesIndex
+            applicationIndex: request.params.applicationIndex
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
 
       handler: async (request, h) => {
+        const { applicationIndex } = request.params
         const speciesData = await getSpecies(
           request,
           request.payload.speciesName
         )
         const previousAppData = getAppData(request)
         const newAppData = lodash.cloneDeep(previousAppData)
-        const newAppDataSpecies =
-          newAppData.species[request.params.speciesIndex]
-        const previousAppDataSpecies =
-          previousAppData?.species[request.params.speciesIndex]
+        const newAppDataApplication = newAppData.applications[applicationIndex]
+        const previousAppDataApplication = previousAppData.applications[applicationIndex]
 
-        newAppDataSpecies.speciesName = speciesData?.scientificname
-        newAppDataSpecies.speciesSearchData = request.payload.speciesName
-        newAppDataSpecies.quantity = request.payload.quantity
-        newAppDataSpecies.unitOfMeasurement = request.payload.unitOfMeasurement
-        newAppDataSpecies.kingdom = speciesData?.kingdom
+        if (previousAppData.applications.length < applicationIndex + 1) {
+          return h.redirect(invalidAppDataPath)
+        }
 
-         if (previousAppDataSpecies.speciesName !== request.payload.speciesName) {
-          //If changing speciesName , remove all specimens
-          for (let i = 0; i < previousAppDataSpecies.quantity; i++) {
-            newAppDataSpecies.specimens.pop()
-            //TODO - NEED TO LEAVE EMPTY SPECIMENS HERE FOR THE NEXT PAGE TO WORK.  BUT THIS IS ALL DUE TO CHANGE SOON SO NOT WORTH DOING AT THE MOMENT
-          }
-        } else if (
-          previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" &&
-          request.payload.unitOfMeasurement !== "noOfSpecimens"
-        ) {
-          //If switching from noOfSpecimens to a measurement, remove all specimens except one
-          for (let i = 0; i < previousAppDataSpecies.quantity - 1; i++) {
-            newAppDataSpecies.specimens.pop()
-          }
-        } else if (
-          previousAppDataSpecies.unitOfMeasurement === "noOfSpecimens" &&
-          previousAppDataSpecies.quantity > request.payload.quantity
-        ) {
-          //If reducing the noOfSpecimens, remove all surplus specimens until the number equals the quantity
-          for (
-            let i = 0;
-            i < previousAppDataSpecies.quantity - request.payload.quantity; i++) {
-            newAppDataSpecies.specimens.pop()
-          }
+        if (previousAppDataApplication.species?.speciesName !== speciesData?.scientificname) {
+          //TODO If changing speciesName , remove all other species data
+          newAppDataApplication.species = null
         }
         
-        if (request.payload.unitOfMeasurement === "noOfSpecimens") {
-          //Add new specimens to match the quantity
-          for (let i = 0; i < request.payload.quantity; i++) {
-            if (!newAppDataSpecies.specimens[i]) {
-              newAppDataSpecies.specimens.push({ specimenIndex: i })
-            }
-          }
+        if(!newAppDataApplication.species){
+          newAppDataApplication.species = {}
         }
 
+        newAppDataApplication.species.speciesName = speciesData?.scientificname
+        newAppDataApplication.species.speciesSearchData = request.payload.speciesName
+        newAppDataApplication.species.kingdom = speciesData?.kingdom
+
         try {
-          setAppData(request, newAppData)
-
-          if (
-            speciesData?.scientificname &&
-            (speciesData.kingdom === "Animalia" ||
-              speciesData.kingdom === "Plantae")
-          ) {
-            const nextPath = `${urlPrefix}/source-code/${request.params.speciesIndex}/0`
-            return h.redirect(nextPath)
-          }
-
-          return h.redirect(
-            `${unknownSpeciesPath}/${request.params.speciesIndex}`
-          )
+          setAppData(request, newAppData)          
         } catch (err) {
           console.log(err)
           return h.redirect(invalidAppDataPath)
         }
+
+        if (!speciesData?.scientificname || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
+          return h.redirect(`${unknownSpeciesPath}/${applicationIndex}`)
+        }
+        
+        return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }
   }

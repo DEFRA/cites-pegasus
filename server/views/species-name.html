@@ -38,26 +38,11 @@
         }) %}
 
       <p>
-        {{bodyText}} <a href="{{bodyLinkUrl}}" target="_blank">{{bodyLinkText}}</a>
+        {{bodyText}}<a href="{{bodyLinkUrl}}" target="_blank">{{bodyLinkText}}</a>&nbsp{{bodyText2}}
       </p>
 
-      {# <div class="govuk-form-group {% if speciesNameError %}govuk-form-group--error{% endif %}">
-        <h1 class="govuk-label-wrapper">
-          <label class="govuk-label" for="speciesName">
-            {{inputLabelSpeciesName}}
-            <a href="{{inputLabelSpeciesNameLinkUrl}}" target="_blank">{{inputLabelSpeciesNameLinkText}}</a>
-          </label>
-        </h1>
-        <p id="national-insurance-number-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{speciesNameError.text}}
-        </p>
-        <input id="speciesName" name="speciesName" class="govuk-input {% if speciesNameError %}govuk-input--error{% endif %}" value="{{speciesName}}" type="text">
-      </div> #}
       {{ govukInput(inputSpeciesName) }}
-      {{ govukInput(inputQuantity) }}
-      {{ govukSelect(selectUnitOfMeasurement) }}
-
+      
       {% endcall %}
       {{ govukButton({
           text: continueButton,
