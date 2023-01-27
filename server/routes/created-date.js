@@ -5,7 +5,6 @@ const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const { isValidDate, isPastDate } = require("../lib/validators")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
-const value = require("../content/text-content")
 const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
