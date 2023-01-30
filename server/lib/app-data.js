@@ -100,59 +100,55 @@ function getAppFlow(appData) {
                     if (applicationIndex > 0) {
                         appFlow.push(`species-name/${applicationIndex}`)
                     }
-                    // if (application.speciesName) {
-                    //     application.specimens.forEach((specimen, specimenindex) => {
-                    //         appFlow.push(`source-code/${speciesindex}/${specimenindex}`)
-                    //     })
-                    // }
-                    // if (species.specimens) {
-                    //     species.specimens.forEach((specimen, specimenindex) => {
-                    //         if (specimen.sourceCode) {
-                    //             appFlow.push(`purpose-code/${speciesindex}/${specimenindex}`)
-                    //         }
-                    //         if (specimen.purposeCode) {
-                    //             if (appData.permitType === "article10") {
-                    //                 appFlow.push(`use-certificate-for/${speciesindex}/${specimenindex}`)
-                    //                 if (specimen.useCertificateFor) {
-                    //                     appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
-                    //                 }
-                    //             } else {
-                    //                 appFlow.push(`specimen-type/${speciesindex}/${specimenindex}`)
-                    //             }
-                    //         }
-                    //         if (specimen.specimenType) {
-                    //             if (specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
-                    //                 appFlow.push(`created-date/${speciesindex}/${specimenindex}`)
-                    //             } else {
-                    //                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
-                    //             }
+                    if (application.species?.speciesName) {
+                        appFlow.push(`source-code/${applicationIndex}`)
+                        const species = application.species
 
-                    //             if (specimen.createdDate) {
-                    //                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
-                    //             }
-                    //         }
+                        if (species.sourceCode) {
+                            appFlow.push(`purpose-code/${applicationIndex}`)
+                            if (species.purposeCode) {
+                                if (appData.permitType === "article10") {
+                                    appFlow.push(`use-certificate-for/${applicationIndex}`)
+                                    if (species.useCertificateFor) {
+                                        appFlow.push(`specimen-type/${applicationIndex}`)
+                                    }
+                                } else {
+                                    appFlow.push(`specimen-type/${applicationIndex}`)
+                                }
+                            }
+                            //         if (specimen.specimenType) {
+                            //             if (specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
+                            //                 appFlow.push(`created-date/${speciesindex}/${specimenindex}`)
+                            //             } else {
+                            //                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            //             }
 
-                    //         if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {
-                    //             appFlow.push(`unique-identification-mark/${speciesindex}/${specimenindex}`)
-                    //         }
+                            //             if (specimen.createdDate) {
+                            //                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
+                            //             }
+                            //         }
 
-                    //         if (specimen.uniqueIdentificationMarkType) {
-                    //             if (specimen.specimenType === "animalLiving") {
-                    //                 appFlow.push(`describe-living-animal/${speciesindex}/${specimenindex}`)
-                    //             } else {
-                    //                 appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
-                    //             }
-                    //         }
-                    //         if (specimen.specimenDescriptionGeneric || specimen.specimenDescriptionLivingAnimal) {
-                    //             if (appData.permitType === "article10") {
-                    //                 appFlow.push(`acquired-date/${speciesindex}/${specimenindex}`)
-                    //             } else {
-                    //                 appFlow.push(`importer-exporter/${speciesindex}/${specimenindex}`)
+                            //         if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {
+                            //             appFlow.push(`unique-identification-mark/${speciesindex}/${specimenindex}`)
+                            //         }
 
-                    //             }
-                    //         }
-                    //     })
-                    // }
+                            //         if (specimen.uniqueIdentificationMarkType) {
+                            //             if (specimen.specimenType === "animalLiving") {
+                            //                 appFlow.push(`describe-living-animal/${speciesindex}/${specimenindex}`)
+                            //             } else {
+                            //                 appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
+                            //             }
+                            //         }
+                            //         if (specimen.specimenDescriptionGeneric || specimen.specimenDescriptionLivingAnimal) {
+                            //             if (appData.permitType === "article10") {
+                            //                 appFlow.push(`acquired-date/${speciesindex}/${specimenindex}`)
+                            //             } else {
+                            //                 appFlow.push(`importer-exporter/${speciesindex}/${specimenindex}`)
+
+                            //             }
+                            //         }
+                        }
+                    }
                 })
             }
         }

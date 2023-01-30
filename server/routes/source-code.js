@@ -1,10 +1,6 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const { ALPHA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
@@ -17,19 +13,14 @@ const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
+  const isAnimal = data.kingdom === "Animalia"
 
-  const pageContent =
-    data.kingdom === "Animalia"
-      ? textContent.sourceCode.animal
-      : textContent.sourceCode.plant
+  const pageContent = isAnimal ? textContent.sourceCode.animal : textContent.sourceCode.plant
 
   let errorList = null
   if (errors) {
     errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
+    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
     const fields = [
       "sourceCode",
       "anotherSourceCodeForI",
@@ -47,22 +38,11 @@ function createModel(errors, data) {
     })
   }
 
-  const speciesName = data.speciesName
-  const quantity = data.quantity
-  const specimenIndex = data.specimenIndex + 1
-  const unitOfMeasurement = data.unitOfMeasurement
-
-  const captionText =
-    unitOfMeasurement === "noOfSpecimens"
-      ? `${speciesName} (${specimenIndex} of ${quantity})`
-      : `${speciesName}`
-
-  var renderString =
-    "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
   renderString = renderString + " {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  
+
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
       id: "anotherSourceCodeForI",
@@ -93,8 +73,7 @@ function createModel(errors, data) {
     }
   })
 
-  var renderString =
-    "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n"
+  var renderString = "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n"
   renderString = renderString + " {{govukCharacterCount(input)}}"
 
   const sourceCharacterCount = nunjucks.renderString(renderString, {
@@ -112,13 +91,13 @@ function createModel(errors, data) {
   })
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    captionText: captionText,
+    captionText: data.speciesName,
 
     inputSourceCode: {
       idPrefix: "sourceCode",
@@ -140,7 +119,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "W")
         },
-        data.kingdom === "Animalia" && {
+        isAnimal && {
           value: "R",
           text: pageContent.radioOptionR,
           hint: { text: pageContent.radioOptionRHint },
@@ -158,7 +137,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "D")
         },
-        data.kingdom === "Animalia" && {
+        isAnimal && {
           value: "C",
           text: pageContent.radioOptionC,
           hint: { text: pageContent.radioOptionCHint },
@@ -167,7 +146,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "C")
         },
-        data.kingdom === "Animalia" && {
+        isAnimal && {
           value: "F",
           text: pageContent.radioOptionF,
           hint: { text: pageContent.radioOptionFHint },
@@ -176,7 +155,7 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "F")
         },
-        !(data.kingdom === "Animalia") && {
+        !(isAnimal) && {
           value: "A",
           text: pageContent.radioOptionA,
           hint: { text: pageContent.radioOptionAHint },
@@ -245,14 +224,11 @@ function createModel(errors, data) {
 
 function failAction(request, h, err) {
   const appData = getAppData(request)
+  const species = appData.applications[request.params.applicationIndex].species
   const pageData = {
-    speciesIndex: request.params.speciesIndex,
-    specimenIndex: request.params.specimenIndex,
-    speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-    quantity: appData.species[request.params.speciesIndex]?.quantity,
-    unitOfMeasurement:
-      appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-    kingdom: appData.species[request.params.speciesIndex]?.kingdom,
+    applicationIndex: request.params.applicationIndex,
+    speciesName: species.speciesName,
+    kingdom: species.kingdom,
     ...request.payload
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -261,64 +237,47 @@ function failAction(request, h, err) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
+      const {applicationIndex} = request.params
       const appData = getAppData(request)
 
       try {
-        validateAppData(
-          appData,
-          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        )
+        validateAppData(appData, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
+      const species = appData.applications[applicationIndex].species
+
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-        quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement:
-          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-        kingdom: appData.species[request.params.speciesIndex]?.kingdom,
-        sourceCode:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]?.sourceCode,
-        anotherSourceCodeForI:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]?.anotherSourceCodeForI,
-        anotherSourceCodeForO:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]?.anotherSourceCodeForO,
-        enterAReason:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ]?.enterAReason
+        applicationIndex: applicationIndex,
+        speciesName: species.speciesName,
+        kingdom: species.kingdom,
+        sourceCode: species.sourceCode,
+        anotherSourceCodeForI: species.anotherSourceCodeForI,
+        anotherSourceCodeForO: species.anotherSourceCodeForO,
+        enterAReason: species.enterAReason
       }
+
       return h.view(pageId, createModel(null, pageData))
     }
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -342,7 +301,9 @@ module.exports = [
         failAction: failAction
       },
       handler: async (request, h) => {
+        const { applicationIndex } = request.params
         const appData = getAppData(request)
+        const species = appData.applications[applicationIndex].species
 
         const animalSchema = Joi.string()
           .required()
@@ -351,8 +312,7 @@ module.exports = [
           .required()
           .valid("W", "D", "A", "I", "O", "X", "U")
 
-        const payloadSchema = appData.species[request.params.speciesIndex].kingdom === "Animalia" ? animalSchema : plantSchema
-       
+        const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
 
         const result = payloadSchema.validate(request.payload.sourceCode, { abortEarly: false })
 
@@ -361,28 +321,20 @@ module.exports = [
           return failAction(request, h, result.error)
         }
 
-        const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
-  
-        specimen.sourceCode = request.payload.sourceCode
-        specimen.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
-        specimen.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
-        specimen.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+        species.sourceCode = request.payload.sourceCode
+        species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
+        species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
+        species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
 
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-          )
+          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        )
+        return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }
   }

@@ -1,10 +1,6 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
@@ -37,8 +33,8 @@ function createModel(errors, data) {
   }
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -98,22 +94,22 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
+      const { applicationIndex } = request.params
       const appData = getAppData(request)
 
       try {
         validateAppData(
           appData,
-          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          `${pageId}/${applicationIndex}`
         )
       } catch (err) {
         console.log(err)
@@ -121,12 +117,8 @@ module.exports = [
       }
 
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        useCertificateFor:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].useCertificateFor
+        applicationIndex: applicationIndex,
+        useCertificateFor: appData.applications[applicationIndex].species.useCertificateFor
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -135,12 +127,11 @@ module.exports = [
 
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -148,33 +139,31 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
+            applicationIndex: request.params.applicationIndex,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
+        const { applicationIndex } = request.params
         const appData = getAppData(request)
-
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].useCertificateFor = request.payload.useCertificateFor
+        const species = appData.applications[applicationIndex].species
+        
+        species.useCertificateFor = request.payload.useCertificateFor
 
         try {
           mergeAppData(
             request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+            { applications: appData.applications },
+            `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidAppDataPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        return h.redirect(`${nextPath}/${applicationIndex}`
         )
       }
     }

@@ -107,7 +107,7 @@ module.exports = [
       }
 
       const pageData = {
-        speciesName: appData.applications[applicationIndex].species.speciesSearchData,
+        speciesName: appData.applications[applicationIndex].species?.speciesSearchData,
         deliveryAddressOption: appData.delivery.addressOption,
         applicationIndex: applicationIndex
       }
