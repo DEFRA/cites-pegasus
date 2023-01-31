@@ -1,10 +1,6 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
 
 const textContent = require("../content/text-content")
@@ -36,16 +32,6 @@ function createModel(errors, data) {
       }
     })
   }
-
-  const speciesName = data.speciesName
-  const quantity = data.quantity
-  const specimenNo = data.specimenIndex + 1
-  const unitOfMeasurement = data.unitOfMeasurement
-
-  const captionText =
-    unitOfMeasurement === "noOfSpecimens"
-      ? `${speciesName} (${specimenNo} of ${quantity})`
-      : `${speciesName}`
 
   let radioOptions = null
 
@@ -95,13 +81,13 @@ function createModel(errors, data) {
   }
 
   const model = {
-    backLink: data.permitType === 'article10' ? `${urlPrefix}/use-certificate-for/${data.speciesIndex}/${data.specimenIndex}` : `${urlPrefix}/purpose-code/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: data.permitType === 'article10' ? `${urlPrefix}/use-certificate-for/${data.applicationIndex}` : `${urlPrefix}/purpose-code/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    captionText: captionText,
+      captionText: data.speciesName,
 
     inputSpecimenType: {
       idPrefix: "specimenType",
@@ -122,14 +108,13 @@ function createModel(errors, data) {
 
 function failAction(request, h, err) {
   const appData = getAppData(request)
+  const species = appData.applications[request.params.applicationIndex].species
+
   const pageData = {
     permitType: appData.permitType,
-    speciesIndex: request.params.speciesIndex,
-    specimenIndex: request.params.specimenIndex,
-    speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-    quantity: appData.species[request.params.speciesIndex]?.quantity,
-    unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-    kingdom: appData.species[request.params.speciesIndex].kingdom,
+    applicationIndex: request.params.applicationIndex,
+    speciesName: species.speciesName,
+    kingdom: species.kingdom,
     specimenType: request.payload.specimenType
   }
 
@@ -139,34 +124,32 @@ function failAction(request, h, err) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
+      const { applicationIndex } = request.params
       const appData = getAppData(request)
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        validateAppData(appData, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
+      const species = appData.applications[applicationIndex].species
       const pageData = {
         permitType: appData.permitType,
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-        quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-        kingdom: appData.species[request.params.speciesIndex].kingdom,
-        specimenType: appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType
+        applicationIndex: applicationIndex,
+        speciesName: species.speciesName,
+        kingdom: species.kingdom,
+        specimenType: species.specimenType
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -175,12 +158,11 @@ module.exports = [
 
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -189,14 +171,14 @@ module.exports = [
         failAction: failAction
       },
       handler: async (request, h) => {
+        const { applicationIndex } = request.params
         const appData = getAppData(request)
+        const species = appData.applications[applicationIndex].species
 
         const animalSchema = Joi.string().required().valid('animalLiving', 'animalPart', 'animalWorked', 'animalCoral')
         const plantSchema = Joi.string().required().valid('plantLiving', 'plantWorked', 'plantProduct')
 
-        const payloadSchema = Joi.object({
-          specimenType: appData.species[request.params.speciesIndex].kingdom === 'Animalia' ? animalSchema : plantSchema
-        })
+        const payloadSchema = Joi.object({ specimenType: species.kingdom === 'Animalia' ? animalSchema : plantSchema })
 
         const result = payloadSchema.validate(request.payload, { abortEarly: false })
 
@@ -206,14 +188,14 @@ module.exports = [
 
         const isWorkedItem = request.payload.specimenType === 'animalWorked' || request.payload.specimenType === 'plantWorked'
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType = request.payload.specimenType
+        species.specimenType = request.payload.specimenType
 
         if(!isWorkedItem){
-          appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].createdDate = null
+          species.createdDate = null
         }
 
         try {
-          mergeAppData(request, { species: appData.species }, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+          mergeAppData(request, { applications: appData.applications }, `${pageId}/${request.params.applicationIndex}`)
         }
         catch (err) {
           console.log(err);
@@ -221,10 +203,10 @@ module.exports = [
         }
 
         if(isWorkedItem){
-          return h.redirect(`${nextPathCreatedDate}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+          return h.redirect(`${nextPathCreatedDate}/${request.params.applicationIndex}`)
         }
 
-        return h.redirect(`${nextPathTradeTerm}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        return h.redirect(`${nextPathTradeTerm}/${request.params.applicationIndex}`)
       }
     }
   }

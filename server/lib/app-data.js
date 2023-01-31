@@ -116,21 +116,21 @@ function getAppFlow(appData) {
                                     appFlow.push(`specimen-type/${applicationIndex}`)
                                 }
                             }
-                            //         if (specimen.specimenType) {
-                            //             if (specimen.specimenType === 'animalWorked' || specimen.specimenType === 'plantWorked') {
-                            //                 appFlow.push(`created-date/${speciesindex}/${specimenindex}`)
-                            //             } else {
-                            //                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
-                            //             }
+                            if (species.specimenType) {
+                                if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+                                    appFlow.push(`created-date/${applicationIndex}`)
+                                } else {
+                                    appFlow.push(`trade-term-code/${applicationIndex}`)
+                                }
 
-                            //             if (specimen.createdDate) {
-                            //                 appFlow.push(`trade-term-code/${speciesindex}/${specimenindex}`)
-                            //             }
-                            //         }
+                                if (species.createdDate) {
+                                    appFlow.push(`trade-term-code/${applicationIndex}`)
+                                }
+                            }
 
-                            //         if (specimen.isTradeTermCode === true || specimen.isTradeTermCode === false) {
-                            //             appFlow.push(`unique-identification-mark/${speciesindex}/${specimenindex}`)
-                            //         }
+                            if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
+                                appFlow.push(`unique-identification-mark/${applicationIndex}`)
+                            }
 
                             //         if (specimen.uniqueIdentificationMarkType) {
                             //             if (specimen.specimenType === "animalLiving") {

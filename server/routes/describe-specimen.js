@@ -39,11 +39,6 @@ function createModel(errors, data) {
   const specimenIndex = data.specimenIndex + 1
   const unitOfMeasurement = data.unitOfMeasurement
 
-  const captionText =
-    unitOfMeasurement === "noOfSpecimens"
-      ? `${speciesName} (${specimenIndex} of ${quantity})`
-      : `${speciesName}`
-
   const model = {
     backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
     formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
@@ -51,7 +46,7 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : `${pageContent.defaultTitle} ${speciesName}`,
-    captionText: captionText,
+    captionText: data.speciesName,
 
     inputSpecimenDescriptionGeneric: {
       id: "specimenDescriptionGeneric",

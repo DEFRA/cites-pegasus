@@ -12,7 +12,7 @@ const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPathArticle10 = `${urlPrefix}/use-certificate-for`
-const nextPathSpecimenType = `${urlPrefix}/specimen-type` //TO DO
+const nextPathSpecimenType = `${urlPrefix}/specimen-type`
 const invalidAppDataPath = urlPrefix
 
 function createModel(errors, data) {
@@ -38,8 +38,6 @@ function createModel(errors, data) {
     })
   }
 
-  const speciesName = data.speciesName
-  const captionText = speciesName
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -48,7 +46,7 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    captionText: captionText,
+      captionText: data.speciesName,
 
     inputPurposeCode: {
       idPrefix: "purposeCode",

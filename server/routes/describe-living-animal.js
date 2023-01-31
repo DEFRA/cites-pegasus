@@ -98,8 +98,7 @@ function getRadioItem(sex, undeterminedSexReason, radioOption, errorList) {
 }
 
 function getUndeterminedSexReason(inputId, undeterminedSexReason, errorList) {
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
-  renderString = renderString + " {{govukInput(input)}}"
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
   const inputModel = {
     input: {
       id: inputId,

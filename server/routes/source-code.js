@@ -38,8 +38,7 @@ function createModel(errors, data) {
     })
   }
 
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
-  renderString = renderString + " {{govukInput(input)}}"
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
@@ -73,8 +72,7 @@ function createModel(errors, data) {
     }
   })
 
-  var renderString = "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n"
-  renderString = renderString + " {{govukCharacterCount(input)}}"
+  var renderString = "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n {{govukCharacterCount(input)}}"
 
   const sourceCharacterCount = nunjucks.renderString(renderString, {
     input: {
