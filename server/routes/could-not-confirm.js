@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const textContent = require('../content/text-content')
-const { getAppData } = require('../lib/app-data')
+const { getSubmission } = require('../lib/submission')
 const { getYarValue } = require("../lib/session")
 const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'could-not-confirm'
@@ -25,8 +25,8 @@ module.exports = [{
       }
     },
   handler: (request, h) => {
-    const appData = getAppData(request)
-    const unknownSpeciesName = appData.applications[request.params.applicationIndex].species.speciesSearchData
+    const submission = getSubmission(request)
+    const unknownSpeciesName = submission.applications[request.params.applicationIndex].species.speciesSearchData
     return h.view(pageId, createModel(unknownSpeciesName, request.params.applicationIndex));  
   }
 }]

@@ -1,14 +1,14 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/confirm-address/applicant`
 const deliveryAddressOptions = ['applicant', 'agent', 'different']
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -85,22 +85,22 @@ module.exports = [{
     method: 'GET',
     path: `${currentPath}`,
     handler: async (request, h) => {
-        const appData = getAppData(request);
+        const submission = getSubmission(request);
 
         try {
-            validateAppData(appData, `${pageId}`)
+            validateSubmission(submission, `${pageId}`)
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+            return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         const pageData = {
-            isAgent: appData?.isAgent,
-            permitType: appData?.permitType,
-            deliveryAddressOption: appData?.delivery?.addressOption || null,
-            applicantAddress: appData.applicant.address,
-            agentAddress: appData.agent?.address
+            isAgent: submission?.isAgent,
+            permitType: submission?.permitType,
+            deliveryAddressOption: submission?.delivery?.addressOption || null,
+            applicantAddress: submission.applicant.address,
+            agentAddress: submission.agent?.address
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -116,21 +116,21 @@ module.exports = [{
                 deliveryAddressOption: Joi.string().required().valid(...deliveryAddressOptions)
             }),
             failAction: (request, h, err) => {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
 
                 const pageData = {
-                    isAgent: appData?.isAgent,
-                    permitType: appData?.permitType,
-                    deliveryAddressOption: appData?.delivery?.addressOption,
-                    applicantAddress: appData.applicant.address,
-                    agentAddress: appData.agent?.address
+                    isAgent: submission?.isAgent,
+                    permitType: submission?.permitType,
+                    deliveryAddressOption: submission?.delivery?.addressOption,
+                    applicantAddress: submission.applicant.address,
+                    agentAddress: submission.agent?.address
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {
-            const appData = getAppData(request)
+            const submission = getSubmission(request)
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
 
@@ -138,10 +138,10 @@ module.exports = [{
 
             switch (deliveryAddressOption) {
                 case 'applicant':
-                    deliveryAddress = { ...appData.applicant.address }
+                    deliveryAddress = { ...submission.applicant.address }
                     break;
                 case 'agent':
-                    deliveryAddress = { ...appData.agent.address }
+                    deliveryAddress = { ...submission.agent.address }
                     break;
                 case 'different':
                     deliveryAddress = null
@@ -152,7 +152,7 @@ module.exports = [{
 
             }
 
-            const newAppData = {
+            const newSubmission = {
                 delivery: {
                     address: deliveryAddress,
                     addressOption: request.payload.deliveryAddressOption,
@@ -161,11 +161,11 @@ module.exports = [{
             }
 
             try {
-                mergeAppData(request, newAppData, `${pageId}`)
+                mergeSubmission(request, newSubmission, `${pageId}`)
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidAppDataPath}/`)
+                return h.redirect(`${invalidSubmissionPath}/`)
             }
 
             return h.redirect(nextPath)

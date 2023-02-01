@@ -5,7 +5,7 @@ const {
   getFieldError,
   isChecked
 } = require("../lib/helper-functions")
-const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 
 const textContent = require("../content/text-content")
 const pageId = "purpose-code"
@@ -13,7 +13,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPathArticle10 = `${urlPrefix}/use-certificate-for`
 const nextPathSpecimenType = `${urlPrefix}/specimen-type`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -186,19 +186,19 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const appData = getAppData(request)
+      const submission = getSubmission(request)
 
       try {
-        validateAppData(
-          appData,
+        validateSubmission(
+          submission,
           `${pageId}/${request.params.applicationIndex}`
         )
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
 
-      const species = appData.applications[request.params.applicationIndex].species
+      const species = submission.applications[request.params.applicationIndex].species
 
       const pageData = {
         applicationIndex: request.params.applicationIndex,
@@ -223,8 +223,8 @@ module.exports = [
           purposeCode: Joi.string().valid("B", "E", "G", "H", "L", "M", "N", "P", "Q", "S", "T", "Z").required()
         }),
         failAction: (request, h, err) => {
-          const appData = getAppData(request)
-          const species = appData.applications[request.params.applicationIndex].species
+          const submission = getSubmission(request)
+          const species = submission.applications[request.params.applicationIndex].species
 
           const pageData = {
             applicationIndex: request.params.applicationIndex,
@@ -237,19 +237,19 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const appData = getAppData(request)
+        const submission = getSubmission(request)
 
-        appData.applications[applicationIndex].species.purposeCode = request.payload.purposeCode
+        submission.applications[applicationIndex].species.purposeCode = request.payload.purposeCode
 
         try {
-          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`)
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         }
         catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (appData.permitType === "article10") {
+        if (submission.permitType === "article10") {
           return h.redirect(
             `${nextPathArticle10}/${applicationIndex}`
           )

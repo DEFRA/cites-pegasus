@@ -1,13 +1,13 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/purpose-code`
 const nextPath = `${urlPrefix}/specimen-type`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -104,18 +104,18 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
-      const appData = getAppData(request)
+      const submission = getSubmission(request)
 
       try {
-        validateAppData(appData, `${pageId}/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
 
       const pageData = {
         applicationIndex: applicationIndex,
-        useCertificateFor: appData.applications[applicationIndex].species.useCertificateFor
+        useCertificateFor: submission.applications[applicationIndex].species.useCertificateFor
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -144,20 +144,20 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const appData = getAppData(request)
-        const species = appData.applications[applicationIndex].species
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
         
         species.useCertificateFor = request.payload.useCertificateFor
 
         try {
-          mergeAppData(
+          mergeSubmission(
             request,
-            { applications: appData.applications },
+            { applications: submission.applications },
             `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         return h.redirect(`${nextPath}/${applicationIndex}`

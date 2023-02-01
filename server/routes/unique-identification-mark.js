@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
@@ -10,7 +10,7 @@ const previousPath = `${urlPrefix}/trade-term-code`
 const nextPathLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathGeneric = `${urlPrefix}/describe-specimen`
 
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
 
@@ -136,16 +136,16 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
-      const appData = getAppData(request)
+      const submission = getSubmission(request)
       
       try {
-        validateAppData(appData, `${pageId}/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
-      
-      const species = appData.applications[applicationIndex].species
+
+      const species = submission.applications[applicationIndex].species
 
       const pageData = {
         applicationIndex: applicationIndex,
@@ -189,8 +189,8 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const appData = getAppData(request)
-        const species = appData.applications[applicationIndex].species
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
 
         const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]
 
@@ -198,10 +198,10 @@ module.exports = [
         species.uniqueIdentificationMark = uniqueIdentificationMark || ""
 
         try {
-          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`)
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         if (species.specimenType === 'animalLiving') {

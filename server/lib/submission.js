@@ -3,100 +3,100 @@ const { Color } = require('./console-colours')
 const lodash = require('lodash')
 
 
-function getAppData(request) {
-    const session = getYarValue(request, 'appData')
+function getSubmission(request) {
+    const session = getYarValue(request, 'submission')
     return lodash.cloneDeep(session)
 }
 
-function mergeAppData(request, data, path) {
-    const existingAppData = getAppData(request)
-    if (path) { validateAppData(existingAppData, path) }
+function mergeSubmission(request, data, path) {
+    const existingSubmission = getSubmission(request)
+    if (path) { validateSubmission(existingSubmission, path) }
 
-    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
+    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
 
-    const mergedAppData = lodash.merge(existingAppData, data)
-    //const mergedAppData = { ...emptyAppData, ...existingAppData, ...data }
+    const mergedSubmission = lodash.merge(existingSubmission, data)
+    //const mergedSubmission = { ...emptySubmission, ...existingSubmission, ...data }
 
-    setYarValue(request, 'appData', mergedAppData)
-    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedAppData, null, 4))//TODO Remove this
+    setYarValue(request, 'submission', mergedSubmission)
+    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedSubmission, null, 4))//TODO Remove this
 
-    return mergedAppData
+    return mergedSubmission
 }
 
-function setAppData(request, data, path) {
-    const existingAppData = getAppData(request)
-    if (path) { validateAppData(existingAppData, path) }
+function setSubmission(request, data, path) {
+    const existingSubmission = getSubmission(request)
+    if (path) { validateSubmission(existingSubmission, path) }
 
-    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingAppData, null, 4))//TODO Remove this
+    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
 
-    setYarValue(request, 'appData', data)
+    setYarValue(request, 'submission', data)
     console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
 }
 
-function clearAppData(request) {
-    setYarValue(request, 'appData', null)
+function clearSubmission(request) {
+    setYarValue(request, 'submission', null)
 }
 
-function validateAppData(appData, path) {
-    const appFlow = getAppFlow(appData)
+function validateSubmission(submission, path) {
+    const appFlow = getAppFlow(submission)
     if (!appFlow.includes(path)) {
         throw `Invalid navigation to ${path}`
     }
 }
 
-function getAppFlow(appData) {
+function getAppFlow(submission) {
     let appFlow = ['apply-cites-permit', 'permit-type']
-    if (appData) {
+    if (submission) {
 
 
-        if (appData.permitType === 'other') { appFlow.push('cannot-use-service') }
+        if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
 
-        if (appData.permitType && appData.permitType !== 'other') {
+        if (submission.permitType && submission.permitType !== 'other') {
             appFlow.push('applying-on-behalf')
 
-            if (appData.isAgent === true) {
+            if (submission.isAgent === true) {
                 appFlow.push('contact-details/agent')
-                if (appData.agent?.fullName) {
+                if (submission.agent?.fullName) {
                     appFlow.push('postcode/agent')
                     appFlow.push('enter-address/agent')
-                    if (appData.agent.addressSearchData?.postcode) {
+                    if (submission.agent.addressSearchData?.postcode) {
                         appFlow.push('select-address/agent')
                     }
-                    if (appData.agent.address) {
+                    if (submission.agent.address) {
                         appFlow.push('confirm-address/agent')
                     }
                 }
             }
 
-            if (appData.isAgent === false || (appData.isAgent === true && appData.agent?.address)) {
+            if (submission.isAgent === false || (submission.isAgent === true && submission.agent?.address)) {
                 appFlow.push('contact-details/applicant')
-                if (appData.applicant?.fullName) {
+                if (submission.applicant?.fullName) {
                     appFlow.push('postcode/applicant')
                     appFlow.push('enter-address/applicant')
-                    if (appData.applicant?.addressSearchData?.postcode) {
+                    if (submission.applicant?.addressSearchData?.postcode) {
                         appFlow.push('select-address/applicant')
                     }
-                    if (appData.applicant?.address) {
+                    if (submission.applicant?.address) {
                         appFlow.push('confirm-address/applicant')
                     }
                 }
             }
 
-            if (appData.applicant?.address) {
+            if (submission.applicant?.address) {
                 appFlow.push('select-delivery-address')
                 appFlow.push('postcode/delivery')
                 appFlow.push('enter-address/delivery')
-                if (appData.delivery?.addressSearchData?.postcode) {
+                if (submission.delivery?.addressSearchData?.postcode) {
                     appFlow.push('select-address/delivery')
                 }
-                if (appData.delivery?.address) {
+                if (submission.delivery?.address) {
                     appFlow.push('confirm-address/delivery')
                     appFlow.push('species-name/0')
                 }
             }
 
-            if (appData.applications?.length > 0) {
-                appData.applications.forEach((application, applicationIndex) => {
+            if (submission.applications?.length > 0) {
+                submission.applications.forEach((application, applicationIndex) => {
                     if (applicationIndex > 0) {
                         appFlow.push(`species-name/${applicationIndex}`)
                     }
@@ -107,7 +107,7 @@ function getAppFlow(appData) {
                         if (species.sourceCode) {
                             appFlow.push(`purpose-code/${applicationIndex}`)
                             if (species.purposeCode) {
-                                if (appData.permitType === "article10") {
+                                if (submission.permitType === "article10") {
                                     appFlow.push(`use-certificate-for/${applicationIndex}`)
                                     if (species.useCertificateFor) {
                                         appFlow.push(`specimen-type/${applicationIndex}`)
@@ -141,7 +141,7 @@ function getAppFlow(appData) {
                             }
                             
                             if (species.specimenDescriptionGeneric || species.specimenDescriptionLivingAnimal) {
-                                if (appData.permitType === "article10") {
+                                if (submission.permitType === "article10") {
                                     appFlow.push(`acquired-date/${applicationIndex}`)
                                 } else {
                                     appFlow.push(`importer-exporter/${applicationIndex}`)
@@ -158,9 +158,9 @@ function getAppFlow(appData) {
 }
 
 module.exports = {
-    setAppData,
-    mergeAppData,
-    getAppData,
-    clearAppData,
-    validateAppData
+    setSubmission,
+    mergeSubmission,
+    getSubmission,
+    clearSubmission,
+    validateSubmission
 }

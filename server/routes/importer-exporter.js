@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'importer-exporter'
@@ -11,7 +11,7 @@ const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathRemarks = `${urlPrefix}/remarks`
 const lodash = require('lodash')
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
 
@@ -159,21 +159,21 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
-      const appData = getAppData(request)
+      const submission = getSubmission(request)
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
 
-      const importerExporter = appData.applications[applicationIndex].importerExporterDetails
+      const importerExporter = submission.applications[applicationIndex].importerExporterDetails
 
       const pageData = {
         applicationIndex: applicationIndex,
-        permitType: appData.permitType,
-        specimenDescriptionLivingAnimal: appData.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
+        permitType: submission.permitType,
+        specimenDescriptionLivingAnimal: submission.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
         country: importerExporter?.country,
         name: importerExporter?.name,
         addressLine1: importerExporter?.addressLine1,
@@ -207,11 +207,11 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
-          const appData = getAppData(request)
+          const submission = getSubmission(request)
           const pageData = {
             applicationIndex: applicationIndex,
-            permitType: appData.permitType,
-            specimenDescriptionLivingAnimal: appData.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
+            permitType: submission.permitType,
+            specimenDescriptionLivingAnimal: submission.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -219,7 +219,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const appData = getAppData(request)
+        const submission = getSubmission(request)
 
         const importerExporterDetails = {
           country: request.payload.country.trim(),
@@ -231,17 +231,17 @@ module.exports = [
           postcode: request.payload.postcode.trim()
         }
 
-        appData.applications[applicationIndex].importerExporterDetails = importerExporterDetails
+        submission.applications[applicationIndex].importerExporterDetails = importerExporterDetails
 
         try {
-          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (appData.permitType === 'export') {
+        if (submission.permitType === 'export') {
           return h.redirect(`${nextPathRemarks}/${applicationIndex}`)
         } else {
           return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)

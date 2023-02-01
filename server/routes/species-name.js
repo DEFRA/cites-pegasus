@@ -1,14 +1,14 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getAppData, setAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const { getSubmission, setSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { getSpecies } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPath = `${urlPrefix}/source-code`
-const invalidAppDataPath = `${urlPrefix}/`
+const invalidSubmissionPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 
 function createModel(errors, data) {
@@ -77,38 +77,38 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
-      const appData = getAppData(request)
+      const submission = getSubmission(request)
 
-      if (!appData?.applications) {
-        appData.applications = []
+      if (!submission?.applications) {
+        submission.applications = []
       }
 
-      if (appData.applications.length < applicationIndex) {
+      if (submission.applications.length < applicationIndex) {
         console.log("Invalid application index")
-        return h.redirect(invalidAppDataPath)
+        return h.redirect(invalidSubmissionPath)
       }
 
-      if (appData.applications.length < applicationIndex + 1) {
-        appData.applications.push({ applicationIndex: applicationIndex })
+      if (submission.applications.length < applicationIndex + 1) {
+        submission.applications.push({ applicationIndex: applicationIndex })
 
         try {
-          mergeAppData(request, appData)
+          mergeSubmission(request, submission)
         } catch (err) {
           console.log(err)
-          return h.redirect(invalidAppDataPath)
+          return h.redirect(invalidSubmissionPath)
         }
       }
 
       try {
-        validateAppData(appData, `${pageId}/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(invalidAppDataPath)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const pageData = {
-        speciesName: appData.applications[applicationIndex].species?.speciesSearchData,
-        deliveryAddressOption: appData.delivery.addressOption,
+        speciesName: submission.applications[applicationIndex].species?.speciesSearchData,
+        deliveryAddressOption: submission.delivery.addressOption,
         applicationIndex: applicationIndex
       }
 
@@ -128,10 +128,10 @@ module.exports = [
           speciesName: Joi.string().required()
         }),
         failAction: (request, h, err) => {
-          const appData = getAppData(request)
+          const submission = getSubmission(request)
           const pageData = {
             speciesName: request.payload.speciesName,
-            deliveryAddressOption: appData?.delivery?.addressOption,
+            deliveryAddressOption: submission?.delivery?.addressOption,
             applicationIndex: request.params.applicationIndex
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -144,33 +144,33 @@ module.exports = [
           request,
           request.payload.speciesName
         )
-        const previousAppData = getAppData(request)
-        const newAppData = lodash.cloneDeep(previousAppData)
-        const newAppDataApplication = newAppData.applications[applicationIndex]
-        const previousAppDataApplication = previousAppData.applications[applicationIndex]
+        const previousSubmission = getSubmission(request)
+        const newSubmission = lodash.cloneDeep(previousSubmission)
+        const newSubmissionApplication = newSubmission.applications[applicationIndex]
+        const previousSubmissionApplication = previousSubmission.applications[applicationIndex]
 
-        if (previousAppData.applications.length < applicationIndex + 1) {
-          return h.redirect(invalidAppDataPath)
+        if (previousSubmission.applications.length < applicationIndex + 1) {
+          return h.redirect(invalidSubmissionPath)
         }
 
-        if (previousAppDataApplication.species?.speciesName !== speciesData?.scientificname) {
+        if (previousSubmissionApplication.species?.speciesName !== speciesData?.scientificname) {
           //TODO If changing speciesName , remove all other species data
-          newAppDataApplication.species = null
+          newSubmissionApplication.species = null
         }
         
-        if(!newAppDataApplication.species){
-          newAppDataApplication.species = {}
+        if(!newSubmissionApplication.species){
+          newSubmissionApplication.species = {}
         }
 
-        newAppDataApplication.species.speciesName = speciesData?.scientificname
-        newAppDataApplication.species.speciesSearchData = request.payload.speciesName
-        newAppDataApplication.species.kingdom = speciesData?.kingdom
+        newSubmissionApplication.species.speciesName = speciesData?.scientificname
+        newSubmissionApplication.species.speciesSearchData = request.payload.speciesName
+        newSubmissionApplication.species.kingdom = speciesData?.kingdom
 
         try {
-          setAppData(request, newAppData)          
+          setSubmission(request, newSubmission)          
         } catch (err) {
           console.log(err)
-          return h.redirect(invalidAppDataPath)
+          return h.redirect(invalidSubmissionPath)
         }
 
         if (!speciesData?.scientificname || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {

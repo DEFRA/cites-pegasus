@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { isValidDate, isPastDate } = require("../lib/validators")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
@@ -9,7 +9,7 @@ const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
 const nextPath = `${urlPrefix}/trade-term-code`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -215,16 +215,16 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
-      const appData = getAppData(request)
+      const submission = getSubmission(request)
       
       try {
-        validateAppData(appData, `${pageId}/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
       
-      const species = appData.applications[applicationIndex].species
+      const species = submission.applications[applicationIndex].species
 
       const pageData = {
         applicationIndex: applicationIndex,
@@ -259,13 +259,13 @@ module.exports = [
         }).custom(createdDateValidator),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
-          const appData = getAppData(request)
+          const submission = getSubmission(request)
 
           const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
 
           const pageData = {
             applicationIndex: applicationIndex,
-            speciesName: appData.applications[applicationIndex].species.speciesName,
+            speciesName: submission.applications[applicationIndex].species.speciesName,
             createdDateDay: day,
             createdDateMonth: month,
             createdDateYear: year,
@@ -278,8 +278,8 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const appData = getAppData(request)
-        const species = appData.applications[applicationIndex].species
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
 
         const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
         species.createdDate = isExactDateUnknown
@@ -287,11 +287,11 @@ module.exports = [
           : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
 
         try {
-          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         return h.redirect(

@@ -1,14 +1,14 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/postcode`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 
 function createModel(errors, data) {
@@ -126,20 +126,20 @@ module.exports = [{
     method: 'GET',
     path: `${currentPath}/{contactType}`,
     handler: async (request, h) => {
-        const appData = getAppData(request);
+        const submission = getSubmission(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.contactType}`)
+            validateSubmission(submission, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+            return h.redirect(`${invalidSubmissionPath}/`)
         }
         const pageData = { 
             contactType: request.params.contactType, 
-            isAgent: appData?.isAgent, 
-            permitType: appData?.permitType,
-            ...appData[request.params.contactType] 
+            isAgent: submission?.isAgent, 
+            permitType: submission?.permitType,
+            ...submission[request.params.contactType] 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -168,11 +168,11 @@ module.exports = [{
                 email: Joi.string().email().allow("")
             }),
             failAction: (request, h, err) => {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
                 const pageData = { 
                     contactType: request.params.contactType, 
-                    isAgent: appData?.isAgent, 
-                    permitType: appData?.permitType,
+                    isAgent: submission?.isAgent, 
+                    permitType: submission?.permitType,
                     ...request.payload 
                 }
 
@@ -190,11 +190,11 @@ module.exports = [{
             }
 
             try {
-                mergeAppData(request, contactDetails, `${pageId}/${request.params.contactType}`)
+                mergeSubmission(request, contactDetails, `${pageId}/${request.params.contactType}`)
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidAppDataPath}/`)
+                return h.redirect(`${invalidSubmissionPath}/`)
             }
 
             return h.redirect(`${nextPath}/${request.params.contactType}`)

@@ -1,14 +1,14 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
-const { mergeAppData, getAppData, validateAppData } = require('../lib/app-data')
+const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
 
 const textContent = require('../content/text-content')
 const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, isAgent) {
   const commonContent = textContent.common;
@@ -71,27 +71,27 @@ function createModel(errors, isAgent) {
 
 }
 
-// function validateAppData(appData) {
-//   if (appData.permitType === null) { throw 'appData error: permitType is null' }
-//   if (appData.permitType === 'other') { throw 'appData error: permitType is "other"' }
+// function validateSubmission(submission) {
+//   if (submission.permitType === null) { throw 'submission error: permitType is null' }
+//   if (submission.permitType === 'other') { throw 'submission error: permitType is "other"' }
 // }
 
 module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    const appData = getAppData(request) || null
+    const submission = getSubmission(request) || null
 
     try {
-      validateAppData(appData, pageId)
+      validateSubmission(submission, pageId)
       
     }
     catch (err) {
       console.log(err);
-      return h.redirect(`${invalidAppDataPath}/`)
+      return h.redirect(`${invalidSubmissionPath}/`)
     }
 
-    return h.view(pageId, createModel(null, appData?.isAgent));
+    return h.view(pageId, createModel(null, submission?.isAgent));
   }
 },
 {
@@ -113,11 +113,11 @@ module.exports = [{
       try {
         agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
 
-        mergeAppData(request, agentData, pageId)        
+        mergeSubmission(request, agentData, pageId)        
       }
       catch (err){
         console.log(err);
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
       
       const pathSuffix = isAgent ? 'agent' : 'applicant'
