@@ -64,9 +64,11 @@ function createModel(errors, data) {
     })
   }
 
+  const previousPath = data.specimenDescriptionLivingAnimal ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
+
   const model = {
-    backLink: `${previousPathDescribeLivingAnimal}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
@@ -147,31 +149,31 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
+      const { applicationIndex } = request.params
       const appData = getAppData(request)
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        validateAppData(appData, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
       }
 
-      const importerExporter = appData.species[request.params.speciesIndex].importerExporterDetails
+      const importerExporter = appData.applications[applicationIndex].importerExporterDetails
 
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
+        applicationIndex: applicationIndex,
         permitType: appData.permitType,
+        specimenDescriptionLivingAnimal: appData.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
         country: importerExporter?.country,
         name: importerExporter?.name,
         addressLine1: importerExporter?.addressLine1,
@@ -187,12 +189,11 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -205,17 +206,19 @@ module.exports = [
           postcode: Joi.string().max(50).optional().allow('', null)
         }),
         failAction: (request, h, err) => {
+          const { applicationIndex } = request.params
           const appData = getAppData(request)
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
+            applicationIndex: applicationIndex,
             permitType: appData.permitType,
+            specimenDescriptionLivingAnimal: appData.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
+        const { applicationIndex } = request.params
         const appData = getAppData(request)
 
         const importerExporterDetails = {
@@ -228,13 +231,10 @@ module.exports = [
           postcode: request.payload.postcode.trim()
         }
 
-        appData.species[request.params.speciesIndex].importerExporterDetails = importerExporterDetails
+        appData.applications[applicationIndex].importerExporterDetails = importerExporterDetails
 
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
@@ -242,9 +242,9 @@ module.exports = [
         }
 
         if (appData.permitType === 'export') {
-          return h.redirect(`${nextPathRemarks}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+          return h.redirect(`${nextPathRemarks}/${applicationIndex}`)
         } else {
-          return h.redirect(`${nextPathPermitDetails}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
         }
       }
     }

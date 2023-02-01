@@ -132,21 +132,22 @@ function getAppFlow(appData) {
                                 appFlow.push(`unique-identification-mark/${applicationIndex}`)
                             }
 
-                            //         if (specimen.uniqueIdentificationMarkType) {
-                            //             if (specimen.specimenType === "animalLiving") {
-                            //                 appFlow.push(`describe-living-animal/${speciesindex}/${specimenindex}`)
-                            //             } else {
-                            //                 appFlow.push(`describe-specimen/${speciesindex}/${specimenindex}`)
-                            //             }
-                            //         }
-                            //         if (specimen.specimenDescriptionGeneric || specimen.specimenDescriptionLivingAnimal) {
-                            //             if (appData.permitType === "article10") {
-                            //                 appFlow.push(`acquired-date/${speciesindex}/${specimenindex}`)
-                            //             } else {
-                            //                 appFlow.push(`importer-exporter/${speciesindex}/${specimenindex}`)
+                            if (species.uniqueIdentificationMarkType) {
+                                if (species.specimenType === "animalLiving") {
+                                    appFlow.push(`describe-living-animal/${applicationIndex}`)
+                                } else {
+                                    appFlow.push(`describe-specimen/${applicationIndex}`)
+                                }
+                            }
+                            
+                            if (species.specimenDescriptionGeneric || species.specimenDescriptionLivingAnimal) {
+                                if (appData.permitType === "article10") {
+                                    appFlow.push(`acquired-date/${applicationIndex}`)
+                                } else {
+                                    appFlow.push(`importer-exporter/${applicationIndex}`)
 
-                            //             }
-                            //         }
+                                }
+                            }
                         }
                     }
                 })

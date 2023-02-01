@@ -44,12 +44,12 @@ function createModel(errors, data) {
   const radioItems = radioOptions.map(x => x = getRadioItem(data.sex, data.undeterminedSexReason, x, errorList))
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader + data.speciesName,
-    speciesName: data.speciesName,
+    caption: data.speciesName,
     inputLabelSex: pageContent.inputLabelSex,
     inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
     inputLabelDescription: pageContent.inputLabelDescription,
@@ -116,36 +116,33 @@ function getUndeterminedSexReason(inputId, undeterminedSexReason, errorList) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
+      const { applicationIndex } = request.params
       const appData = getAppData(request)
 
       // try {
-      //   validateAppData(
-      //     appData,
-      //     `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-      //   )
+      //   validateAppData(appData, `${pageId}/${applicationIndex}`)
       // } catch (err) {
       //   console.log(err)
       //   return h.redirect(`${invalidAppDataPath}/`)
       // }
 
+      const species = appData.applications[applicationIndex].species
+
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+        applicationIndex: applicationIndex,
+        speciesName: species.speciesName,
         permitType: appData.permitType,
         sex: null,
         undeterminedSexReason: ""
-//        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sex
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -153,12 +150,11 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -169,10 +165,11 @@ module.exports = [
           })
         }),
         failAction: (request, h, err) => {
+          const { applicationIndex } = request.params
+          const appData = getAppData(request)
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
-            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
+            applicationIndex: request.params.applicationIndex,
+            speciesName: appData.applications[applicationIndex].species.speciesName,
             permitType: appData.permitType,
             sex: request.payload.sex,
             undeterminedSexReason: request.payload.undeterminedSexReason
@@ -181,15 +178,15 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
+        const { applicationIndex } = request.params
         const appData = getAppData(request)
-
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenDescriptionLivingAnimal  = request.payload.description
+        const species = appData.applications[applicationIndex].species
+        
+        species.specimenDescriptionLivingAnimal  = request.payload.description
+        species.specimenDescriptionGeneric = null
 
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          mergeAppData(request, { applications: appData.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
@@ -197,12 +194,10 @@ module.exports = [
         }
 
         if(appData.permitType === 'article10'){
-          return h.redirect(`${nextPathAcquiredDate}/${request.params.speciesIndex}/${request.params.specimenIndex}`)  
+          return h.redirect(`${nextPathAcquiredDate}/${applicationIndex}`)  
         } else {
-          return h.redirect(`${nextPathImporterExporter}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-        }
-        //TODO else 
-        //        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          return h.redirect(`${nextPathImporterExporter}/${applicationIndex}`)
+        }        
       }
     }
   }

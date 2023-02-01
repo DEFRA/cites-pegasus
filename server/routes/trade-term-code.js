@@ -109,15 +109,16 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const appData = getAppData(request)
-      const species = appData.applications[applicationIndex].species
-
+      
       try {
         validateAppData(appData, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
       }
-
+      
+      const species = appData.applications[applicationIndex].species
+      
       const pageData = {
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,

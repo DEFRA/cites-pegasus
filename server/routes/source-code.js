@@ -255,7 +255,7 @@ module.exports = [
       }
 
       const species = appData.applications[applicationIndex].species
-
+      
       const pageData = {
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,

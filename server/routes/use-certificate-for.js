@@ -107,10 +107,7 @@ module.exports = [
       const appData = getAppData(request)
 
       try {
-        validateAppData(
-          appData,
-          `${pageId}/${applicationIndex}`
-        )
+        validateAppData(appData, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidAppDataPath}/`)
