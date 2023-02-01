@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
@@ -10,7 +10,7 @@ const previousPath = `${urlPrefix}/trade-term-code`
 const nextPathLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathGeneric = `${urlPrefix}/describe-specimen`
 
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
 
@@ -47,21 +47,18 @@ function createModel(errors, data) {
     { text: pageContent.radioOptionLabel, value: 'LB', hasInput: true },
     { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasInput: true },
     { text: pageContent.radioOptionSerialNumber, value: 'SN', hasInput: true },
-    { text: pageContent.radioOptionDivider, value: null, hasInput: false},
+    { text: pageContent.radioOptionDivider, value: null, hasInput: false },
     { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasInput: false }
   ]
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
 
-
-
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-
 
     inputUniqueIdentificationMark: {
       idPrefix: "uniqueIdentificationMarkType",
@@ -83,7 +80,7 @@ function createModel(errors, data) {
 
 function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, radioOption, errorList) {
 
-  if(!radioOption.value){
+  if (!radioOption.value) {
     return {
       divider: radioOption.text
     }
@@ -104,8 +101,7 @@ function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, ra
 }
 
 function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, errorList) {
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
-  renderString = renderString + " {{govukInput(input)}}"
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
   const inputModel = {
     input: {
       id: inputId,
@@ -130,35 +126,31 @@ const getUniqueIdentificationMarkInputSchema = (uniqueIdentificationMarkType) =>
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const appData = getAppData(request)
-
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+      
       try {
-        validateAppData(
-          appData,
-          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        )
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
 
-      const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
+      const species = submission.applications[applicationIndex].species
 
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        uniqueIdentificationMarkType: specimen.uniqueIdentificationMarkType,
-        uniqueIdentificationMark: specimen.uniqueIdentificationMark        
+        applicationIndex: applicationIndex,
+        uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
+        uniqueIdentificationMark: species.uniqueIdentificationMark
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -166,12 +158,11 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -189,8 +180,7 @@ module.exports = [
         failAction: (request, h, err) => {
           var uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
+            applicationIndex: request.params.applicationIndex,
             uniqueIdentificationMark: uniqueIdentificationMark,
             uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType
           }
@@ -198,28 +188,26 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const appData = getAppData(request)
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
 
         const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].uniqueIdentificationMark = uniqueIdentificationMark || ""
+        species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
+        species.uniqueIdentificationMark = uniqueIdentificationMark || ""
 
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-          )
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if(appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenType === 'animalLiving'){
-          return h.redirect(`${nextPathLivingAnimal}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        if (species.specimenType === 'animalLiving') {
+          return h.redirect(`${nextPathLivingAnimal}/${applicationIndex}`)
         } else {
-          return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+          return h.redirect(`${nextPathGeneric}/${applicationIndex}`)
         }
       }
     }

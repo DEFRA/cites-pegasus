@@ -347,17 +347,10 @@ const schema = Joi.object().keys({
     bodyText: Joi.string().required(),
     bodyLinkText: Joi.string().required(),
     bodyLinkUrl: Joi.string().required(),
+    bodyText2: Joi.string().required(),
     inputLabelSpeciesName: Joi.string().required(),
-    inputLabelQuantity: Joi.string().required(),
-    selectLabelUnitOfMeasurement: Joi.string().required(),
-    unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object()),
     errorMessages: Joi.object({
-      "error.speciesName.string.empty": Joi.string().required(),
-      "error.unitOfMeasurement.string.empty": Joi.string().required(),
-      "error.quantity.number.base": Joi.string().required(),
-      "error.quantity.number.min": Joi.string().required(),
-      "error.quantity.number.max": Joi.string().required()
+      "error.speciesName.string.empty": Joi.string().required()    
     }).required()
   }).required(),
   couldNotConfirm: Joi.object({

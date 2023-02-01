@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { POSTCODE_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'postcode'
@@ -10,7 +10,7 @@ const previousPathContactDetails = `${urlPrefix}/contact-details`
 const previousPathSelectDeliveryAddress = `${urlPrefix}/select-delivery-address`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/select-address`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -114,21 +114,21 @@ module.exports = [{
         }
     },
     handler: async (request, h) => {
-        const appData = getAppData(request);
+        const submission = getSubmission(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.contactType}`)
+            validateSubmission(submission, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+            return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         const pageData = { 
             contactType: request.params.contactType, 
-            isAgent: appData?.isAgent, 
-            permitType: appData?.permitType, 
-            postcode: appData[request.params.contactType]?.addressSearchData?.postcode 
+            isAgent: submission?.isAgent, 
+            permitType: submission?.permitType, 
+            postcode: submission[request.params.contactType]?.addressSearchData?.postcode 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -147,11 +147,11 @@ module.exports = [{
                 postcode: Joi.string().regex(POSTCODE_REGEX).required()
             }),
             failAction: (request, h, err) => {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
                 const pageData = { 
                     contactType: request.params.contactType, 
-                    isAgent: appData?.isAgent, 
-                    permitType: appData?.permitType, 
+                    isAgent: submission?.isAgent, 
+                    permitType: submission?.permitType, 
                     ...request.payload 
                 }
                 
@@ -162,7 +162,7 @@ module.exports = [{
             const contactType = request.params.contactType
 
 
-            const appData = {
+            const submission = {
                 [contactType]: {
                     addressSearchData: {               
                         postcode: request.payload.postcode.trim().toUpperCase()
@@ -171,11 +171,11 @@ module.exports = [{
             }
 
             try {
-                mergeAppData(request, appData, `${pageId}/${contactType}`)
+                mergeSubmission(request, submission, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidAppDataPath}/`)
+                return h.redirect(`${invalidSubmissionPath}/`)
             }
 
             return h.redirect(`${nextPath}/${contactType}`)

@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { isValidDate, isPastDate } = require("../lib/validators")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
@@ -9,15 +9,11 @@ const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
 const nextPath = `${urlPrefix}/trade-term-code`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.createdDate
-  const speciesName = data.speciesName
-  const quantity = data.quantity
-  const specimenIndex = data.specimenIndex + 1
-  const unitOfMeasurement = data.unitOfMeasurement
 
   let createdDateErrors = []
   let errorList = null
@@ -76,14 +72,7 @@ function createModel(errors, data) {
     { name: 'year', value: data.createdDateYear }
   ]
 
-  const captionText =
-    unitOfMeasurement === "noOfSpecimens"
-      ? `${speciesName} (${specimenIndex} of ${quantity})`
-      : `${speciesName}`
-
-  var renderString =
-    "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
-  renderString = renderString + " {{govukInput(input)}}"
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
@@ -108,11 +97,11 @@ function createModel(errors, data) {
 
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    captionText: captionText,
+    captionText: data.speciesName,
 
     inputCreatedDate: {
       id: "createdDate",
@@ -164,7 +153,7 @@ function getCreatedDateInputGroupItems(components, createdDateErrors) {
   })
 }
 
-function createdDateValidator(value, helpers){
+function createdDateValidator(value, helpers) {
   const {
     "createdDate-day": day,
     "createdDate-month": month,
@@ -216,54 +205,46 @@ function createdDateValidator(value, helpers){
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const appData = getAppData(request)
-
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+      
       try {
-        validateAppData(
-          appData,
-          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        )
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
-
-      const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
+      
+      const species = submission.applications[applicationIndex].species
 
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-        quantity: appData.species[request.params.speciesIndex]?.quantity,
-        unitOfMeasurement:
-          appData.species[request.params.speciesIndex]?.unitOfMeasurement,
-        createdDateDay: specimen.createdDate?.day,
-        createdDateMonth: specimen.createdDate?.month,
-        createdDateYear: specimen.createdDate?.year,
-        isExactDateUnknown: specimen.createdDate?.isExactDateUnknown,
-        approximateDate: specimen.createdDate?.approximateDate
+        applicationIndex: applicationIndex,
+        speciesName: species.speciesName,
+        createdDateDay: species.createdDate?.day,
+        createdDateMonth: species.createdDate?.month,
+        createdDateYear: species.createdDate?.year,
+        isExactDateUnknown: species.createdDate?.isExactDateUnknown,
+        approximateDate: species.createdDate?.approximateDate
       }
       return h.view(pageId, createModel(null, pageData))
     }
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -277,17 +258,14 @@ module.exports = [
           "createdDate-year": Joi.any().optional(),
         }).custom(createdDateValidator),
         failAction: (request, h, err) => {
-          const appData = getAppData(request)
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
 
           const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
 
-
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
-            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-            quantity: appData.species[request.params.speciesIndex]?.quantity,
-            unitOfMeasurement: appData.species[request.params.speciesIndex]?.unitOfMeasurement,
+            applicationIndex: applicationIndex,
+            speciesName: submission.applications[applicationIndex].species.speciesName,
             createdDateDay: day,
             createdDateMonth: month,
             createdDateYear: year,
@@ -299,27 +277,25 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const appData = getAppData(request)
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
 
-        const specimen = appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex]
         const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
-        specimen.createdDate = isExactDateUnknown
-              ? { day: null, month: null, year: null, isExactDateUnknown: isExactDateUnknown, approximateDate: approximateDate } 
-              : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
-        
+        species.createdDate = isExactDateUnknown
+          ? { day: null, month: null, year: null, isExactDateUnknown: isExactDateUnknown, approximateDate: approximateDate }
+          : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
+
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         return h.redirect(
-          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          `${nextPath}/${applicationIndex}`
         )
       }
     }

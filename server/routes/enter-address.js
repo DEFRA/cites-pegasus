@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'enter-address'
@@ -9,7 +9,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/postcode`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -158,21 +158,21 @@ module.exports = [{
         }
     },
     handler: async (request, h) => {
-        const appData = getAppData(request);
+        const submission = getSubmission(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.contactType}`)
+            validateSubmission(submission, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+            return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         const pageData = {
             contactType: request.params.contactType,
-            isAgent: appData?.isAgent,
-            permitType: appData?.permitType,
-            ...appData[request.params.contactType]?.address
+            isAgent: submission?.isAgent,
+            permitType: submission?.permitType,
+            ...submission[request.params.contactType]?.address
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -212,11 +212,11 @@ module.exports = [{
             const result = payloadSchema.validate(request.payload, { abortEarly: false })
 
             if (result.error) {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
                 const pageData = {
                     contactType: request.params.contactType,
-                    isAgent: appData?.isAgent,
-                    permitType: appData?.permitType,
+                    isAgent: submission?.isAgent,
+                    permitType: submission?.permitType,
                     ...request.payload
                 }
 
@@ -224,7 +224,7 @@ module.exports = [{
             }
 
 
-            const appData = {
+            const submission = {
                 [contactType]: {
                     address: {
                         addressLine1: request.payload.addressLine1.trim(),
@@ -239,11 +239,11 @@ module.exports = [{
             }
 
             try {
-                mergeAppData(request, appData, `${pageId}/${contactType}`)
+                mergeSubmission(request, submission, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidAppDataPath}/`)
+                return h.redirect(`${invalidSubmissionPath}/`)
             }
 
             return h.redirect(`${nextPath}/${contactType}`)

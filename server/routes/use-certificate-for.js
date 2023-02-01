@@ -1,17 +1,13 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
-const { getAppData, mergeAppData, validateAppData } = require("../lib/app-data")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/purpose-code`
 const nextPath = `${urlPrefix}/specimen-type`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -37,8 +33,8 @@ function createModel(errors, data) {
   }
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -98,35 +94,28 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const appData = getAppData(request)
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
 
       try {
-        validateAppData(
-          appData,
-          `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-        )
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
 
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        useCertificateFor:
-          appData.species[request.params.speciesIndex].specimens[
-            request.params.specimenIndex
-          ].useCertificateFor
+        applicationIndex: applicationIndex,
+        useCertificateFor: submission.applications[applicationIndex].species.useCertificateFor
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -135,12 +124,11 @@ module.exports = [
 
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -148,33 +136,31 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
+            applicationIndex: request.params.applicationIndex,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
-        const appData = getAppData(request)
-
-        appData.species[request.params.speciesIndex].specimens[
-          request.params.specimenIndex
-        ].useCertificateFor = request.payload.useCertificateFor
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
+        
+        species.useCertificateFor = request.payload.useCertificateFor
 
         try {
-          mergeAppData(
+          mergeSubmission(
             request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+            { applications: submission.applications },
+            `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+        return h.redirect(`${nextPath}/${applicationIndex}`
         )
       }
     }

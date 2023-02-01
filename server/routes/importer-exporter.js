@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'importer-exporter'
@@ -11,7 +11,7 @@ const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathRemarks = `${urlPrefix}/remarks`
 const lodash = require('lodash')
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
 
@@ -64,9 +64,11 @@ function createModel(errors, data) {
     })
   }
 
+  const previousPath = data.specimenDescriptionLivingAnimal ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
+
   const model = {
-    backLink: `${previousPathDescribeLivingAnimal}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
@@ -147,31 +149,31 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const appData = getAppData(request)
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
 
       try {
-        validateAppData(appData, `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidAppDataPath}/`)
+        return h.redirect(`${invalidSubmissionPath}/`)
       }
 
-      const importerExporter = appData.species[request.params.speciesIndex].importerExporterDetails
+      const importerExporter = submission.applications[applicationIndex].importerExporterDetails
 
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        permitType: appData.permitType,
+        applicationIndex: applicationIndex,
+        permitType: submission.permitType,
+        specimenDescriptionLivingAnimal: submission.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
         country: importerExporter?.country,
         name: importerExporter?.name,
         addressLine1: importerExporter?.addressLine1,
@@ -187,12 +189,11 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -205,18 +206,20 @@ module.exports = [
           postcode: Joi.string().max(50).optional().allow('', null)
         }),
         failAction: (request, h, err) => {
-          const appData = getAppData(request)
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
-            permitType: appData.permitType,
+            applicationIndex: applicationIndex,
+            permitType: submission.permitType,
+            specimenDescriptionLivingAnimal: submission.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
-        const appData = getAppData(request)
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
 
         const importerExporterDetails = {
           country: request.payload.country.trim(),
@@ -228,23 +231,20 @@ module.exports = [
           postcode: request.payload.postcode.trim()
         }
 
-        appData.species[request.params.speciesIndex].importerExporterDetails = importerExporterDetails
+        submission.applications[applicationIndex].importerExporterDetails = importerExporterDetails
 
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (appData.permitType === 'export') {
-          return h.redirect(`${nextPathRemarks}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+        if (submission.permitType === 'export') {
+          return h.redirect(`${nextPathRemarks}/${applicationIndex}`)
         } else {
-          return h.redirect(`${nextPathPermitDetails}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
+          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
         }
       }
     }

@@ -1,11 +1,11 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['agent', 'applicant', 'delivery']
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -90,21 +90,21 @@ module.exports = [{
         }
     },
     handler: async (request, h) => {
-        const appData = getAppData(request);
+        const submission = getSubmission(request);
 
         try {
-            validateAppData(appData, `${pageId}/${request.params.contactType}`)
+            validateSubmission(submission, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+            return h.redirect(`${invalidSubmissionPath}/`)
         }
 
         const pageData = {
             contactType: request.params.contactType,
-            isAgent: appData?.isAgent,
-            permitType: appData?.permitType,
-            ...appData[request.params.contactType],
+            isAgent: submission?.isAgent,
+            permitType: submission?.permitType,
+            ...submission[request.params.contactType],
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -120,12 +120,12 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             failAction: (request, h, err) => {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
                 const pageData = {
                     contactType: request.params.contactType,
-                    isAgent: appData?.isAgent,
-                    permitType: appData?.permitType,
-                    ...appData[request.params.contactType],
+                    isAgent: submission?.isAgent,
+                    permitType: submission?.permitType,
+                    ...submission[request.params.contactType],
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()

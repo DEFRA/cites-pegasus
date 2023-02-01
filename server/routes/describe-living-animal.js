@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'describe-living-animal'
@@ -9,7 +9,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -44,12 +44,12 @@ function createModel(errors, data) {
   const radioItems = radioOptions.map(x => x = getRadioItem(data.sex, data.undeterminedSexReason, x, errorList))
 
   const model = {
-    backLink: `${previousPath}/${data.speciesIndex}/${data.specimenIndex}`,
-    formActionPage: `${currentPath}/${data.speciesIndex}/${data.specimenIndex}`,
+    backLink: `${previousPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader + data.speciesName,
-    speciesName: data.speciesName,
+    caption: data.speciesName,
     inputLabelSex: pageContent.inputLabelSex,
     inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
     inputLabelDescription: pageContent.inputLabelDescription,
@@ -98,8 +98,7 @@ function getRadioItem(sex, undeterminedSexReason, radioOption, errorList) {
 }
 
 function getUndeterminedSexReason(inputId, undeterminedSexReason, errorList) {
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n"
-  renderString = renderString + " {{govukInput(input)}}"
+  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
   const inputModel = {
     input: {
       id: inputId,
@@ -117,36 +116,33 @@ function getUndeterminedSexReason(inputId, undeterminedSexReason, errorList) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const appData = getAppData(request)
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
 
       // try {
-      //   validateAppData(
-      //     appData,
-      //     `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
-      //   )
+      //   validateSubmission(submission, `${pageId}/${applicationIndex}`)
       // } catch (err) {
       //   console.log(err)
-      //   return h.redirect(`${invalidAppDataPath}/`)
+      //   return h.redirect(`${invalidSubmissionPath}/`)
       // }
 
+      const species = submission.applications[applicationIndex].species
+
       const pageData = {
-        speciesIndex: request.params.speciesIndex,
-        specimenIndex: request.params.specimenIndex,
-        speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-        permitType: appData.permitType,
+        applicationIndex: applicationIndex,
+        speciesName: species.speciesName,
+        permitType: submission.permitType,
         sex: null,
         undeterminedSexReason: ""
-//        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].sex
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -154,12 +150,11 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{speciesIndex}/{specimenIndex}`,
+    path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          speciesIndex: Joi.number().required(),
-          specimenIndex: Joi.number().required()
+          applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         payload: Joi.object({
@@ -170,11 +165,12 @@ module.exports = [
           })
         }),
         failAction: (request, h, err) => {
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
           const pageData = {
-            speciesIndex: request.params.speciesIndex,
-            specimenIndex: request.params.specimenIndex,
-            speciesName: appData.species[request.params.speciesIndex]?.speciesName,
-            permitType: appData.permitType,
+            applicationIndex: request.params.applicationIndex,
+            speciesName: submission.applications[applicationIndex].species.speciesName,
+            permitType: submission.permitType,
             sex: request.payload.sex,
             undeterminedSexReason: request.payload.undeterminedSexReason
           }
@@ -182,28 +178,26 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const appData = getAppData(request)
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
 
-        appData.species[request.params.speciesIndex].specimens[request.params.specimenIndex].specimenDescriptionLivingAnimal  = request.payload.description
+        species.specimenDescriptionLivingAnimal  = request.payload.description
+        species.specimenDescriptionGeneric = null
 
         try {
-          mergeAppData(
-            request,
-            { species: appData.species },
-            `${pageId}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidAppDataPath}/`)
+          return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if(appData.permitType === 'article10'){
-          return h.redirect(`${nextPathAcquiredDate}/${request.params.speciesIndex}/${request.params.specimenIndex}`)  
+        if(submission.permitType === 'article10'){
+          return h.redirect(`${nextPathAcquiredDate}/${applicationIndex}`)  
         } else {
-          return h.redirect(`${nextPathImporterExporter}/${request.params.speciesIndex}/${request.params.specimenIndex}`)
-        }
-        //TODO else 
-        //        return h.redirect(`${nextPathGeneric}/${request.params.speciesIndex}/${request.params.specimenIndex}`
+          return h.redirect(`${nextPathImporterExporter}/${applicationIndex}`)
+        }        
       }
     }
   }

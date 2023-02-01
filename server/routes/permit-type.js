@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -85,10 +85,10 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    const appData = getAppData(request);
-    validateAppData(appData, pageId)
+    const submission = getSubmission(request);
+    validateSubmission(submission, pageId)
 
-    return h.view(pageId, createModel(null, appData?.permitType));
+    return h.view(pageId, createModel(null, submission?.permitType));
   }
 },
 {
@@ -105,7 +105,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      mergeAppData(request, {permitType: request.payload.permitType});
+      mergeSubmission(request, {permitType: request.payload.permitType});
 
       return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
     }

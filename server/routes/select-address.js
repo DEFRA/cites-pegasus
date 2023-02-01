@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getAppData, mergeAppData, validateAppData } = require('../lib/app-data')
+const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressesByPostcode } = require('../services/address-service')
 const textContent = require('../content/text-content')
@@ -11,7 +11,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
-const invalidAppDataPath = urlPrefix
+const invalidSubmissionPath = urlPrefix
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -110,13 +110,13 @@ module.exports = [{
     },
     handler: async (request, h) => {
         const contactType = request.params.contactType
-        const appData = getAppData(request);
+        const submission = getSubmission(request);
         try {
-            const searchData = appData[contactType].addressSearchData
-            validateAppData(appData, `${pageId}/${contactType}`)
-            validateSearchData(appData[contactType].addressSearchData)
+            const searchData = submission[contactType].addressSearchData
+            validateSubmission(submission, `${pageId}/${contactType}`)
+            validateSearchData(submission[contactType].addressSearchData)
 
-            let newAppData = {
+            let newSubmission = {
                 [contactType]: {
                     addressSearchData: {
                         results: null
@@ -124,19 +124,19 @@ module.exports = [{
                 }
             }
 
-            mergeAppData(request, newAppData, `${pageId}/${contactType}`)
+            mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
 
             const response = await getAddressesByPostcode(searchData.postcode)
             const pageData = {
                 contactType: contactType,
-                permitType: appData?.permitType,
-                isAgent: appData?.isAgent,
-                ...appData[contactType]?.addressSearchData,
+                permitType: submission?.permitType,
+                isAgent: submission?.isAgent,
+                ...submission[contactType]?.addressSearchData,
                 results: response.results,
-                ...appData[contactType].address,
+                ...submission[contactType].address,
             }
 
-            newAppData = {
+            newSubmission = {
                 [contactType]: {
                     addressSearchData: {
                         results: response.results
@@ -144,13 +144,13 @@ module.exports = [{
                 }
             }
 
-            mergeAppData(request, newAppData, `${pageId}/${contactType}`)
+            mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
 
             return h.view(pageId, createModel(null, pageData));
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidAppDataPath}/`)
+            return h.redirect(`${invalidSubmissionPath}/`)
         }
     }
 },
@@ -167,12 +167,12 @@ module.exports = [{
                 address: Joi.string().required()
             }),
             failAction: (request, h, err) => {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
                 const pageData = {
                     contactType: request.params.contactType,
-                    permitType: appData?.permitType,
-                    isAgent: appData?.isAgent,
-                    ...appData[request.params.contactType]?.addressSearchData,
+                    permitType: submission?.permitType,
+                    isAgent: submission?.isAgent,
+                    ...submission[request.params.contactType]?.addressSearchData,
                     ...request.payload
                 }
 
@@ -182,9 +182,9 @@ module.exports = [{
         handler: async (request, h) => {
             const contactType = request.params.contactType
             try {
-                const appData = getAppData(request);
+                const submission = getSubmission(request);
 
-                const selectedAddress = appData[contactType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
+                const selectedAddress = submission[contactType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
 
                 // const selectedAddress = {
                 //     //SubBuildingName: "Room 1",
@@ -204,7 +204,7 @@ module.exports = [{
                 const localityComponents = [selectedAddress.DependentLocality, selectedAddress.Locality].filter(Boolean)
                 const otherAddressLineComponents = [localityComponents.join(", "), selectedAddress.Town, selectedAddress.County].filter(Boolean)
 
-                const newAppData = {
+                const newSubmission = {
                     [contactType]: {
                         // addressSearchData: { //TODO COMMENT THIS BIT OUT
                         //     results: null
@@ -222,11 +222,11 @@ module.exports = [{
                     }
                 }
 
-                mergeAppData(request, newAppData, `${pageId}/${contactType}`)
+                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidAppDataPath}/`)
+                return h.redirect(`${invalidSubmissionPath}/`)
             }
 
             return h.redirect(`${nextPath}/${contactType}`)
