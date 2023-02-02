@@ -666,8 +666,8 @@
         }
     },
     "specimenDescriptionGeneric": {
-        "defaultTitle": "Description",
-        "pageHeader": "Describe the",
+        "defaultTitle": "Describe the specimen",
+        "pageHeader": "Describe the specimen",
         "errorMessages": {
             "error.specimenDescriptionGeneric.string.empty": "Enter a description",
             "error.specimenDescriptionGeneric.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
@@ -676,8 +676,8 @@
         }
     },
     "describeLivingAnimal": {
-        "defaultTitle": "Describe the ",
-        "pageHeader": "Describe the ",
+        "defaultTitle": "Describe the specimen",
+        "pageHeader": "Describe the specimen",
         "inputLabelSex": "What sex is the specimen?",
         "inputLabelUndeterminedSexReason": "Enter a reason",
         "inputLabelDateOfBirth": "When was the specimen’s date of birth?",

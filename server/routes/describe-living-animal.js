@@ -48,7 +48,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    pageHeader: pageContent.pageHeader + data.speciesName,
+    pageHeader: pageContent.pageHeader,
     caption: data.speciesName,
     inputLabelSex: pageContent.inputLabelSex,
     inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
