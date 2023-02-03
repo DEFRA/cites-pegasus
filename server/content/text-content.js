@@ -457,6 +457,26 @@ const schema = Joi.object().keys({
       "error.approximateDate.string.empty": Joi.string().required()
     }).required()
   }).required(),
+  acquiredDate: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageHeaderHint: Joi.string().required(),
+    checkboxLabelIsExactDateUnknown: Joi.string().required(),
+    inputLabelApproximateDate: Joi.string().required(),
+    inputLabelHintApproximateDate: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.acquiredDate.any.empty": Joi.string().required(),
+      "error.acquiredDate.any.future": Joi.string().required(),
+      "error.acquiredDate.any.invalid": Joi.string().required(),
+      "error.acquiredDate-day.any.empty": Joi.string().required(),
+      "error.acquiredDate-day-month.any.empty": Joi.string().required(),
+      "error.acquiredDate-day-year.any.empty": Joi.string().required(),
+      "error.acquiredDate-month.any.empty": Joi.string().required(),
+      "error.acquiredDate-month-year.any.empty": Joi.string().required(),
+      "error.acquiredDate-year.any.empty": Joi.string().required(),
+      "error.approximateDate.string.empty": Joi.string().required()
+    }).required()
+  }).required(),
   uniqueIdentificationMark: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
