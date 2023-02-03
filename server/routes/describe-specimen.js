@@ -40,7 +40,7 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : `${pageContent.defaultTitle} ${data.speciesName}`,
+      : `${pageContent.defaultTitle}`,
     captionText: data.speciesName,
 
     inputSpecimenDescriptionGeneric: {
@@ -49,7 +49,7 @@ function createModel(errors, data) {
       maxlength: 448,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
-        text: `${pageContent.pageHeader} ${data.speciesName}`,
+        text: `${pageContent.pageHeader}`,
         isPageHeading: true,
         classes: "govuk-label--l"
       },
