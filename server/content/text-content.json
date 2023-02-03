@@ -618,6 +618,26 @@
             "error.approximateDate.string.empty":"Enter an approximate date or period of time "
         }
     },
+    "acquiredDate": {
+        "defaultTitle": "When did you acquire the specimen? ",
+        "pageHeader": "When did you acquire the specimen? ",
+        "pageHeaderHint": "For example, 27 3 2007",
+        "checkboxLabelIsExactDateUnknown": "I do not know the exact date",
+        "inputLabelApproximateDate": "Enter an approximate date or period of time",
+        "inputLabelHintApproximateDate": "For example, ‘1950’ or ‘15th century’",
+        "errorMessages": {
+            "error.acquiredDate.any.empty": "Enter the date that you acquired the specimen, or select I do not know the exact date",
+            "error.acquiredDate.any.future": "The date that you acquired the specimen must be in the past",
+            "error.acquiredDate.any.invalid": "The date that you acquired the specimen must be a real date ",
+            "error.acquiredDate-day.any.empty": "The date that you acquired the specimen must include a day",
+            "error.acquiredDate-day-month.any.empty": "The date that you acquired the specimen must include a day and month",
+            "error.acquiredDate-day-year.any.empty": "The date that you acquired the specimen must include a day and year",
+            "error.acquiredDate-month.any.empty": "The date that you acquired the specimen must include a month",
+            "error.acquiredDate-month-year.any.empty": "The date that you acquired the specimen must include a month and year",
+            "error.acquiredDate-year.any.empty": "The date that you acquired the specimen must include a year",
+            "error.approximateDate.string.empty":"Enter an approximate date or period of time "
+        }
+    },
     "uniqueIdentificationMark": {
         "defaultTitle": "What is the specimen’s unique identification mark?",
         "pageHeader": "What is the specimen’s unique identification mark? ",
