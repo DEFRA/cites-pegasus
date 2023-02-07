@@ -540,15 +540,26 @@ const schema = Joi.object().keys({
     inputLabelSex: Joi.string().required(),
     inputLabelDateOfBirth: Joi.string().required(),
     inputLabelUndeterminedSexReason: Joi.string().required(),
+    inputHintDateOfBirth: Joi.string().required(),
     inputLabelDescription: Joi.string().required(),
     inputHintDescription: Joi.string().required(),
     inputLabelParentDetails: Joi.string().required(),
+    inputHintParentDetails: Joi.string().required(),
     radioOptionSexMale: Joi.string().required(),
     radioOptionSexFemale: Joi.string().required(),
     radioOptionSexUndetermined: Joi.string().required(),
     errorMessages: Joi.object().keys({
       'error.sex.any.required': Joi.string().required(),
-      'error.sex.any.only': Joi.string().required()
+      'error.sex.any.only': Joi.string().required(),
+      'error.parentDetails.string.empty': Joi.string().required(),
+      'error.parentDetails.string.min': Joi.string().required(),
+      'error.parentDetails.string.max': Joi.string().required(),
+      'error.description.string.max': Joi.string().required(),
+      'error.dateOfBirth.any.future': Joi.string().required(),
+      'error.dateOfBirth.any.invalid': Joi.string().required(),
+      'error.dateOfBirth-day.number.base': Joi.string().required(),
+      'error.dateOfBirth-month.number.base': Joi.string().required(),
+      'error.dateOfBirth-year.number.base': Joi.string().required()
     }).required()
   }).required(),
   importerExporter: Joi.object({

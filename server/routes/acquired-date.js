@@ -95,7 +95,7 @@ function createModel(errors, data) {
     }
   })
 
-  const previousPath = data.specimenDescriptionLivingAnimal ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
+  const previousPath = data.sex ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -230,6 +230,7 @@ module.exports = [
       const pageData = {
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
+        sex: species.sex,
         acquiredDateDay: species.acquiredDate?.day,
         acquiredDateMonth: species.acquiredDate?.month,
         acquiredDateYear: species.acquiredDate?.year,
@@ -261,12 +262,14 @@ module.exports = [
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
+          const species = submission.applications[applicationIndex].species
 
           const { "acquiredDate-day": day, "acquiredDate-month": month, "acquiredDate-year": year, isExactDateUnknown, approximateDate } = request.payload
 
           const pageData = {
             applicationIndex: applicationIndex,
-            speciesName: submission.applications[applicationIndex].species.speciesName,
+            speciesName: species.speciesName,
+            sex: species.sex,
             acquiredDateDay: day,
             acquiredDateMonth: month,
             acquiredDateYear: year,

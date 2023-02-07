@@ -140,7 +140,7 @@ function getAppFlow(submission) {
                                 }
                             }
                             
-                            if (species.specimenDescriptionGeneric || species.specimenDescriptionLivingAnimal) {
+                            if (species.specimenDescriptionGeneric || species.sex) {
                                 if (submission.permitType === "article10") {
                                     appFlow.push(`acquired-date/${applicationIndex}`)
                                 } else {

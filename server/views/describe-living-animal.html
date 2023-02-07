@@ -59,7 +59,9 @@
             <div class="govuk-grid-column-one-half">
               <h1 class="govuk-heading-s">{{inputLabelParentDetails}}</h1>
             </div>
-            <div class="govuk-grid-column-one-half"></div>
+            <div class="govuk-grid-column-one-half">
+              {{govukCharacterCount(inputParentDetails)}}
+            </div>
           </div>
         {% endif %}
 

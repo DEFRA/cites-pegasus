@@ -700,16 +700,27 @@
         "pageHeader": "Describe the specimen",
         "inputLabelSex": "What sex is the specimen?",
         "inputLabelUndeterminedSexReason": "Enter a reason",
-        "inputLabelDateOfBirth": "When was the specimen’s date of birth?",
-        "inputLabelDescription": "Other description",
-        "inputHintDescription": "Include anything else that helps to describe the specimen.",
+        "inputLabelDateOfBirth": "What is the specimen’s date of birth?",
+        "inputHintDateOfBirth": "If you do not know the exact date, enter an approximate month and year, or leave the date of birth empty.",
         "inputLabelParentDetails": "Parent details",
+        "inputHintParentDetails": "Enter the unique identification mark and Article 10 certificate number for each parent. For example, ‘Parent female A10 number: 10AB010C/01, closed ring number: WEL0072257’",
+        "inputLabelDescription": "Other description",
+        "inputHintDescription": "Include anything else that helps to describe the specimen (optional).",
         "radioOptionSexMale": "Male",
         "radioOptionSexFemale": "Female",
         "radioOptionSexUndetermined": "Not known",
         "errorMessages": {
             "error.sex.any.required": "Select the specimen’s sex",
-            "error.sex.any.only": "Select the specimen’s sex"
+            "error.sex.any.only": "Select the specimen’s sex",
+            "error.parentDetails.string.empty": "Enter the parent details",
+            "error.parentDetails.string.min": "Parent details must be 3 characters or more",
+            "error.parentDetails.string.max": "Parent details must be 250 characters or less",
+            "error.description.string.max": "Description must be 100 characters or less",
+            "error.dateOfBirth.any.future": "Date of birth must be in the past",
+            "error.dateOfBirth.any.invalid": "Enter a real date of birth",
+            "error.dateOfBirth-day.number.base": "Date of birth must only include numbers 0 to 9",
+            "error.dateOfBirth-month.number.base": "Date of birth must only include numbers 0 to 9",
+            "error.dateOfBirth-year.number.base": "Date of birth must only include numbers 0 to 9"
         }
     },
     "importerExporter": {

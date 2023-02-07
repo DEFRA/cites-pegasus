@@ -126,6 +126,9 @@ module.exports = [
 
         species.specimenDescriptionGeneric = request.payload.specimenDescriptionGeneric
         species.specimenDescriptionLivingAnimal = null
+        species.sex = null
+        species.parentDetails = null
+        species.dateOfBirth = null
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)

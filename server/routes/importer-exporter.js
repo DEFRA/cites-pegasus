@@ -64,7 +64,7 @@ function createModel(errors, data) {
     })
   }
 
-  const previousPath = data.specimenDescriptionLivingAnimal ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
+  const previousPath = data.sex ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -173,7 +173,7 @@ module.exports = [
       const pageData = {
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
-        specimenDescriptionLivingAnimal: submission.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
+        sex: submission.applications[applicationIndex].species.sex,
         country: importerExporter?.country,
         name: importerExporter?.name,
         addressLine1: importerExporter?.addressLine1,
@@ -211,7 +211,7 @@ module.exports = [
           const pageData = {
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
-            specimenDescriptionLivingAnimal: submission.applications[applicationIndex].species.specimenDescriptionLivingAnimal,
+            sex: submission.applications[applicationIndex].species.sex,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
