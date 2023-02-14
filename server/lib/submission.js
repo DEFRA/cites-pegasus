@@ -151,6 +151,9 @@ function getAppFlow(submission) {
                             if (species.acquiredDate) {
                                 appFlow.push(`already-have-a10/${applicationIndex}`)
                             }
+                            if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
+                                appFlow.push(`ever-imported-exported/${applicationIndex}`)
+                            }
                         }
                     }
                 })
