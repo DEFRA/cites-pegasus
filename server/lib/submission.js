@@ -145,8 +145,11 @@ function getAppFlow(submission) {
                                     appFlow.push(`acquired-date/${applicationIndex}`)
                                 } else {
                                     appFlow.push(`importer-exporter/${applicationIndex}`)
-
                                 }
+                            }
+
+                            if (species.acquiredDate) {
+                                appFlow.push(`already-have-a10/${applicationIndex}`)
                             }
                         }
                     }

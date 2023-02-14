@@ -763,5 +763,18 @@
                 "error.name.string.empty": "Enter the exporter’s full name"
             }
         }        
-    }
+    },
+    "alreadyHaveA10": {
+       "defaultTitle": "Does the specimen already have an Article 10 certificate?",
+        "pageHeader": "Does the specimen already have an Article 10 certificate?",
+        "inputLabelA10CertificateNumber": "Enter certificate number",
+        "inputLabelA10CertificateNumberHint": "For example, ‘10AB010C’",
+        "errorMessages": {
+          "error.isA10CertificateNumberKnown.any.required": "Select yes if the specimen already has an Article 10 certificate",
+          "error.a10CertificateNumber.string.empty": "Enter a certificate number",
+          "error.a10CertificateNumber.string.min": "Certificate number must be 5 characters or more ",
+          "error.a10CertificateNumber.string.max": "Certificate number must be 27 characters or less",
+          "error.a10CertificateNumber.string.pattern.base": "Certificate number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
+        }
+      }
 }
