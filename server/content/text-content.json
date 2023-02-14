@@ -435,7 +435,7 @@
         "bodyLinkUrl": "https://speciesplus.net/",
         "inputLabelSpeciesName": "Scientific name",
         "errorMessages": {
-            "error.speciesName.string.empty": "Enter the scientific name"        
+            "error.speciesName.string.empty": "Enter the scientific name"
         }
     },
     "couldNotConfirm": {
@@ -615,7 +615,7 @@
             "error.createdDate-month.any.empty": "The date the worked item or finished product was created must include a month",
             "error.createdDate-month-year.any.empty": "The date the worked item or finished product was created must include a month and year",
             "error.createdDate-year.any.empty": "The date the worked item or finished product was created must include a year",
-            "error.approximateDate.string.empty":"Enter an approximate date or period of time "
+            "error.approximateDate.string.empty": "Enter an approximate date or period of time "
         }
     },
     "acquiredDate": {
@@ -635,7 +635,7 @@
             "error.acquiredDate-month.any.empty": "The date that you acquired the specimen must include a month",
             "error.acquiredDate-month-year.any.empty": "The date that you acquired the specimen must include a month and year",
             "error.acquiredDate-year.any.empty": "The date that you acquired the specimen must include a year",
-            "error.approximateDate.string.empty":"Enter an approximate date or period of time "
+            "error.approximateDate.string.empty": "Enter an approximate date or period of time "
         }
     },
     "uniqueIdentificationMark": {
@@ -762,6 +762,14 @@
             "errorMessages": {
                 "error.name.string.empty": "Enter the exporter’s full name"
             }
-        }        
+        }
+    },
+    "unmarkedSpecimens": {
+        "defaultTitle": "How many unmarked specimens do you want to apply for?",
+        "pageHeader": "How many unmarked specimens do you want to apply for?",
+        "inputLabelHintNumberOfUnmarkedSpecimens": "Enter the number of unmarked specimens that you want to apply for on this permit. ",
+        "errorMessages": {
+            "error.numberOfUnmarkedSpecimens.number.empty": "Enter the number of unmarked "
+        }
     }
 }

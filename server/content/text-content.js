@@ -588,6 +588,14 @@ const schema = Joi.object().keys({
     }).required(),
     importerDetails: importerExporterDetailsSchema,
     exporterDetails: importerExporterDetailsSchema
+  }).required(),
+  unmarkedSpecimens: Joi.object({    
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelHintNumberOfUnmarkedSpecimens: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.numberOfUnmarkedSpecimens.number.empty": Joi.string().required()
+    }).required()
   }).required()
 })
 
