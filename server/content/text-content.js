@@ -588,6 +588,19 @@ const schema = Joi.object().keys({
     }).required(),
     importerDetails: importerExporterDetailsSchema,
     exporterDetails: importerExporterDetailsSchema
+  }).required(),
+  alreadyHaveA10: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelA10CertificateNumber: Joi.string().required(),
+    inputLabelA10CertificateNumberHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isA10CertificateNumberKnown.any.required": Joi.string().required(),
+      "error.a10CertificateNumber.string.empty": Joi.string().required(),
+      "error.a10CertificateNumber.string.min": Joi.string().required(),
+      "error.a10CertificateNumber.string.max": Joi.string().required(),
+      "error.a10CertificateNumber.string.pattern.base": Joi.string().required()
+    }).required()
   }).required()
 })
 

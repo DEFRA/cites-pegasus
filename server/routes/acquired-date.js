@@ -9,7 +9,7 @@ const pageId = "acquired-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
-const nextPath = `${urlPrefix}/already-have-A10`
+const nextPath = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
