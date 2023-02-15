@@ -6,8 +6,8 @@ const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/s
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
-const nextPathTradeTerm = `${urlPrefix}/trade-term-code`
-const nextPathCreatedDate = `${urlPrefix}/created-date`
+const nextPathQuantity = `${urlPrefix}/quantity`
+const nextPathUniqueId = `${urlPrefix}/unique-identification-mark`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
@@ -202,11 +202,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if(isWorkedItem){
-          return h.redirect(`${nextPathCreatedDate}/${request.params.applicationIndex}`)
+        if(species.specimenType === 'animalLiving'){
+          return h.redirect(`${nextPathUniqueId}/${request.params.applicationIndex}`)
         }
 
-        return h.redirect(`${nextPathTradeTerm}/${request.params.applicationIndex}`)
+        return h.redirect(`${nextPathQuantity}/${request.params.applicationIndex}`)
       }
     }
   }

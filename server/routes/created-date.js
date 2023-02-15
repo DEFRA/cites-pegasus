@@ -294,8 +294,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${applicationIndex}`
+        return h.redirect(`${nextPath}/${applicationIndex}`
         )
       }
     }
