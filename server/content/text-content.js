@@ -602,6 +602,13 @@ const schema = Joi.object().keys({
       "error.a10CertificateNumber.string.pattern.base": Joi.string().required()
     }).required()
   }).required(),
+  everImportedExported: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isEverImportedExported.any.required": Joi.string().required(),
+    }).required()
+  }).required(),
   unmarkedSpecimens: Joi.object({    
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
