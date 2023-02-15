@@ -2,21 +2,17 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
-const { NAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'unmarked-specimens'
 const currentPath = `${urlPrefix}/${pageId}`
-// const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
-// const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
-// const nextPathPermitDetails = `${urlPrefix}/permit-details`
-// const nextPathRemarks = `${urlPrefix}/remarks`
+const previousPath = `${urlPrefix}/unique-identification-mark`
+const nextPath = `${urlPrefix}/describe-specimen`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
 
   const commonContent = textContent.common
   const pageContent = textContent.unmarkedSpecimens
-
 
   let errorList = null
   if (errors) {
@@ -37,31 +33,48 @@ function createModel(errors, data) {
     })
   }
 
-  //const previousPath = data.sex ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
-
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    pageHeader: pageContent.pageHeader,
-    heading: pageContent.heading,
-    headingAddress: pageContent.headingAddress,
+    pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+
     inputNumberOfUnmarkedSpecimens: {
-      label: {
-        text: pageContent.inputLabelCountry
-      },
       id: "numberOfUnmarkedSpecimens",
       name: "numberOfUnmarkedSpecimens",
-      classes: "govuk-!-width-two-thirds",
+      label: {
+        text: pageContent.pageHeader,
+        classes: "govuk-label--l",
+        isPageHeading: true
+      },
+      classes: "govuk-input--width-4",
+      inputmode: "numeric",
+      hint: {
+        text: pageContent.pageHeaderHint
+      },
       ...(data.numberOfUnmarkedSpecimens ? { value: data.numberOfUnmarkedSpecimens } : {}),
       errorMessage: getFieldError(errorList, '#numberOfUnmarkedSpecimens')
-    }
+    },
+
   }
   return { ...commonContent, ...model }
 }
 
+function validateNumberOfUnmarkedSpecimens(value, helpers) {
 
+  if (value.length === 0) {
+    return helpers.error('any.empty', { customLabel: 'numberOfUnmarkedSpecimens' })
+  }
+
+  const schema = Joi.number().min(1).max(1000000).integer()
+  const result = schema.validate(value)
+
+  if(result.error){
+    return helpers.error(result.error.details[0].type, { customLabel: 'numberOfUnmarkedSpecimens' })
+  }
+
+  return value
+}
 
 module.exports = [
   {
@@ -78,12 +91,12 @@ module.exports = [
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
 
-      // try {
-      //   validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
-      // } catch (err) {
-      //   console.log(err)
-      //   return h.redirect(`${invalidSubmissionPath}/`)
-      // }
+      try {
+        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
 
       const species = submission.applications[applicationIndex].species
 
@@ -106,7 +119,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          numberOfUnmarkedSpecimens: Joi.number().min(1).required()
+          numberOfUnmarkedSpecimens: Joi.any().custom(validateNumberOfUnmarkedSpecimens)
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
@@ -119,7 +132,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-
+        const submission = getSubmission(request)
         submission.applications[applicationIndex].species.numberOfUnmarkedSpecimens = request.payload.numberOfUnmarkedSpecimens
 
         try {
@@ -130,11 +143,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (submission.permitType === 'export') {
-          return h.redirect(`${nextPathRemarks}/${applicationIndex}`)
-        } else {
-          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
-        }
+        return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }
   }

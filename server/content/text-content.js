@@ -589,12 +589,30 @@ const schema = Joi.object().keys({
     importerDetails: importerExporterDetailsSchema,
     exporterDetails: importerExporterDetailsSchema
   }).required(),
+  alreadyHaveA10: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelA10CertificateNumber: Joi.string().required(),
+    inputLabelA10CertificateNumberHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isA10CertificateNumberKnown.any.required": Joi.string().required(),
+      "error.a10CertificateNumber.string.empty": Joi.string().required(),
+      "error.a10CertificateNumber.string.min": Joi.string().required(),
+      "error.a10CertificateNumber.string.max": Joi.string().required(),
+      "error.a10CertificateNumber.string.pattern.base": Joi.string().required()
+    }).required()
+  }).required(),
   unmarkedSpecimens: Joi.object({    
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    inputLabelHintNumberOfUnmarkedSpecimens: Joi.string().required(),
+    pageHeaderHint: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.numberOfUnmarkedSpecimens.number.empty": Joi.string().required()
+      "error.numberOfUnmarkedSpecimens.any.empty": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.base": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.integer": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.min": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.unsafe": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.max": Joi.string().required()
     }).required()
   }).required()
 })

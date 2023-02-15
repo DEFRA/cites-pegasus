@@ -23,6 +23,7 @@ const routes = [].concat(
   require('../routes/describe-specimen'),
   require('../routes/describe-living-animal'),
   require('../routes/importer-exporter'),
+  require('../routes/already-have-a10'),
   require('../routes/unmarked-specimens'),
   require('../routes/public'),
   require('../routes/test'),
