@@ -118,7 +118,7 @@ function getAppFlow(submission) {
                             }
                             if (species.specimenType) {
                                 if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
-                                    appFlow.push(`created-date/${applicationIndex}`)
+                                    appFlow.push(`quantity/${applicationIndex}`)
                                 } else {
                                     appFlow.push(`trade-term-code/${applicationIndex}`)
                                 }

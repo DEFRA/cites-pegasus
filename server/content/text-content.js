@@ -621,7 +621,21 @@ const schema = Joi.object().keys({
       "error.numberOfUnmarkedSpecimens.number.unsafe": Joi.string().required(),
       "error.numberOfUnmarkedSpecimens.number.max": Joi.string().required()
     }).required()
-  }).required()
+  }).required(),
+  quantity: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelQuantity: Joi.string().required(),
+    selectLabelUnitOfMeasurement: Joi.string().required(),
+    unitOfMeasurementPrompt: Joi.string().required(),
+    unitsOfMeasurement: Joi.array().items(Joi.object()),
+    errorMessages: Joi.object({
+      "error.unitOfMeasurement.string.empty": Joi.string().required(),
+      "error.quantity.number.base": Joi.string().required(),
+      "error.quantity.number.min": Joi.string().required(),
+      "error.quantity.number.max": Joi.string().required()
+    }).required()
+  }).required(),
 })
 
 // Validate config
