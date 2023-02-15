@@ -7,7 +7,7 @@ const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathTradeTerm = `${urlPrefix}/trade-term-code`
-const nextPathCreatedDate = `${urlPrefix}/created-date`
+const nextPathQuantity = `${urlPrefix}/quantity`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
@@ -203,7 +203,7 @@ module.exports = [
         }
 
         if(isWorkedItem){
-          return h.redirect(`${nextPathCreatedDate}/${request.params.applicationIndex}`)
+          return h.redirect(`${nextPathQuantity}/${request.params.applicationIndex}`)
         }
 
         return h.redirect(`${nextPathTradeTerm}/${request.params.applicationIndex}`)
