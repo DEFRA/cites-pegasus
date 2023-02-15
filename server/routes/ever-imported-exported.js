@@ -2,18 +2,17 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
-const nunjucks = require("nunjucks")
-const pageId = "already-have-a10"
+const pageId = "ever-imported-exported"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/acquired-date`
-const nextPath = `${urlPrefix}/ever-imported-exported`
+const previousPath = `${urlPrefix}/already-have-a10`
+const nextPathPermitDetails = `${urlPrefix}/permit-details`
+const nextPathComments = `${urlPrefix}/comments`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.alreadyHaveA10
+  const pageContent = textContent.everImportedExported
 
   let errorList = null
   if (errors) {
@@ -22,7 +21,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["isA10CertificateNumberKnown", "a10CertificateNumber"]
+    const fields = ["isEverImportedExported"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -34,26 +33,6 @@ function createModel(errors, data) {
     })
   }
 
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
-
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-
-  const a10CertificateNumberInput = nunjucks.renderString(renderString, {
-    input: {
-      id: "a10CertificateNumber",
-      name: "a10CertificateNumber",
-      classes: "govuk-input govuk-input--width-20",
-      label: {
-        text: pageContent.inputLabelA10CertificateNumber
-      },
-      hint: {
-        text: pageContent.inputLabelA10CertificateNumberHint
-      },
-      ...(data.a10CertificateNumber ? { value: data.a10CertificateNumber } : {}),
-      errorMessage: getFieldError(errorList, "#a10CertificateNumber")
-    }
-  })
-
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -62,11 +41,11 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     captionText: data.speciesName,
-   
 
-    inputIsA10CertificateNumberKnown: {
-      idPrefix: "isA10CertificateNumberKnown",
-      name: "isA10CertificateNumberKnown",
+    inputIsEverImportedExported: {
+      idPrefix: "isEverImportedExported",
+      name: "isEverImportedExported",
+      classes: "govuk-radios--inline",
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
@@ -78,18 +57,15 @@ function createModel(errors, data) {
         {
           value: true,
           text: commonContent.radioOptionYes,
-          checked: data.isA10CertificateNumberKnown,
-          conditional: {
-            html: a10CertificateNumberInput
-          }
+          checked: data.isEverImportedExported
         },
         {
           value: false,
           text: commonContent.radioOptionNo,
-          checked: data.isA10CertificateNumberKnown === false
+          checked: data.isEverImportedExported === false
         }
       ],
-      errorMessage: getFieldError(errorList, "#isA10CertificateNumberKnown")
+      errorMessage: getFieldError(errorList, "#isEverImportedExported")
     }
   }
   return { ...commonContent, ...model }
@@ -109,21 +85,20 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      
+
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-      
+
       const species = submission.applications[applicationIndex].species
-      
+
       const pageData = {
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,
-        isA10CertificateNumberKnown: species.isA10CertificateNumberKnown,
-        a10CertificateNumber: species.a10CertificateNumber
+        isEverImportedExported: species.isEverImportedExported
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -138,11 +113,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isA10CertificateNumberKnown: Joi.boolean().required(),
-          a10CertificateNumber: Joi.when("isA10CertificateNumberKnown", {
-            is: true,
-            then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()
-          })
+          isEverImportedExported: Joi.boolean().required()
         }),
 
         failAction: (request, h, err) => {
@@ -150,21 +121,20 @@ module.exports = [
           const submission = getSubmission(request)
           const species = submission.applications[applicationIndex].species
 
-          let isA10CertificateNumberKnown = null
-          switch (request.payload.isA10CertificateNumberKnown) {
+          let isEverImportedExported = null
+          switch (request.payload.isEverImportedExported) {
             case "true":
-              isA10CertificateNumberKnown = true
+              isEverImportedExported = true
               break
             case "false":
-              isA10CertificateNumberKnown = false
+              isEverImportedExported = false
               break
           }
 
           const pageData = {
             applicationIndex: applicationIndex,
             speciesName: species?.speciesName,
-            isA10CertificateNumberKnown: isA10CertificateNumberKnown,
-            a10CertificateNumber: request.payload.a10CertificateNumber,
+            isEverImportedExported: isEverImportedExported
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -175,23 +145,24 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        if (!request.payload.isA10CertificateNumberKnown) {
-          species.a10CertificateNumber = ""
-        }
-
-        species.isA10CertificateNumberKnown = request.payload.isA10CertificateNumberKnown
-        species.a10CertificateNumber = request.payload.isA10CertificateNumberKnown ? request.payload.a10CertificateNumber : ""
+        species.isEverImportedExported = request.payload.isEverImportedExported
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+          mergeSubmission(
+            request,
+            { applications: submission.applications },
+            `${pageId}/${applicationIndex}`
+          )
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${applicationIndex}`
-        )
+        if (request.payload.isEverImportedExported) {
+          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
+        } else {
+          return h.redirect(`${nextPathComments}/${applicationIndex}`)
+        }
       }
     }
   }
