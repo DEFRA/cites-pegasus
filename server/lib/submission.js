@@ -134,7 +134,11 @@ function getAppFlow(submission) {
 
                             if (species.uniqueIdentificationMarkType) {
                                 if (species.specimenType === "animalLiving") {
-                                    appFlow.push(`describe-living-animal/${applicationIndex}`)
+                                    if(species.uniqueIdentificationMarkType === 'unmarked') {
+                                        appFlow.push(`unmarked-specimens/${applicationIndex}`)
+                                    } else {
+                                        appFlow.push(`describe-living-animal/${applicationIndex}`)
+                                    }
                                 } else {
                                     appFlow.push(`describe-specimen/${applicationIndex}`)
                                 }

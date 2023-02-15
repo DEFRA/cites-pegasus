@@ -608,6 +608,19 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       "error.isEverImportedExported.any.required": Joi.string().required(),
     }).required()
+  }).required(),
+  unmarkedSpecimens: Joi.object({    
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageHeaderHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.numberOfUnmarkedSpecimens.any.empty": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.base": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.integer": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.min": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.unsafe": Joi.string().required(),
+      "error.numberOfUnmarkedSpecimens.number.max": Joi.string().required()
+    }).required()
   }).required()
 })
 

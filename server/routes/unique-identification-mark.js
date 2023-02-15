@@ -7,7 +7,7 @@ const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/trade-term-code`
-const nextPathLivingAnimal = `${urlPrefix}/describe-living-animal`
+const nextPathLivingAnimal = `${urlPrefix}/unmarked-specimens`
 const nextPathGeneric = `${urlPrefix}/describe-specimen`
 
 const invalidSubmissionPath = urlPrefix
