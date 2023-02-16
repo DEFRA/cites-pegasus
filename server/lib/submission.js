@@ -136,9 +136,15 @@ function getAppFlow(submission) {
                             } else {//Not living animal flow
                                 appFlow.push(`quantity/${applicationIndex}`)
 
-                                if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
-                                    appFlow.push(`created-date/${applicationIndex}`)
-                                } else {
+                                if (species.quantity) {
+                                    if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+                                        appFlow.push(`created-date/${applicationIndex}`)
+                                    } else {
+                                        appFlow.push(`trade-term-code/${applicationIndex}`)
+                                    }
+                                }
+
+                                if (species.createdDate) {
                                     appFlow.push(`trade-term-code/${applicationIndex}`)
                                 }
 
@@ -168,7 +174,7 @@ function getAppFlow(submission) {
                             }
                         }
 
-                        if(application.importerExporterDetails || species.isEverImportedExported) {
+                        if (application.importerExporterDetails || species.isEverImportedExported) {
                             //PERMIT DETAILS
                         }
 
