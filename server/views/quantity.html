@@ -24,23 +24,33 @@
     </div>
   {% endif %}
 
-
-{% endblock %}
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+  {% endblock %}
+  {% block content %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {# <span class="govuk-caption-l"> {{captionText}} </span> #}
-        {{ govukInput(inputQuantity) }}
-        {{ govukSelect(selectUnitOfMeasurement) }}
+        {% call govukFieldset({
+            legend: {
+              text: pageHeader,
+              classes: "govuk-fieldset__legend--l",
+              isPageHeading: true
+            }
+          }) %}
+  
+          {{ govukInput(inputQuantity) }}
+          {{ govukSelect(selectUnitOfMeasurement) }}
+  
         
-
+        
+        
+        {% endcall %}
         {{ govukButton({
-        text: continueButton,
-        type: "submit"
-      }) }}
+            text: continueButton,
+            type: "submit"
+          }) }}
       </form>
+      </div>
     </div>
-  </div>
-{% endblock %}
+  {% endblock %}
+
 
