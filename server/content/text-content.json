@@ -850,8 +850,9 @@
             }
         ],
         "errorMessages": {
-            "error.unitOfMeasurement.string.empty": "Select the unit of measurement",
-            "error.quantity.number.base": "Enter the quantity using numbers 0 to 9",
+            "error.unitOfMeasurement.any.only": "Select a unit of measurement",
+            "error.quantity.any.empty": "Enter the quantity",
+            "error.quantity.number.base": "Quantity must only include numbers 0 to 9, and special characters such as full stops",
             "error.quantity.number.min": "Quantity must be more than 0.0001",
             "error.quantity.number.max": "Quantity must be less than 1000000"
         }
