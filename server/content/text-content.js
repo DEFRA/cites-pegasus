@@ -628,7 +628,10 @@ const schema = Joi.object().keys({
     inputLabelQuantity: Joi.string().required(),
     selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object()),
+    unitsOfMeasurement: Joi.array().items(Joi.object({
+      "text": Joi.string().required(),
+      "value": Joi.string().required(),
+    }).required()),
     errorMessages: Joi.object({
       "error.unitOfMeasurement.any.only": Joi.string().required(),
       "error.quantity.any.empty": Joi.string().required(),
