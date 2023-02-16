@@ -137,21 +137,7 @@ module.exports = [
         }),
         payload: Joi.object({
           quantity: Joi.any().custom(quantity),
-          unitOfMeasurement: Joi.string()
-            .valid(
-              "noOfSpecimens",
-              "noOfPiecesOrParts",
-              "cm3",
-              "g",
-              "Kg",
-              "ltr",
-              "m",
-              "m2",
-              "m3",
-              "ml",
-              "tonne"
-            )
-            .required()
+          unitOfMeasurement: Joi.string().valid("noOfSpecimens", "noOfPiecesOrParts", "cm3", "g", "Kg", "ltr", "m", "m2",  "m3", "ml", "tonne").required()
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
