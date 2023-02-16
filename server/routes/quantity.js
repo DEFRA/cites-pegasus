@@ -11,7 +11,7 @@ const lodash = require("lodash")
 const pageId = "quantity"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
-const nextPath = `${urlPrefix}//trade-term-code`
+const nextPath = `${urlPrefix}/trade-term-code`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
@@ -26,10 +26,6 @@ function createModel(errors, data) {
     if (e.value === data.unitOfMeasurement) e.selected = "true"
   })
 
-  //   const previousPath =
-  //     data.deliveryAddressOption === "different"
-  //       ? `${urlPrefix}/confirm-address/delivery`
-  //       : `${urlPrefix}/select-delivery-address`
 
   let errorList = null
   if (errors) {
