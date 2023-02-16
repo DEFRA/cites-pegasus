@@ -249,15 +249,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (submission.permitType === "article10") {
-          return h.redirect(
-            `${nextPathArticle10}/${applicationIndex}`
-          )
-        } else {
-          return h.redirect(
-            `${nextPathSpecimenType}/${applicationIndex}`
-          )
-        }
+        return h.redirect(`${nextPathSpecimenType}/${applicationIndex}`)        
       }
     }
   }

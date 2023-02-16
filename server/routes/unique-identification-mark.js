@@ -6,9 +6,11 @@ const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/trade-term-code`
-const nextPathLivingAnimal = `${urlPrefix}/unmarked-specimens`
-const nextPathGeneric = `${urlPrefix}/describe-specimen`
+const previousPathSpecimenType = `${urlPrefix}/specimen-type`
+const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
+const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
+const nextPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
+const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
 const invalidSubmissionPath = urlPrefix
 
@@ -53,6 +55,8 @@ function createModel(errors, data) {
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
+
+  const previousPath = data.specimenType === 'animalLiving' ? previousPathSpecimenType : previousPathTradeTermCode
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -137,7 +141,7 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      
+
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
@@ -149,6 +153,7 @@ module.exports = [
 
       const pageData = {
         applicationIndex: applicationIndex,
+        specimenType: species.specimenType,
         uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
         uniqueIdentificationMark: species.uniqueIdentificationMark
       }
@@ -178,9 +183,14 @@ module.exports = [
           inputSI: getUniqueIdentificationMarkInputSchema("SI"),
         }),
         failAction: (request, h, err) => {
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
+          const species = submission.applications[applicationIndex].species
+
           var uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
           const pageData = {
             applicationIndex: request.params.applicationIndex,
+            specimenType: species.specimenType,
             uniqueIdentificationMark: uniqueIdentificationMark,
             uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType
           }
@@ -205,9 +215,13 @@ module.exports = [
         }
 
         if (species.specimenType === 'animalLiving') {
-          return h.redirect(`${nextPathLivingAnimal}/${applicationIndex}`)
+          if (request.payload.uniqueIdentificationMarkType === 'unmarked') {
+            return h.redirect(`${nextPathUnmarkedSpecimens}/${applicationIndex}`)
+          } else {
+            return h.redirect(`${nextPathDescLivingAnimal}/${applicationIndex}`)
+          }
         } else {
-          return h.redirect(`${nextPathGeneric}/${applicationIndex}`)
+          return h.redirect(`${nextPathDescGeneric}/${applicationIndex}`)
         }
       }
     }

@@ -7,7 +7,7 @@ const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/specimen-type`
+const previousPath = `${urlPrefix}/quantity`
 const nextPath = `${urlPrefix}/trade-term-code`
 const invalidSubmissionPath = urlPrefix
 
@@ -294,8 +294,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${applicationIndex}`
+        return h.redirect(`${nextPath}/${applicationIndex}`
         )
       }
     }
