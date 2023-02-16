@@ -6,7 +6,8 @@ const textContent = require("../content/text-content")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/unique-identification-mark`
+const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
+const previousPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
 const nextPathImporterDetails = `${urlPrefix}/importer-exporter`
 const nextPathArticle10 = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = urlPrefix
@@ -33,6 +34,8 @@ function createModel(errors, data) {
       }
     })
   }
+
+  const previousPath = data.numberOfUnmarkedSpecimens ? previousPathUnmarkedSpecimens : previousPathUniqueId 
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -87,6 +90,7 @@ module.exports = [
       const pageData = {
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
+        numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
         specimenDescriptionGeneric: species.specimenDescriptionGeneric
       }
 
@@ -114,6 +118,7 @@ module.exports = [
           const pageData = {
             applicationIndex: applicationIndex,
             speciesName: species.speciesName,
+            numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
             ...request.payload
           }
           return h.view(pageId, createModel(err, pageData)).takeover()

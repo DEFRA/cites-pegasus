@@ -11,7 +11,8 @@ const lodash = require("lodash")
 const pageId = "quantity"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
-const nextPath = `${urlPrefix}//trade-term-code`
+const nextPathTradeTermCode = `${urlPrefix}/trade-term-code`
+const nextPathCreatedDate = `${urlPrefix}/created-date`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
@@ -160,9 +161,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${applicationIndex}`
-        )
+        if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+          return h.redirect(`${nextPathCreatedDate}/${applicationIndex}`)
+        } else {
+          return h.redirect(`${nextPathTradeTermCode}/${applicationIndex}`)
+        }
 
 
 

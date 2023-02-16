@@ -7,7 +7,7 @@ const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "trade-term-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathSpecimenType = `${urlPrefix}/specimen-type`
+const previousPathQuantity = `${urlPrefix}/quantity`
 const previousPathCreatedDate = `${urlPrefix}/created-date`
 const nextPath = `${urlPrefix}/unique-identification-mark`
 const invalidSubmissionPath = urlPrefix
@@ -56,7 +56,7 @@ function createModel(errors, data) {
   })
 
   const model = {
-    backLink: data.createdDate ? `${previousPathCreatedDate}/${data.applicationIndex}` : `${previousPathSpecimenType}/${data.applicationIndex}`,
+    backLink: data.createdDate ? `${previousPathCreatedDate}/${data.applicationIndex}` : `${previousPathQuantity}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -191,9 +191,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(
-          `${nextPath}/${applicationIndex}`
-        )
+        return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }
   }

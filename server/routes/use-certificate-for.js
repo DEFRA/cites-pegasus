@@ -5,7 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/s
 const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/purpose-code`
+const previousPath = `${urlPrefix}/source-code`
 const nextPath = `${urlPrefix}/specimen-type`
 const invalidSubmissionPath = urlPrefix
 

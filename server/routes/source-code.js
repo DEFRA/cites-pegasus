@@ -8,7 +8,8 @@ const nunjucks = require("nunjucks")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
-const nextPath = `${urlPrefix}/purpose-code`
+const nextPathPurposeCode = `${urlPrefix}/purpose-code`
+const nextPathUseCertFor = `${urlPrefix}/use-certificate-for`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
@@ -332,7 +333,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(`${nextPath}/${applicationIndex}`)
+        if(submission.permitType === 'article10'){
+          return h.redirect(`${nextPathUseCertFor}/${applicationIndex}`)
+        } else {
+          return h.redirect(`${nextPathPurposeCode}/${applicationIndex}`)
+        }        
       }
     }
   }
