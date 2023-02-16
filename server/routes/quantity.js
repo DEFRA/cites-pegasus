@@ -1,11 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const {
-  getSubmission,
-  mergeSubmission,
-  validateSubmission
-} = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "quantity"
@@ -26,7 +22,6 @@ function createModel(errors, data) {
   unitsOfMeasurement.forEach((e) => {
     if (e.value === data.unitOfMeasurement) e.selected = "true"
   })
-
 
   let errorList = null
   if (errors) {
@@ -58,12 +53,12 @@ function createModel(errors, data) {
     captionText: data.speciesName,
 
     inputQuantity: {
-      label: {
-        text: pageContent.inputLabelQuantity
-      },
       id: "quantity",
       name: "quantity",
       classes: "govuk-input--width-4",
+      label: {
+        text: pageContent.inputLabelQuantity
+      },
       ...(data.quantity ? { value: data.quantity } : {}),
       errorMessage: getFieldError(errorList, "#quantity")
     },
@@ -78,6 +73,23 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function quantity(value, helpers) {
+  if (value.length === 0) {
+    return helpers.error("any.empty", { customLabel: "quantity" })
+  }
+
+  const schema = Joi.number().min(0.0001).max(1000000)
+  const result = schema.validate(value)
+
+  if (result.error) {
+    return helpers.error(result.error.details[0].type, {
+      customLabel: "quantity"
+    })
+  }
+
+  return value
 }
 
 module.exports = [
@@ -124,8 +136,22 @@ module.exports = [
           applicationIndex: Joi.number().required()
         }),
         payload: Joi.object({
-          quantity: Joi.number().required().min(0.0001).max(1000000),
+          quantity: Joi.any().custom(quantity),
           unitOfMeasurement: Joi.string()
+            .valid(
+              "noOfSpecimens",
+              "noOfPiecesOrParts",
+              "cm3",
+              "g",
+              "Kg",
+              "ltr",
+              "m",
+              "m2",
+              "m3",
+              "ml",
+              "tonne"
+            )
+            .required()
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
@@ -136,7 +162,7 @@ module.exports = [
             applicationIndex: applicationIndex,
             speciesName: species?.speciesName,
             quantity: request.payload.quantity,
-            unitOfMeasurement: request.payload.unitOfMeasurement,
+            unitOfMeasurement: request.payload.unitOfMeasurement
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -151,13 +177,20 @@ module.exports = [
         species.unitOfMeasurement = request.payload.unitOfMeasurement
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+          mergeSubmission(
+            request,
+            { applications: submission.applications },
+            `${pageId}/${applicationIndex}`
+          )
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+        if (
+          species.specimenType === "animalWorked" ||
+          species.specimenType === "plantWorked"
+        ) {
           return h.redirect(`${nextPathCreatedDate}/${applicationIndex}`)
         } else {
           return h.redirect(`${nextPathTradeTermCode}/${applicationIndex}`)

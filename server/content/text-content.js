@@ -630,7 +630,8 @@ const schema = Joi.object().keys({
     unitOfMeasurementPrompt: Joi.string().required(),
     unitsOfMeasurement: Joi.array().items(Joi.object()),
     errorMessages: Joi.object({
-      "error.unitOfMeasurement.string.empty": Joi.string().required(),
+      "error.unitOfMeasurement.any.only": Joi.string().required(),
+      "error.quantity.any.empty": Joi.string().required(),
       "error.quantity.number.base": Joi.string().required(),
       "error.quantity.number.min": Joi.string().required(),
       "error.quantity.number.max": Joi.string().required()
