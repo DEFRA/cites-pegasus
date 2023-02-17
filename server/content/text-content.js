@@ -637,7 +637,8 @@ const schema = Joi.object().keys({
       "error.quantity.any.empty": Joi.string().required(),
       "error.quantity.number.base": Joi.string().required(),
       "error.quantity.number.min": Joi.string().required(),
-      "error.quantity.number.max": Joi.string().required()
+      "error.quantity.number.max": Joi.string().required(),
+      "error.quantity.number.unsafe": Joi.string().required()
     }).required()
   }).required(),
 })

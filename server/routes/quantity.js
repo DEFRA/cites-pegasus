@@ -93,7 +93,7 @@ function quantity(value, helpers) {
   return value
 }
 
-const unitOfMeasurementValue = textContent.quantity.unitsOfMeasurement.map(
+const unitOfMeasurementValues = textContent.quantity.unitsOfMeasurement.map(
   (e) => e.value
 )
 
@@ -142,21 +142,7 @@ module.exports = [
         }),
         payload: Joi.object({
           quantity: Joi.any().custom(quantity),
-          unitOfMeasurement: Joi.string()
-            .valid(
-              unitOfMeasurementValue[0],
-              unitOfMeasurementValue[1],
-              unitOfMeasurementValue[2],
-              unitOfMeasurementValue[3],
-              unitOfMeasurementValue[4],
-              unitOfMeasurementValue[5],
-              unitOfMeasurementValue[6],
-              unitOfMeasurementValue[7],
-              unitOfMeasurementValue[8],
-              unitOfMeasurementValue[9],
-              unitOfMeasurementValue[10]
-            )
-            .required()
+          unitOfMeasurement: Joi.string().valid(...unitOfMeasurementValues).required()
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
