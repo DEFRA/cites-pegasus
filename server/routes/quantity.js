@@ -19,6 +19,7 @@ function createModel(errors, data) {
     { text: pageContent.unitOfMeasurementPrompt, value: null },
     ...pageContent.unitsOfMeasurement
   ])
+
   unitsOfMeasurement.forEach((e) => {
     if (e.value === data.unitOfMeasurement) e.selected = "true"
   })
@@ -92,6 +93,10 @@ function quantity(value, helpers) {
   return value
 }
 
+const unitOfMeasurementValues = textContent.quantity.unitsOfMeasurement.map(
+  (e) => e.value
+)
+
 module.exports = [
   {
     method: "GET",
@@ -137,7 +142,7 @@ module.exports = [
         }),
         payload: Joi.object({
           quantity: Joi.any().custom(quantity),
-          unitOfMeasurement: Joi.string().valid("noOfSpecimens", "noOfPiecesOrParts", "cm3", "g", "Kg", "ltr", "m", "m2",  "m3", "ml", "tonne").required()
+          unitOfMeasurement: Joi.string().valid(...unitOfMeasurementValues).required()
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
