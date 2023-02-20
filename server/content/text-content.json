@@ -46,9 +46,8 @@
         "pageBody": "You can only use this service to apply for:",
         "bullet1": "import, export or re-export permits",
         "bullet2": "article 10 certificates",
-        "linkText": "Check how to apply for other CITES permits and certificates",
-        "linkUrl": "/",
-        "finishButtonUrl": "/"
+        "link": "<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>Check how to apply for other CITES permits and certificates</a>",
+        "finishButtonUrl": "/your-applications"
     },
     "applyingOnBehalf": {
         "defaultTitle": "Are you applying on behalf of someone else?",
