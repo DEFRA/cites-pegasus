@@ -139,7 +139,7 @@ function createModel(errors, data) {
         isAnimal && {
           value: "C",
           text: pageContent.radioOptionC,
-          hint: { text: pageContent.radioOptionCHint },
+          hint: { html: pageContent.radioOptionCHint },
           label: {
             classes: "govuk-!-font-weight-bold"
           },
@@ -148,7 +148,7 @@ function createModel(errors, data) {
         isAnimal && {
           value: "F",
           text: pageContent.radioOptionF,
-          hint: { text: pageContent.radioOptionFHint },
+          hint: { html: pageContent.radioOptionFHint },
           label: {
             classes: "govuk-!-font-weight-bold"
           },
