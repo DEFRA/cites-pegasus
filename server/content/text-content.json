@@ -456,7 +456,7 @@
             "radioOptionR": "R",
             "radioOptionRHint": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
             "radioOptionD": "D",
-            "radioOptionDHint": "Animals bred in captivity for commercial purposes",
+            "radioOptionDHint": "Animals bred in captivity by a CITES registered breeder",
             "radioOptionC": "C",
             "radioOptionCHint": "Animals bred in captivity for non-commercial purposes",
             "radioOptionF": "F",
