@@ -1,7 +1,7 @@
 const { Issuer } = require('openid-client');
 
 async function createOpenIdClient() {
-  const issuer = await Issuer.discover('https://comdev5.azure.defra.cloud/idphub/b2c/.well-known/openid-configuration?p=b2c_1a_signupsignin');
+  const issuer = await Issuer.discover('https://condev5.azure.defra.cloud/idphub/b2c/.well-known/openid-configuration?p=b2c_1a_signupsignin');
   const client = new issuer.Client({
     client_id: 'your-client-id',
     client_secret: 'your-client-secret',
