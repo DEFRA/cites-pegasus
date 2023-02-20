@@ -29,7 +29,8 @@ const routes = [].concat(
   require('../routes/quantity'),
   require('../routes/public'),
   require('../routes/test'),
-  require('../routes/oidc')
+  require('../routes/oidc'),
+  require('../routes/profile')
 )
 
 module.exports = {
