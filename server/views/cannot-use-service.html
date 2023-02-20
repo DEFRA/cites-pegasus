@@ -27,7 +27,7 @@
       </ul>
 
       <p class="govuk-body govuk-!-margin-bottom-7">
-        <a href="{{linkUrl}}">{{linkText}}</a>
+        {{link | safe}}
       </p>
 
       {{ govukButton({
