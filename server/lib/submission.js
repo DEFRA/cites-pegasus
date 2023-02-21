@@ -175,7 +175,7 @@ function getAppFlow(submission) {
                         }
 
                         if (application.importerExporterDetails || species.isEverImportedExported) {
-                            //PERMIT DETAILS
+                            appFlow.push(`permit-details/${applicationIndex}`)
                         }
 
 

@@ -9,7 +9,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
-const nextPathRemarks = `${urlPrefix}/remarks`
+const nextPathComments = `${urlPrefix}/comments`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
 
@@ -242,7 +242,7 @@ module.exports = [
         }
 
         if (submission.permitType === 'export') {
-          return h.redirect(`${nextPathRemarks}/${applicationIndex}`)
+          return h.redirect(`${nextPathComments}/${applicationIndex}`)
         } else {
           return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
         }

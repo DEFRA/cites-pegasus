@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+  {% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+        "titleText": errorSummaryTitle,
+        "errorList": errorList
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l"> {{pageHeader}} </h1>
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+        {% call govukFieldset({
+          legend: {
+            text: headingExportOrReexport,
+            classes: "govuk-fieldset__legend--m",
+            isPageHeading: true
+          }
+        }) %}
+        <p>
+          {{ govukInput(inputExportOrReexportCountry) }}
+          {{ govukInput(inputExportOrReexportPermitNumber) }}
+          {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
+          <p>{{divider}}</p>
+          {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
+          {% endcall %}
+
+          {% call govukFieldset({
+          legend: {
+            text:  headingCountryOfOrigin,
+            classes: "govuk-fieldset__legend--m",
+            isPageHeading: false
+          }
+        }) %}
+          <p>
+            {{ govukInput(inputCountryOfOrigin) }}
+            {{ govukInput(inputCountryOfOriginPermitNumber) }}
+            {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
+            <p>{{divider}}</p>
+            {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
+            {% endcall %}
+
+            {{ govukButton({
+              text: continueButton,
+              type: "submit"
+            }) }}
+          </form>
+        </div>
+      </div>
+    {% endblock %}
