@@ -487,7 +487,7 @@ module.exports = [
             exportOrReexportCountry: exportOrReexportCountry,
             exportOrReexportPermitNumber: exportOrReexportPermitNumber,
             exportOrReexportPermitIssueDateDay: exportOrReexportDay,
-            exportOrReexportPermitIssueDateonth: exportOrReexportMonth,
+            exportOrReexportPermitIssueDateMonth: exportOrReexportMonth,
             exportOrReexportPermitIssueDateYear: exportOrReexportYear,
             isExportOrReexportNotApplicable: isExportOrReexportNotApplicable,
             countryOfOrigin: countryOfOrigin,
