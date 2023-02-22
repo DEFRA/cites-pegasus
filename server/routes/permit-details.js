@@ -305,139 +305,81 @@ function permitIssueDateValidator(value, helpers) {
   console.log("valuee>>>", value)
 
   if (!isExportOrReexportNotApplicable) {
-    if (
-      !exportOrReexportDay &&
-      !exportOrReexportMonth &&
-      !exportOrReexportYear
-    ) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate"
-      })
+    if ( !exportOrReexportDay && !exportOrReexportMonth && !exportOrReexportYear) {
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate" })
     }
 
     if (!exportOrReexportDay && !exportOrReexportMonth) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate-day-month"
-      })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-month"})
     }
 
     if (!exportOrReexportDay && !exportOrReexportYear) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate-day-year"
-      })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-year" })
     }
 
     if (!exportOrReexportMonth && !exportOrReexportYear) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate-month-year"
-      })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-month-year" })
     }
 
     if (!exportOrReexportDay) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate-day"
-      })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day" })
     }
 
     if (!exportOrReexportMonth) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate-month"
-      })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-month" })
     }
 
     if (!exportOrReexportYear) {
-      return helpers.error("any.empty", {
-        customLabel: "exportOrReexportPermitIssueDate-year"
-      })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-year"  })
     }
 
-    if (
-      !isValidDate(
-        exportOrReexportDay,
-        exportOrReexportMonth,
-        exportOrReexportYear
-      )
-    ) {
+    if (!isValidDate( exportOrReexportDay, exportOrReexportMonth, exportOrReexportYear)) {
       return helpers.error("any.invalid", {
         customLabel: "exportOrReexportPermitIssueDate"
       })
-    } else {
-      const date = new Date(
-        exportOrReexportYear,
-        exportOrReexportMonth - 1,
-        exportOrReexportDay
-      )
+    } else { const date = new Date( exportOrReexportYear, exportOrReexportMonth - 1, exportOrReexportDay)
       if (!isPastDate(date, true)) {
-        return helpers.error("any.future", {
-          customLabel: "exportOrReexportPermitIssueDate"
-        })
+        return helpers.error("any.future", { customLabel: "exportOrReexportPermitIssueDate" })
       }
     }
   }
 
   if (!isCountryOfOriginNotApplicable) {
     if (!countryOfOriginDay && !countryOfOriginMonth && !countryOfOriginYear) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate" })
     }
 
     if (!countryOfOriginDay && !countryOfOriginMonth) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate-day-month"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-day-month" })
     }
 
     if (!countryOfOriginDay && !countryOfOriginYear) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate-day-year"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-day-year" })
     }
 
     if (!countryOfOriginMonth && !countryOfOriginYear) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate-month-year"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-month-year" })
     }
 
     if (!countryOfOriginDay) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate-day"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-day" })
     }
 
     if (!countryOfOriginMonth) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate-month"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-month" })
     }
 
     if (!countryOfOriginYear) {
-      return helpers.error("any.empty", {
-        customLabel: "countryOfOriginPermitIssueDate-year"
-      })
+      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-year" })
     }
 
     if (
-      !isValidDate(
-        countryOfOriginDay,
-        countryOfOriginMonth,
-        countryOfOriginYear
-      )
-    ) {
-      return helpers.error("any.invalid", {
-        customLabel: "countryOfOriginPermitIssueDate"
-      })
+      !isValidDate( countryOfOriginDay, countryOfOriginMonth, countryOfOriginYear  ) ) {
+      return helpers.error("any.invalid", {  customLabel: "countryOfOriginPermitIssueDate" })
     } else {
-      const date = new Date(
-        countryOfOriginYear,
-        countryOfOriginMonth - 1,
-        countryOfOriginDay
-      )
+      const date = new Date( countryOfOriginYear, countryOfOriginMonth - 1, countryOfOriginDay )
       if (!isPastDate(date, true)) {
-        return helpers.error("any.future", {
-          customLabel: "countryOfOriginPermitIssueDate"
-        })
+        return helpers.error("any.future", { customLabel: "countryOfOriginPermitIssueDate" })
       }
     }
   }
@@ -649,3 +591,74 @@ module.exports = [
   }
 ]
 
+
+
+// function exportOrReexportPermitIssueDateValidator(value, helpers) {
+//   const {
+//     "exportOrReexportPermitIssueDate-day": day,
+//     "exportOrReexportPermitIssueDate-month": month,
+//     "exportOrReexportPermitIssueDate-year": year,
+//     isExportOrReexportNotApplicable
+//   } = value
+
+
+//     console.log("valuee>>>", value)
+
+//     if (!isExportOrReexportNotApplicable){
+//       if (!day && !month && !year) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate"
+//         })
+//       }
+    
+//       if (!day && !month) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate-day-month"
+//         })
+//       }
+    
+//       if (!day && !year) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate-day-year"
+//         })
+//       }
+    
+//       if (!month && !year) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate-month-year"
+//         })
+//       }
+    
+//       if (!day) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate-day"
+//         })
+//       }
+    
+//       if (!month) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate-month"
+//         })
+//       }
+    
+//       if (!year) {
+//         return helpers.error("any.empty", {
+//           customLabel: "exportOrReexportPermitIssueDate-year"
+//         })
+//       }
+    
+//       if (!isValidDate(day, month, year)) {
+//         return helpers.error("any.invalid", {
+//           customLabel: "exportOrReexportPermitIssueDate"
+//         })
+//       } else {
+//         const date = new Date(year, month - 1, day)
+//         if (!isPastDate(date, true)) {
+//           return helpers.error("any.future", {
+//             customLabel: "exportOrReexportPermitIssueDate"
+//           })
+//         }
+//       }
+//     }
+//   return value
+// }
