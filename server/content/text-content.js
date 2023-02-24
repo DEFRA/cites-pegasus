@@ -641,6 +641,15 @@ const schema = Joi.object().keys({
       "error.quantity.number.unsafe": Joi.string().required()
     }).required()
   }).required(),
+  uploadSupportingDocuments: Joi.object({    
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
+      "error.fileUpload.hapi.headers.content-type.any.only": Joi.string().required(),
+      "error.fileUpload.any.custom": Joi.string().required(),
+    }).required()
+  }).required(),
 })
 
 // Validate config

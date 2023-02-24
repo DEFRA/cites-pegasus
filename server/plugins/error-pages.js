@@ -20,12 +20,17 @@ module.exports = {
             return h.view('404').code(statusCode)
           }
 
+          if (statusCode === 413) {
+            return h.view('413').code(statusCode)
+          }
+
           // Log the error
           request.log('error', {
             statusCode: statusCode,
             message: response.message,
             stack: response.data ? response.data.stack : response.stack
           })
+
 
           // The return the `500` view
           return h.view('500').code(statusCode)

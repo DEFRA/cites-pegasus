@@ -857,5 +857,15 @@
             "error.quantity.number.max": "Quantity must be less than 1000000",
             "error.quantity.number.unsafe": "Quantity must be less than 1000000"
         }
+    },
+    "uploadSupportingDocuments": {
+        "defaultTitle": "Upload supporting documents",
+        "pageHeader": "Upload supporting documents",
+        "errorMessages": {
+            "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
+            "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
+            "error.fileUpload.any.custom": "A file with this name has already been uploaded"
+        }
+        
     }
 }
