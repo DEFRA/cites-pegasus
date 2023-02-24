@@ -895,6 +895,7 @@
       "error.countryOfOriginPermitNumber.string.min": "Country of origin permit number must be 5 characters or more",
       "error.countryOfOriginPermitNumber.string.max": "Country of origin permit number must be 27 characters or less",
       "error.countryOfOriginPermitIssueDate.any.empty": "Enter the country of origin permit issue date",
+      "error.countryOfOriginPermitIssueDate.any.custom": "Enter the country of origin permit issue date",
       "error.countryOfOriginPermitIssueDate.any.future": "Country of origin permit issue date must be in the past",
       "error.countryOfOriginPermitIssueDate.any.invalid": "Country of origin permit issue date must be a real date",
       "error.countryOfOriginPermitIssueDate-day.any.empty": "Country of origin permit issue date must include a day",

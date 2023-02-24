@@ -683,6 +683,7 @@ const schema = Joi.object().keys({
       "error.countryOfOriginPermitNumber.string.pattern.base": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.min": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.max": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.custom": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate.any.empty": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate.any.future": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate.any.invalid": Joi.string().required(),
