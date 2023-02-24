@@ -872,6 +872,7 @@
     "headingCountryOfOrigin": "Country of origin",
     "errorMessages": {
       "error.exportOrReexportCountry.string.empty": "Enter the country of export or re-export",
+      "error.exportOrReexportCountry.any.empty": "Enter the country of export or re-export",
       "error.exportOrReexportPermitNumber.string.empty": "Enter the country of export or re-export permit number",
       "error.exportOrReexportPermitNumber.string.pattern.base": "Export or re-export permit number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
       "error.exportOrReexportPermitNumber.string.min": "Export or re-export permit number must be 5 characters or more",
@@ -886,6 +887,9 @@
       "error.exportOrReexportPermitIssueDate-month-year.any.empty":  "The export or re-export permit issue date must include a month and year",
       "error.exportOrReexportPermitIssueDate-year.any.empty":  "The export or re-export permit issue date must include a year",
       "error.countryOfOrigin.string.empty": "Enter the country of origin",
+      "error.countryOfOrigin.any.empty": "Enter the country of origin",
+      "error.countryOfOrigin.any.required":  "Enter the country of origin",
+      "error.countryOfOriginPermitNumber.any.required": "Enter the country of origin permit number",
       "error.countryOfOriginPermitNumber.string.empty": "Enter the country of origin permit number",
       "error.countryOfOriginPermitNumber.string.pattern.base": "Country of origin permit number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
       "error.countryOfOriginPermitNumber.string.min": "Country of origin permit number must be 5 characters or more",
