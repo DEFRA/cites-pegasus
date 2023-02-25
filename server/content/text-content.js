@@ -227,8 +227,7 @@ const schema = Joi.object().keys({
     pageBody: Joi.string().required(),
     bullet1: Joi.string().required(),
     bullet2: Joi.string().required(),
-    linkText: Joi.string().required(),
-    linkUrl: Joi.string().uri({ allowRelative: true }).required(),
+    link: Joi.string().required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
   }).required(),
   applyingOnBehalf: Joi.object({
@@ -695,9 +694,17 @@ const schema = Joi.object().keys({
       "error.countryOfOriginPermitIssueDate-month.any.empty": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate-month-year.any.empty": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate-year.any.empty": Joi.string().required(),
-     
     }).required()
-  }).required()
+  }).required(),
+  uploadSupportingDocuments: Joi.object({    
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
+      "error.fileUpload.hapi.headers.content-type.any.only": Joi.string().required(),
+      "error.fileUpload.any.custom": Joi.string().required(),
+    }).required()
+  }).required(),
 })
 
 // Validate config

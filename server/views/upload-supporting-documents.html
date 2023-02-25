@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+  {% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+        "titleText": errorSummaryTitle,
+        "errorList": errorList
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">
+        {# {{ govukInput(inputNumberOfUnmarkedSpecimens) }} #}
+
+        <h1 class="govuk-heading-xl">
+          {{pageHeader}}
+        </h1>
+        {# 
+    <p class="govuk-body">{{pageBody1}}</p>
+    <p class="govuk-body">{{pageBody2}}</p> #}
+
+        {# <ul class="govuk-list govuk-list--bullet">
+      <li>{{bullet1}}</li>
+      <li>{{bullet2}}</li>
+    </ul> #}
+
+        {{ govukFileUpload(inputFile) }}
+        {{ govukButton({
+          text: "upload",
+          type: "submit",
+          attributes: {
+            formAction: formActionPage + '/upload'
+          }
+        }) }}
+
+        <h3>Files uploaded</h3>
+
+        <output id="image-gallery">
+          <ul class="thumb-Images" id="imgList">
+            {% for supportingDocument in supportingDocuments %}
+              <li>
+                <div class="img-wrap img-wrapper">
+                  <span class="close">
+                    <i class="fa fa-trash-o"></i>
+                  </span>
+                </div>
+                <div class="file-info">{{supportingDocument.fileName}}</div>
+                {{ govukButton({
+                  text: "delete",
+                  type: "submit",
+                  attributes: {
+                    formAction: supportingDocument.formActionDelete
+                  }
+                }) }}
+              
+            </li>
+          {% endfor %}
+        </ul>
+      </output>
+
+      {{ govukButton({
+              text: continueButton,
+              type: "submit",
+              attributes: {
+                    formAction: formActionPage + '/continue'
+                  }
+            }) }}
+    </form>
+  </div>
+</div>
+{% endblock %}

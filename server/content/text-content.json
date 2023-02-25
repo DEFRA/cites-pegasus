@@ -1,43 +1,871 @@
 {
-  "common": {
-    "serviceName": "Apply for a CITES permit",
-    "phaseBannerPhase": "beta",
-    "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
-    "backLinkButton": "Back",
-    "continueButton": "Continue",
-    "confirmButton": "Confirm",
-    "searchButton": "Search",
-    "startButton": "Start now",
-    "finishButton": "Finish",
-    "errorSummaryTitlePrefix": "Error: ",
-    "errorSummaryTitle": "There is a problem",
-    "radioOptionYes": "Yes",
-    "radioOptionNo": "No",
-    "errorMessages": {}
-  },
-  "applyCitesPermit": {
-    "pageTitle": "Apply for a CITES permit",
-    "pageHeader": "Apply for a CITES permit",
-    "pageBody1": "Use this service to apply for a permit to import, export or re-export under the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES).",
-    "pageBody2": "You can use this service to apply for a permit to:",
-    "bullet1": "import, export or re-export a specimen",
-    "bullet2": "use a specimen for commercial purposes (also called an Article 10)"
-  },
-  "permitType": {
-    "defaultTitle": "What type of permit or certificate are you applying for?",
-    "pageHeader": "What type of permit or certificate are you applying for?",
-    "radioOptionImport": "Import",
-    "radioOptionImportHint": "To move a species into Great Britain from another country.",
-    "radioOptionExport": "Export",
-    "radioOptionExportHint": "To move a species out of Great Britain to another country.",
-    "radioOptionReexport": "Re-export",
-    "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
-    "radioOptionArticle10": "Article 10",
-    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
-    "radioOptionOther": "Other",
-    "errorMessages": {
-      "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
-      "error.permitType.any.only": "Select the type of permit or certificate that you are applying for"
+    "common": {
+        "serviceName": "Apply for a CITES permit",
+        "phaseBannerPhase": "beta",
+        "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
+        "backLinkButton": "Back",
+        "continueButton": "Continue",
+        "confirmButton": "Confirm",
+        "searchButton": "Search",
+        "startButton": "Start now",
+        "finishButton": "Finish",
+        "errorSummaryTitlePrefix": "Error: ",
+        "errorSummaryTitle": "There is a problem",
+        "radioOptionYes": "Yes",
+        "radioOptionNo": "No",
+        "errorMessages": {}
+    },
+    "applyCitesPermit": {
+        "pageTitle": "Apply for a CITES permit",
+        "pageHeader": "Apply for a CITES permit",
+        "pageBody1": "Use this service to apply for a permit to import, export or re-export under the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES).",
+        "pageBody2": "You can use this service to apply for a permit to:",
+        "bullet1": "import, export or re-export a specimen",
+        "bullet2": "use a specimen for commercial purposes (also called an Article 10)"
+    },
+    "permitType": {
+        "defaultTitle": "What type of permit or certificate are you applying for?",
+        "pageHeader": "What type of permit or certificate are you applying for?",
+        "radioOptionImport": "Import",
+        "radioOptionImportHint": "To move a species into Great Britain from another country.",
+        "radioOptionExport": "Export",
+        "radioOptionExportHint": "To move a species out of Great Britain to another country.",
+        "radioOptionReexport": "Re-export",
+        "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
+        "radioOptionArticle10": "Article 10",
+        "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
+        "radioOptionOther": "Other",
+        "errorMessages": {
+            "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
+            "error.permitType.any.only": "Select the type of permit or certificate that you are applying for"
+        }
+    },
+    "cannotUseService": {
+        "pageTitle": "You cannot use this service yet",
+        "pageHeader": "You cannot use this service yet",
+        "pageBody": "You can only use this service to apply for:",
+        "bullet1": "import, export or re-export permits",
+        "bullet2": "article 10 certificates",
+        "link": "<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>Check how to apply for other CITES permits and certificates</a>",
+        "finishButtonUrl": "/your-applications"
+    },
+    "applyingOnBehalf": {
+        "defaultTitle": "Are you applying on behalf of someone else?",
+        "pageHeader": "Are you applying on behalf of someone else?",
+        "pageBody1": "Select ‘yes’ if you are completing this application:",
+        "bulletListItems": [
+            {
+                "bulletListItem": "as an agent"
+            },
+            {
+                "bulletListItem": "for a friend or family member"
+            }
+        ],
+        "pageBody2": "Select ‘no’ if you are completing this application on behalf of yourself, your business or the business that you work for.",
+        "errorMessages": {
+            "error.isAgent.any.required": "Select yes if you are applying on behalf of someone else",
+            "error.isAgent.any.only": "Select yes if you are applying on behalf of someone else"
+        }
+    },
+    "contactDetails": {
+        "agent": {
+            "defaultTitleImport": "Enter your contact details",
+            "defaultTitleExport": "Enter your contact details",
+            "defaultTitleReexport": "Enter your contact details",
+            "defaultTitleArticle10": "Enter your contact details",
+            "pageHeaderImport": "Enter your contact details",
+            "pageHeaderExport": "Enter your contact details",
+            "pageHeaderReexport": "Enter your contact details",
+            "pageHeaderArticle10": "Enter your contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessNameImport": "If you are a business, give the business name.",
+            "inputHintBusinessNameExport": "If you are a business, give the business name.",
+            "inputHintBusinessNameReexport": "If you are a business, give the business name.",
+            "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmailImport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailExport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
+        },
+        "applicant": {
+            "defaultTitleImport": "Enter your contact details",
+            "defaultTitleExport": "Enter your contact details",
+            "defaultTitleReexport": "Enter your contact details",
+            "defaultTitleArticle10": "Enter your contact details",
+            "pageHeaderImport": "Enter your contact details",
+            "pageHeaderExport": "Enter your contact details",
+            "pageHeaderReexport": "Enter your contact details",
+            "pageHeaderArticle10": "Enter your contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessNameImport": "If you are a business, give the business name.",
+            "inputHintBusinessNameExport": "If you are a business, give the business name.",
+            "inputHintBusinessNameReexport": "If you are a business, give the business name.",
+            "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmailImport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailExport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
+            "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
+        },
+        "agentLed": {
+            "defaultTitleImport": "Enter the importer’s contact details",
+            "defaultTitleExport": "Enter the exporter’s contact details",
+            "defaultTitleReexport": "Enter the re-exporter’s contact details",
+            "defaultTitleArticle10": "Enter the applicant’s contact details",
+            "pageHeaderImport": "Enter the importer’s contact details",
+            "pageHeaderExport": "Enter the exporter’s contact details",
+            "pageHeaderReexport": "Enter the re-exporter’s contact details",
+            "pageHeaderArticle10": "Enter the applicant’s contact details",
+            "inputLabelFullName": "Full name",
+            "inputLabelBusinessName": "Business name (optional)",
+            "inputHintBusinessNameImport": "If the importer is a business, give the business name.",
+            "inputHintBusinessNameExport": "If the exporter is a business, give the business name.",
+            "inputHintBusinessNameReexport": "If the re-exporter is a business, give the business name.",
+            "inputHintBusinessNameArticle10": "If the applicant is a business, give the business name.",
+            "inputLabelEmail": "Email address",
+            "inputHintEmailImport": "We will only use the importer’s email address to contact them about the application.",
+            "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
+            "inputHintEmailReexport": "We will only use the re-exporter’s email address to contact them about the application.",
+            "inputHintEmailArticle10": "We will only use the applicant’s email address to contact them about the application."
+        },
+        "errorMessages": {
+            "error.fullName.string.empty": "Full name is required",
+            "error.fullName.string.pattern.base": "Full name is invalid",
+            "error.businessName.string.pattern.base": "Business name is invalid",
+            "error.email.string.email": "Email format is invalid"
+        }
+    },
+    "postcode": {
+        "common": {
+            "buttonFindAddress": "Find address",
+            "linkTextEnterAddress": "Enter address manually",
+            "inputLabelPostcode": "Postcode",
+            "errorMessages": {
+                "error.postcode.string.empty": "Enter your postcode"
+            }
+        },
+        "agent": {
+            "defaultTitleImport": "What is your address?",
+            "defaultTitleExport": "What is your address?",
+            "defaultTitleReexport": "What is your address?",
+            "defaultTitleArticle10": "What is your address?",
+            "pageHeaderImport": "What is your address?",
+            "pageHeaderExport": "What is your address?",
+            "pageHeaderReexport": "What is your address?",
+            "pageHeaderArticle10": "What is your address?",
+            "errorMessagesImport": {
+                "error.postcode.string.empty": "Enter your postcode"
+            },
+            "errorMessagesExport": {
+                "error.postcode.string.empty": "Enter your postcode"
+            },
+            "errorMessagesReexport": {
+                "error.postcode.string.empty": "Enter your postcode"
+            },
+            "errorMessagesArticle10": {
+                "error.postcode.string.empty": "Enter your postcode"
+            }
+        },
+        "applicant": {
+            "defaultTitleImport": "What’s the importer’s address?",
+            "defaultTitleExport": "What’s the exporter’s address?",
+            "defaultTitleReexport": "What’s the re-exporter’s address?",
+            "defaultTitleArticle10": "What’s the applicant’s address?",
+            "pageHeaderImport": "What’s the importer’s address?",
+            "pageHeaderExport": "What’s the exporter’s address?",
+            "pageHeaderReexport": "What’s the re-exporter’s address?",
+            "pageHeaderArticle10": "What’s the applicant’s address?"
+        },
+        "agentLed": {
+            "defaultTitleImport": "What’s the importer’s address?",
+            "defaultTitleExport": "What’s the exporter’s address?",
+            "defaultTitleReexport": "What’s the re-exporter’s address?",
+            "defaultTitleArticle10": "What’s the applicant’s address?",
+            "pageHeaderImport": "What’s the importer’s address?",
+            "pageHeaderExport": "What’s the exporter’s address?",
+            "pageHeaderReexport": "What’s the re-exporter’s address?",
+            "pageHeaderArticle10": "What’s the applicant’s address?"
+        },
+        "delivery": {
+            "defaultTitleImport": "What is the delivery address?",
+            "defaultTitleExport": "What is the delivery address?",
+            "defaultTitleReexport": "What is the delivery address?",
+            "defaultTitleArticle10": "What is the delivery address?",
+            "pageHeaderImport": "What is the delivery address?",
+            "pageHeaderExport": "What is the delivery address?",
+            "pageHeaderReexport": "What is the delivery address?",
+            "pageHeaderArticle10": "What is the delivery address?"
+        }
+    },
+    "searchAddress": {
+        "agent": {
+            "defaultTitleImport": "Search for your address",
+            "defaultTitleExport": "Search for your address",
+            "defaultTitleReexport": "Search for your address",
+            "defaultTitleArticle10": "Search for your address",
+            "pageHeaderImport": "Search for your address",
+            "pageHeaderExport": "Search for your address",
+            "pageHeaderReexport": "Search for your address",
+            "pageHeaderArticle10": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name",
+            "inputLabelStreet": "Street",
+            "inputLabelTown": "Town or city"
+        },
+        "applicant": {
+            "defaultTitleImport": "Search for your address",
+            "defaultTitleExport": "Search for your address",
+            "defaultTitleReexport": "Search for your address",
+            "defaultTitleArticle10": "Search for your address",
+            "pageHeaderImport": "Search for your address",
+            "pageHeaderExport": "Search for your address",
+            "pageHeaderReexport": "Search for your address",
+            "pageHeaderArticle10": "Search for your address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name",
+            "inputLabelStreet": "Street",
+            "inputLabelTown": "Town or city"
+        },
+        "agentLed": {
+            "defaultTitleImport": "Search for the importer’s address",
+            "defaultTitleExport": "Search for the exporter’s address",
+            "defaultTitleReexport": "Search for the re-exporter’s address",
+            "defaultTitleArticle10": "Search for the applicant’s address",
+            "pageHeaderImport": "Search for the importer’s address",
+            "pageHeaderExport": "Search for the exporter’s address",
+            "pageHeaderReexport": "Search for the re-exporter’s address",
+            "pageHeaderArticle10": "Search for the applicant’s address",
+            "pageBody": "If you are a business, give the business address.",
+            "inputLabelProperty": "Property number or name",
+            "inputLabelStreet": "Street",
+            "inputLabelTown": "Town or city"
+        }
+    },
+    "selectAddress": {
+        "common": {
+            "defaultTitle": "Select an address ",
+            "pageHeader": "Select an address ",
+            "selectLabelAddress": "Address",
+            "selectAddressPromptNoResults": "No addresses found",
+            "selectAddressPromptSingle": "1 address found",
+            "selectAddressPromptMultiple": "addresses found",
+            "changePostcodeLinkText": "Change postcode",
+            "errorMessages": {
+                "error.address.string.empty": "Select an address"
+            }
+        },
+        "agent": {
+            "enterManualAddressLinkText": "Enter your address manually"
+        },
+        "applicant": {
+            "enterManualAddressLinkText": "Enter the address manually"
+        },
+        "agentLed": {
+            "enterManualAddressLinkText": "Enter the address manually"
+        },
+        "delivery": {
+            "enterManualAddressLinkText": "Enter the address manually"
+        }
+    },
+    "enterAddress": {
+        "common": {
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2",
+            "inputLabelAddressLine3": "Address line 3 (optional)",
+            "inputLabelAddressLine4": "Address line 4 (optional)",
+            "inputLabelPostcode": "Postal or zip code (if your country has one)",
+            "inputLabelCountry": "Country",
+            "errorMessages": {
+                "error.addressLine1.string.empty": "Enter the address line 1",
+                "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+                "error.addressLine2.string.empty": "Enter the address line 2",
+                "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+                "error.addressLine3.string.empty": "Enter the address line 3",
+                "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+                "error.addressLine4.string.empty": "Enter the address line 4",
+                "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+                "error.postcode.string.empty": "Enter a postal or zip code",
+                "error.postcode.string.max": "Enter a real postal or zip code",
+                "error.postcode.string.pattern.base": "Enter a real postal or zip code",
+                "error.country.string.empty": "Enter the country",
+                "error.country.string.max": "Country must be 150 characters or less"
+            }
+        },
+        "agent": {
+            "defaultTitleImport": "Enter your address",
+            "defaultTitleExport": "Enter your address",
+            "defaultTitleReexport": "Enter your address",
+            "defaultTitleArticle10": "Enter your address",
+            "pageHeaderImport": "Enter your address",
+            "pageHeaderExport": "Enter your address",
+            "pageHeaderReexport": "Enter your address",
+            "pageHeaderArticle10": "Enter your address",
+            "pageBodyImport": "If you are a business, enter the business address.",
+            "pageBodyExport": "If you are a business, enter the business address.",
+            "pageBodyReexport": "If you are a business, enter the business address.",
+            "pageBodyArticle10": "If you are a business, enter the business address."
+        },
+        "applicant": {
+            "defaultTitleImport": "Enter the importer’s address",
+            "defaultTitleExport": "Enter the exporter’s address",
+            "defaultTitleReexport": "Enter the re-exporter’s address",
+            "defaultTitleArticle10": "Enter the applicant’s address",
+            "pageHeaderImport": "Enter the importer’s address",
+            "pageHeaderExport": "Enter the exporter’s address",
+            "pageHeaderReexport": "Enter the re-exporter’s address",
+            "pageHeaderArticle10": "Enter the applicant’s address",
+            "pageBodyImport": "If the importer is a business, give the business address.",
+            "pageBodyExport": "If the exporter is a business, give the business address.",
+            "pageBodyReexport": "If the re-exporter is a business, give the business address.",
+            "pageBodyArticle10": "If the applicant is a business, give the business address."
+        },
+        "agentLed": {
+            "defaultTitleImport": "Enter the importer’s address",
+            "defaultTitleExport": "Enter the exporter’s address",
+            "defaultTitleReexport": "Enter the re-exporter’s address",
+            "defaultTitleArticle10": "Enter the applicant’s address",
+            "pageHeaderImport": "Enter the importer’s address",
+            "pageHeaderExport": "Enter the exporter’s address",
+            "pageHeaderReexport": "Enter the re-exporter’s address",
+            "pageHeaderArticle10": "Enter the applicant’s address",
+            "pageBodyImport": "If the importer is a business, give the business address.",
+            "pageBodyExport": "If the exporter is a business, give the business address.",
+            "pageBodyReexport": "If the re-exporter is a business, give the business address.",
+            "pageBodyArticle10": "If the applicant is a business, give the business address."
+        },
+        "delivery": {
+            "defaultTitleImport": "Enter the delivery address ",
+            "defaultTitleExport": "Enter the delivery address ",
+            "defaultTitleReexport": "Enter the delivery address ",
+            "defaultTitleArticle10": "Enter the delivery address ",
+            "pageHeaderImport": "Enter the delivery address ",
+            "pageHeaderExport": "Enter the delivery address ",
+            "pageHeaderReexport": "Enter the delivery address ",
+            "pageHeaderArticle10": "Enter the delivery address ",
+            "pageBodyImport": "You must enter a UK address.",
+            "pageBodyExport": "You must enter a UK address.",
+            "pageBodyReexport": "You must enter a UK address.",
+            "pageBodyArticle10": "You must enter a UK address.",
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2 (optional)",
+            "inputLabelAddressLine3": "Town or city",
+            "inputLabelAddressLine4": "County (optional)",
+            "inputLabelPostcode": "Postcode",
+            "inputLabelCountry": "Country",
+            "errorMessages": {
+                "error.addressLine1.string.pattern.base": "Address line 1 must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine2.string.pattern.base": "Address line 2 must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine3.string.empty": "Enter the town or city",
+                "error.addressLine3.string.max": "Town or city must be 150 characters or less",
+                "error.addressLine3.string.pattern.base": "Town or city must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine4.string.max": "County must be 150 characters or less",
+                "error.addressLine4.string.pattern.base": "County must only include letters a to z and special characters such as hyphens, spaces and apostrophes",
+                "error.postcode.string.empty": "Enter a postcode",
+                "error.postcode.string.max": "Enter a real postcode",
+                "error.postcode.string.pattern.base": "Enter a real postcode"
+            }
+        }
+    },
+    "confirmAddress": {
+        "common": {
+            "changeAddressLinkText": "Change address"
+        },
+        "agent": {
+            "defaultTitleImport": "Confirm the address",
+            "defaultTitleExport": "Confirm the address",
+            "defaultTitleReexport": "Confirm the address",
+            "defaultTitleArticle10": "Confirm the address",
+            "pageHeaderImport": "Confirm the address",
+            "pageHeaderExport": "Confirm the address",
+            "pageHeaderReexport": "Confirm the address",
+            "pageHeaderArticle10": "Confirm the address"
+        },
+        "applicant": {
+            "defaultTitleImport": "Confirm the importer’s address",
+            "defaultTitleExport": "Confirm the exporter’s address",
+            "defaultTitleReexport": "Confirm the re-exporter’s address",
+            "defaultTitleArticle10": "Confirm the applicant’s address",
+            "pageHeaderImport": "Confirm the importer’s address ",
+            "pageHeaderExport": "Confirm the exporter’s address",
+            "pageHeaderReexport": "Confirm the re-exporter’s address",
+            "pageHeaderArticle10": "Confirm the applicant’s address"
+        },
+        "agentLed": {
+            "defaultTitleImport": "Confirm the importer’s address",
+            "defaultTitleExport": "Confirm the exporter’s address",
+            "defaultTitleReexport": "Confirm the re-exporter’s address",
+            "defaultTitleArticle10": "Confirm the applicant’s address",
+            "pageHeaderImport": "Confirm the importer’s address ",
+            "pageHeaderExport": "Confirm the exporter’s address",
+            "pageHeaderReexport": "Confirm the re-exporter’s address",
+            "pageHeaderArticle10": "Confirm the applicant’s address"
+        },
+        "delivery": {
+            "defaultTitleImport": "Confirm the delivery address",
+            "defaultTitleExport": "Confirm the delivery address",
+            "defaultTitleReexport": "Confirm the delivery address",
+            "defaultTitleArticle10": "Confirm the delivery address",
+            "pageHeaderImport": "Confirm the delivery address ",
+            "pageHeaderExport": "Confirm the delivery address",
+            "pageHeaderReexport": "Confirm the delivery address",
+            "pageHeaderArticle10": "Confirm the delivery address"
+        }
+    },
+    "selectDeliveryAddress": {
+        "defaultTitle": "Select the delivery address",
+        "pageHeader": "Select the delivery address",
+        "radioOptionDeliverToApplicantAddress": "Deliver the permit to",
+        "radioOptionDeliverToAgentAddress": "Deliver the permit to",
+        "radioOptionDeliverToDifferentAddress": "Deliver the permit to a different address",
+        "errorMessages": {
+            "error.deliveryAddressOption.any.required": "Select the delivery address",
+            "error.deliveryAddressOption.any.only": "Select the delivery address"
+        }
+    },
+    "speciesName": {
+        "defaultTitle": "What is the scientific name of the species?",
+        "pageHeader": "What is the scientific name of the species?",
+        "bodyText": "Enter the exact scientific name as it appears on the CITES species list. You can ",
+        "bodyLinkText": "search for the scientific name on species+",
+        "bodyText2": "(opens in new tab), then copy and paste it below.",
+        "bodyLinkUrl": "https://speciesplus.net/",
+        "inputLabelSpeciesName": "Scientific name",
+        "errorMessages": {
+            "error.speciesName.string.empty": "Enter the scientific name"
+        }
+    },
+    "couldNotConfirm": {
+        "pageTitle": "We could not confirm the scientific name",
+        "pageHeader": "We could not confirm the scientific name",
+        "bodyText1": "We could not confirm the scientific name ‘",
+        "bodyText2": "’ on the species list. You can ",
+        "linkText": "check scientific names on species+ (opens in a new tab)",
+        "linkUrl": "https://speciesplus.net/",
+        "searchAgainButton": "Search again"
+    },
+    "sourceCode": {
+        "animal": {
+            "defaultTitle": "What is the source code?",
+            "pageHeader": "What is the source code?",
+            "radioOptionW": "W",
+            "radioOptionWHint": "From the wild",
+            "radioOptionR": "R",
+            "radioOptionRHint": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
+            "radioOptionD": "D",
+            "radioOptionDHint": "Animals bred in captivity by a CITES registered breeder",
+            "radioOptionC": "C",
+            "radioOptionCHint": "Animals bred in captivity to second generation specimens or that meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-12-10-R15.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
+            "radioOptionF": "F",
+            "radioOptionFHint": "Animals born in captivity to first generation specimens or that do not meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-10-16-R11_0.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
+            "radioOptionI": "I",
+            "radioOptionIHint": "Confiscated or seized",
+            "inputLabelEnterAnotherSourceCode": "Enter another source code",
+            "radioOptionO": "O",
+            "radioOptionOHint": "Pre-convention",
+            "radioOptionX": "X",
+            "radioOptionXHint": "Taken from the marine environment",
+            "radioOptionA": "",
+            "radioOptionAHint": "",
+            "radioOptionU": "U",
+            "radioOptionUHint": "I do not know",
+            "characterCountLabelEnterAReason": "Enter a reason",
+            "dividerText": "Or",
+            "errorMessages": {
+                "error.sourceCode.any.required": "Select the source code",
+                "error.anotherSourceCodeForI.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+                "error.anotherSourceCodeForO.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+                "error.enterAReason.string.empty": "Enter a reason",
+                "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.enterAReason.string.max": "Reason must be 150 characters or less"
+            }
+        },
+        "plant": {
+            "defaultTitle": "What is the source code?",
+            "pageHeader": "What is the source code?",
+            "radioOptionW": "W",
+            "radioOptionWHint": "From the wild",
+            "radioOptionD": "D",
+            "radioOptionDHint": "Plants artificially propagated for commercial purposes",
+            "radioOptionA": "A",
+            "radioOptionAHint": "Plants artificially propagated for non-commercial purposes",
+            "radioOptionI": "I",
+            "radioOptionIHint": "Confiscated or seized",
+            "inputLabelEnterAnotherSourceCode": "Enter another source code",
+            "radioOptionO": "O",
+            "radioOptionOHint": "Pre-convention",
+            "radioOptionX": "X",
+            "radioOptionXHint": "Taken from the marine environment",
+            "radioOptionR": "",
+            "radioOptionRHint": "",
+            "radioOptionC": "",
+            "radioOptionCHint": "",
+            "radioOptionF": "",
+            "radioOptionFHint": "",
+            "radioOptionU": "U",
+            "radioOptionUHint": "I do not know",
+            "characterCountLabelEnterAReason": "Enter a reason",
+            "dividerText": "Or",
+            "errorMessages": {
+                "error.sourceCode.any.required": "Select the source code",
+                "error.anotherSourceCodeForI.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+                "error.anotherSourceCodeForO.string.empty": "Enter another source code",
+                "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
+                "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+                "error.enterAReason.string.empty": "Enter a reason",
+                "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+                "error.enterAReason.string.max": "Reason must be 150 characters or less"
+            }
+        }
+    },
+    "purposeCode": {
+        "defaultTitle": "What is the purpose code?",
+        "pageHeader": "What is the purpose code?",
+        "radioOptionB": "B",
+        "radioOptionBHint": "Breeding in captivity or artificial propagation",
+        "radioOptionE": "E",
+        "radioOptionEHint": "Educational",
+        "radioOptionG": "G",
+        "radioOptionGHint": "Botanical gardens",
+        "radioOptionH": "H",
+        "radioOptionHHint": "Hunting trophies",
+        "radioOptionL": "L",
+        "radioOptionLHint": "Enforcement",
+        "radioOptionM": "M",
+        "radioOptionMHint": "Bio-medical research",
+        "radioOptionN": "N",
+        "radioOptionNHint": "Reintroduction or introduction into the wild",
+        "radioOptionP": "P",
+        "radioOptionPHint": "Personal",
+        "radioOptionQ": "Q",
+        "radioOptionQHint": "Circuses and travelling exhibitions",
+        "radioOptionS": "S",
+        "radioOptionSHint": "Scientific",
+        "radioOptionT": "T",
+        "radioOptionTHint": "Commercial",
+        "radioOptionZ": "Z",
+        "radioOptionZHint": "Zoos",
+        "errorMessages": {
+            "error.purposeCode.any.required": "Select the purpose code"
+        }
+    },
+    "useCertificateFor": {
+        "defaultTitle": "What will you use the certificate for?",
+        "pageHeader": "What will you use the certificate for?",
+        "radioOptionLegallyAcquired": "To prove that you legally acquired a specimen",
+        "radioOptionCommercialActivities": "To use the specimen for commercial activities",
+        "radioOptionOther": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
+        "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain",
+        "errorMessages": {
+            "error.useCertificateFor.any.required": "Select what you will use the certificate for"
+        }
+    },
+    "specimenType": {
+        "defaultTitle": "What best describes the specimen?",
+        "pageHeader": "What best describes the specimen?",
+        "radioOptionAnimalLiving": "A living animal",
+        "radioOptionAnimalPart": "An animal part or derivative",
+        "radioOptionAnimalWorked": "A worked item or finished product",
+        "radioOptionAnimalCoral": "Coral",
+        "radioOptionPlantLiving": "A living plant",
+        "radioOptionPlantProduct": "A plant product",
+        "radioOptionPlantProductHint": "Any plant body or part that was removed from its natural habitat to make a product. For example, seeds, fruits, roots, stems, flowers or leaves, including extracts or powders.",
+        "radioOptionPlantWorked": "A worked item or finished product",
+        "radioOptionPlantWorkedHint": "A specimen that has been significantly altered from its natural raw state and used for items such as furniture, jewellery, carved figures or musical instruments.",
+        "errorMessages": {
+            "error.specimenType.any.only": "Select what best describes the specimen",
+            "error.specimenType.any.required": "Select what best describes the specimen"
+        }
+    },
+    "tradeTermCode": {
+        "defaultTitle": "Do you know the trade term code?",
+        "pageHeader": "Do you know the trade term code?",
+        "inputLabelTradeCode": "Enter the trade term code",
+        "inputLabelTradeCodeHint": "For example, ‘LIV’ for live animals",
+        "errorMessages": {
+            "error.isTradeTermCode.any.required": "Select yes if you know the trade term code",
+            "error.tradeTermCode.string.empty": "Enter the trade term code",
+            "error.tradeTermCode.string.length": "Trade term code must be 3 characters",
+            "error.tradeTermCode.string.pattern.base": "Enter a trade term code using letters a to z"
+        }
+    },
+    "createdDate": {
+        "defaultTitle": "When was the worked item or finished product created?",
+        "pageHeader": "When was the worked item or finished product created?",
+        "pageHeaderHint": "For example, 27 3 2007",
+        "checkboxLabelIsExactDateUnknown": "I do not know the exact date",
+        "inputLabelApproximateDate": "Enter an approximate date or period of time",
+        "inputLabelHintApproximateDate": "For example, ‘1950’ or ‘15th century’",
+        "errorMessages": {
+            "error.createdDate.any.empty": "Enter the date the worked item or finished product was created, or select I do not know the exact date",
+            "error.createdDate.any.future": "The date the worked item or finished product was created must be in the past",
+            "error.createdDate.any.invalid": "The date the worked item or finished product was created must be a real date ",
+            "error.createdDate-day.any.empty": "The date the worked item or finished product was created must include a day",
+            "error.createdDate-day-month.any.empty": "The date the worked item or finished product was created must include a day and month",
+            "error.createdDate-day-year.any.empty": "The date the worked item or finished product was created must include a day and year",
+            "error.createdDate-month.any.empty": "The date the worked item or finished product was created must include a month",
+            "error.createdDate-month-year.any.empty": "The date the worked item or finished product was created must include a month and year",
+            "error.createdDate-year.any.empty": "The date the worked item or finished product was created must include a year",
+            "error.approximateDate.string.empty": "Enter an approximate date or period of time "
+        }
+    },
+    "acquiredDate": {
+        "defaultTitle": "When did you acquire the specimen? ",
+        "pageHeader": "When did you acquire the specimen? ",
+        "pageHeaderHint": "For example, 27 3 2007",
+        "checkboxLabelIsExactDateUnknown": "I do not know the exact date",
+        "inputLabelApproximateDate": "Enter an approximate date or period of time",
+        "inputLabelHintApproximateDate": "For example, ‘1950’ or ‘15th century’",
+        "errorMessages": {
+            "error.acquiredDate.any.empty": "Enter the date that you acquired the specimen, or select I do not know the exact date",
+            "error.acquiredDate.any.future": "The date that you acquired the specimen must be in the past",
+            "error.acquiredDate.any.invalid": "The date that you acquired the specimen must be a real date ",
+            "error.acquiredDate-day.any.empty": "The date that you acquired the specimen must include a day",
+            "error.acquiredDate-day-month.any.empty": "The date that you acquired the specimen must include a day and month",
+            "error.acquiredDate-day-year.any.empty": "The date that you acquired the specimen must include a day and year",
+            "error.acquiredDate-month.any.empty": "The date that you acquired the specimen must include a month",
+            "error.acquiredDate-month-year.any.empty": "The date that you acquired the specimen must include a month and year",
+            "error.acquiredDate-year.any.empty": "The date that you acquired the specimen must include a year",
+            "error.approximateDate.string.empty": "Enter an approximate date or period of time "
+        }
+    },
+    "uniqueIdentificationMark": {
+        "defaultTitle": "What is the specimen’s unique identification mark?",
+        "pageHeader": "What is the specimen’s unique identification mark? ",
+        "inputLabelUniqueIdentificationMark": "Enter the unique identification mark",
+        "radioOptionMicrochipNumber": "Microchip number",
+        "radioOptionClosedRingNumber": "Closed ring number",
+        "radioOptionSplitRingNumber": "Split ring number",
+        "radioOptionOtherRingNumber": "Other type of metal ring",
+        "radioOptionCableTie": "Cable tie",
+        "radioOptionHuntingTrophy": "Hunting trophy",
+        "radioOptionLabel": "Label",
+        "radioOptionSwissInstitue": "Swiss institute",
+        "radioOptionSerialNumber": "Serial number",
+        "radioOptionDivider": "or",
+        "radioOptionUnmarked": "The specimen is not marked",
+        "errorMessages": {
+            "error.uniqueIdentificationMarkType.any.required": "Select the specimen’s unique identification mark",
+            "error.uniqueIdentificationMarkType.any.only": "Select the specimen’s unique identification mark",
+            "error.inputCR.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputCR.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputCR.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputCT.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputCT.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputCT.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputHU.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputHU.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputHU.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputLB.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputLB.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputLB.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputMC.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputMC.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputMC.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputOT.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputOT.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputOT.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputSN.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputSN.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputSN.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputSR.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputSR.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputSR.string.min": "Unique identification mark must be 3 characters or more",
+            "error.inputSI.string.empty": "Enter the specimen’s unique identification mark",
+            "error.inputSI.string.max": "Unique identification mark must be 150 characters or less",
+            "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"
+        }
+    },
+    "specimenDescriptionGeneric": {
+        "defaultTitle": "Describe the specimen",
+        "pageHeader": "Describe the specimen",
+        "errorMessages": {
+            "error.specimenDescriptionGeneric.string.empty": "Enter a description",
+            "error.specimenDescriptionGeneric.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+            "error.specimenDescriptionGeneric.string.min": "Description must be 5 characters or more",
+            "error.specimenDescriptionGeneric.string.max": "Description must be 448 characters or less"
+        }
+    },
+    "describeLivingAnimal": {
+        "defaultTitle": "Describe the specimen",
+        "pageHeader": "Describe the specimen",
+        "inputLabelSex": "What sex is the specimen?",
+        "inputLabelUndeterminedSexReason": "Enter a reason",
+        "inputLabelDateOfBirth": "What is the specimen’s date of birth?",
+        "inputHintDateOfBirth": "If you do not know the exact date, enter an approximate month and year, or leave the date of birth empty.",
+        "inputLabelParentDetails": "Parent details",
+        "inputHintParentDetails": "Enter the unique identification mark and Article 10 certificate number for each parent. For example, ‘Parent female A10 number: 10AB010C/01, closed ring number: WEL0072257’",
+        "inputLabelDescription": "Other description",
+        "inputHintDescription": "Include anything else that helps to describe the specimen (optional).",
+        "radioOptionSexMale": "Male",
+        "radioOptionSexFemale": "Female",
+        "radioOptionSexUndetermined": "Not known",
+        "errorMessages": {
+            "error.sex.any.required": "Select the specimen’s sex",
+            "error.sex.any.only": "Select the specimen’s sex",
+            "error.parentDetails.string.empty": "Enter the parent details",
+            "error.parentDetails.string.min": "Parent details must be 3 characters or more",
+            "error.parentDetails.string.max": "Parent details must be 250 characters or less",
+            "error.description.string.max": "Description must be 100 characters or less",
+            "error.dateOfBirth.any.future": "Date of birth must be in the past",
+            "error.dateOfBirth.any.invalid": "Enter a real date of birth",
+            "error.dateOfBirth-day.number.base": "Date of birth must only include numbers 0 to 9",
+            "error.dateOfBirth-month.number.base": "Date of birth must only include numbers 0 to 9",
+            "error.dateOfBirth-year.number.base": "Date of birth must only include numbers 0 to 9"
+        }
+    },
+    "importerExporter": {
+        "common": {
+            "inputLabelCountry": "Country",
+            "headingAddress": "Address",
+            "inputLabelFullName": "Full name",
+            "inputLabelAddressLine1": "Address line 1",
+            "inputLabelAddressLine2": "Address line 2",
+            "inputLabelAddressLine3": "Address line 3 (optional)",
+            "inputLabelAddressLine4": "Address line 4 (optional)",
+            "inputLabelPostcode": "Postal or zip code (if your country has one)",
+            "errorMessages": {
+                "error.name.string.max": "Full name must be 150 characters or less",
+                "error.name.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
+                "error.addressLine1.string.empty": "Enter the address line 1",
+                "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+                "error.addressLine2.string.empty": "Enter the address line 2",
+                "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+                "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+                "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+                "error.postcode.string.max": "Postal or zip code must be 50 characters or less",
+                "error.country.string.empty": "Select a country",
+                "error.country.string.max": "Country must be 150 characters or less"
+            }
+        },
+        "importerDetails": {
+            "defaultTitle": "Importer’s contact details ",
+            "pageHeader": "Importer’s details",
+            "heading": "Country of import",
+            "errorMessages": {
+                "error.name.string.empty": "Enter the importer’s full name"
+            }
+        },
+        "exporterDetails": {
+            "defaultTitle": "Exporter or re-exporter’s contact details",
+            "pageHeader": "Exporter or re-exporter’s details",
+            "heading": "Country of export or re-export",
+            "errorMessages": {
+                "error.name.string.empty": "Enter the exporter’s full name"
+            }
+        }
+    },
+    "alreadyHaveA10": {
+       "defaultTitle": "Does the specimen already have an Article 10 certificate?",
+        "pageHeader": "Does the specimen already have an Article 10 certificate?",
+        "inputLabelA10CertificateNumber": "Enter certificate number",
+        "inputLabelA10CertificateNumberHint": "For example, ‘10AB010C’",
+        "errorMessages": {
+          "error.isA10CertificateNumberKnown.any.required": "Select yes if the specimen already has an Article 10 certificate",
+          "error.a10CertificateNumber.string.empty": "Enter a certificate number",
+          "error.a10CertificateNumber.string.min": "Certificate number must be 5 characters or more ",
+          "error.a10CertificateNumber.string.max": "Certificate number must be 27 characters or less",
+          "error.a10CertificateNumber.string.pattern.base": "Certificate number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
+        }
+      },
+      "everImportedExported": {
+        "defaultTitle": "Has the specimen ever been imported or exported? ",
+        "pageHeader": "Has the specimen ever been imported or exported? ",
+        "errorMessages": {
+          "error.isEverImportedExported.any.required": "Select yes if the specimen has ever been imported or exported"
+        }
+      },
+    "unmarkedSpecimens": {
+        "defaultTitle": "How many unmarked specimens do you want to apply for?",
+        "pageHeader": "How many unmarked specimens do you want to apply for?",
+        "pageHeaderHint": "Enter the number of unmarked specimens that you want to apply for on this permit.",
+        "errorMessages": {
+            "error.numberOfUnmarkedSpecimens.any.empty": "Enter the number of unmarked specimens",
+            "error.numberOfUnmarkedSpecimens.number.base": "The number of unmarked specimens must only include numbers 0 to 9",
+            "error.numberOfUnmarkedSpecimens.number.integer": "The number of unmarked specimens must be a whole number, like 30",
+            "error.numberOfUnmarkedSpecimens.number.min": "The number of unmarked specimens must be 1 or more",
+            "error.numberOfUnmarkedSpecimens.number.max": "The number of unmarked specimens must be 1000000 or fewer",
+            "error.numberOfUnmarkedSpecimens.number.unsafe": "The number of unmarked specimens must be 1000000 or fewer"
+        }
+    },
+    "quantity": {
+        "defaultTitle": "Quantity or net mass",
+        "pageHeader": "Quantity or net mass",
+        "inputLabelQuantity": "Quantity or net mass",
+        "selectLabelUnitOfMeasurement": "Unit of measurement",
+        "unitOfMeasurementPrompt": "Choose unit of measurement",
+        "unitsOfMeasurement": [
+            {
+                "text": "Number of specimens",
+                "value": "noOfSpecimens"
+            },
+            {
+                "text": "Number of pieces or parts",
+                "value": "noOfPiecesOrParts"
+            },
+            {
+                "text": "cm3",
+                "value": "cm3"
+            },
+            {
+                "text": "g",
+                "value": "g"
+            },
+            {
+                "text": "Kg",
+                "value": "Kg"
+            },
+            {
+                "text": "litres",
+                "value": "litres"
+            },
+            {
+                "text": "m",
+                "value": "m"
+            },
+            {
+                "text": "m2",
+                "value": "m2"
+            },
+            {
+                "text": "m3",
+                "value": "m3"
+            },
+            {
+                "text": "ml",
+                "value": "ml"
+            },
+            {
+                "text": "tonne",
+                "value": "tonne"
+            }
+        ],
+        "errorMessages": {
+            "error.unitOfMeasurement.any.only": "Select a unit of measurement",
+            "error.quantity.any.empty": "Enter the quantity",
+            "error.quantity.number.base": "Quantity must only include numbers 0 to 9, and special characters such as full stops",
+            "error.quantity.number.min": "Quantity must be more than 0.0001",
+            "error.quantity.number.max": "Quantity must be less than 1000000",
+            "error.quantity.number.unsafe": "Quantity must be less than 1000000"
+        }
+    },
+    "uploadSupportingDocuments": {
+        "defaultTitle": "Upload supporting documents",
+        "pageHeader": "Upload supporting documents",
+        "errorMessages": {
+            "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
+            "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
+            "error.fileUpload.any.custom": "A file with this name has already been uploaded"
+        }
+        
     }
   },
   "cannotUseService": {
