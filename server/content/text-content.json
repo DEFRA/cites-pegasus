@@ -915,6 +915,10 @@
           "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
           "error.fileUpload.any.custom": "A file with this name has already been uploaded"
       }
-      
+  },
+  "comments": {
+   "defaultTitle": "Add remarks",
+    "pageHeader": "Add remarks",
+    "inputHintAddRemarks": "Include any other comments that may support your application (optional)."
   }
 }

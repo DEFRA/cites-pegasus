@@ -180,6 +180,10 @@ function getAppFlow(submission) {
                             appFlow.push(`permit-details/${applicationIndex}`)
                         }
 
+                        if (application.permitDetails || species.isEverImportedExported) {
+                            appFlow.push(`comments/${applicationIndex}`)
+                        }
+
 
                         // if (species.specimenType === 'animalLiving') {
                         //     if (request.payload.uniqueIdentificationMarkType === 'unmarked') {
