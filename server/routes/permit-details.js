@@ -36,7 +36,6 @@ function createModel(errors, data) {
   let exportOrReexportPermitIssueDateErrors = []
   let countryOfOriginPermitIssueDateErrors = []
 
-  // let permitIssueDateErrors = []
   let errorList = null
 
   if (errors) {
@@ -66,7 +65,9 @@ function createModel(errors, data) {
       "countryOfOriginPermitIssueDate-year"
     ]
     fields.forEach((field) => {
+
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+
       if (fieldError) {
         errorList.push({
           text: fieldError,
@@ -109,29 +110,27 @@ function createModel(errors, data) {
     })
   }
 
-  console.log(
-    "exportOrReexportPermitIssueDateErrors",
-    exportOrReexportPermitIssueDateErrors
-  )
 
-  console.log(
-    " countryOfOriginPermitIssueDateErrors",
-    countryOfOriginPermitIssueDateErrors
-  )
+  // const exportOrReexportPermitIssueDateErrorMessage =
+  //   exportOrReexportPermitIssueDateErrors[0]
+  //     .map((item) => {
+  //       return item.message
+  //     })
+  //     .join('</p> <p class="govuk-error-message">')
+
+  // const countryOfOriginPermitIssueDateErrorMessage =
+  //   countryOfOriginPermitIssueDateErrors[0]
+  //     .map((item) => {
+  //       return item.message
+  //     })
+  //     .join('</p> <p class="govuk-error-message">')
+
 
   const exportOrReexportPermitIssueDateErrorMessage =
-    exportOrReexportPermitIssueDateErrors
-      .map((item) => {
-        return item.message
-      })
-      .join('</p> <p class="govuk-error-message">')
+    exportOrReexportPermitIssueDateErrors[0]?.message
 
   const countryOfOriginPermitIssueDateErrorMessage =
-    countryOfOriginPermitIssueDateErrors
-      .map((item) => {
-        return item.message
-      })
-      .join('</p> <p class="govuk-error-message">')
+    countryOfOriginPermitIssueDateErrors[0]?.message
 
   const exportOrReexportPermitIssueDateComponents = [
     { name: "day", value: data.exportOrReexportPermitIssueDateDay },
@@ -299,8 +298,6 @@ function countryOfOriginPermitIssueDateValidator(value, helpers) {
     isCountryOfOriginNotApplicable
   } = value
 
-  console.log("valuee countryOfOriginPermitIssueDate >>>", value)
-
   if (!isCountryOfOriginNotApplicable) {
     if (!countryOfOriginDay && !countryOfOriginMonth && !countryOfOriginYear) {
       return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate" })
@@ -349,10 +346,7 @@ function exportOrReexportPermitIssueDateValidator(value, helpers) {
     "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
     "exportOrReexportPermitIssueDate-year": exportOrReexportYear,
     isExportOrReexportNotApplicable,
-   
   } = value
-
-  console.log("valuee    exportOrReexportPermitIssueDate>>>", value)
 
   if (!isExportOrReexportNotApplicable) {
     if ( !exportOrReexportDay && !exportOrReexportMonth && !exportOrReexportYear) {
@@ -360,7 +354,7 @@ function exportOrReexportPermitIssueDateValidator(value, helpers) {
     }
 
     if (!exportOrReexportDay && !exportOrReexportMonth) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-month"})
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-month", input:"exportOrReexportPermitIssueDate-day-month" })
     }
 
     if (!exportOrReexportDay && !exportOrReexportYear) {
@@ -455,13 +449,9 @@ module.exports = [
          //Payload validation done in handler section
       },
 
-
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-
-        console.log("submission", submission)
-        console.log("request.payload in handler", request.payload)
 
         const {
           exportOrReexportCountry,
@@ -534,21 +524,41 @@ module.exports = [
 
           const result = payloadSchema.validate(requestPayload, { abortEarly: false })
 
-          console.log("result.error", result.error)
-
           if (result.error) {
             const { applicationIndex } = request.params
             const submission = getSubmission(request)
 
-        //   console.log("request.payload in handler", request.payload)
-        //   console.log("err in handler", err)
-        
-              const pageData = {
-                  applicationIndex: applicationIndex,
-                  permitType: submission.permitType,
-                  ...request.payload
-              }
-
+            const {
+              exportOrReexportCountry,
+              exportOrReexportPermitNumber,
+              "exportOrReexportPermitIssueDate-day": exportOrReexportDay,
+              "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
+              "exportOrReexportPermitIssueDate-year": exportOrReexportYear,
+              countryOfOrigin,
+              countryOfOriginPermitNumber,
+              "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
+              "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
+              "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
+              isExportOrReexportNotApplicable,
+              isCountryOfOriginNotApplicable
+            } = request.payload
+  
+            const pageData = {
+              applicationIndex: applicationIndex,
+              permitType: submission.permitType,
+              exportOrReexportCountry: exportOrReexportCountry,
+              exportOrReexportPermitNumber: exportOrReexportPermitNumber,
+              exportOrReexportPermitIssueDateDay: exportOrReexportDay,
+              exportOrReexportPermitIssueDateMonth: exportOrReexportMonth,
+              exportOrReexportPermitIssueDateYear: exportOrReexportYear,
+              isExportOrReexportNotApplicable: isExportOrReexportNotApplicable,
+              countryOfOrigin: countryOfOrigin,
+              countryOfOriginPermitNumber: countryOfOriginPermitNumber,
+              countryOfOriginPermitIssueDateDay: countryOfOriginDay,
+              countryOfOriginPermitIssueDateMonth: countryOfOriginMonth,
+              countryOfOriginPermitIssueDateYear: countryOfOriginYear,
+              isCountryOfOriginNotApplicable: isCountryOfOriginNotApplicable
+            }
               return h.view(pageId, createModel(result.error, pageData)).takeover()
           }
 
