@@ -65,9 +65,7 @@ function createModel(errors, data) {
       "countryOfOriginPermitIssueDate-year"
     ]
     fields.forEach((field) => {
-
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-
       if (fieldError) {
         errorList.push({
           text: fieldError,
@@ -354,7 +352,7 @@ function exportOrReexportPermitIssueDateValidator(value, helpers) {
     }
 
     if (!exportOrReexportDay && !exportOrReexportMonth) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-month", input:"exportOrReexportPermitIssueDate-day-month" })
+      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-month" })
     }
 
     if (!exportOrReexportDay && !exportOrReexportYear) {

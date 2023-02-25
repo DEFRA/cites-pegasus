@@ -662,6 +662,8 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       "error.exportOrReexportCountry.string.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.empty": Joi.string().required(),
+      "error.exportOrReexportCountry.any.required": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.any.required": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.empty": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.pattern.base": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.min": Joi.string().required(),

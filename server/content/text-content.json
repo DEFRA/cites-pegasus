@@ -873,6 +873,8 @@
     "errorMessages": {
       "error.exportOrReexportCountry.string.empty": "Enter the country of export or re-export",
       "error.exportOrReexportCountry.any.empty": "Enter the country of export or re-export",
+      "error.exportOrReexportCountry.any.required": "Enter the country of export or re-export",
+      "error.exportOrReexportPermitNumber.any.required": "Enter the country of export or re-export permit number",
       "error.exportOrReexportPermitNumber.string.empty": "Enter the country of export or re-export permit number",
       "error.exportOrReexportPermitNumber.string.pattern.base": "Export or re-export permit number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
       "error.exportOrReexportPermitNumber.string.min": "Export or re-export permit number must be 5 characters or more",
