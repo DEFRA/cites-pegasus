@@ -260,7 +260,8 @@ const schema = Joi.object().keys({
       linkTextEnterAddress: Joi.string().required(),
       inputLabelPostcode: Joi.string().required(),
       errorMessages: Joi.object({
-        "error.postcode.string.empty": Joi.string().required()
+        "error.postcode.string.empty": Joi.string().required(),
+        "error.postcode.string.pattern.base": Joi.string().required()
       }).required()
     }).required(),
     agent: postcodeSchema,
@@ -662,6 +663,7 @@ const schema = Joi.object().keys({
       "error.exportOrReexportCountry.string.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.required": Joi.string().required(),
+      "error.exportOrReexportCountry.string.max": Joi.string().required(),
       "error.exportOrReexportPermitNumber.any.required": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.empty": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.pattern.base": Joi.string().required(),
@@ -679,6 +681,7 @@ const schema = Joi.object().keys({
       "error.countryOfOrigin.string.empty": Joi.string().required(),
       "error.countryOfOrigin.any.empty": Joi.string().required(),
       "error.countryOfOrigin.any.required": Joi.string().required(),
+      "error.countryOfOrigin.string.max": Joi.string().required(),
       "error.countryOfOriginPermitNumber.any.required": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.empty": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.pattern.base": Joi.string().required(),
