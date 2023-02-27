@@ -20,7 +20,6 @@ function createModel(errors, data) {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
-    captionText: data.speciesName,
 
     inputComments: {
       id: "comments",
