@@ -260,7 +260,8 @@ const schema = Joi.object().keys({
       linkTextEnterAddress: Joi.string().required(),
       inputLabelPostcode: Joi.string().required(),
       errorMessages: Joi.object({
-        "error.postcode.string.empty": Joi.string().required()
+        "error.postcode.string.empty": Joi.string().required(),
+        "error.postcode.string.pattern.base": Joi.string().required()
       }).required()
     }).required(),
     agent: postcodeSchema,

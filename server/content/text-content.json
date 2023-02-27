@@ -144,7 +144,8 @@
           "linkTextEnterAddress": "Enter address manually",
           "inputLabelPostcode": "Postcode",
           "errorMessages": {
-              "error.postcode.string.empty": "Enter your postcode"
+              "error.postcode.string.empty": "Enter your postcode",
+              "error.postcode.string.pattern.base": "Enter a real postcode"
           }
       },
       "agent": {
