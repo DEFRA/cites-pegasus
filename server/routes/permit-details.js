@@ -286,98 +286,52 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
     return { name: component.name, classes: classes, value: component.value }
   })
 }
-  
-function countryOfOriginPermitIssueDateValidator(value, helpers) {
-  const {
+
+function permitIssueDateValidator(value, helpers) {
+    const {
+    "exportOrReexportPermitIssueDate-day": exportOrReexportDay,
+    "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
+    "exportOrReexportPermitIssueDate-year": exportOrReexportYear,
     "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
     "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
     "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
   } = value
 
-    if (!countryOfOriginDay && !countryOfOriginMonth && !countryOfOriginYear) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate" })
-    }
+  const day =  value.hasOwnProperty("exportOrReexportPermitIssueDate-day") ? exportOrReexportDay :  countryOfOriginDay
+  const month =  value.hasOwnProperty("exportOrReexportPermitIssueDate-month") ?  exportOrReexportMonth :  countryOfOriginMonth
+  const year =   value.hasOwnProperty("exportOrReexportPermitIssueDate-year") ? exportOrReexportYear :  countryOfOriginYear
+  const customLabelPrefix =   value.hasOwnProperty("exportOrReexportPermitIssueDate-day") ? "exportOrReexportPermitIssueDate" :  "countryOfOriginPermitIssueDate"
 
-    if (!countryOfOriginDay && !countryOfOriginMonth) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-day-month" })
+    if (!day && !month && !year) {
+      return helpers.error("any.empty", { customLabel: customLabelPrefix })
     }
-
-    if (!countryOfOriginDay && !countryOfOriginYear) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-day-year" })
+    if (!day && !month) {
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-month` })
     }
-
-    if (!countryOfOriginMonth && !countryOfOriginYear) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-month-year" })
+    if (!day && !year) {
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-year` })
     }
-
-    if (!countryOfOriginDay) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-day" })
+    if (!month && !year) {
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month-year` })
     }
-
-    if (!countryOfOriginMonth) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-month" })
+    if (!day) {
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day` })
     }
-
-    if (!countryOfOriginYear) {
-      return helpers.error("any.empty", { customLabel: "countryOfOriginPermitIssueDate-year" })
+    if (!month) {
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month` })
     }
-
+    if (!year) {
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-month` })
+    }
     if (
-      !isValidDate( countryOfOriginDay, countryOfOriginMonth, countryOfOriginYear  ) ) {
-      return helpers.error("any.invalid", {  customLabel: "countryOfOriginPermitIssueDate" })
+      !isValidDate( day, month, year  ) ) {
+      return helpers.error("any.invalid", {  customLabel: customLabelPrefix  })
     } else {
-      const date = new Date( countryOfOriginYear, countryOfOriginMonth - 1, countryOfOriginDay )
+      const date = new Date( year, month - 1, day )
       if (!isPastDate(date, true)) {
-        return helpers.error("any.future", { customLabel: "countryOfOriginPermitIssueDate" })
+        return helpers.error("any.future", { customLabel: customLabelPrefix  })
       }
     }
-  return value
-}
-
-function exportOrReexportPermitIssueDateValidator(value, helpers) {
-  const {
-    "exportOrReexportPermitIssueDate-day": exportOrReexportDay,
-    "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
-    "exportOrReexportPermitIssueDate-year": exportOrReexportYear,
-  } = value
-
-    if ( !exportOrReexportDay && !exportOrReexportMonth && !exportOrReexportYear) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate" })
-    }
-
-    if (!exportOrReexportDay && !exportOrReexportMonth) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-month" })
-    }
-
-    if (!exportOrReexportDay && !exportOrReexportYear) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day-year" })
-    }
-
-    if (!exportOrReexportMonth && !exportOrReexportYear) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-month-year" })
-    }
-
-    if (!exportOrReexportDay) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-day" })
-    }
-
-    if (!exportOrReexportMonth) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-month" })
-    }
-
-    if (!exportOrReexportYear) {
-      return helpers.error("any.empty", { customLabel: "exportOrReexportPermitIssueDate-year"  })
-    }
-
-    if (!isValidDate( exportOrReexportDay, exportOrReexportMonth, exportOrReexportYear)) {
-      return helpers.error("any.invalid", {
-        customLabel: "exportOrReexportPermitIssueDate"
-      })
-    } else { const date = new Date( exportOrReexportYear, exportOrReexportMonth - 1, exportOrReexportDay)
-      if (!isPastDate(date, true)) {
-        return helpers.error("any.future", { customLabel: "exportOrReexportPermitIssueDate" })
-      }
-  }
   return value
 }
 
@@ -396,7 +350,7 @@ const payloadSchema = Joi.object({
           "exportOrReexportPermitIssueDate-day": Joi.any().optional(),
           "exportOrReexportPermitIssueDate-month": Joi.any().optional(),
           "exportOrReexportPermitIssueDate-year": Joi.any().optional(),
-        }).custom(exportOrReexportPermitIssueDateValidator) }), 
+        }).custom(permitIssueDateValidator) }), 
 
   isCountryOfOriginNotApplicable: Joi.boolean().default(false),
   countryOfOrigin: Joi.when("isCountryOfOriginNotApplicable", {
@@ -411,7 +365,7 @@ const payloadSchema = Joi.object({
          "countryOfOriginPermitIssueDate-day": Joi.any().optional(),
          "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
          "countryOfOriginPermitIssueDate-year": Joi.any().optional()
-        }).custom(countryOfOriginPermitIssueDateValidator) }),
+        }).custom(permitIssueDateValidator) }),
    })
 
 module.exports = [
@@ -468,7 +422,6 @@ module.exports = [
         }),
          //Payload validation done in handler section
       },
-
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
@@ -590,7 +543,6 @@ module.exports = [
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
         }
-
         return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }
