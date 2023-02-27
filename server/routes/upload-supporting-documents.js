@@ -2,6 +2,7 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission } = require('../lib/submission')
+const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob");
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -34,7 +35,7 @@ function createModel(errors, data) {
     })
   }
 
-  const supportingDocuments =  data.supportingDocuments.map((supportingDocument) => {
+  const supportingDocuments =  data.supportingDocuments?.map((supportingDocument) => {
     return {
       ...supportingDocument,
       formActionDelete: `${currentPath}/delete/${encodeURIComponent(supportingDocument.fileName)}`
@@ -87,6 +88,31 @@ module.exports = [
     method: "GET",
     path: `${currentPath}`,
     handler: async (request, h) => {
+
+
+try {
+      const connStr = "DefaultEndpointsProtocol=https;AccountName=bscitesapplicatidev;AccountKey=KdvFlnb5arDIqS7mUpCS2KGTYQMJvDKWMWXetNb1hNe56ZRp5RjPAOfSDZfiavDIUcYAim3I9b3G+AStSqSZsw==;EndpointSuffix=core.windows.net";
+
+      const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+
+      let i = 1;
+      let containers = blobServiceClient.listContainers();
+      for await (const container of containers) {
+        console.log(`Container ${i++}: ${container.name}`);
+      }
+
+      //const containerName = `Bensnewcontainer${new Date().getTime()}`;
+      const containerName = 'Bensnewcontainer'
+      const containerClient = blobServiceClient.getContainerClient(containerName);
+      const createContainerResponse = await containerClient.create();
+      console.log(`Create container ${containerName} successfully`, createContainerResponse.requestId);
+}
+catch (err) {
+  console.log(err)
+}
+
+
+
       const submission = getSubmission(request)
 
       // try {
