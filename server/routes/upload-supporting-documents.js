@@ -95,14 +95,24 @@ try {
 
       const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
 
-      let i = 1;
-      let containers = blobServiceClient.listContainers();
-      for await (const container of containers) {
-        console.log(`Container ${i++}: ${container.name}`);
-      }
+      //Upload text to blob
+      // const containerClient = blobServiceClient.getContainerClient('bentest');
+      // const content = "Hello world!";
+      // const blobName = "newblob" + new Date().getTime();
+      // const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+      // const uploadBlobResponse = await blockBlobClient.upload(content, content.length);
+      // console.log(`Upload block blob ${blobName} successfully`, uploadBlobResponse.requestId);
 
-      //const containerName = `Bensnewcontainer${new Date().getTime()}`;
-      const containerName = 'Bensnewcontainer'
+      //List containers
+      // let i = 1;
+      // let containers = blobServiceClient.listContainers();
+      // for await (const container of containers) {
+      //   console.log(`Container ${i++}: ${container.name}`);
+      // }
+
+
+      //Create a container
+      const containerName = `cites-application-container-docs-${new Date().getTime()}`;
       const containerClient = blobServiceClient.getContainerClient(containerName);
       const createContainerResponse = await containerClient.create();
       console.log(`Create container ${containerName} successfully`, createContainerResponse.requestId);
