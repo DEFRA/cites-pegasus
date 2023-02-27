@@ -1,11 +1,13 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
+const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const pageId = "comments"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
+const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPath = `${urlPrefix}/check-your-answers`
 const invalidSubmissionPath = urlPrefix
 
@@ -14,12 +16,42 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.comments
 
-  const previousPath = data.permitDetails ? previousPathPermitDetails : previousPathEverImportedExported
+  let errorList = null
+  if (errors) {
+    errorList = []
+    const mergedErrorMessages = {
+      ...commonContent.errorMessages,
+      ...pageContent.errorMessages
+    }
+    const fields = ["comments"]
+    fields.forEach((field) => {
+      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+      if (fieldError) {
+        errorList.push({
+          text: fieldError,
+          href: `#${field}`
+        })
+      }
+    })
+  }
+
+  let previousPath = ''
+  if (data.permitType === 'export') {
+      previousPath = previousPathImporterExporter
+  } else if (!data.isEverImportedExported && data.permitType === 'article10') {
+      previousPath = previousPathEverImportedExported
+  } else if (data.permitDetails) {
+    previousPath = previousPathPermitDetails
+  }
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
-    pageTitle: pageContent.defaultTitle,
+    ...(errorList ? { errorList } : {}),
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
+    pageTitle: errorList
+    ? commonContent.errorSummaryTitlePrefix + errorList[0].text
+    : `${pageContent.defaultTitle}`,
 
     inputComments: {
       id: "comments",
@@ -35,6 +67,7 @@ function createModel(errors, data) {
         text: pageContent.inputHintAddRemarks
       },
       ...(data.comments ? { value: data.comments } : {}),
+      errorMessage: getFieldError(errorList, "#comments")
     }
   }
   return { ...commonContent, ...model }
@@ -64,6 +97,9 @@ module.exports = [
 
       const pageData = {
         applicationIndex: applicationIndex,
+        permitType: submission.permitType,
+        permitDetails: submission.applications[applicationIndex]?.permitDetails,
+        isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
         comments: submission.applications[applicationIndex].comments
       }
 
@@ -81,8 +117,21 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-            comments: Joi.string().max(100).optional().allow(null, ""),
+            comments: Joi.string().max(500).optional().allow(null, ""),
         }),
+        failAction: (request, h, err) => {
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
+
+          const pageData = {
+            applicationIndex: applicationIndex,
+            permitType: submission.permitType,
+            permitDetails: submission.applications[applicationIndex].permitDetails,
+            isEverImportedExported: submission.applications[applicationIndex].species.isEverImportedExported,
+            ...request.payload
+          }
+          return h.view(pageId, createModel(err, pageData)).takeover()
+        }
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params

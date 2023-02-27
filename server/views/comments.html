@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
@@ -9,6 +10,17 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
+
+  {% if errorList %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{govukErrorSummary ({
+      "titleText": errorSummaryTitle,
+      "errorList": errorList
+      }) }}
+    </div>
+  </div>
+{% endif %}
 
 
 
