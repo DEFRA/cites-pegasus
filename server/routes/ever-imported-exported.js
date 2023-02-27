@@ -158,7 +158,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (request.payload.isEverImportedExported) {
+        if (request.payload.isEverImportedExported && submission.permitType !== 'export') {
           return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
         } else {
           return h.redirect(`${nextPathComments}/${applicationIndex}`)

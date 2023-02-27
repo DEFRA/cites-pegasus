@@ -156,7 +156,7 @@ function setLabelData(data, labelData) {
 function findErrorList({ details }, inputFields, errorMessages) {
   const errorCodes = inputFields.map((input) => {
     const foundErrorList = details.filter(
-      ({ context: { label: valLabel, customLabel } }) => valLabel === input || customLabel === input
+      ({ context: { label: valLabel, customLabel } }) => customLabel ? customLabel === input : valLabel === input 
     )
 
     if (foundErrorList.length === 0) {
