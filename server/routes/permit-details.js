@@ -172,7 +172,7 @@ function createModel(errors, data) {
       },
       id: "exportOrReexportPermitNumber",
       name: "exportOrReexportPermitNumber",
-      classes: "govuk-!-width-two-thirds",
+      classes: "govuk-input govuk-input--width-20",
       ...(data.exportOrReexportPermitNumber
         ? { value: data.exportOrReexportPermitNumber }
         : {}),
@@ -226,7 +226,7 @@ function createModel(errors, data) {
       },
       id: "countryOfOriginPermitNumber",
       name: "countryOfOriginPermitNumber",
-      classes: "govuk-!-width-two-thirds",
+      classes: "govuk-input govuk-input--width-20",
       ...(data.countryOfOriginPermitNumber
         ? { value: data.countryOfOriginPermitNumber }
         : {}),
