@@ -288,20 +288,19 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
 }
 
 function permitIssueDateValidator(value, helpers) {
-    const {
-    "exportOrReexportPermitIssueDate-day": exportOrReexportDay,
-    "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
-    "exportOrReexportPermitIssueDate-year": exportOrReexportYear,
-    "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
-    "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
-    "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
-  } = value
-
-  const day =  value.hasOwnProperty("exportOrReexportPermitIssueDate-day") ? exportOrReexportDay :  countryOfOriginDay
-  const month =  value.hasOwnProperty("exportOrReexportPermitIssueDate-month") ?  exportOrReexportMonth :  countryOfOriginMonth
-  const year =   value.hasOwnProperty("exportOrReexportPermitIssueDate-year") ? exportOrReexportYear :  countryOfOriginYear
-  const customLabelPrefix =   value.hasOwnProperty("exportOrReexportPermitIssueDate-day") ? "exportOrReexportPermitIssueDate" :  "countryOfOriginPermitIssueDate"
-
+  const {day, month, year, customLabelPrefix} = value.hasOwnProperty("exportOrReexportPermitIssueDate-day")
+    ? {
+        day: value["exportOrReexportPermitIssueDate-day"],
+        month: value["exportOrReexportPermitIssueDate-month"],
+        year: value["exportOrReexportPermitIssueDate-year"],
+        customLabelPrefix: "exportOrReexportPermitIssueDate"
+      } : {
+        day: value["countryOfOriginPermitIssueDate-day"],
+        month:  value["countryOfOriginPermitIssueDate-month"],
+        year:  value["countryOfOriginPermitIssueDate-year"],
+        customLabelPrefix: "countryOfOriginPermitIssueDate"
+}
+ 
     if (!day && !month && !year) {
       return helpers.error("any.empty", { customLabel: customLabelPrefix })
     }
@@ -321,7 +320,7 @@ function permitIssueDateValidator(value, helpers) {
       return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month` })
     }
     if (!year) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-month` })
+      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-year` })
     }
     if (
       !isValidDate( day, month, year  ) ) {
