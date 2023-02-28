@@ -395,6 +395,7 @@ module.exports = [
       const pageData = {
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
+        isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
         exportOrReexportCountry: permitDetails?.exportOrReexportCountry,
         exportOrReexportPermitNumber: permitDetails?.exportOrReexportPermitNumber,
         exportOrReexportPermitIssueDateDay: permitDetails?.exportOrReexportPermitIssueDate.day,
@@ -468,6 +469,7 @@ module.exports = [
             const pageData = {
               applicationIndex: applicationIndex,
               permitType: submission.permitType,
+              isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
               exportOrReexportCountry: exportOrReexportCountry,
               exportOrReexportPermitNumber: exportOrReexportPermitNumber,
               exportOrReexportPermitIssueDateDay: exportOrReexportDay,

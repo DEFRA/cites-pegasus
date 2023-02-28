@@ -922,6 +922,9 @@
   "comments": {
    "defaultTitle": "Add remarks",
     "pageHeader": "Add remarks",
-    "inputHintAddRemarks": "Include any other comments that may support your application (optional)."
+    "inputHintAddRemarks": "Include any other comments that may support your application (optional).",
+    "errorMessages": {
+       "error.comments.string.max": "Comments must be 500 characters or less"
+    }
   }
 }

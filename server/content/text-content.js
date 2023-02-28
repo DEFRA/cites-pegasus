@@ -712,6 +712,9 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     inputHintAddRemarks: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.comments.string.max": Joi.string().required()
+    }).required()
   }).required(),
 })
 

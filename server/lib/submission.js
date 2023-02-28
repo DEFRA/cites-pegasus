@@ -180,7 +180,7 @@ function getAppFlow(submission) {
                             appFlow.push(`permit-details/${applicationIndex}`)
                         }
 
-                        if (application.permitDetails || species.isEverImportedExported) {
+                        if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
                             appFlow.push(`comments/${applicationIndex}`)
                         }
 
