@@ -2,6 +2,8 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission } = require('../lib/submission')
+const { readSecret } = require('../lib/key-vault')
+const config = require('../../config/config')
 const { BlobServiceClient } = require("@azure/storage-blob");
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
@@ -10,10 +12,16 @@ const previousPath = `${urlPrefix}/your-applications`
 const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = urlPrefix
 const Boom = require('@hapi/boom');
+let blobServiceClient = null
 
-const connStr = "DefaultEndpointsProtocol=https;AccountName=bscitesapplicatidev;AccountKey=KdvFlnb5arDIqS7mUpCS2KGTYQMJvDKWMWXetNb1hNe56ZRp5RjPAOfSDZfiavDIUcYAim3I9b3G+AStSqSZsw==;EndpointSuffix=core.windows.net";
-const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
-
+readSecret('BLOB-STORAGE-CONNECTION-STRING')
+  .then(secret => {
+    blobServiceClient = BlobServiceClient.fromConnectionString(secret.value);
+  })
+  .catch(err => {
+    console.log(err)
+    throw err
+  })
 
 function createModel(errors, data) {
 
@@ -27,7 +35,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename"]
+    const fields = ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename", "file"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
 
@@ -82,7 +90,7 @@ function failAction(request, h, err) {
   const submission = getSubmission(request)
 
   const pageData = {
-    supportingDocuments: submission.supportingDocuments
+    files: submission.supportingDocuments?.files || []
   }
 
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -115,18 +123,19 @@ async function createBlobContainer(attemptNo = 1) {
 }
 
 async function addFileToBlobContainer(containerName, fileUpload) {
-  const fileName = fileUpload.hapi.filename
-  const fileData = fileUpload._data
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileUpload.hapi.filename);
+  await blockBlobClient.uploadData(fileUpload._data);
+
+  return blockBlobClient.url
+}
+
+async function deleteFileFromBlobContainer(containerName, fileName) {
   const containerClient = blobServiceClient.getContainerClient(containerName);
   const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-  const url = blockBlobClient.url;
-  await blockBlobClient.uploadData(fileData);
-
-  return url
-  //const submission = getSubmission(request)
-  // const supportingDocuments = submission.supportingDocuments || { files: [] } 
-  // supportingDocuments.files.push({ fileName, containerName })
-  // setSubmission(request, { ...submission, supportingDocuments })
+  await blockBlobClient.deleteIfExists();
+  // const blobClient = containerClient.getBlobClient(fileName);
+  // return blobClient.deleteIfExists();
 }
 
 module.exports = [
@@ -136,7 +145,7 @@ module.exports = [
     handler: async (request, h) => {
       const submission = getSubmission(request)
 
-    //Check that the container is still in azure
+      //Check that the container is still in azure
       if (submission.supportingDocuments?.containerName) {
         const containerClient = blobServiceClient.getContainerClient(submission.supportingDocuments.containerName);
 
@@ -251,18 +260,18 @@ module.exports = [
           return failAction(request, h, error)
         }
 
-        if (!docs.containerName) {
-          const containerName = await createBlobContainer()
-          docs.containerName = containerName
-          try {
-            mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
-          } catch (err) {
-            console.error(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
-          }
-        }
-
         try {
+          if (!docs.containerName) {
+            const containerName = await createBlobContainer()
+            docs.containerName = containerName
+            try {
+              mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
+            } catch (err) {
+              console.error(err);
+              return h.redirect(`${invalidSubmissionPath}/`)
+            }
+          }
+
           const blobUrl = await addFileToBlobContainer(docs.containerName, request.payload.fileUpload)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl })
           try {
@@ -274,7 +283,16 @@ module.exports = [
         }
         catch (err) {
           console.log(err)
-          throw err
+          const error = {
+            details: [
+              {
+                type: 'upload.exception',
+                context: { label: 'fileUpload', key: 'fileUpload' }
+              }
+            ]
+          }
+
+          return failAction(request, h, error)
         }
 
         const pageData = { files: docs.files }
@@ -296,22 +314,44 @@ module.exports = [
 
         const submission = getSubmission(request)
 
-
         if (submission.supportingDocuments === undefined) {
           submission.supportingDocuments = { files: [] }
         }
 
-        const existingFile = submission.supportingDocuments.files.find(file => file.fileName === request.params.fileName)
+        const docs = submission.supportingDocuments
+
+        const existingFile = docs.files.find(file => file.fileName === request.params.fileName)
 
         if (!existingFile) {
           throw new Error('File does not exist')
         }
 
-        submission.supportingDocuments.files.splice(submission.supportingDocuments.files.indexOf(existingFile), 1)
+        try {
+          await deleteFileFromBlobContainer(docs.containerName, existingFile.fileName)
+          docs.files.splice(docs.files.indexOf(existingFile), 1)
 
-        setSubmission(request, submission, `${pageId}`)
+          try {
+            setSubmission(request, submission, `${pageId}`)
+          } catch (err) {
+            console.error(err);
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+        }
+        catch (err) {
+          console.log(err)
+          const error = {
+            details: [
+              {
+                type: 'delete.exception',
+                context: { label: 'file', key: 'file' }
+              }
+            ]
+          }
 
-        const pageData = { files: submission.supportingDocuments.files }
+          return failAction(request, h, error)
+        }
+
+        const pageData = { files: docs.files }
         return h.view(pageId, createModel(null, pageData)).takeover()
       }
     }

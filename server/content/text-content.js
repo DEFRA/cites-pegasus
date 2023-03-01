@@ -706,6 +706,8 @@ const schema = Joi.object().keys({
       "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
       "error.fileUpload.hapi.headers.content-type.any.only": Joi.string().required(),
       "error.fileUpload.any.custom": Joi.string().required(),
+      "error.fileUpload.upload.exception": Joi.string().required(),
+      "error.file.delete.exception": Joi.string().required()
     }).required()
   }).required(),
 })

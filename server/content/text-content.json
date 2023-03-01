@@ -916,7 +916,9 @@
       "errorMessages": {
           "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
           "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
-          "error.fileUpload.any.custom": "A file with this name has already been uploaded"
+          "error.fileUpload.any.custom": "A file with this name has already been uploaded",
+          "error.fileUpload.upload.exception": "There was a problem uploading your file",
+          "error.file.delete.exception": "There was a problem deleting your file"
       }
       
   }
