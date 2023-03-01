@@ -2,13 +2,18 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission } = require('../lib/submission')
-const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob");
+const { BlobServiceClient } = require("@azure/storage-blob");
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/your-applications`
 const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = urlPrefix
+const Boom = require('@hapi/boom');
+
+const connStr = "DefaultEndpointsProtocol=https;AccountName=bscitesapplicatidev;AccountKey=KdvFlnb5arDIqS7mUpCS2KGTYQMJvDKWMWXetNb1hNe56ZRp5RjPAOfSDZfiavDIUcYAim3I9b3G+AStSqSZsw==;EndpointSuffix=core.windows.net";
+const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+
 
 function createModel(errors, data) {
 
@@ -25,7 +30,7 @@ function createModel(errors, data) {
     const fields = ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            
+
       if (fieldError) {
         errorList.push({
           text: fieldError,
@@ -35,10 +40,10 @@ function createModel(errors, data) {
     })
   }
 
-  const supportingDocuments =  data.supportingDocuments?.map((supportingDocument) => {
+  const supportingDocuments = data.files?.map((file) => {
     return {
-      ...supportingDocument,
-      formActionDelete: `${currentPath}/delete/${encodeURIComponent(supportingDocument.fileName)}`
+      ...file,
+      formActionDelete: `${currentPath}/delete/${encodeURIComponent(file.fileName)}`
     }
   })
 
@@ -56,7 +61,7 @@ function createModel(errors, data) {
       attributes: {
         //multiple: true,
         accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
-      }      
+      }
     }
   }
   return { ...commonContent, ...model }
@@ -83,47 +88,71 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
+async function createBlobContainer(attemptNo = 1) {
+  const containerName = `cites-submission-${new Date().getTime()}`;
+
+  try {
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    await containerClient.create();
+  }
+
+  catch (err) {
+    console.log(`cites-submission-${new Date().getTime()}`)
+    if (err.code === 'ContainerAlreadyExists') {
+      if (attemptNo >= 5) {
+        console.log("Unable to find unique container name after 5 attempts")
+        throw Boom.badImplementation("Unable to find unique container name after 5 attempts", err)
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
+
+      return await createBlobContainer(attemptNo + 1)
+    }
+    throw err
+  }
+
+  return containerName
+}
+
+async function addFileToBlobContainer(containerName, fileUpload) {
+  const fileName = fileUpload.hapi.filename
+  const fileData = fileUpload._data
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  const url = blockBlobClient.url;
+  await blockBlobClient.uploadData(fileData);
+
+  return url
+  //const submission = getSubmission(request)
+  // const supportingDocuments = submission.supportingDocuments || { files: [] } 
+  // supportingDocuments.files.push({ fileName, containerName })
+  // setSubmission(request, { ...submission, supportingDocuments })
+}
+
 module.exports = [
   {
     method: "GET",
     path: `${currentPath}`,
     handler: async (request, h) => {
-
-
-try {
-      const connStr = "DefaultEndpointsProtocol=https;AccountName=bscitesapplicatidev;AccountKey=KdvFlnb5arDIqS7mUpCS2KGTYQMJvDKWMWXetNb1hNe56ZRp5RjPAOfSDZfiavDIUcYAim3I9b3G+AStSqSZsw==;EndpointSuffix=core.windows.net";
-
-      const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
-
-      //Upload text to blob
-      // const containerClient = blobServiceClient.getContainerClient('bentest');
-      // const content = "Hello world!";
-      // const blobName = "newblob" + new Date().getTime();
-      // const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-      // const uploadBlobResponse = await blockBlobClient.upload(content, content.length);
-      // console.log(`Upload block blob ${blobName} successfully`, uploadBlobResponse.requestId);
-
-      //List containers
-      // let i = 1;
-      // let containers = blobServiceClient.listContainers();
-      // for await (const container of containers) {
-      //   console.log(`Container ${i++}: ${container.name}`);
-      // }
-
-
-      //Create a container
-      const containerName = `cites-application-container-docs-${new Date().getTime()}`;
-      const containerClient = blobServiceClient.getContainerClient(containerName);
-      const createContainerResponse = await containerClient.create();
-      console.log(`Create container ${containerName} successfully`, createContainerResponse.requestId);
-}
-catch (err) {
-  console.log(err)
-}
-
-
-
       const submission = getSubmission(request)
+
+    //Check that the container is still in azure
+      if (submission.supportingDocuments?.containerName) {
+        const containerClient = blobServiceClient.getContainerClient(submission.supportingDocuments.containerName);
+
+        const exists = await containerClient.exists();
+
+        if (!exists) {
+          submission.supportingDocuments = { files: [] }
+          try {
+            setSubmission(request, submission)
+          } catch (err) {
+            console.error(err);
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+        }
+
+      }
 
       // try {
       //   validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
@@ -132,7 +161,7 @@ catch (err) {
       //   return h.redirect(`${invalidSubmissionPath}/`)
       // }
 
-      const pageData = { supportingDocuments: submission.supportingDocuments }
+      const pageData = { files: submission.supportingDocuments?.files || [] }
 
       return h.view(pageId, createModel(null, pageData))
 
@@ -165,75 +194,93 @@ catch (err) {
       //   // }).unknown(true).required(),
       //   failAction: failAction
       handler: async (request, h) => {
-        try {
-
-          if (request.headers["content-length"] > 10485760) {
-            return h.response('File size is too large').code(413)
-          }
-
-          let payloadSchema = null
-          if (Array.isArray(request.payload.fileUpload)) {
-            payloadSchema = Joi.object({ fileUpload: Joi.array().items(fileSchema) })
-          } else {
-            payloadSchema = Joi.object({ fileUpload: fileSchema })
-          }
-
-          const { error, value } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
-
-          // If there was an error, return a 400 Bad Request response
-          if (error) {
-            return failAction(request, h, error)
-          }
-
-          // const files = []
-          // if (Array.isArray(value.fileUpload)) {
-          //   value.fileUpload.forEach(file => {
-          //     files.push(file)
-          //   })
-          // } else {
-          //   files.push(value.fileUpload)
-          // }
-
-          // console.log(files)
-
-          const submission = getSubmission(request)
-
-
-          if (submission.supportingDocuments === undefined) {
-            submission.supportingDocuments = []
-          }
-
-          if (submission.supportingDocuments.length >= 10) {
-            throw new Error('Maximum number of supporting documents reached')
-          }
-
-          
-          const existingFile = submission.supportingDocuments.find(file => file.fileName === request.payload.fileUpload.hapi.filename)
-          if (existingFile) {
-            const error = {
-              details: [
-                {
-                  message: 'A file with this name already exists',
-                  path: ['fileUpload'],
-                  type: 'any.custom',
-                  context: { label: 'fileUpload', key: 'fileUpload' }
-                }
-              ]
-            }
-            return failAction(request, h, error)
-          }
-
-          submission.supportingDocuments.push({ fileName: request.payload.fileUpload.hapi.filename })
-
-          mergeSubmission(request, { supportingDocuments: submission.supportingDocuments }, `${pageId}`)
-
-          const pageData = { supportingDocuments: submission.supportingDocuments }
-          return h.view(pageId, createModel(null, pageData)).takeover()
-
-        } catch (err) {
-          console.error(err);
-          return h.redirect(`${invalidSubmissionPath}/`)
+        if (request.headers["content-length"] > 10485760) {
+          return h.response('File size is too large').code(413)
         }
+
+        let payloadSchema = null
+        if (Array.isArray(request.payload.fileUpload)) {
+          payloadSchema = Joi.object({ fileUpload: Joi.array().items(fileSchema) })
+        } else {
+          payloadSchema = Joi.object({ fileUpload: fileSchema })
+        }
+
+        const { error, value } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
+
+        // If there was an error, return a 400 Bad Request response
+        if (error) {
+          return failAction(request, h, error)
+        }
+
+        // const files = []
+        // if (Array.isArray(value.fileUpload)) {
+        //   value.fileUpload.forEach(file => {
+        //     files.push(file)
+        //   })
+        // } else {
+        //   files.push(value.fileUpload)
+        // }
+
+        // console.log(files)
+
+        const submission = getSubmission(request)
+
+        if (submission.supportingDocuments === undefined) {
+          submission.supportingDocuments = { files: [] }
+        }
+
+        const docs = submission.supportingDocuments
+
+        if (docs.files.length >= 10) {
+          throw new Error('Maximum number of supporting documents reached')
+        }
+
+
+        const existingFile = docs.files.find(file => file.fileName === request.payload.fileUpload.hapi.filename)
+        if (existingFile) {
+          const error = {
+            details: [
+              {
+                message: 'A file with this name already exists',
+                path: ['fileUpload'],
+                type: 'any.custom',
+                context: { label: 'fileUpload', key: 'fileUpload' }
+              }
+            ]
+          }
+          return failAction(request, h, error)
+        }
+
+        if (!docs.containerName) {
+          const containerName = await createBlobContainer()
+          docs.containerName = containerName
+          try {
+            mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
+          } catch (err) {
+            console.error(err);
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+        }
+
+        try {
+          const blobUrl = await addFileToBlobContainer(docs.containerName, request.payload.fileUpload)
+          docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl })
+          try {
+            mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
+          } catch (err) {
+            console.error(err);
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+        }
+        catch (err) {
+          console.log(err)
+          throw err
+        }
+
+        const pageData = { files: docs.files }
+        return h.view(pageId, createModel(null, pageData)).takeover()
+
+
       }
     }
   },
@@ -251,20 +298,20 @@ catch (err) {
 
 
         if (submission.supportingDocuments === undefined) {
-          submission.supportingDocuments = []
+          submission.supportingDocuments = { files: [] }
         }
 
-        const existingFile = submission.supportingDocuments.find(file => file.fileName === request.params.fileName)
-        
+        const existingFile = submission.supportingDocuments.files.find(file => file.fileName === request.params.fileName)
+
         if (!existingFile) {
           throw new Error('File does not exist')
         }
-        
-        submission.supportingDocuments.splice(submission.supportingDocuments.indexOf(existingFile), 1)
-        
+
+        submission.supportingDocuments.files.splice(submission.supportingDocuments.files.indexOf(existingFile), 1)
+
         setSubmission(request, submission, `${pageId}`)
 
-        const pageData = { supportingDocuments: submission.supportingDocuments }
+        const pageData = { files: submission.supportingDocuments.files }
         return h.view(pageId, createModel(null, pageData)).takeover()
       }
     }
