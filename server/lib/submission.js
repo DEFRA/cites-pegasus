@@ -184,6 +184,10 @@ function getAppFlow(submission) {
                             appFlow.push(`comments/${applicationIndex}`)
                         }
 
+                        if (application.comments) {
+                            appFlow.push(`check-answers/${applicationIndex}`)
+                        }
+
 
                         // if (species.specimenType === 'animalLiving') {
                         //     if (request.payload.uniqueIdentificationMarkType === 'unmarked') {

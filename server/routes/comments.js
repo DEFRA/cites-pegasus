@@ -8,7 +8,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
-const nextPath = `${urlPrefix}/check-your-answers`
+const nextPath = `${urlPrefix}/check-answers`
 const invalidSubmissionPath = urlPrefix
 
 
@@ -137,7 +137,7 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
       
-        submission.applications[applicationIndex].comments = request.payload.comments
+        submission.applications[applicationIndex].comments = request.payload.comments ? request.payload.comments : ""
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
