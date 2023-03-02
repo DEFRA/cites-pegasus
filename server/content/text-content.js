@@ -702,12 +702,27 @@ const schema = Joi.object().keys({
   uploadSupportingDocuments: Joi.object({    
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),
+    bulletList1Items: Joi.array().items(
+      Joi.object().keys({ bulletListItem: Joi.string().required() })
+    ),
+    agentBulletListItem: Joi.string().required(),
+    heading1: Joi.string().required(),
+    pageBody2: Joi.string().required(),
+    bulletList2Items: Joi.array().items(
+      Joi.object().keys({ bulletListItem: Joi.string().required() })
+    ),
+    buttonUpload: Joi.string().required(),
+    heading2: Joi.string().required(),
+    spanNoFilesUploaded: Joi.string().required(),
+    buttonDelete: Joi.string().required(),
     errorMessages: Joi.object({
       "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
       "error.fileUpload.hapi.headers.content-type.any.only": Joi.string().required(),
       "error.fileUpload.any.custom": Joi.string().required(),
       "error.fileUpload.upload.exception": Joi.string().required(),
-      "error.file.delete.exception": Joi.string().required()
+      "error.file.delete.exception": Joi.string().required(),
+      "error.fileUpload.any.filesize": Joi.string().required(),
     }).required()
   }).required(),
 })

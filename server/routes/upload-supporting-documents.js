@@ -58,21 +58,21 @@ function createModel(errors, data) {
   const model = {
     backLink: `${previousPath}`,
     formActionPage: `${currentPath}`,
-    ...(errorList ? { errorList } : {}),
+        ...(errorList ? { errorList } : {}),
     supportingDocuments: supportingDocuments,
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-
+    isAgent: data.isAgent,
     inputFile: {
       id: "fileUpload",
       name: "fileUpload",
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
         //multiple: true,
-        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
+        //accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
       }
     }
   }
-  return { ...commonContent, ...model }
+  return { ...commonContent, ...pageContent, ...model }
 }
 
 const fileSchema = Joi.object({
@@ -90,6 +90,7 @@ function failAction(request, h, err) {
   const submission = getSubmission(request)
 
   const pageData = {
+    isAgent: submission.isAgent,
     files: submission.supportingDocuments?.files || []
   }
 
@@ -170,7 +171,10 @@ module.exports = [
       //   return h.redirect(`${invalidSubmissionPath}/`)
       // }
 
-      const pageData = { files: submission.supportingDocuments?.files || [] }
+      const pageData = { 
+        isAgent: submission.isAgent,
+        files: submission.supportingDocuments?.files || [] 
+      }
 
       return h.view(pageId, createModel(null, pageData))
 
@@ -181,7 +185,7 @@ module.exports = [
     path: `${currentPath}/upload`,
     options: {
       payload: {
-        maxBytes: 10485760, // 10 MB limit
+        maxBytes: 20971520, // 20 MB limit
         output: 'stream',
         parse: true,
         allow: 'multipart/form-data',
@@ -204,7 +208,16 @@ module.exports = [
       //   failAction: failAction
       handler: async (request, h) => {
         if (request.headers["content-length"] > 10485760) {
-          return h.response('File size is too large').code(413)
+          const error = {
+            details: [
+              {
+                type: 'any.filesize',
+                context: { label: 'fileUpload', key: 'fileUpload' }
+              }
+            ]
+          }
+          return failAction(request, h, error)
+          //return h.response('File size is too large').code(413)
         }
 
         let payloadSchema = null
@@ -295,10 +308,12 @@ module.exports = [
           return failAction(request, h, error)
         }
 
-        const pageData = { files: docs.files }
+        const pageData = {
+          isAgent: submission.isAgent,
+          files: docs.files 
+        }
+
         return h.view(pageId, createModel(null, pageData)).takeover()
-
-
       }
     }
   },
@@ -351,7 +366,11 @@ module.exports = [
           return failAction(request, h, error)
         }
 
-        const pageData = { files: docs.files }
+        const pageData = { 
+          isAgent: submission.isAgent,
+          files: docs.files 
+        }
+
         return h.view(pageId, createModel(null, pageData)).takeover()
       }
     }
