@@ -10,7 +10,7 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
-
+<div id="divErrorSummaryContainer">
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -21,7 +21,7 @@
       </div>
     </div>
   {% endif %}
-
+</div>
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -43,9 +43,9 @@
         <ul class="govuk-list govuk-list--bullet">
           {% for item in bulletList2Items %}
             <li>{{item.bulletListItem}}</li>
-          {% endfor %}          
+          {% endfor %}
         </ul>
-        <div class="inline-full-width">
+        <div class="inline-full-width align-items-end">
           {{ govukFileUpload(inputFile) }}
           {{ govukButton({
             text: buttonUpload,
@@ -61,12 +61,12 @@
         <h2 class="govuk-heading-m">{{heading2}}</h2>
         {% if supportingDocuments.length == 0 %}
           <p>{{spanNoFilesUploaded}}</p>
-        {% endif %}        
+        {% endif %}
         <ul class="smaller-indent">
           {% for supportingDocument in supportingDocuments %}
 
             <li class="no-bullets">
-              <div class="inline-full-width">
+              <div class="inline-full-width align-items-center">
                 <div class="govuk-body file-name">{{supportingDocument.fileName}}</div>
                 <div>
                   {{ govukButton({
@@ -94,4 +94,9 @@
       </form>
     </div>
   </div>
+{% endblock %}
+
+{% block localJS %}
+  <input id="clientJSConfig" type="hidden" value="{{clientJSConfig}}"/>
+  <script src="{{assetPath}}/js/upload-supporting-documents.client.js"></script>
 {% endblock %}

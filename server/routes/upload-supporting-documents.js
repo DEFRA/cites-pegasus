@@ -8,10 +8,12 @@ const { BlobServiceClient } = require("@azure/storage-blob");
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
+const assetPath = `${urlPrefix}/assets`
 const previousPath = `${urlPrefix}/your-applications`
 const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = urlPrefix
 const Boom = require('@hapi/boom');
+const maxFileSizeBytes = 10485760
 let blobServiceClient = null
 
 readSecret('BLOB-STORAGE-CONNECTION-STRING')
@@ -55,7 +57,15 @@ function createModel(errors, data) {
     }
   })
 
+  clientJSConfig = {
+    fileSizeErrorText: pageContent.errorMessages["error.fileUpload.any.filesize"],
+    maxFileSizeBytes: maxFileSizeBytes,
+    errorSummaryTitle: commonContent.errorSummaryTitle
+  }
+
   const model = {
+    assetPath: assetPath,
+    clientJSConfig: JSON.stringify(clientJSConfig),
     backLink: `${previousPath}`,
     formActionPage: `${currentPath}`,
         ...(errorList ? { errorList } : {}),
@@ -68,7 +78,7 @@ function createModel(errors, data) {
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
         //multiple: true,
-        //accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
+        //accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'//TODO: ENABLE THIS
       }
     }
   }
@@ -207,7 +217,7 @@ module.exports = [
       //   // }).unknown(true).required(),
       //   failAction: failAction
       handler: async (request, h) => {
-        if (request.headers["content-length"] > 10485760) {
+        if (request.headers["content-length"] > maxFileSizeBytes) {
           const error = {
             details: [
               {

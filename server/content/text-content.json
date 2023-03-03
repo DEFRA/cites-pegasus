@@ -945,7 +945,7 @@
                 "bulletListItem": "an image file (JPG or PNG)"
             }            
         ],
-        "buttonUpload": "Upload",
+        "buttonUpload": "Upload file",
         "heading2": "Files you have uploaded",
         "spanNoFilesUploaded": "You have not uploaded any files",
         "buttonDelete": "Remove",
