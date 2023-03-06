@@ -725,6 +725,11 @@ const schema = Joi.object().keys({
       "error.fileUpload.any.filesize": Joi.string().required(),
     }).required()
   }).required(),
+  comments: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputHintAddRemarks: Joi.string().required(),
+  }).required(),
 })
 
 // Validate config
