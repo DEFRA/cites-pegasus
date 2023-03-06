@@ -913,15 +913,57 @@
     "uploadSupportingDocuments": {
         "defaultTitle": "Upload supporting documents",
         "pageHeader": "Upload supporting documents",
+        "pageBody1": "You should add any documents that may support your application. For example, you can upload:",
+        "bulletList1Items": [
+            {
+                "bulletListItem": "an export or re-export permit"
+            },
+            {
+                "bulletListItem": "an endorsed import permit"
+            },
+            {
+                "bulletListItem": "an Article 10 certificate for the specimen’s parents"
+            },
+            {
+                "bulletListItem": "proof of ownership or how you acquired the specimen"
+            },
+            {
+                "bulletListItem": "the specimen’s proof of identity"
+            }
+        ],
+        "agentBulletListItem": "permission to act on the applicant’s behalf",
+        "heading1": "Upload files",
+        "pageBody2": "You can upload a total of 10 files. Files must be smaller than 10MB and either:",
+        "bulletList2Items": [
+            {
+                "bulletListItem": "a PDF"
+            },
+            {
+                "bulletListItem": "a Microsoft Word document (.DOC or .DOCX)"
+            },
+            {
+                "bulletListItem": "an image file (JPG or PNG)"
+            }
+        ],
+        "buttonUpload": "Upload file",
+        "heading2": "Files you have uploaded",
+        "spanNoFilesUploaded": "You have not uploaded any files",
+        "buttonDelete": "Remove",
         "errorMessages": {
             "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
             "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
-            "error.fileUpload.any.custom": "A file with this name has already been uploaded"
+            "error.fileUpload.any.custom": "A file with this name has already been uploaded",
+            "error.fileUpload.upload.exception": "The selected file could not be uploaded – try again",
+            "error.file.delete.exception": "The selected file could not be removed – try again",
+            "error.fileUpload.any.filesize": "The selected file must be smaller than 10MB"
         }
     },
     "comments": {
         "defaultTitle": "Add remarks",
         "pageHeader": "Add remarks",
-        "inputHintAddRemarks": "Include any other comments that may support your application (optional)."
+        "inputHintAddRemarks": "Include any other comments that may support your application (optional).",
+        "errorMessages": {
+            "error.comments.string.max": "Comments must be 500 characters or less"
+        }
     }
 }

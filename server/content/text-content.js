@@ -651,14 +651,14 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     headingImport: Joi.string().required(),
-    headingReexportA10 : Joi.string().required(),
+    headingReexportA10: Joi.string().required(),
     inputLabelCountry: Joi.string().required(),
     inputLabelPermitNumber: Joi.string().required(),
     inputLabelPermitIssueDate: Joi.string().required(),
     inputLabelHintPermitIssueDate: Joi.string().required(),
     dividerText: Joi.string().required(),
-    checkboxLabelNotApplicable : Joi.string().required(),
-    headingCountryOfOrigin : Joi.string().required(),
+    checkboxLabelNotApplicable: Joi.string().required(),
+    headingCountryOfOrigin: Joi.string().required(),
     errorMessages: Joi.object({
       "error.exportOrReexportCountry.string.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.empty": Joi.string().required(),
@@ -699,7 +699,7 @@ const schema = Joi.object().keys({
       "error.countryOfOriginPermitIssueDate-year.any.empty": Joi.string().required(),
     }).required()
   }).required(),
-  uploadSupportingDocuments: Joi.object({    
+  uploadSupportingDocuments: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody1: Joi.string().required(),
@@ -723,15 +723,17 @@ const schema = Joi.object().keys({
       "error.fileUpload.upload.exception": Joi.string().required(),
       "error.file.delete.exception": Joi.string().required(),
       "error.fileUpload.any.filesize": Joi.string().required(),
-    }).required()
+    }).required(),
   }).required(),
   comments: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     inputHintAddRemarks: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.comments.string.max": Joi.string().required()
+    }).required()
   }).required(),
-})
-
+}).required()
 // Validate config
 const { error, value } = schema.validate(textContent)
 
