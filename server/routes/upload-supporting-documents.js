@@ -78,7 +78,7 @@ function createModel(errors, data) {
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
         //multiple: true,
-        //accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'//TODO: ENABLE THIS
+        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'//TODO: ENABLE THIS
       }
     }
   }
