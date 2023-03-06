@@ -26,13 +26,15 @@
     serviceName: serviceName,
     serviceUrl: "#"
   }) }}
-    {{ govukPhaseBanner({
+{% if phaseBannerPhase != null %} {
+    {{  govukPhaseBanner({
       tag: {
         text: phaseBannerPhase
       },
       html: phaseBannerHTML,
       classes: 'govuk-width-container'
     }) }}
+{% endif %}
 {% endblock %}
 
 {% block pageTitle %}
