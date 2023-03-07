@@ -599,36 +599,56 @@ function createModel(errors, data) {
     ]
   }
 
-  // const summaryListImporterExporterDetails = {
-  //   id: "permitType",
-  //   name: "permitType",
-  //   classes: "govuk-!-margin-bottom-9",
-  //   rows: [
-  //     {
-  //       classes: "govuk-heading-m",
-  //       key: {
-  //         text: pageContent.headerPermit
-  //       }
-  //     },
-  //     {
-  //       key: {
-  //         text: pageContent.rowTextPermitType
+  // function getPermitDetails(header, pageContent, permitDetailsData) {
+  //   const summaryListPermitDetails = {
+  //     id: "permitDetails",
+  //     name: "permitDetails",
+  //     classes: "govuk-!-margin-bottom-9",
+  //     rows: [
+  //       {
+  //         classes: "govuk-heading-m",
+  //         key: {
+  //           text: header
+  //         }
   //       },
-  //       value: {
-  //         text: data.permitType
+  //       {
+  //         key: {
+  //           text: pageContent.rowTextCountry
+  //         },
+  //         value: {
+  //           text: permitDetailsData.country
+  //         },
+  //         actions: {
+  //           items: [
+  //             {
+  //               href: "#",
+  //               text: "Change",
+  //               visuallyHiddenText: "permit details"
+  //             }
+  //           ]
+  //         }
   //       },
-  //       actions: {
-  //         items: [
-  //           {
-  //             href: "#",
-  //             text: "Change",
-  //             visuallyHiddenText: "permit type"
-  //           }
-  //         ]
-  //       }
-  //     }
-  //   ]
-  // }
+  //       {
+  //         key: {
+  //           text: pageContent.rowTextPermitNumber
+  //         },
+  //         value: {
+  //           text: permitDetailsData.permitNumber
+  //         },
+  //       },
+  //       {
+  //         key: {
+  //           text: pageContent.rowTextPermitIssueDate
+  //         },
+  //         value: {
+  //           text:getDateValue(permitDetailsData.date)
+  //         },
+  //       },
+  //     ]
+  //   }
+  //   return summaryListPermitDetails
+  // } 
+
   
 
   const model = {
@@ -649,6 +669,7 @@ function createModel(errors, data) {
 
     summaryListImporterExporterDetails : data.permitType !== "article10" && getSummaryListContactDetails(headingImporterExporterDetails, pageContent, importerExporterDetailsData),
 
+    // summaryListPermitDetails : summaryListPermitDetails,
 
 
 }
