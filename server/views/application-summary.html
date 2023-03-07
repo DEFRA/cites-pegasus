@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+        <h1 class="govuk-heading-l">
+            {{pageHeader}}
+          </h1>
+
+        {{ govukSummaryList (summaryListAboutThePermit) }}
+        {{ govukSummaryList (summaryListYourContactDetails) }}
+        {{ govukSummaryList (summaryListApplicantContactDetails) }}
+        {{ govukSummaryList (summaryListDeliveryAddress) }}
+        {{ govukSummaryList (summaryListSpecimenDetails) }}
+        {{ govukSummaryList (summaryListImporterExporterDetails) }}
+        <!-- {{ govukSummaryList (summaryListPermitDetails) }} -->
+        
+       
+
+        {{ govukButton({
+        text: confirmAndSubmitButton,
+        type: "submit"
+      }) }}
+     
+      </form>
+    </div>
+  </div>
+{% endblock %}
