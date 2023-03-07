@@ -15,7 +15,7 @@ const summaryTypes = ['check', 'view', 'copy']
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.checkAnswers
+  const pageContent = textContent.applicationSummary
 
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null

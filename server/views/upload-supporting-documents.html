@@ -10,7 +10,7 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
-
+<div id="divErrorSummaryContainer">
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -21,68 +21,82 @@
       </div>
     </div>
   {% endif %}
-
+</div>
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
       <form method="POST" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">
-        {# {{ govukInput(inputNumberOfUnmarkedSpecimens) }} #}
 
-        <h1 class="govuk-heading-xl">
-          {{pageHeader}}
-        </h1>
-        {# 
-    <p class="govuk-body">{{pageBody1}}</p>
-    <p class="govuk-body">{{pageBody2}}</p> #}
+        <h1 class="govuk-heading-l">{{pageHeader}}</h1>
+        <p>{{pageBody1}}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          {% for item in bulletList1Items %}
+            <li>{{item.bulletListItem}}</li>
+          {% endfor %}
+          {% if isAgent %}
+            <li>{{agentBulletListItem}}</li>
+          {% endif %}
+        </ul>
+        <h2 class="govuk-heading-m">{{heading1}}</h2>
+        <p>{{pageBody2}}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          {% for item in bulletList2Items %}
+            <li>{{item.bulletListItem}}</li>
+          {% endfor %}
+        </ul>
+        <div class="inline-full-width align-items-end">
+          {{ govukFileUpload(inputFile) }}
+          {{ govukButton({
+            text: buttonUpload,
+            type: "submit",
+            attributes: {
+              formAction: formActionPage + '/upload'
+            }
+          }) }}
+        </div>
 
-        {# <ul class="govuk-list govuk-list--bullet">
-      <li>{{bullet1}}</li>
-      <li>{{bullet2}}</li>
-    </ul> #}
+        <hr class="hr-light"/>
 
-        {{ govukFileUpload(inputFile) }}
-        {{ govukButton({
-          text: "upload",
-          type: "submit",
-          attributes: {
-            formAction: formActionPage + '/upload'
-          }
-        }) }}
+        <h2 class="govuk-heading-m">{{heading2}}</h2>
+        {% if supportingDocuments.length == 0 %}
+          <p>{{spanNoFilesUploaded}}</p>
+        {% endif %}
+        <ul class="smaller-indent">
+          {% for supportingDocument in supportingDocuments %}
 
-        <h3>Files uploaded</h3>
-
-        <output id="image-gallery">
-          <ul class="thumb-Images" id="imgList">
-            {% for supportingDocument in supportingDocuments %}
-              <li>
-                <div class="img-wrap img-wrapper">
-                  <span class="close">
-                    <i class="fa fa-trash-o"></i>
-                  </span>
+            <li class="no-bullets">
+              <div class="inline-full-width align-items-center">
+                <div class="govuk-body file-name">{{supportingDocument.fileName}}</div>
+                <div>
+                  {{ govukButton({
+                    text: buttonDelete,
+                    type: "submit",
+                    classes: "govuk-button--secondary",
+                    attributes: {
+                      formAction: supportingDocument.formActionDelete
+                    }
+                  }) }}
                 </div>
-                <div class="file-info">{{supportingDocument.fileName}}</div>
-                {{ govukButton({
-                  text: "delete",
-                  type: "submit",
-                  attributes: {
-                    formAction: supportingDocument.formActionDelete
-                  }
-                }) }}
-              
+              </div>
             </li>
           {% endfor %}
         </ul>
-      </output>
+        <hr class="hr-light"/>
 
-      {{ govukButton({
+        {{ govukButton({
               text: continueButton,
-              type: "submit",
+              type: "submit",            
               attributes: {
                     formAction: formActionPage + '/continue'
                   }
             }) }}
-    </form>
+      </form>
+    </div>
   </div>
-</div>
+{% endblock %}
+
+{% block localJS %}
+  <input id="clientJSConfig" type="hidden" value="{{clientJSConfig}}"/>
+  <script src="{{assetPath}}/js/upload-supporting-documents.client.js"></script>
 {% endblock %}
