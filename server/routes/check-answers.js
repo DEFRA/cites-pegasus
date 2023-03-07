@@ -17,7 +17,7 @@ function createModel(errors, data) {
   const pageContent = textContent.checkAnswers
 
   let headerApplicantContactDetails = null
-  let headingExporterOrReexporterContactDetails = null
+  let headingImporterExporterDetails = null
   let headingPermitDetails = null
 
   console.log("data", data)
@@ -25,18 +25,17 @@ function createModel(errors, data) {
   switch (data.permitType) {
     case "import":
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
-      headingExporterOrReexporterContactDetails = pageContent.headerExportOrReexporterContactDetails
+      headingImporterExporterDetails = pageContent.headerExportOrReexporterContactDetails
       headingPermitDetails = pageContent.headerExportOrReexportPermitDetails
       break
     case "export":
       headerApplicantContactDetails = pageContent.headerExporterContactDetails
-      headingExporterOrReexporterContactDetails = pageContent.headerImporterContactDetails
+      headingImporterExporterDetails = pageContent.headerImporterContactDetails
       break
     case "reexport":
       headerApplicantContactDetails = pageContent.headerReexporterContactDetails
-      headingExporterOrReexporterContactDetails = pageContent.headerImporterContactDetails
-      headingPermitDetails =
-        pageContent.headerPermitDetailsFromExportIntoGreatBritain
+      headingImporterExporterDetails = pageContent.headerImporterContactDetails
+      headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
       break
     case "article10":
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
@@ -67,6 +66,7 @@ function createModel(errors, data) {
 
   if (!data.isAgent) {
     yourContactDetailsData = {
+      isImporterExporterDetails: false,
       fullName: data.applicant.fullName,
       businessName: data.applicant.businessName,
       email: data.applicant.email,
@@ -81,6 +81,7 @@ function createModel(errors, data) {
     }
   } else {
     yourContactDetailsData = {
+      isImporterExporterDetails: false,
       fullName: data.agent.fullName,
       businessName: data.agent.businessName,
       email: data.agent.email,
@@ -96,6 +97,7 @@ function createModel(errors, data) {
   }
 
   const agentApplicantContactDetailsData = {
+    isImporterExporterDetails: false,
     fullName: data.applicant.fullName,
     businessName: data.applicant.businessName,
     email: data.applicant.email,
@@ -108,6 +110,22 @@ function createModel(errors, data) {
       country: data.applicant.address.country
     }
   }
+
+  const importerExporterDetailsData = {
+    isImporterExporterDetails: true,
+    fullName: data.importerExporterDetails.name,
+    country: data.permitType !== "import" ?  data.importerExporterDetails.country : "",
+    address: {
+      addressLine1: data.importerExporterDetails.addressLine1,
+      addressLine2: data.importerExporterDetails.addressLine2,
+      addressLine3: data.importerExporterDetails.addressLine3 ? data.importerExporterDetails.addressLine3 : "",
+      addressLine4: data.importerExporterDetails.addressLine4 ? data.importerExporterDetails.addressLine4 : "",
+      postcode: data.importerExporterDetails.postcode,
+      country : ""
+    }
+  }
+
+  
 
   const deliveryAddressData = {
     addressLine1: data.delivery.address.addressLine1,
@@ -200,16 +218,35 @@ function createModel(errors, data) {
       }
     ]
   }
+  console.log("contactDetailsData", data)
 
   function getSummaryListContactDetails(header, pageContent, contactDetailsData) {
     const summaryListContactDetails = {
       id: "contactDetails",
       name: "contactDetails",
       rows: [
-        {
+       {
           classes: "govuk-heading-m",
           key: {
             text: header
+          }
+        },
+        (contactDetailsData.country) && {
+          classes: "govuk-summary-list__row--no-border",
+          key: {
+            text: pageContent.rowTextCountry
+          },
+          value: {
+            text: contactDetailsData.country
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Change",
+                visuallyHiddenText: "country"
+              }
+            ]
           }
         },
         {
@@ -230,7 +267,7 @@ function createModel(errors, data) {
             ]
           }
         },
-        {
+        (!contactDetailsData.isImporterExporterDetails) && {
           classes: "govuk-summary-list__row--no-border",
           key: {
             text: pageContent.rowTextBusinessName
@@ -239,7 +276,7 @@ function createModel(errors, data) {
             text: contactDetailsData.businessName
           }
         },
-        {
+        (!contactDetailsData.isImporterExporterDetails) && {
           key: {
             text: pageContent.rowTextEmailAddress
           },
@@ -558,10 +595,40 @@ function createModel(errors, data) {
             }
           ]
         }
-      },
-      
+      }
     ]
   }
+
+  // const summaryListImporterExporterDetails = {
+  //   id: "permitType",
+  //   name: "permitType",
+  //   classes: "govuk-!-margin-bottom-9",
+  //   rows: [
+  //     {
+  //       classes: "govuk-heading-m",
+  //       key: {
+  //         text: pageContent.headerPermit
+  //       }
+  //     },
+  //     {
+  //       key: {
+  //         text: pageContent.rowTextPermitType
+  //       },
+  //       value: {
+  //         text: data.permitType
+  //       },
+  //       actions: {
+  //         items: [
+  //           {
+  //             href: "#",
+  //             text: "Change",
+  //             visuallyHiddenText: "permit type"
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   ]
+  // }
   
 
   const model = {
@@ -580,12 +647,15 @@ function createModel(errors, data) {
 
     summaryListSpecimenDetails : summaryListSpecimenDetails,
 
+    summaryListImporterExporterDetails : data.permitType !== "article10" && getSummaryListContactDetails(headingImporterExporterDetails, pageContent, importerExporterDetailsData),
+
 
 
 }
 
   return { ...commonContent, ...model }
 }
+
 
 module.exports = [
   {
@@ -622,7 +692,9 @@ module.exports = [
         applicant: submission.applicant,
         agent: submission?.agent,
         delivery: submission.delivery,
-        species: submission.applications[applicationIndex].species
+        species: submission.applications[applicationIndex].species,
+        importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
+        permitDetails: submission.applications[applicationIndex].permitDetails,
 
       }
 
