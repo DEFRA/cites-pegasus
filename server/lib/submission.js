@@ -185,7 +185,7 @@ function getAppFlow(submission) {
                         }
 
                         if (application.comments && (application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
-                            appFlow.push(`check-answers/${applicationIndex}`)
+                            appFlow.push(`application-summary/check/${applicationIndex}`)
                         }
 
                         // if (application.comments) {

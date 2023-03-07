@@ -6,11 +6,12 @@ const {
   validateSubmission
 } = require("../lib/submission")
 const textContent = require("../content/text-content")
-const pageId = "check-answers"
+const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/comments`
 const nextPath = `${urlPrefix}/your-applications-pre-submission` //TO DO
 const invalidSubmissionPath = urlPrefix
+const summaryTypes = ['check', 'view', 'copy']
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -654,7 +655,7 @@ function createModel(errors, data) {
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     pageHeader: pageContent.pageHeader,
-    formActionPage: `${currentPath}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
@@ -681,10 +682,11 @@ function createModel(errors, data) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{applicationIndex}`,
+    path: `${currentPath}/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required()
         }),
         failAction: (request, h, error) => {
@@ -693,13 +695,13 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const { applicationIndex } = request.params
+      const {summaryType, applicationIndex } = request.params
       const submission = getSubmission(request)
 
       try {
         validateSubmission(
           submission,
-          `${pageId}/${request.params.applicationIndex}`
+          `${pageId}/${request.params.summaryType}/${request.params.applicationIndex}`
         )
       } catch (err) {
         console.log(err)
@@ -707,6 +709,7 @@ module.exports = [
       }
 
       const pageData = {
+        summaryType: summaryType,
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
@@ -716,7 +719,7 @@ module.exports = [
         species: submission.applications[applicationIndex].species,
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
-
+        ...submission[request.params.summaryType] 
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -724,21 +727,21 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{applicationIndex}`,
+    path: `${currentPath}/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
         failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
+          const {summaryType, applicationIndex } = request.params
           const submission = getSubmission(request)
           const pageData = {
+            summaryType: summaryType,
             applicationIndex: applicationIndex,
-            permitType: submission.permitType
           }
-
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },

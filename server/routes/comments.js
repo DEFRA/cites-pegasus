@@ -8,7 +8,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
-const nextPath = `${urlPrefix}/check-answers`
+const nextPath = `${urlPrefix}/application-summary/`
 const invalidSubmissionPath = urlPrefix
 
 
@@ -146,7 +146,12 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        return h.redirect(`${nextPath}/${applicationIndex}`)
+        const pathSuffix = 'check'
+
+        console.log(`${nextPath}${pathSuffix}/${applicationIndex}`)
+
+        return h.redirect(`${nextPath}${pathSuffix}/${applicationIndex}`)
+
       }
     }
   }

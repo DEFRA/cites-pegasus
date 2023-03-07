@@ -29,7 +29,7 @@ const routes = [].concat(
   require('../routes/quantity'),
   require('../routes/permit-details'),
   require('../routes/comments'),
-  require('../routes/check-answers'),
+  require('../routes/application-summary'),
   require('../routes/upload-supporting-documents'),
   require('../routes/public'),
   require('../routes/test'),
