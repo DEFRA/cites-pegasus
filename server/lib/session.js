@@ -1,5 +1,9 @@
 function setYarValue(request, key, value) {
   request.yar.set(key, value)
+
+  if(key === 'changeRouteData') {     //TODO REMOVE THIS DEBUGGING CODE
+      console.log(`${key}: ${JSON.stringify(value)}`)
+  }
 }
 
 function getYarValue(request, key) {
