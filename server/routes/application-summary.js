@@ -221,7 +221,7 @@ function createModel(errors, data) {
   }
   console.log("contactDetailsData", data)
 
-  function getSummaryListContactDetails(header, pageContent, contactDetailsData) {
+  function getContactDetails(header, pageContent, contactDetailsData) {
     const summaryListContactDetails = {
       id: "contactDetails",
       name: "contactDetails",
@@ -262,7 +262,7 @@ function createModel(errors, data) {
             items: [
               {
                 href: "#",
-                text: "Change",
+                text: !contactDetailsData.country ? "Change" : "",
                 visuallyHiddenText: "contact details"
               }
             ]
@@ -296,7 +296,7 @@ function createModel(errors, data) {
             items: [
               {
                 href: "#",
-                text: "Change",
+                text: !contactDetailsData.country ? "Change" : "",
                 visuallyHiddenText: "address"
               }
             ]
@@ -600,55 +600,113 @@ function createModel(errors, data) {
     ]
   }
 
-  // function getPermitDetails(header, pageContent, permitDetailsData) {
-  //   const summaryListPermitDetails = {
-  //     id: "permitDetails",
-  //     name: "permitDetails",
-  //     classes: "govuk-!-margin-bottom-9",
-  //     rows: [
-  //       {
-  //         classes: "govuk-heading-m",
-  //         key: {
-  //           text: header
-  //         }
-  //       },
-  //       {
-  //         key: {
-  //           text: pageContent.rowTextCountry
-  //         },
-  //         value: {
-  //           text: permitDetailsData.country
-  //         },
-  //         actions: {
-  //           items: [
-  //             {
-  //               href: "#",
-  //               text: "Change",
-  //               visuallyHiddenText: "permit details"
-  //             }
-  //           ]
-  //         }
-  //       },
-  //       {
-  //         key: {
-  //           text: pageContent.rowTextPermitNumber
-  //         },
-  //         value: {
-  //           text: permitDetailsData.permitNumber
-  //         },
-  //       },
-  //       {
-  //         key: {
-  //           text: pageContent.rowTextPermitIssueDate
-  //         },
-  //         value: {
-  //           text:getDateValue(permitDetailsData.date)
-  //         },
-  //       },
-  //     ]
-  //   }
-  //   return summaryListPermitDetails
-  // } 
+  const exportOrReexportPermitDetailData = {
+    notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
+    country : data.permitDetails?.exportOrReexportCountry,
+    permitNumber: data.permitDetails?.exportOrReexportPermitNumber,
+    permitIssueDate: {
+      day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
+      month: data.permitDetails?.exportOrReexportPermitIssueDate.month,
+      year: data.permitDetails?.exportOrReexportPermitIssueDate.year
+    }
+  }
+
+  const countryOfOriginPermitDetailData = {
+    notApplicable: data.permitDetails?.isCountryOfOriginNotApplicable,
+    country : data.permitDetails?.countryOfOrigin,
+    permitNumber: data.permitDetails?.countryOfOriginPermitNumber,
+    permitIssueDate: {
+      day: data.permitDetails?.countryOfOriginPermitIssueDate.day,
+      month: data.permitDetails?.countryOfOriginPermitIssueDate.month,
+      year: data.permitDetails?.countryOfOriginPermitIssueDate.year
+    }
+  }
+ 
+
+  function getPermitDetails(header, pageContent, permitDetailsData) {
+    const summaryListPermitDetails = {
+      id: "permitDetails",
+      name: "permitDetails",
+      classes: "govuk-!-margin-bottom-9",
+      rows: [
+        {
+          classes: "govuk-heading-m",
+          key: {
+            text: header
+          }
+        },
+        {
+          classes: "govuk-summary-list__row--no-border",
+          key: {
+            text: pageContent.rowTextCountry
+          },
+          value: {
+            text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country 
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Change",
+                visuallyHiddenText: "permit details"
+              }
+            ]
+          }
+        },
+        {
+          classes: "govuk-summary-list__row--no-border",
+          key: {
+            text: pageContent.rowTextPermitNumber
+          },
+          value: {
+            text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber
+          },
+        },
+        {
+          key: {
+            text: pageContent.rowTextPermitIssueDate
+          },
+          value: {
+            text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate)
+          },
+        },
+      ]
+    }
+    return summaryListPermitDetails
+   }
+
+
+   const summaryListRemarks = {
+    id: "permitType",
+    name: "permitType",
+    classes: "govuk-!-margin-bottom-9",
+    rows: [
+      {
+        classes: "govuk-heading-m",
+        key: {
+          text: pageContent.headerRemarks
+        }
+      },
+      {
+        key: {
+          text: pageContent.headerRemarks
+        },
+        value: {
+          text: data.comments
+        },
+        actions: {
+          items: [
+            {
+              href: "#",
+              text: "Change",
+              visuallyHiddenText: "permit type"
+            }
+          ]
+        }
+      }
+    ]
+  }
+
 
   
 
@@ -660,24 +718,29 @@ function createModel(errors, data) {
 
     summaryListAboutThePermit: summaryListAboutThePermit,
 
-    summaryListYourContactDetails: getSummaryListContactDetails(pageContent.headerYourContactDetails, pageContent, yourContactDetailsData),
+    summaryListYourContactDetails: getContactDetails(pageContent.headerYourContactDetails, pageContent, yourContactDetailsData),
 
-    summaryListApplicantContactDetails: data.isAgent && getSummaryListContactDetails(headerApplicantContactDetails, pageContent, agentApplicantContactDetailsData),
+    summaryListApplicantContactDetails: data.isAgent && getContactDetails(headerApplicantContactDetails, pageContent, agentApplicantContactDetailsData),
   
     summaryListDeliveryAddress : summaryListDeliveryAddress,
 
     summaryListSpecimenDetails : summaryListSpecimenDetails,
 
-    summaryListImporterExporterDetails : data.permitType !== "article10" && getSummaryListContactDetails(headingImporterExporterDetails, pageContent, importerExporterDetailsData),
+    summaryListImporterExporterDetails : data.permitType !== "article10" && getContactDetails(headingImporterExporterDetails, pageContent, importerExporterDetailsData),
 
-    // summaryListPermitDetails : summaryListPermitDetails,
+    summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(headingPermitDetails, pageContent, exportOrReexportPermitDetailData),
+
+    summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent.headerCountryOfOriginPermitDetails, pageContent, countryOfOriginPermitDetailData),
+
+    summaryListRemarks: summaryListRemarks,
 
 
-}
+  }
 
   return { ...commonContent, ...model }
 }
 
+// (data.permitType !== "export" || !data.species.isEverImportedExported)
 
 module.exports = [
   {
@@ -719,6 +782,7 @@ module.exports = [
         species: submission.applications[applicationIndex].species,
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
+        comments: submission.applications[applicationIndex].comments,
         ...submission[request.params.summaryType] 
       }
 
@@ -741,6 +805,16 @@ module.exports = [
           const pageData = {
             summaryType: summaryType,
             applicationIndex: applicationIndex,
+            permitType: submission.permitType,
+            isAgent: submission.isAgent,
+            applicant: submission.applicant,
+            agent: submission?.agent,
+            delivery: submission.delivery,
+            species: submission.applications[applicationIndex].species,
+            importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
+            permitDetails: submission.applications[applicationIndex].permitDetails,
+            comments: submission.applications[applicationIndex].comments,
+            ...submission[request.params.summaryType] 
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }

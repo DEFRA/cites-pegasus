@@ -1014,6 +1014,7 @@
          "rowTextPermitNumber": "Permit number",
          "rowTextPermitIssueDate": "Permit issue date",
          "headerCountryOfOriginPermitDetails": "Country of origin permit details",
+         "rowTextNotApplicable": "Not applicable",
          "headerRemarks": "Remarks"
        }
 }

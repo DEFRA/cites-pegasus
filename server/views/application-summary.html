@@ -27,10 +27,10 @@
         {{ govukSummaryList (summaryListDeliveryAddress) }}
         {{ govukSummaryList (summaryListSpecimenDetails) }}
         {{ govukSummaryList (summaryListImporterExporterDetails) }}
-        <!-- {{ govukSummaryList (summaryListPermitDetails) }} -->
-        
+        {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
+        {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
+        {{ govukSummaryList (summaryListRemarks) }}
        
-
         {{ govukButton({
         text: confirmAndSubmitButton,
         type: "submit"
