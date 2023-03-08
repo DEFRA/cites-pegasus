@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { setChangeRoute, changeTypes } = require("../lib/change-route")
+const { setChangeRoute, clearChangeRoute, changeTypes } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -19,7 +19,7 @@ function createModel(errors, data) {
   let headingImporterExporterDetails = null
   let headingPermitDetails = null
 
-  console.log("data", data)
+  //console.log("data", data)
 
   switch (data.permitType) {
     case "import":
@@ -135,7 +135,7 @@ function createModel(errors, data) {
     country: data.delivery.address.country
   }
 
-  console.log("deliveryAddressData", deliveryAddressData)
+  //console.log("deliveryAddressData", deliveryAddressData)
 
   function getDateValue(date) {
     if (date.day) {
@@ -217,7 +217,7 @@ function createModel(errors, data) {
       }
     ]
   }
-  console.log("contactDetailsData", data)
+  //console.log("contactDetailsData", data)
 
   function getSummaryListContactDetails(header, pageContent, contactDetailsData) {
     const summaryListContactDetails = {
@@ -241,7 +241,7 @@ function createModel(errors, data) {
           actions: {
             items: [
               {
-                href: "#",
+                href: "../../application-summary/change/" + data.applicationIndex + "/agentContactDetails",
                 text: "Change",
                 visuallyHiddenText: "country"
               }
@@ -695,6 +695,7 @@ module.exports = [
     handler: async (request, h) => {
       const { summaryType, applicationIndex } = request.params
       const submission = getSubmission(request)
+      clearChangeRoute(request)
 
       try {
         validateSubmission(
