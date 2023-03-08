@@ -1,10 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  getSubmission,
-  mergeSubmission,
-  validateSubmission
-} = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { setChangeRoute, changeTypes } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -12,6 +9,7 @@ const previousPath = `${urlPrefix}/comments`
 const nextPath = `${urlPrefix}/your-applications-pre-submission` //TO DO
 const invalidSubmissionPath = urlPrefix
 const summaryTypes = ['check', 'view', 'copy']
+
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -61,7 +59,7 @@ function createModel(errors, data) {
       break
   }
 
-  
+
 
   let yourContactDetailsData = null
 
@@ -74,8 +72,8 @@ function createModel(errors, data) {
       address: {
         addressLine1: data.applicant.address.addressLine1,
         addressLine2: data.applicant.address.addressLine2,
-        addressLine3: data.applicant.address.addressLine3 ? data.applicant.address.addressLine3  : "",
-        addressLine4: data.applicant.address.addressLine4 ? data.applicant.address.addressLine4  : "",
+        addressLine3: data.applicant.address.addressLine3 ? data.applicant.address.addressLine3 : "",
+        addressLine4: data.applicant.address.addressLine4 ? data.applicant.address.addressLine4 : "",
         postcode: data.applicant.address.postcode,
         country: data.applicant.address.country
       }
@@ -115,18 +113,18 @@ function createModel(errors, data) {
   const importerExporterDetailsData = {
     isImporterExporterDetails: true,
     fullName: data.importerExporterDetails.name,
-    country: data.permitType !== "import" ?  data.importerExporterDetails.country : "",
+    country: data.permitType !== "import" ? data.importerExporterDetails.country : "",
     address: {
       addressLine1: data.importerExporterDetails.addressLine1,
       addressLine2: data.importerExporterDetails.addressLine2,
       addressLine3: data.importerExporterDetails.addressLine3 ? data.importerExporterDetails.addressLine3 : "",
       addressLine4: data.importerExporterDetails.addressLine4 ? data.importerExporterDetails.addressLine4 : "",
       postcode: data.importerExporterDetails.postcode,
-      country : ""
+      country: ""
     }
   }
 
-  
+
 
   const deliveryAddressData = {
     addressLine1: data.delivery.address.addressLine1,
@@ -137,10 +135,10 @@ function createModel(errors, data) {
     country: data.delivery.address.country
   }
 
-  console.log ("deliveryAddressData", deliveryAddressData)
+  console.log("deliveryAddressData", deliveryAddressData)
 
-  function getDateValue(date){
-    if(date.day){
+  function getDateValue(date) {
+    if (date.day) {
       return `${date.day}.${date.month}.${date.year}`
     } else {
       return `${date.month}.${date.year}`
@@ -158,7 +156,7 @@ function createModel(errors, data) {
 
 
 
- const summaryListAboutThePermit = {
+  const summaryListAboutThePermit = {
     id: "permitType",
     name: "permitType",
     classes: "govuk-!-margin-bottom-9",
@@ -205,7 +203,7 @@ function createModel(errors, data) {
           text: pageContent.rowTextAddress
         },
         value: {
-            text: `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.country} ${deliveryAddressData.postcode}`
+          text: `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.country} ${deliveryAddressData.postcode}`
         },
         actions: {
           items: [
@@ -226,7 +224,7 @@ function createModel(errors, data) {
       id: "contactDetails",
       name: "contactDetails",
       rows: [
-       {
+        {
           classes: "govuk-heading-m",
           key: {
             text: header
@@ -307,7 +305,7 @@ function createModel(errors, data) {
     return summaryListContactDetails
   }
 
-  const summaryListSpecimenDetails  = {
+  const summaryListSpecimenDetails = {
     id: "specimenDetails",
     name: "specimenDetails",
     classes: "govuk-!-margin-bottom-9",
@@ -356,7 +354,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "#",
+              href: "../../application-summary/change/" + data.applicationIndex + "/sourceCode",
               text: "Change",
               visuallyHiddenText: "source code"
             }
@@ -471,7 +469,7 @@ function createModel(errors, data) {
           ]
         }
       },
-      (data.species.specimenType === "animalLiving") &&  (data.permitType === "article10") && {
+      (data.species.specimenType === "animalLiving") && (data.permitType === "article10") && {
         classes: "govuk-summary-list__row--no-border",
         key: {
           text: pageContent.rowTextParentDetails
@@ -650,7 +648,7 @@ function createModel(errors, data) {
   //   return summaryListPermitDetails
   // } 
 
-  
+
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -663,17 +661,17 @@ function createModel(errors, data) {
     summaryListYourContactDetails: getSummaryListContactDetails(pageContent.headerYourContactDetails, pageContent, yourContactDetailsData),
 
     summaryListApplicantContactDetails: data.isAgent && getSummaryListContactDetails(headerApplicantContactDetails, pageContent, agentApplicantContactDetailsData),
-  
-    summaryListDeliveryAddress : summaryListDeliveryAddress,
 
-    summaryListSpecimenDetails : summaryListSpecimenDetails,
+    summaryListDeliveryAddress: summaryListDeliveryAddress,
 
-    summaryListImporterExporterDetails : data.permitType !== "article10" && getSummaryListContactDetails(headingImporterExporterDetails, pageContent, importerExporterDetailsData),
+    summaryListSpecimenDetails: summaryListSpecimenDetails,
+
+    summaryListImporterExporterDetails: data.permitType !== "article10" && getSummaryListContactDetails(headingImporterExporterDetails, pageContent, importerExporterDetailsData),
 
     // summaryListPermitDetails : summaryListPermitDetails,
 
 
-}
+  }
 
   return { ...commonContent, ...model }
 }
@@ -695,7 +693,7 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const {summaryType, applicationIndex } = request.params
+      const { summaryType, applicationIndex } = request.params
       const submission = getSubmission(request)
 
       try {
@@ -719,10 +717,32 @@ module.exports = [
         species: submission.applications[applicationIndex].species,
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
-        ...submission[request.params.summaryType] 
+        ...submission[request.params.summaryType]
       }
 
       return h.view(pageId, createModel(null, pageData))
+    }
+  },
+  {
+    method: "GET",
+    path: `${currentPath}/change/{applicationIndex}/{changeType}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+          changeType: Joi.string().valid(...changeTypes),
+        }),
+        failAction: (request, h, error) => {
+          console.log(error)
+        }
+      }
+    },
+    handler: async (request, h) => {
+      const { applicationIndex, changeType } = request.params
+
+      const changeRouteData = setChangeRoute(request, changeType, applicationIndex)
+
+      return h.redirect(changeRouteData.startUrl)
     }
   },
   {
@@ -736,7 +756,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         failAction: (request, h, err) => {
-          const {summaryType, applicationIndex } = request.params
+          const { summaryType, applicationIndex } = request.params
           const submission = getSubmission(request)
           const pageData = {
             summaryType: summaryType,
