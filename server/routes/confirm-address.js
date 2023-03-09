@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -140,6 +141,12 @@ module.exports = [{
             } else {
                 nextPath = `${urlPrefix}/species-name/0`
             }
+
+            const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+            if (exitChangeRouteUrl) {
+              return h.redirect(exitChangeRouteUrl)
+            }
+
             return h.redirect(nextPath)
         }
     },

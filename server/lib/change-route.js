@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['sourceCode', 'applicantContactDetails']
+const changeTypes = ['sourceCode', 'applicantContactDetails', 'applicantAddress']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function clearChangeRoute(request) {
@@ -69,6 +69,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
         case "a10CertificateNumber":
         case "importerExporterDetails":
         case "permitDetails":
+        case "comments":
             throw new Error(`Change type not handled yet: ${changeType}`)
         default:
             throw new Error(`Invalid change type: ${changeType}`)
