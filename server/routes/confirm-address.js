@@ -15,19 +15,19 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.agentLed )
+            pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.agentLed)
         } else {
-            pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.applicant )
+            pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.applicant)
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.agent )
+        pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.agent)
     } else {
-        pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.delivery )
+        pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.delivery)
     }
 
     let previousPath = ''
-    if (!data.addressOption || data.addressOption === 'different'){
-        previousPath = data.address.uprn ? `${urlPrefix}/select-address/${data.contactType}` : `${urlPrefix}/enter-address/${data.contactType}`
+    if (!data.addressOption || data.addressOption === 'different') {
+        previousPath = data.selectedAddress.uprn ? `${urlPrefix}/select-address/${data.contactType}` : `${urlPrefix}/enter-address/${data.contactType}`
     } else {
         previousPath = `${urlPrefix}/select-delivery-address`
     }
@@ -64,13 +64,13 @@ function createModel(errors, data) {
         pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
         pageTitle: defaultTitle,
-        addressLine1: data.address.addressLine1,
-        addressLine2: data.address.addressLine2,
-        addressLine3: data.address.addressLine3,
-        addressLine4: data.address.addressLine4,
-        postcode: data.address.postcode,
-        country: data.address.country,
-        showCountry: data.address.country && data.contactType !== 'delivery',
+        addressLine1: data.selectedAddress.addressLine1,
+        addressLine2: data.selectedAddress.addressLine2,
+        addressLine3: data.selectedAddress.addressLine3,
+        addressLine4: data.selectedAddress.addressLine4,
+        postcode: data.selectedAddress.postcode,
+        country: data.selectedAddress.country,
+        showCountry: data.selectedAddress.country && data.contactType !== 'delivery',
         changeAddressLinkText: pageContent.changeAddressLinkText,
         changeAddressLink: `/postcode/${data.contactType}`,
     }
@@ -105,7 +105,7 @@ module.exports = [{
             contactType: request.params.contactType,
             isAgent: submission?.isAgent,
             permitType: submission?.permitType,
-            ...submission[request.params.contactType],
+            ...submission[request.params.contactType].candidateAddressData,
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -126,17 +126,39 @@ module.exports = [{
                     contactType: request.params.contactType,
                     isAgent: submission?.isAgent,
                     permitType: submission?.permitType,
-                    ...submission[request.params.contactType],
+                    ...submission[request.params.contactType]?.candidateAddressData,
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {
+            const submission = getSubmission(request)
+            const {contactType} = request.params
+            const { candidateAddressData } = submission[contactType]
+
+            const newSubmission = {
+                [contactType]: {
+                    address: candidateAddressData.selectedAddress
+                }
+            }
+
+            if(candidateAddressData.addressOption){
+                newSubmission[contactType].addressOption = candidateAddressData.addressOption
+            }
+            
+            try {
+                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)            
+            }
+            catch (err) {
+                console.log(err);
+                return h.redirect(`${invalidSubmissionPath}/`)
+            }
+
             let nextPath = ''
-            if (request.params.contactType === 'agent') {
+            if (contactType === 'agent') {
                 nextPath = `${urlPrefix}/contact-details/applicant`
-            } else if (request.params.contactType === 'applicant') {
+            } else if (contactType === 'applicant') {
                 nextPath = `${urlPrefix}/select-delivery-address`
             } else {
                 nextPath = `${urlPrefix}/species-name/0`
@@ -144,7 +166,7 @@ module.exports = [{
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)
             if (exitChangeRouteUrl) {
-              return h.redirect(exitChangeRouteUrl)
+                return h.redirect(exitChangeRouteUrl)
             }
 
             return h.redirect(nextPath)

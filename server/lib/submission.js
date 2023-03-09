@@ -18,7 +18,7 @@ function mergeSubmission(request, data, path) {
     //const mergedSubmission = { ...emptySubmission, ...existingSubmission, ...data }
 
     setYarValue(request, 'submission', mergedSubmission)
-    //console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedSubmission, null, 4))//TODO Remove this
+    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedSubmission, null, 4))//TODO Remove this
 
     return mergedSubmission
 }
@@ -30,7 +30,7 @@ function setSubmission(request, data, path) {
     //console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
 
     setYarValue(request, 'submission', data)
-    //console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
+    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
 }
 
 function clearSubmission(request) {
@@ -62,10 +62,10 @@ function getAppFlow(submission) {
                 if (submission.agent?.fullName) {
                     appFlow.push('postcode/agent')
                     appFlow.push('enter-address/agent')
-                    if (submission.agent.addressSearchData?.postcode) {
+                    if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/agent')
                     }
-                    if (submission.agent.address) {
+                    if (submission.agent.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/agent')
                     }
                 }
@@ -76,10 +76,10 @@ function getAppFlow(submission) {
                 if (submission.applicant?.fullName) {
                     appFlow.push('postcode/applicant')
                     appFlow.push('enter-address/applicant')
-                    if (submission.applicant?.addressSearchData?.postcode) {
+                    if (submission.applicant?.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/applicant')
                     }
-                    if (submission.applicant?.address) {
+                    if (submission.applicant?.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/applicant')
                     }
                 }
@@ -89,13 +89,16 @@ function getAppFlow(submission) {
                 appFlow.push('select-delivery-address')
                 appFlow.push('postcode/delivery')
                 appFlow.push('enter-address/delivery')
-                if (submission.delivery?.addressSearchData?.postcode) {
+                if (submission.delivery?.candidateAddressData?.addressSearchData?.postcode) {
                     appFlow.push('select-address/delivery')
                 }
-                if (submission.delivery?.address) {
+                if (submission.delivery?.candidateAddressData?.selectedAddress) {
                     appFlow.push('confirm-address/delivery')
-                    appFlow.push('species-name/0')
                 }
+            }
+
+            if(submission.delivery?.address) {
+                appFlow.push('species-name/0')
             }
 
             if (submission.applications?.length > 0) {

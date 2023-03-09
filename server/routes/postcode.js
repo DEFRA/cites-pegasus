@@ -132,7 +132,7 @@ module.exports = [{
             contactType: request.params.contactType, 
             isAgent: submission?.isAgent, 
             permitType: submission?.permitType, 
-            postcode: submission[request.params.contactType]?.addressSearchData?.postcode 
+            postcode: submission[request.params.contactType]?.candidateAddressData?.addressSearchData?.postcode 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -169,8 +169,10 @@ module.exports = [{
 
             const submission = {
                 [contactType]: {
-                    addressSearchData: {               
-                        postcode: request.payload.postcode.trim().toUpperCase()
+                    candidateAddressData: {
+                        addressSearchData: {               
+                            postcode: request.payload.postcode.trim().toUpperCase()
+                        }
                     }
                 }
             }

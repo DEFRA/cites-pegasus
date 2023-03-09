@@ -22,14 +22,14 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = lodash.merge(selectAddressText.common, selectAddressText.agentLed )
+            pageContent = lodash.merge(selectAddressText.common, selectAddressText.agentLed)
         } else {
-            pageContent = lodash.merge(selectAddressText.common, selectAddressText.applicant )
+            pageContent = lodash.merge(selectAddressText.common, selectAddressText.applicant)
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(selectAddressText.common, selectAddressText.agent )
+        pageContent = lodash.merge(selectAddressText.common, selectAddressText.agent)
     } else {
-        pageContent = lodash.merge(selectAddressText.common, selectAddressText.delivery )
+        pageContent = lodash.merge(selectAddressText.common, selectAddressText.delivery)
     }
 
     let errorList = null
@@ -112,14 +112,16 @@ module.exports = [{
         const contactType = request.params.contactType
         const submission = getSubmission(request);
         try {
-            const searchData = submission[contactType].addressSearchData
+            const searchData = submission[contactType].candidateAddressData.addressSearchData
             validateSubmission(submission, `${pageId}/${contactType}`)
-            validateSearchData(submission[contactType].addressSearchData)
+            validateSearchData(submission[contactType].candidateAddressData.addressSearchData)
 
             let newSubmission = {
                 [contactType]: {
-                    addressSearchData: {
-                        results: null
+                    candidateAddressData: {
+                        addressSearchData: {
+                            results: null
+                        }
                     }
                 }
             }
@@ -131,15 +133,17 @@ module.exports = [{
                 contactType: contactType,
                 permitType: submission?.permitType,
                 isAgent: submission?.isAgent,
-                ...submission[contactType]?.addressSearchData,
+                ...submission[contactType]?.candidateAddressData.addressSearchData,
                 results: response.results,
-                ...submission[contactType].address,
+                ...submission[contactType].candidateAddressData.selectedAddress
             }
 
             newSubmission = {
                 [contactType]: {
-                    addressSearchData: {
-                        results: response.results
+                    candidateAddressData: {
+                        addressSearchData: {
+                            results: response.results
+                        }
                     }
                 }
             }
@@ -172,7 +176,7 @@ module.exports = [{
                     contactType: request.params.contactType,
                     permitType: submission?.permitType,
                     isAgent: submission?.isAgent,
-                    ...submission[request.params.contactType]?.addressSearchData,
+                    ...submission[request.params.contactType]?.candidateAddressData.addressSearchData,
                     ...request.payload
                 }
 
@@ -184,7 +188,7 @@ module.exports = [{
             try {
                 const submission = getSubmission(request);
 
-                const selectedAddress = submission[contactType].addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
+                const selectedAddress = submission[contactType].candidateAddressData.addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
 
                 // const selectedAddress = {
                 //     //SubBuildingName: "Room 1",
@@ -206,23 +210,25 @@ module.exports = [{
 
                 const newSubmission = {
                     [contactType]: {
-                        // addressSearchData: { //TODO COMMENT THIS BIT OUT
-                        //     results: null
-                        // },
-                        address: {
-                            //addressSummary: request.payload.address,
-                            addressLine1: addressLine1Components.join(", ") || null,
-                            addressLine2: otherAddressLineComponents[0] || null,
-                            addressLine3: otherAddressLineComponents[1] || null,
-                            addressLine4: otherAddressLineComponents[2] || null,
-                            postcode: selectedAddress.Postcode || null,
-                            country: selectedAddress.Country || null,
-                            uprn: selectedAddress.UPRN || null
+                        candidateAddressData: {
+                            // addressSearchData: { //TODO COMMENT THIS BIT OUT
+                            //     results: null
+                            // },
+                            selectedAddress: {
+                                //addressSummary: request.payload.address,
+                                addressLine1: addressLine1Components.join(", ") || null,
+                                addressLine2: otherAddressLineComponents[0] || null,
+                                addressLine3: otherAddressLineComponents[1] || null,
+                                addressLine4: otherAddressLineComponents[2] || null,
+                                postcode: selectedAddress.Postcode || null,
+                                country: selectedAddress.Country || null,
+                                uprn: selectedAddress.UPRN || null
+                            }
                         }
                     }
                 }
-                if(contactType === "delivery") {
-                    newSubmission[contactType].addressOption = "different"                    
+                if (contactType === "delivery") {
+                    newSubmission[contactType].addressOption = "different"
                 }
 
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
