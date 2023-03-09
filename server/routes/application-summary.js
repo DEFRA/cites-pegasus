@@ -177,10 +177,17 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "#",
-              text: "Change",
+              href: "../../application-summary/change/" + data.applicationIndex + "/applicantContactDetails",//TODO Remove this
+              text: "Test!",
+              //text: "Change",
               visuallyHiddenText: "permit type"
-            }
+            },
+            // {
+            //   href: "../../application-summary/change/" + data.applicationIndex + "/permitType",
+            //   text: "Change",
+            //   visuallyHiddenText: "permit type"
+            // }
+
           ]
         }
       }

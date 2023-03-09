@@ -3,6 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -72,9 +73,11 @@ function createModel(errors, data) {
             }
         })
     }
+    
+    const backLink = data.backLinkOverride ? data.backLinkOverride : previousPath
 
     const model = {
-        backLink: previousPath,
+        backLink: backLink,
         pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
@@ -136,6 +139,7 @@ module.exports = [{
             return h.redirect(`${invalidSubmissionPath}/`)
         }
         const pageData = { 
+            backLinkOverride: checkChangeRouteExit(request, true),
             contactType: request.params.contactType, 
             isAgent: submission?.isAgent, 
             permitType: submission?.permitType,
@@ -170,6 +174,7 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
                 const pageData = { 
+                    backLinkOverride: checkChangeRouteExit(request, true),
                     contactType: request.params.contactType, 
                     isAgent: submission?.isAgent, 
                     permitType: submission?.permitType,
@@ -195,6 +200,11 @@ module.exports = [{
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidSubmissionPath}/`)
+            }
+
+            const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+            if (exitChangeRouteUrl) {
+              return h.redirect(exitChangeRouteUrl)
             }
 
             return h.redirect(`${nextPath}/${request.params.contactType}`)
