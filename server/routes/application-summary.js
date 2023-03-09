@@ -158,7 +158,13 @@ function createModel(errors, data) {
               href: "../../application-summary/change/" + data.applicationIndex + "/permitType",
               text: "Change",
               visuallyHiddenText: "permit type"
-            }
+            },
+            // {
+            //   href: "../../application-summary/change/" + data.applicationIndex + "/permitType",
+            //   text: "Change",
+            //   visuallyHiddenText: "permit type"
+            // }
+
           ]
         }
       }

@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['sourceCode']
+const changeTypes = ['sourceCode', 'applicantContactDetails']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function clearChangeRoute(request) {
@@ -13,13 +13,63 @@ function setChangeRoute(request, changeType, applicationIndex) {
     let confirm = false
 
     switch (changeType) {
-        case "sourceCode":
-            startUrl = `${urlPrefix}/source-code/${applicationIndex}`
+        case "permitType":
+            startUrl = `${urlPrefix}/permit-type`
+            endUrl = 'to be defined'
             confirm = true
             break
         case "agentContactDetails":
-            startUrl = `${urlPrefix}/contactdetails/agent/`
+            startUrl = `${urlPrefix}/contact-details/agent`
+            confirm = true
             break
+        case "agentAddress":
+            startUrl = `${urlPrefix}/postcode/agent`
+            endUrl = `${urlPrefix}/confirm-address/agent`
+            confirm = true
+            break
+        case "applicantContactDetails":
+            startUrl = `${urlPrefix}/contact-details/applicant`
+            confirm = true
+            break
+        case "applicantAddress":
+            startUrl = `${urlPrefix}/postcode/applicant`
+            endUrl = `${urlPrefix}/confirm-address/applicant`
+            confirm = true
+            break
+        case "deliveryAddress":
+            startUrl = `${urlPrefix}/postcode/delivery`
+            endUrl = `${urlPrefix}/confirm-address/delivery`
+            confirm = true
+            break
+        case "speciesName":
+            startUrl = `${urlPrefix}/species-name/${applicationIndex}`
+            endUrl = 'to be defined'
+            confirm = true
+            break
+        case "sourceCode":
+            startUrl = `${urlPrefix}/source-code/${applicationIndex}`
+            break
+        case "purposeCode":
+            startUrl = `${urlPrefix}/purpose-code/${applicationIndex}`
+            break
+        case "uniqueIdentificationMark":
+            startUrl = `${urlPrefix}/unique-identification-mark/${applicationIndex}`
+            break
+        case "tradeTermCode":
+            startUrl = `${urlPrefix}/trade-term-code/${applicationIndex}`
+            break
+        case "useCertificateFor":
+            startUrl = `${urlPrefix}/use-certificate-for/${applicationIndex}`
+            break
+        case "describeLivingAnimal":
+        case "unmarkedSpecimens":
+        case "createdDate":
+        case "descriptionGeneric":
+        case "acquiredDate":
+        case "a10CertificateNumber":
+        case "importerExporterDetails":
+        case "permitDetails":
+            throw new Error(`Change type not handled yet: ${changeType}`)
         default:
             throw new Error(`Invalid change type: ${changeType}`)
     }
@@ -55,9 +105,14 @@ function checkChangeRouteExit(request, isBack = false) {
     return null
 }
 
+function getChangeRouteData(request) {
+    return getYarValue(request, "changeRouteData")
+}
+
 module.exports = {
     checkChangeRouteExit,
     setChangeRoute,
     clearChangeRoute,
+    getChangeRouteData,
     changeTypes
 }
