@@ -14,6 +14,7 @@ const summaryTypes = ['check', 'view', 'copy']
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationSummary
+  const hrefPrefix =  "../../application-summary/change/" + data.applicationIndex
 
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
@@ -74,7 +75,8 @@ function createModel(errors, data) {
         postcode: data.applicant.address.postcode,
         country: data.applicant.address.country
       },
-      hrefPathSuffix: "applicantContactDetails"
+      hrefPathSuffixContactDetails: "/applicantContactDetails",
+      hrefPathSuffixAddress: "/applicantAddress"
     }
   } else {
     yourContactDetailsData = {
@@ -89,7 +91,8 @@ function createModel(errors, data) {
         postcode: data.agent.address.postcode,
         country: data.agent.address.country
       },
-      hrefPathSuffix: "/agentContactDetails"
+      hrefPathSuffixContactDetails: "/agentContactDetails",
+      hrefPathSuffixAddress: "/agentAddress"
     }
   }
 
@@ -105,7 +108,8 @@ function createModel(errors, data) {
       postcode: data.applicant.address.postcode,
       country: data.applicant.address.country
     },
-    hrefPathSuffix: "/applicantContactDetails"
+    hrefPathSuffixContactDetails: "/applicantContactDetails",
+    hrefPathSuffixAddress: "/applicantAddress"
   }
 
   const deliveryAddressData = {
@@ -140,12 +144,6 @@ function createModel(errors, data) {
     classes: "govuk-!-margin-bottom-9",
     rows: [
       {
-        classes: "govuk-heading-m",
-        key: {
-          text: pageContent.headerPermit
-        }
-      },
-      {
         key: {
           text: pageContent.rowTextPermitType
         },
@@ -155,7 +153,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/permitType",
+              href: hrefPrefix + "/permitType",
               text: "Change",
               visuallyHiddenText: "permit type"
             }
@@ -171,12 +169,6 @@ function createModel(errors, data) {
     classes: "govuk-!-margin-bottom-9",
     rows: [
       {
-        classes: "govuk-heading-m",
-        key: {
-          text: pageContent.headerDeliveryAddress
-        }
-      },
-      {
         key: {
           text: pageContent.rowTextAddress
         },
@@ -186,7 +178,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/deliveryAddress",
+              href: hrefPrefix + "/deliveryAddress",
               text: "Change",
               visuallyHiddenText: "delivery address"
             }
@@ -196,17 +188,11 @@ function createModel(errors, data) {
     ]
   }
 
-  function getContactDetails(header, pageContent, contactDetailsData) {
+  function getContactDetails(pageContent, contactDetailsData) {
     const summaryListContactDetails = {
       id: "contactDetails",
       name: "contactDetails",
       rows: [
-        {
-          classes: "govuk-heading-m",
-          key: {
-            text: header
-          }
-        },
         {
           classes: "govuk-summary-list__row--no-border",
           key: {
@@ -218,7 +204,7 @@ function createModel(errors, data) {
           actions: {
             items: [
               {
-                href: "../../application-summary/change/" + data.applicationIndex + contactDetailsData.hrefPathSuffix,
+                href: hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails,
                 text: "Change",
                 visuallyHiddenText: "contact details"
               }
@@ -252,7 +238,7 @@ function createModel(errors, data) {
           actions: {
             items: [
               {
-                href: "../../application-summary/change/" + data.applicationIndex + "/address",
+                href: hrefPrefix + contactDetailsData.hrefPathSuffixAddress,
                 text:  "Change",
                 visuallyHiddenText: "address"
               }
@@ -271,18 +257,7 @@ function createModel(errors, data) {
     id: "specimenDetails",
     name: "specimenDetails",
     classes: "govuk-!-margin-bottom-9",
-    card: {
-      title: {
-        text: "Lead tenant"
-      }
-    },
     rows: [
-      {
-        classes: "govuk-heading-m",
-        key: {
-          text: pageContent.headerSpecimenDetails
-        }
-      },
       {
         classes: "govuk-summary-list__row--no-border",
         key: {
@@ -294,7 +269,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/speciesName",
+              href: hrefPrefix + "/speciesName",
               text: "Change",
               visuallyHiddenText: "species name"
             }
@@ -321,7 +296,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/sourceCode",
+              href: hrefPrefix + "/sourceCode",
               text: "Change",
               visuallyHiddenText: "source code"
             }
@@ -339,7 +314,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/purposeCode",
+              href: hrefPrefix + "/purposeCode",
               text: "Change",
               visuallyHiddenText: "purpose Code"
             }
@@ -357,7 +332,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/tradeTermCode",
+              href: hrefPrefix + "/tradeTermCode",
               text: "Change",
               visuallyHiddenText: "trade term code"
             }
@@ -375,7 +350,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/useCertificateFor",
+              href: hrefPrefix + "/useCertificateFor",
               text: "Change",
               visuallyHiddenText: "use certificate for"
             }
@@ -393,7 +368,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/uniqueIdentificationMark",
+              href: hrefPrefix + "/uniqueIdentificationMark",
               text: "Change",
               visuallyHiddenText: "unique identification mark"
             }
@@ -411,7 +386,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/describeLivingAnimal",
+              href: hrefPrefix + "/describeLivingAnimal",
               text: "Change",
               visuallyHiddenText: "sex"
             }
@@ -429,7 +404,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/describeLivingAnimal",
+              href: hrefPrefix + "/describeLivingAnimal",
               text: "Change",
               visuallyHiddenText: "date of birth"
             }
@@ -447,7 +422,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/describeLivingAnimal",
+              href: hrefPrefix + "/describeLivingAnimal",
               text: "Change",
               visuallyHiddenText: "parent details"
             }
@@ -465,7 +440,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/describeLivingAnimal",
+              href: hrefPrefix + "/describeLivingAnimal",
               text: "Change",
               visuallyHiddenText: "other description"
             }
@@ -482,7 +457,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/unmarkedSpecimens",
+              href: hrefPrefix + "/unmarkedSpecimens",
               text: "Change",
               visuallyHiddenText: "unmarked specimens"
             }
@@ -500,7 +475,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/createdDate",
+              href: hrefPrefix + "/createdDate",
               text: "Change",
               visuallyHiddenText: "created date"
             }
@@ -517,7 +492,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/descriptionGeneric",
+              href: hrefPrefix + "/descriptionGeneric",
               text: "Change",
               visuallyHiddenText: "description"
             }
@@ -535,7 +510,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/acquiredDate",
+              href: hrefPrefix + "/acquiredDate",
               text: "Change",
               visuallyHiddenText: "acquired date"
             }
@@ -553,7 +528,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/a10CertificateNumber",
+              href: hrefPrefix + "/a10CertificateNumber",
               text: "Change",
               visuallyHiddenText: "existing article 10 certificate"
             }
@@ -601,12 +576,6 @@ function createModel(errors, data) {
     id: "importerExporterDetail",
     name: "importerExporterDetail",
     rows: [
-      {
-        classes: "govuk-heading-m",
-        key: {
-          text: headingImporterExporterDetails
-        }
-      },
       (importerExporterDetailsData.country) && {
         classes: "govuk-summary-list__row--no-border",
         key: {
@@ -618,7 +587,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/importerExporterDetails",
+              href: hrefPrefix + "/importerExporterDetails",
               text: "Change",
               visuallyHiddenText: "country"
             }
@@ -636,7 +605,7 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "../../application-summary/change/" + data.applicationIndex + "/importerExporterDetails",
+              href: hrefPrefix + "/importerExporterDetails",
               text: !importerExporterDetailsData.country ? "Change" : "",
               visuallyHiddenText: "contact details"
             }
@@ -655,18 +624,12 @@ function createModel(errors, data) {
   }
  
 
-  function getPermitDetails(header, pageContent, permitDetailsData) {
+  function getPermitDetails(pageContent, permitDetailsData) {
     const summaryListPermitDetails = {
       id: "permitDetails",
       name: "permitDetails",
       classes: "govuk-!-margin-bottom-9",
       rows: [
-        {
-          classes: "govuk-heading-m",
-          key: {
-            text: header
-          }
-        },
         {
           classes: "govuk-summary-list__row--no-border",
           key: {
@@ -678,7 +641,7 @@ function createModel(errors, data) {
           actions: {
             items: [
               {
-                href: "../../application-summary/change/" + data.applicationIndex + "/permitDetails",
+                href: hrefPrefix + "/permitDetails",
                 text: "Change",
                 visuallyHiddenText: "permit details"
               }
@@ -709,16 +672,10 @@ function createModel(errors, data) {
 
 
    const summaryListRemarks = {
-    id: "permitType",
-    name: "permitType",
+    id: "remarks",
+    name: "remarks",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      {
-        classes: "govuk-heading-m",
-        key: {
-          text: pageContent.headerRemarks
-        }
-      },
       {
         key: {
           text: pageContent.headerRemarks
@@ -729,9 +686,9 @@ function createModel(errors, data) {
         actions: {
           items: [
             {
-              href: "#",
+              href: hrefPrefix + "/comments",
               text: "Change",
-              visuallyHiddenText: "permit type"
+              visuallyHiddenText: "remarks"
             }
           ]
         }
@@ -747,12 +704,21 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
+    headerPermit: pageContent.headerPermit,
+    headerYourContactDetails:pageContent.headerYourContactDetails,
+    headerApplicantContactDetails:headerApplicantContactDetails,
+    headerDeliveryAddress: pageContent.headerDeliveryAddress,
+    headerSpecimenDetails: pageContent.headerSpecimenDetails,
+    headingImporterExporterDetails: headingImporterExporterDetails,
+    headingPermitDetails: headingPermitDetails,
+    headerCountryOfOriginPermitDetails: pageContent.headerCountryOfOriginPermitDetails,
+    headerRemarks: pageContent.headerRemarks,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
 
-    summaryListYourContactDetails: getContactDetails(pageContent.headerYourContactDetails, pageContent, yourContactDetailsData),
+    summaryListYourContactDetails: getContactDetails (pageContent, yourContactDetailsData),
 
-    summaryListApplicantContactDetails: data.isAgent && getContactDetails(headerApplicantContactDetails, pageContent, agentApplicantContactDetailsData),
+    summaryListApplicantContactDetails: data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData),
   
     summaryListDeliveryAddress : summaryListDeliveryAddress,
 
@@ -760,15 +726,12 @@ function createModel(errors, data) {
 
     summaryListImporterExporterDetails : data.permitType !== "article10" && summaryListImporterExporterDetails,
     
-    summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(headingPermitDetails, pageContent, exportOrReexportPermitDetailData),
+    summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData),
 
-    summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent.headerCountryOfOriginPermitDetails, pageContent, countryOfOriginPermitDetailData),
+    summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData),
 
     summaryListRemarks: summaryListRemarks,
-
-
   }
-
   return { ...commonContent, ...model }
 }
 
@@ -819,7 +782,6 @@ module.exports = [
         comments: submission.applications[applicationIndex].comments,
         ...submission[request.params.summaryType] 
       }
-
       return h.view(pageId, createModel(null, pageData))
     }
   },
