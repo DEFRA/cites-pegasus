@@ -221,6 +221,9 @@ module.exports = [{
                         }
                     }
                 }
+                if(contactType === "delivery") {
+                    newSubmission[contactType].addressOption = "different"                    
+                }
 
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
