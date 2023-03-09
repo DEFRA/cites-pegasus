@@ -1,13 +1,25 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-   <noscript>
+
+  <style>
+    .js-enabled-only {
+      display: block;
+    }
+    .js-disabled-only {
+      display: none;
+    }
+  </style>
+  <noscript>
     <style type="text/css">
-      #backButton {
+      .js-enabled-only {
         display: none;
       }
+      .js-disabled-only {
+        display: block;
+      }
     </style>
-  </noscript> 
+  </noscript>
 
   <div class="govuk-width-container">
     <div class="govuk-main-wrapper">
@@ -15,12 +27,10 @@
         <div class="govuk-grid-column-two-thirds">
           <h1 class="govuk-heading-xl">Sorry, there is a problem</h1>
           <p class="govuk-body">The file or information that you’re trying to upload is too big.</p>
-          <p class="govuk-body">You need to reduce the size of the file or information and try again.</p>
-          <noscript>
-            <p class="govuk-body">Press the back button in your browser to go back</p>
-          </noscript>
+          <p class="govuk-body js-enabled-only">You need to reduce the size of the file or information and try again.</p>
+          <p class="govuk-body js-disabled-only">You need to reduce the size of the file or information, then go back in your browser and try again.</p>
           <form>
-            <input id="backButton" type="button" class="govuk-button" value="Back" onclick="history.back()">
+            <input type="button" class="govuk-button js-enabled-only" value="Continue" onclick="history.back()">
           </form>
         </div>
       </div>
