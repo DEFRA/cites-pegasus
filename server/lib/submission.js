@@ -184,7 +184,7 @@ function getAppFlow(submission) {
                             appFlow.push(`comments/${applicationIndex}`)
                         }
 
-                        if (application.comments && (application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
+                        if (application.comments || (application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                         }
 

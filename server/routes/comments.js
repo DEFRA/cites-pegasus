@@ -148,8 +148,6 @@ module.exports = [
 
         const pathSuffix = 'check'
 
-        console.log(`${nextPath}${pathSuffix}/${applicationIndex}`)
-
         return h.redirect(`${nextPath}${pathSuffix}/${applicationIndex}`)
 
       }

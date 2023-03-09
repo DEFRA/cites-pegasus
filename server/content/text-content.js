@@ -803,6 +803,7 @@ const schema = Joi.object().keys({
     rowTextPermitNumber: Joi.string().required(),
     rowTextPermitIssueDate: Joi.string().required(),
     headerCountryOfOriginPermitDetails: Joi.string().required(),
+    rowTextNotApplicable: Joi.string().required(),
     headerRemarks: Joi.string().required()
   }).required()
 })
