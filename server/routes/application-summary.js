@@ -19,7 +19,6 @@ function createModel(errors, data) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
   let headingPermitDetails = null
-
   switch (data.permitType) {
     case "import":
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
@@ -42,7 +41,6 @@ function createModel(errors, data) {
   }
 
   let a10CertificatePurposeValue = null
-
   switch (data.species.useCertificateFor) {
     case "legallyAcquired":
       a10CertificatePurposeValue = pageContent.rowTextLegallyAcquired
@@ -57,6 +55,76 @@ function createModel(errors, data) {
       a10CertificatePurposeValue = pageContent.rowTextOther
       break
   }
+
+  let purposeCodeValueText = null
+  switch (data.species.purposeCode) {
+    case "B":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeB
+      break
+    case "E":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeE
+      break
+    case "G":
+      purposeCodeValueText =  pageContent.rowTextPurposeCodeG
+      break
+    case "H":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeH
+      break
+    case "L":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeL
+      break
+    case "M":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeM
+      break
+    case "P":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeP
+      break
+    case "Q":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeQ
+      break
+    case "S":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeS
+      break
+    case "T":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeT
+      break
+    case "Z":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeZ
+      break
+  }
+
+  let sourceCodeValueText = null
+  switch (data.species.sourceCode) {
+    case "W":
+      sourceCodeValueText = pageContent.rowTextSourceCodeW
+      break
+    case "R":
+      sourceCodeValueText = pageContent.rowTextSourceCodeR
+      break
+    case "D":
+      sourceCodeValueText = data.species.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant
+      break
+    case "C":
+      sourceCodeValueText = pageContent.rowTextSourceCodeC
+      break
+    case "F":
+      sourceCodeValueText = pageContent.rowTextSourceCodeF
+      break
+    case "I":
+      sourceCodeValueText = pageContent.rowTextSourceCodeI
+      break
+    case "O":
+      sourceCodeValueText = pageContent.rowTextSourceCodeO
+      break
+    case "X":
+      sourceCodeValueText = pageContent.rowTextSourceCodeX
+      break
+    case "U":
+      sourceCodeValueText = data.species.enterAReason
+      break
+  }
+
+
 
 
 
@@ -121,14 +189,6 @@ function createModel(errors, data) {
     country: data.delivery.address.country
   }
 
-  function getDateValue(date) {
-    if (date.day) {
-      return `${date.day}.${date.month}.${date.year}`
-    } else {
-      return `${date.month}.${date.year}`
-    }
-  }
-
   let unitsOfMeasurementValue = null
   if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfSpecimens") {
     unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
@@ -138,12 +198,49 @@ function createModel(errors, data) {
     unitsOfMeasurementValue = data.species?.unitOfMeasurement
   }
 
+  const exportOrReexportPermitDetailData = {
+    notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
+    country : data.permitDetails?.exportOrReexportCountry,
+    permitNumber: data.permitDetails?.exportOrReexportPermitNumber,
+    permitIssueDate: {
+      day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
+      month: data.permitDetails?.exportOrReexportPermitIssueDate.month,
+      year: data.permitDetails?.exportOrReexportPermitIssueDate.year
+    }
+  }
+
+  const countryOfOriginPermitDetailData = {
+    notApplicable: data.permitDetails?.isCountryOfOriginNotApplicable,
+    country : data.permitDetails?.countryOfOrigin,
+    permitNumber: data.permitDetails?.countryOfOriginPermitNumber,
+    permitIssueDate: {
+      day: data.permitDetails?.countryOfOriginPermitIssueDate.day,
+      month: data.permitDetails?.countryOfOriginPermitIssueDate.month,
+      year: data.permitDetails?.countryOfOriginPermitIssueDate.year
+    }
+  }
+
+  const importerExporterDetailsData = {
+    isImporterExporterDetails: true,
+    fullName: data.importerExporterDetails.name,
+    country: data.permitType !== "import" ? data.importerExporterDetails.country : "",
+    address: {
+      addressLine1: data.importerExporterDetails.addressLine1,
+      addressLine2: data.importerExporterDetails.addressLine2,
+      addressLine3: data.importerExporterDetails.addressLine3 ? data.importerExporterDetails.addressLine3 : "",
+      addressLine4: data.importerExporterDetails.addressLine4 ? data.importerExporterDetails.addressLine4 : "",
+      postcode: data.importerExporterDetails.postcode,
+    }
+  }
+ 
+
   const summaryListAboutThePermit = {
     id: "permitType",
     name: "permitType",
     classes: "govuk-!-margin-bottom-9",
     rows: [
       {
+        classes: "govuk-summary-list__row-border-top",
         key: {
           text: pageContent.rowTextPermitType
         },
@@ -157,12 +254,6 @@ function createModel(errors, data) {
               text: "Change",
               visuallyHiddenText: "permit type"
             },
-            // {
-            //   href: "../../application-summary/change/" + data.applicationIndex + "/permitType",
-            //   text: "Change",
-            //   visuallyHiddenText: "permit type"
-            // }
-
           ]
         }
       }
@@ -175,6 +266,7 @@ function createModel(errors, data) {
     classes: "govuk-!-margin-bottom-9",
     rows: [
       {
+        classes: "govuk-summary-list__row-border-top",
         key: {
           text: pageContent.rowTextAddress
         },
@@ -194,70 +286,7 @@ function createModel(errors, data) {
     ]
   }
 
-  function getContactDetails(pageContent, contactDetailsData) {
-    const summaryListContactDetails = {
-      id: "contactDetails",
-      name: "contactDetails",
-      rows: [
-        {
-          classes: "govuk-summary-list__row--no-border",
-          key: {
-            text: pageContent.rowTextFullName
-          },
-          value: {
-            text: contactDetailsData.fullName
-          },
-          actions: {
-            items: [
-              {
-                href: hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails,
-                text: "Change",
-                visuallyHiddenText: "contact details"
-              }
-            ]
-          }
-        },
-       {
-          classes: "govuk-summary-list__row--no-border",
-          key: {
-            text: pageContent.rowTextBusinessName
-          },
-          value: {
-            text: contactDetailsData.businessName
-          }
-        },
-       {
-          key: {
-            text: pageContent.rowTextEmailAddress
-          },
-          value: {
-            text: contactDetailsData.email
-          }
-        },
-        {
-          key: {
-            text: pageContent.rowTextAddress
-          },
-          value: {
-            text: `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`
-          },
-          actions: {
-            items: [
-              {
-                href: hrefPrefix + contactDetailsData.hrefPathSuffixAddress,
-                text:  "Change",
-                visuallyHiddenText: "address"
-              }
-            ]
-          }
-        }
-      ]
-    }
-    return summaryListContactDetails
-  }
-
   console.log("Data", data)
-
 
   const summaryListSpecimenDetails = {
     id: "specimenDetails",
@@ -265,7 +294,7 @@ function createModel(errors, data) {
     classes: "govuk-!-margin-bottom-9",
     rows: [
       {
-        classes: "govuk-summary-list__row--no-border",
+        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
         key: {
           text: pageContent.rowTextScientificName
         },
@@ -282,13 +311,22 @@ function createModel(errors, data) {
           ]
         }
       },
-      (data.species.specimenType !== "animalLiving") && {
+     {
         classes: "govuk-summary-list__row--no-border",
         key: {
           text: pageContent.rowTextQuantity
         },
         value: {
-          text: `${data.species.quantity} ${unitsOfMeasurementValue}`
+          text: data.species.quantity
+        },
+      },
+      (data.species.specimenType !== "animalLiving") && {
+        classes: "govuk-summary-list__row--no-border",
+        key: {
+          text: pageContent.rowTextUnitOfMeasurement
+        },
+        value: {
+          text: unitsOfMeasurementValue
         },
       },
       {
@@ -297,7 +335,7 @@ function createModel(errors, data) {
           text: pageContent.rowTextSourceCode
         },
         value: {
-          text: data.species.sourceCode
+          text: `${data.species.sourceCode} ${sourceCodeValueText}`
         },
         actions: {
           items: [
@@ -315,7 +353,7 @@ function createModel(errors, data) {
           text: pageContent.rowTextPurposeCode
         },
         value: {
-          text: data.species.purposeCode
+          text: `${data.species.purposeCode} ${purposeCodeValueText}`
         },
         actions: {
           items: [
@@ -544,46 +582,13 @@ function createModel(errors, data) {
     ]
   }
 
-  const exportOrReexportPermitDetailData = {
-    notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
-    country : data.permitDetails?.exportOrReexportCountry,
-    permitNumber: data.permitDetails?.exportOrReexportPermitNumber,
-    permitIssueDate: {
-      day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
-      month: data.permitDetails?.exportOrReexportPermitIssueDate.month,
-      year: data.permitDetails?.exportOrReexportPermitIssueDate.year
-    }
-  }
-
-  const countryOfOriginPermitDetailData = {
-    notApplicable: data.permitDetails?.isCountryOfOriginNotApplicable,
-    country : data.permitDetails?.countryOfOrigin,
-    permitNumber: data.permitDetails?.countryOfOriginPermitNumber,
-    permitIssueDate: {
-      day: data.permitDetails?.countryOfOriginPermitIssueDate.day,
-      month: data.permitDetails?.countryOfOriginPermitIssueDate.month,
-      year: data.permitDetails?.countryOfOriginPermitIssueDate.year
-    }
-  }
-
-  const importerExporterDetailsData = {
-    isImporterExporterDetails: true,
-    fullName: data.importerExporterDetails.name,
-    country: data.permitType !== "import" ? data.importerExporterDetails.country : "",
-    address: {
-      addressLine1: data.importerExporterDetails.addressLine1,
-      addressLine2: data.importerExporterDetails.addressLine2,
-      addressLine3: data.importerExporterDetails.addressLine3 ? data.importerExporterDetails.addressLine3 : "",
-      addressLine4: data.importerExporterDetails.addressLine4 ? data.importerExporterDetails.addressLine4 : "",
-      postcode: data.importerExporterDetails.postcode,
-    }
-  }
+ 
   const summaryListImporterExporterDetails = {
     id: "importerExporterDetail",
     name: "importerExporterDetail",
     rows: [
       (importerExporterDetailsData.country) && {
-        classes: "govuk-summary-list__row--no-border",
+        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
         key: {
           text: pageContent.rowTextCountry
         },
@@ -601,7 +606,7 @@ function createModel(errors, data) {
         }
       },
       {
-        classes: "govuk-summary-list__row--no-border",
+        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
         key: {
           text: pageContent.rowTextFullName
         },
@@ -630,59 +635,14 @@ function createModel(errors, data) {
   }
  
 
-  function getPermitDetails(pageContent, permitDetailsData) {
-    const summaryListPermitDetails = {
-      id: "permitDetails",
-      name: "permitDetails",
-      classes: "govuk-!-margin-bottom-9",
-      rows: [
-        {
-          classes: "govuk-summary-list__row--no-border",
-          key: {
-            text: pageContent.rowTextCountry
-          },
-          value: {
-            text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country 
-          },
-          actions: {
-            items: [
-              {
-                href: hrefPrefix + "/permitDetails",
-                text: "Change",
-                visuallyHiddenText: "permit details"
-              }
-            ]
-          }
-        },
-        {
-          classes: "govuk-summary-list__row--no-border",
-          key: {
-            text: pageContent.rowTextPermitNumber
-          },
-          value: {
-            text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber
-          },
-        },
-        {
-          key: {
-            text: pageContent.rowTextPermitIssueDate
-          },
-          value: {
-            text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate)
-          },
-        },
-      ]
-    }
-    return summaryListPermitDetails
-   }
-
-
+  
    const summaryListRemarks = {
     id: "remarks",
     name: "remarks",
     classes: "govuk-!-margin-bottom-9",
     rows: [
       {
+        classes: "govuk-summary-list__row-border-top",
         key: {
           text: pageContent.headerRemarks
         },
@@ -711,8 +671,8 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
     headerPermit: pageContent.headerPermit,
-    headerYourContactDetails:pageContent.headerYourContactDetails,
-    headerApplicantContactDetails:headerApplicantContactDetails,
+    headerYourContactDetails: pageContent.headerYourContactDetails,
+    headerApplicantContactDetails: data.isAgent ? headerApplicantContactDetails : "",
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
     headingImporterExporterDetails: headingImporterExporterDetails,
@@ -722,9 +682,9 @@ function createModel(errors, data) {
 
     summaryListAboutThePermit: summaryListAboutThePermit,
 
-    summaryListYourContactDetails: getContactDetails (pageContent, yourContactDetailsData),
+    summaryListYourContactDetails: getContactDetails (pageContent, yourContactDetailsData, hrefPrefix),
 
-    summaryListApplicantContactDetails: data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData),
+    summaryListApplicantContactDetails: data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix),
   
     summaryListDeliveryAddress : summaryListDeliveryAddress,
 
@@ -732,14 +692,132 @@ function createModel(errors, data) {
 
     summaryListImporterExporterDetails : data.permitType !== "article10" && summaryListImporterExporterDetails,
     
-    summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData),
+    summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix),
 
-    summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData),
+    summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix),
 
     summaryListRemarks: summaryListRemarks,
   }
   return { ...commonContent, ...model }
 }
+
+function getDateValue(date) {
+  if (date.day) {
+    return `${date.day}.${date.month}.${date.year}`
+  } else {
+    return `${date.month}.${date.year}`
+  }
+}
+
+function getContactDetails(pageContent, contactDetailsData, hrefPrefix) {
+  const summaryListContactDetails = {
+    id: "contactDetails",
+    name: "contactDetails",
+    rows: [
+      {
+        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
+        key: {
+          text: pageContent.rowTextFullName
+        },
+        value: {
+          text: contactDetailsData.fullName
+        },
+        actions: {
+          items: [
+            {
+              href: hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails,
+              text: "Change",
+              visuallyHiddenText: "contact details"
+            }
+          ]
+        }
+      },
+     {
+        classes: "govuk-summary-list__row--no-border",
+        key: {
+          text: pageContent.rowTextBusinessName
+        },
+        value: {
+          text: contactDetailsData.businessName
+        }
+      },
+     {
+        key: {
+          text: pageContent.rowTextEmailAddress
+        },
+        value: {
+          text: contactDetailsData.email
+        }
+      },
+      {
+        key: {
+          text: pageContent.rowTextAddress
+        },
+        value: {
+          text: `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`
+        },
+        actions: {
+          items: [
+            {
+              href: hrefPrefix + contactDetailsData.hrefPathSuffixAddress,
+              text:  "Change",
+              visuallyHiddenText: "address"
+            }
+          ]
+        }
+      }
+    ]
+  }
+  return summaryListContactDetails
+}
+
+function getPermitDetails(pageContent, permitDetailsData, hrefPrefix) {
+  const summaryListPermitDetails = {
+    id: "permitDetails",
+    name: "permitDetails",
+    classes: "govuk-!-margin-bottom-9",
+    rows: [
+      {
+        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
+        key: {
+          text: pageContent.rowTextCountry
+        },
+        value: {
+          text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country 
+        },
+        actions: {
+          items: [
+            {
+              href: hrefPrefix + "/permitDetails",
+              text: "Change",
+              visuallyHiddenText: "permit details"
+            }
+          ]
+        }
+      },
+      {
+        classes: "govuk-summary-list__row--no-border",
+        key: {
+          text: pageContent.rowTextPermitNumber
+        },
+        value: {
+          text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber
+        },
+      },
+      {
+        key: {
+          text: pageContent.rowTextPermitIssueDate
+        },
+        value: {
+          text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate)
+        },
+      },
+    ]
+  }
+  return summaryListPermitDetails
+ }
+
+
 
 
 module.exports = [
@@ -786,7 +864,6 @@ module.exports = [
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
         comments: submission.applications[applicationIndex].comments,
-        ...submission[request.params.summaryType] 
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -838,7 +915,6 @@ module.exports = [
             importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
             permitDetails: submission.applications[applicationIndex].permitDetails,
             comments: submission.applications[applicationIndex].comments,
-            ...submission[request.params.summaryType] 
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }

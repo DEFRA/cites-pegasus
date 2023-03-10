@@ -986,6 +986,7 @@
          "headerSpecimenDetails": "Specimen details",
          "rowTextScientificName": "Scientific name",
          "rowTextQuantity": "Quantity or net mass",
+         "rowTextUnitOfMeasurement": "Unit of measurement",
          "rowTextUnitsOfMeasurementNoOfSpecimens": "Number of specimens",
          "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts",
          "rowTextSourceCode": "Source code",
@@ -1015,6 +1016,29 @@
          "rowTextPermitIssueDate": "Permit issue date",
          "headerCountryOfOriginPermitDetails": "Country of origin permit details",
          "rowTextNotApplicable": "Not applicable",
-         "headerRemarks": "Remarks"
+         "headerRemarks": "Remarks",
+         "rowTextSourceCodeW": "From the wild",
+         "rowTextSourceCodeR": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
+         "rowTextSourceCodeDAnimal": "Animals bred in captivity by a CITES registered breeder",
+         "rowTextSourceCodeDPlant": "Plants artificially propagated for commercial purposes",
+         "rowTextSourceCodeC": "Animals bred in captivity to second generation specimens or that meet the Commission Regulation criteria",
+         "rowTextSourceCodeF": "Animals born in captivity to first generation specimens or that do not meet the Commission Regulation criteria",
+         "rowTextSourceCodeA": "Plants artificially propagated for non-commercial purposes",
+         "rowTextSourceCodeI": "Confiscated or seized",
+         "rowTextSourceCodeO": "Pre-convention",
+         "rowTextSourceCodeX": "Taken from the marine environment",
+         "rowTextPurposeCodeB": "Breeding in captivity or artificial propagation",
+         "rowTextPurposeCodeE": "Educational",
+         "rowTextPurposeCodeG": "Botanical gardens",
+         "rowTextPurposeCodeH": "Hunting trophies",
+         "rowTextPurposeCodeL": "Enforcement",
+         "rowTextPurposeCodeM": "Bio-medical research",
+         "rowTextPurposeCodeN": "Reintroduction or introduction into the wild",
+         "rowTextPurposeCodeP": "Personal",
+         "rowTextPurposeCodeQ": "Circuses and travelling exhibitions",
+         "rowTextPurposeCodeS": "Scientific",
+         "rowTextPurposeCodeT": "Commercial",
+         "rowTextPurposeCodeZ": "Zoos"
+
        }
 }
