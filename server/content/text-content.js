@@ -828,6 +828,14 @@ const schema = Joi.object().keys({
     rowTextPurposeCodeS: Joi.string().required(),
     rowTextPurposeCodeT: Joi.string().required(),
     rowTextPurposeCodeZ: Joi.string().required(),
+    rowTextSpecimenType: Joi.string().required(),
+    rowTextSpecimenTypeAnimalLiving: Joi.string().required(),
+    rowTextSpecimenTypeAnimalPart: Joi.string().required(),
+    rowTextSpecimenTypeAnimalWorked: Joi.string().required(),
+    rowTextSpecimenTypeAnimalCoral: Joi.string().required(),
+    rowTextSpecimenTypePlantLiving: Joi.string().required(),
+    rowTextSpecimenTypePlantProduct: Joi.string().required(),
+    rowTextSpecimenTypePlantWorked: Joi.string().required(),
   }).required()
 })
 

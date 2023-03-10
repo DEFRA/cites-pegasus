@@ -1038,7 +1038,14 @@
          "rowTextPurposeCodeQ": "Circuses and travelling exhibitions",
          "rowTextPurposeCodeS": "Scientific",
          "rowTextPurposeCodeT": "Commercial",
-         "rowTextPurposeCodeZ": "Zoos"
-
+         "rowTextPurposeCodeZ": "Zoos",
+         "rowTextSpecimenType": "Specimen type",
+         "rowTextSpecimenTypeAnimalLiving": "A living animal",
+         "rowTextSpecimenTypeAnimalPart": "An animal part or derivative",
+         "rowTextSpecimenTypeAnimalWorked": "A worked item or finished product",
+         "rowTextSpecimenTypeAnimalCoral": "Coral",
+         "rowTextSpecimenTypePlantLiving": "A living plant",
+         "rowTextSpecimenTypePlantProduct": "A plant product",
+         "rowTextSpecimenTypePlantWorked": "A worked item or finished product"
        }
 }

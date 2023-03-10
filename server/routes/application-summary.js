@@ -40,22 +40,6 @@ function createModel(errors, data) {
       break
   }
 
-  let a10CertificatePurposeValue = null
-  switch (data.species.useCertificateFor) {
-    case "legallyAcquired":
-      a10CertificatePurposeValue = pageContent.rowTextLegallyAcquired
-      break
-    case "commercialActivities":
-      a10CertificatePurposeValue = pageContent.rowTextCommercialActivities
-      break
-    case "moveALiveSpecimen":
-      a10CertificatePurposeValue = pageContent.rowTextMoveALiveSpecimen
-      break
-    case "other":
-      a10CertificatePurposeValue = pageContent.rowTextOther
-      break
-  }
-
   let purposeCodeValueText = null
   switch (data.species.purposeCode) {
     case "B":
@@ -124,12 +108,52 @@ function createModel(errors, data) {
       break
   }
 
+  let specimenTypeValue = null
+  switch (data.species.specimenType) {
+    case "animalLiving":
+      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalLiving
+      break
+    case "animalPart":
+      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalPart
+      break
+    case "animalWorked":
+      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalWorked
+      break
+    case "animalCoral":
+      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalCoral
+      break
+      case "plantLiving":
+      specimenTypeValue = pageContent.rowTextSpecimenTypePlantLiving
+      break
+    case "plantWorked":
+      specimenTypeValue = pageContent.rowTextSpecimenTypePlantProduct
+      break
+    case "plantProduct":
+      specimenTypeValue = pageContent.rowTextSpecimenTypePlantWorked
+      break
+  }
+
+  let quantityValue = null
+  if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === "unmarked") {
+    quantityValue = `${data.species.numberOfUnmarkedSpecimens} specimen`
+  } else if(data.species.specimenType === "animalLiving"){
+    quantityValue = `1  specimen`
+  } else {
+    quantityValue = data.species?.quantity
+  }
 
 
 
+  let unitsOfMeasurementValue = null
+  if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfSpecimens") {
+    unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
+  } else if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfPiecesOrParts") {
+    unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
+  } else {
+    unitsOfMeasurementValue = data.species?.unitOfMeasurement
+  }
 
   let yourContactDetailsData = null
-
   if (!data.isAgent) {
     yourContactDetailsData = {
       fullName: data.applicant.fullName,
@@ -187,15 +211,6 @@ function createModel(errors, data) {
     addressLine4: data.delivery.address.addressLine4 ? data.delivery.address.addressLine4 : "",
     postcode: data.delivery.address.postcode,
     country: data.delivery.address.country
-  }
-
-  let unitsOfMeasurementValue = null
-  if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfSpecimens") {
-    unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
-  } else if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfPiecesOrParts") {
-    unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
-  } else {
-    unitsOfMeasurementValue = data.species?.unitOfMeasurement
   }
 
   const exportOrReexportPermitDetailData = {
@@ -317,8 +332,17 @@ function createModel(errors, data) {
           text: pageContent.rowTextQuantity
         },
         value: {
-          text: data.species.quantity
+          text: quantityValue
         },
+        actions: {
+          items: [
+            {
+              href: hrefPrefix + "/quantity",
+              text: "Change",
+              visuallyHiddenText: "quantity"
+            }
+          ]
+        }
       },
       (data.species.specimenType !== "animalLiving") && {
         classes: "govuk-summary-list__row--no-border",
@@ -328,6 +352,15 @@ function createModel(errors, data) {
         value: {
           text: unitsOfMeasurementValue
         },
+        actions: {
+          items: [
+            {
+              href: data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity",
+              text: "Change",
+              visuallyHiddenText: "quantity"
+            }
+          ]
+        }
       },
       {
         classes: "govuk-summary-list__row--no-border",
@@ -361,6 +394,24 @@ function createModel(errors, data) {
               href: hrefPrefix + "/purposeCode",
               text: "Change",
               visuallyHiddenText: "purpose Code"
+            }
+          ]
+        }
+      },
+      {
+        classes: "govuk-summary-list__row--no-border",
+        key: {
+          text: pageContent.rowTextSpecimenType
+        },
+        value: {
+          text: specimenTypeValue
+        },
+        actions: {
+          items: [
+            {
+              href: hrefPrefix + "/specimenType",
+              text: "Change",
+              visuallyHiddenText: "specimen type"
             }
           ]
         }
@@ -487,23 +538,6 @@ function createModel(errors, data) {
               href: hrefPrefix + "/describeLivingAnimal",
               text: "Change",
               visuallyHiddenText: "other description"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType === "unmarked") && {
-        key: {
-          text: pageContent.rowTextUnmarkedSpecimens
-        },
-        value: {
-          text: data.species.numberOfUnmarkedSpecimens
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/unmarkedSpecimens",
-              text: "Change",
-              visuallyHiddenText: "unmarked specimens"
             }
           ]
         }
