@@ -5,7 +5,7 @@ async function createOpenIdClient() {
   const client = new issuer.Client({
     client_id: 'your-client-id',
     client_secret: 'your-client-secret',
-    redirect_uris: ['https://your-app.com/callback'],
+    redirect_uris: ['http://localhost:3000/callback'],
   });
   return client;
 }

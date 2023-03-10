@@ -6,7 +6,7 @@ const { client } = require('../services/oidc-client')
 async function getAuthorizationUri() {
   const authorizationUri = await client.authorizationUrl({
     scope: 'openid profile email',
-    redirect_uri: 'https://your-app.com/callback',
+    redirect_uri: 'http://localhost:3000/callback',
     response_type: 'code',
   });
   return authorizationUri;
@@ -26,7 +26,7 @@ module.exports = [
     handler: async (request, h) => {
       const params = await client.callbackParams(request.raw.req);
       const tokenSet = await client.callback(
-        'https://your-app.com/callback',
+        'http://localhost:3000/callback',
         params,
         { code_verifier: 'your-code-verifier' }
       );
@@ -48,7 +48,7 @@ module.exports = [
     handler: (request, h) => {
       const logoutUri = client.endSessionUrl({
         id_token_hint: request.state.token,
-        post_logout_redirect_uri: 'https://your-app.com',
+        post_logout_redirect_uri: 'http://localhost:3000',
       });
       return h.redirect(logoutUri).unstate('token');
     },
