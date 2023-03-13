@@ -13,6 +13,9 @@ function createModel(){
 module.exports = [{
   method: 'GET',
   path: currentPath,
+  config: {
+    auth: false // authentication is not required
+  },
   handler: (request, h) => {
     return h.view(pageId, createModel());  
   }
@@ -20,6 +23,9 @@ module.exports = [{
 {
   method: 'GET',
   path: `${urlPrefix}/`,
+  config: {
+    auth: false // authentication is not required
+  },
   handler: (request, h) => {
     return h.redirect(currentPath)// view(pageId, createModel()); 
   }

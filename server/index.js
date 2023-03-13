@@ -17,9 +17,9 @@ async function createServer() {
       }
     }],
     routes: {
-      auth: {
-        mode: 'optional'
-      },
+      // auth: {
+      //   mode: 'optional'
+      // },
       validate: {
         options: {
           abortEarly: false

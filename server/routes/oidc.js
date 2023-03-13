@@ -48,6 +48,9 @@ module.exports = [
   {
     method: 'GET',
     path: '/login',
+    config: {
+      auth: false // authentication is not required
+    },
     handler: async (request, h) => {
       const authOptions = {
         scope: 'openid email profile',
