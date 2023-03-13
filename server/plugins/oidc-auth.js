@@ -1,7 +1,7 @@
 const jwtAuth = require('hapi-auth-jwt2');
 const jwksClient = require('jwks-rsa');
 const { decode } = require('jsonwebtoken');
-const { client } = require('../services/oidc-client')
+//const { client } = require('../services/oidc-client')
 
 // async function validate(decoded, request) {
 //   const jwksUri = 'https://accounts.example.com/.well-known/jwks.json';
@@ -28,21 +28,16 @@ module.exports = {
     name: 'oidc-auth',
     register: (server, options) => {
 
+      server.register(jwtAuth)
+
       const authOptions = {
-        key: 'your-secret-key',
+        key: 'bVQ8Q~8tDWwLk4sP6FPWmNnXQn4C6NTgjgH3fda7',
         validate,
         verifyOptions: { algorithms: ['RS256'] },
       };
-
-      server.register(jwtAuth)
-
       
       server.auth.strategy('jwt', 'jwt', authOptions);
       server.auth.default('jwt');
-
-      
-
-
     }
   }
 }

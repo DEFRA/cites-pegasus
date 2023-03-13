@@ -3,7 +3,8 @@ const Joi = require('joi')
 module.exports = [{
   method: 'GET',
   path: '/profile',
-  options: {
+  config: {
+    // auth: false
     auth: 'jwt'
   },
   handler: async (request, h) => {

@@ -2,32 +2,36 @@ const hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
 
-async function createServer () {  
+async function createServer() {
   const cacheConfig = await getCacheConfig()
   const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
   // Create the hapi server
   const server = hapi.server({
     port: config.port,
-     cache: [{
-       name: 'session',
-       provider: {
-         constructor: catbox,
-         options: cacheConfig.catboxOptions
-       }
-     }],
+    cache: [{
+      name: 'session',
+      provider: {
+        constructor: catbox,
+        options: cacheConfig.catboxOptions
+      }
+    }],
     routes: {
+      auth: {
+        mode: 'optional'
+      },
       validate: {
         options: {
           abortEarly: false
         }
       }
-    }
+    },
+
   })
 
   // Register the plugins
-  await server.register(require('@hapi/inert'))  
-  await server.register(require('./plugins/oidc-auth')) 
+  await server.register(require('@hapi/inert'))
+  await server.register(require('./plugins/oidc-auth'))
   await server.register(require('./plugins/views'))
   await server.register(require('./plugins/router'))
   await server.register(require('./plugins/error-pages'))
