@@ -313,7 +313,7 @@ function createModel(errors, data) {
       createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherDescription,data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description"),
       (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") && 
       createSummaryListRow("govuk-summary-list__row--no-border",  pageContent.rowTextCreatedDate, data.species.createdDate.isExactDateUnknown ? data.species.createdDate.approximateDate : getDateValue(data.species.createdDate), "/createdDate", "created date"),
-      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType === 'unmarked') && 
+      ((data.species.specimenType !== "animalLiving")|| (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) && 
       createSummaryListRow(data.permitType === "article10" ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, hrefPrefix + "/descriptionGeneric", "description"),
       (data.permitType === "article10") && 
       createSummaryListRow( "govuk-summary-list__row--no-border", pageContent.rowTextAcquiredDate, data.species.acquiredDate.isExactDateUnknown ? data.species.acquiredDate.approximateDate : getDateValue(data.species.acquiredDate), hrefPrefix + "/acquiredDate", "acquired date"),
