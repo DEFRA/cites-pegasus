@@ -133,6 +133,24 @@ function createModel(errors, data) {
       break
   }
 
+  let a10CertificatePurposeValue = null
+
+  switch (data.species.useCertificateFor) {
+    case "legallyAcquired":
+      a10CertificatePurposeValue = pageContent.rowTextLegallyAcquired
+      break
+    case "commercialActivities":
+      a10CertificatePurposeValue = pageContent.rowTextCommercialActivities
+      break
+    case "moveALiveSpecimen":
+      a10CertificatePurposeValue = pageContent.rowTextMoveALiveSpecimen
+      break
+    case "other":
+      a10CertificatePurposeValue = pageContent.rowTextOther
+      break
+  }
+
+
   let quantityValue = null
   if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === "unmarked") {
     quantityValue = `${data.species.numberOfUnmarkedSpecimens} specimen`
@@ -141,7 +159,6 @@ function createModel(errors, data) {
   } else {
     quantityValue = data.species?.quantity
   }
-
 
 
   let unitsOfMeasurementValue = null
@@ -213,6 +230,8 @@ function createModel(errors, data) {
     country: data.delivery.address.country
   }
 
+  const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.country} ${deliveryAddressData.postcode}`
+
   const exportOrReexportPermitDetailData = {
     notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
     country : data.permitDetails?.exportOrReexportCountry,
@@ -237,41 +256,24 @@ function createModel(errors, data) {
 
   const importerExporterDetailsData = {
     isImporterExporterDetails: true,
-    fullName: data.importerExporterDetails.name,
-    country: data.permitType !== "import" ? data.importerExporterDetails.country : "",
+    fullName: data.importerExporterDetails?.name,
+    country: data.permitType !== "import" ? data.importerExporterDetails?.country : "",
     address: {
-      addressLine1: data.importerExporterDetails.addressLine1,
-      addressLine2: data.importerExporterDetails.addressLine2,
-      addressLine3: data.importerExporterDetails.addressLine3 ? data.importerExporterDetails.addressLine3 : "",
-      addressLine4: data.importerExporterDetails.addressLine4 ? data.importerExporterDetails.addressLine4 : "",
-      postcode: data.importerExporterDetails.postcode,
+      addressLine1: data.importerExporterDetails?.addressLine1,
+      addressLine2: data.importerExporterDetails?.addressLine2,
+      addressLine3: data.importerExporterDetails?.addressLine3 ? data.importerExporterDetails?.addressLine3 : "",
+      addressLine4: data.importerExporterDetails?.addressLine4 ? data.importerExporterDetails?.addressLine4 : "",
+      postcode: data.importerExporterDetails?.postcode,
     }
   }
+  const importerExporterAddressValue = `${importerExporterDetailsData.address.addressLine1} ${importerExporterDetailsData.address.addressLine2} ${importerExporterDetailsData.address.addressLine3} ${importerExporterDetailsData.address.addressLine4} ${importerExporterDetailsData.address.postcode}`
  
-
   const summaryListAboutThePermit = {
     id: "permitType",
     name: "permitType",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      {
-        classes: "govuk-summary-list__row-border-top",
-        key: {
-          text: pageContent.rowTextPermitType
-        },
-        value: {
-          text: data.permitType
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/permitType",
-              text: "Change",
-              visuallyHiddenText: "permit type"
-            },
-          ]
-        }
-      }
+      createSummaryListRow("govuk-summary-list__row-border-top", pageContent.rowTextPermitType, data.permitType, hrefPrefix + "/permitType", "permit type"),
     ]
   }
 
@@ -280,339 +282,43 @@ function createModel(errors, data) {
     name: "deliveryAddress",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      {
-        classes: "govuk-summary-list__row-border-top",
-        key: {
-          text: pageContent.rowTextAddress
-        },
-        value: {
-          text: `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.country} ${deliveryAddressData.postcode}`
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/deliveryAddress",
-              text: "Change",
-              visuallyHiddenText: "delivery address"
-            }
-          ]
-        }
-      }
+      createSummaryListRow("govuk-summary-list__row-border-top", pageContent.rowTextAddress, deliveryAddressDataValue, hrefPrefix + "/deliveryAddress", "delivery address"),
     ]
   }
-
-  console.log("Data", data)
 
   const summaryListSpecimenDetails = {
     id: "specimenDetails",
     name: "specimenDetails",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      {
-        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextScientificName
-        },
-        value: {
-          text: data.species.speciesName
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/speciesName",
-              text: "Change",
-              visuallyHiddenText: "species name"
-            }
-          ]
-        }
-      },
-     {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextQuantity
-        },
-        value: {
-          text: quantityValue
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/quantity",
-              text: "Change",
-              visuallyHiddenText: "quantity"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType !== "animalLiving") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextUnitOfMeasurement
-        },
-        value: {
-          text: unitsOfMeasurementValue
-        },
-        actions: {
-          items: [
-            {
-              href: data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity",
-              text: "Change",
-              visuallyHiddenText: "quantity"
-            }
-          ]
-        }
-      },
-      {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextSourceCode
-        },
-        value: {
-          text: `${data.species.sourceCode} ${sourceCodeValueText}`
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/sourceCode",
-              text: "Change",
-              visuallyHiddenText: "source code"
-            }
-          ]
-        }
-      },
-      (data.permitType !== "article10") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextPurposeCode
-        },
-        value: {
-          text: `${data.species.purposeCode} ${purposeCodeValueText}`
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/purposeCode",
-              text: "Change",
-              visuallyHiddenText: "purpose Code"
-            }
-          ]
-        }
-      },
-      {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextSpecimenType
-        },
-        value: {
-          text: specimenTypeValue
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/specimenType",
-              text: "Change",
-              visuallyHiddenText: "specimen type"
-            }
-          ]
-        }
-      },
-      {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextTradeTermCode
-        },
-        value: {
-          text: data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/tradeTermCode",
-              text: "Change",
-              visuallyHiddenText: "trade term code"
-            }
-          ]
-        }
-      },
-      (data.permitType === "article10") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextA10CertificatePurpose
-        },
-        value: {
-          text: a10CertificatePurposeValue
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/useCertificateFor",
-              text: "Change",
-              visuallyHiddenText: "use certificate for"
-            }
-          ]
-        }
-      },
-      {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextUniqueIdentificationMark
-        },
-        value: {
-          text: data.species.uniqueIdentificationMark ? data.species.uniqueIdentificationMark : pageContent.rowTextSpecimenIsNotMarked
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/uniqueIdentificationMark",
-              text: "Change",
-              visuallyHiddenText: "unique identification mark"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextSex
-        },
-        value: {
-          text: data.species.sex
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/describeLivingAnimal",
-              text: "Change",
-              visuallyHiddenText: "sex"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextDateOfBirth
-        },
-        value: {
-          text: data.species.dateOfBirth.year ? getDateValue(data.species.dateOfBirth) : ""
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/describeLivingAnimal",
-              text: "Change",
-              visuallyHiddenText: "date of birth"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && (data.permitType === "article10") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextParentDetails
-        },
-        value: {
-          text: data.species.parentDetails
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/describeLivingAnimal",
-              text: "Change",
-              visuallyHiddenText: "parent details"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextOtherDescription
-        },
-        value: {
-          text: data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : ""
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/describeLivingAnimal",
-              text: "Change",
-              visuallyHiddenText: "other description"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextCreatedDate
-        },
-        value: {
-          text: data.species.createdDate.isExactDateUnknown ? data.species.createdDate.approximateDate : getDateValue(data.species.createdDate)
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/createdDate",
-              text: "Change",
-              visuallyHiddenText: "created date"
-            }
-          ]
-        }
-      },
-      (data.species.specimenType !== "animalLiving") && {
-        key: {
-          text: pageContent.rowTextDescription
-        },
-        value: {
-          text: data.species.specimenDescriptionGeneric
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/descriptionGeneric",
-              text: "Change",
-              visuallyHiddenText: "description"
-            }
-          ]
-        }
-      },
-      (data.permitType === "article10") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextAcquiredDate
-        },
-        value: {
-          text: data.species.acquiredDate.isExactDateUnknown ? data.species.acquiredDate.approximateDate : getDateValue(data.species.acquiredDate)
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/acquiredDate",
-              text: "Change",
-              visuallyHiddenText: "acquired date"
-            }
-          ]
-        }
-      },
-      (data.permitType === "article10") && {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextExistingArticle10Certificate
-        },
-        value: {
-          text: data.species.isA10CertificateNumberKnown ? data.species.a10CertificateNumber : commonContent.radioOptionNo
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/a10CertificateNumber",
-              text: "Change",
-              visuallyHiddenText: "existing article 10 certificate"
-            }
-          ]
-        }
-      }
+      createSummaryListRow("govuk-summary-list__row-border-top govuk-summary-list__row--no-border", pageContent.rowTextScientificName, data.species.speciesName, hrefPrefix + "/speciesName", "species name"),
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextQuantity, quantityValue, hrefPrefix + "/quantity", "quantity"),
+      (data.species.specimenType !== "animalLiving") &&  
+      createSummaryListRow( "govuk-summary-list__row--no-border", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity", "unit of measurement"),
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText}`, hrefPrefix + "/sourceCode", "source code"),
+      (data.permitType !== "article10") && 
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText}`, hrefPrefix + "/purposeCode", "purpose code"),
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type"),
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo, hrefPrefix + "/tradeTermCode", "trade term code"),
+      (data.permitType === "article10") && 
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for"),
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMark ? data.species.uniqueIdentificationMark : pageContent.rowTextSpecimenIsNotMarked, hrefPrefix + "/uniqueIdentificationMark", "unique identification mark"),
+      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && 
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSex, data.species.sex, hrefPrefix + "/describeLivingAnimal", "sex"),
+      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') &&
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextDateOfBirth, data.species.dateOfBirth.year ? getDateValue(data.species.dateOfBirth) : "", hrefPrefix + "/describeLivingAnimal", "date of birth"),
+      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && (data.permitType === "article10") && 
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextParentDetails, data.species.parentDetails, hrefPrefix + "/describeLivingAnimal", "parent details"),
+      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && 
+      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherDescription,data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description"),
+      (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") && 
+      createSummaryListRow("govuk-summary-list__row--no-border",  pageContent.rowTextCreatedDate, data.species.createdDate.isExactDateUnknown ? data.species.createdDate.approximateDate : getDateValue(data.species.createdDate), "/createdDate", "created date"),
+      (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType === 'unmarked') && 
+      createSummaryListRow(data.permitType === "article10" ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, hrefPrefix + "/descriptionGeneric", "description"),
+      (data.permitType === "article10") && 
+      createSummaryListRow( "govuk-summary-list__row--no-border", pageContent.rowTextAcquiredDate, data.species.acquiredDate.isExactDateUnknown ? data.species.acquiredDate.approximateDate : getDateValue(data.species.acquiredDate), hrefPrefix + "/acquiredDate", "acquired date"),
+      (data.permitType === "article10") && 
+      createSummaryListRow( "", pageContent.rowTextExistingArticle10Certificate, data.species.isA10CertificateNumberKnown ? data.species.a10CertificateNumber : commonContent.radioOptionNo,  hrefPrefix + "/a10CertificateNumber", "existing a10 certificate"),
     ]
   }
 
@@ -621,83 +327,21 @@ function createModel(errors, data) {
     id: "importerExporterDetail",
     name: "importerExporterDetail",
     rows: [
-      (importerExporterDetailsData.country) && {
-        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextCountry
-        },
-        value: {
-          text: importerExporterDetailsData.country
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/importerExporterDetails",
-              text: "Change",
-              visuallyHiddenText: "country"
-            }
-          ]
-        }
-      },
-      {
-        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextFullName
-        },
-        value: {
-          text: importerExporterDetailsData.fullName
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/importerExporterDetails",
-              text: !importerExporterDetailsData.country ? "Change" : "",
-              visuallyHiddenText: "contact details"
-            }
-          ]
-        }
-      },
-      {
-        key: {
-          text: pageContent.rowTextAddress
-        },
-        value: {
-          text: `${importerExporterDetailsData.address.addressLine1} ${importerExporterDetailsData.address.addressLine2} ${importerExporterDetailsData.address.addressLine3} ${importerExporterDetailsData.address.addressLine4} ${importerExporterDetailsData.address.postcode}`
-        }
-      }
+      (importerExporterDetailsData.country) && 
+      createSummaryListRow("govuk-summary-list__row-border-top govuk-summary-list__row--no-border", pageContent.rowTextCountry, importerExporterDetailsData.country, hrefPrefix + "/importerExporterDetails", "country"),
+      createSummaryListRow("govuk-summary-list__row-border-top govuk-summary-list__row--no-border", pageContent.rowTextFullName, importerExporterDetailsData.fullName, hrefPrefix + "/importerExporterDetails", "contact details"),
+      createSummaryListRow("", pageContent.rowTextAddress, importerExporterAddressValue, "", ""),
     ]
   }
  
-
-  
-   const summaryListRemarks = {
+  const summaryListRemarks = {
     id: "remarks",
     name: "remarks",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      {
-        classes: "govuk-summary-list__row-border-top",
-        key: {
-          text: pageContent.headerRemarks
-        },
-        value: {
-          text: data.comments
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/comments",
-              text: "Change",
-              visuallyHiddenText: "remarks"
-            }
-          ]
-        }
-      }
+      createSummaryListRow("govuk-summary-list__row-border-top", pageContent.headerRemarks, data.comments, hrefPrefix + "/comments", "remarks"),      
     ]
   }
-
-
-
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
@@ -715,25 +359,40 @@ function createModel(errors, data) {
     headerRemarks: pageContent.headerRemarks,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
-
     summaryListYourContactDetails: getContactDetails (pageContent, yourContactDetailsData, hrefPrefix),
-
     summaryListApplicantContactDetails: data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix),
-  
     summaryListDeliveryAddress : summaryListDeliveryAddress,
-
     summaryListSpecimenDetails: summaryListSpecimenDetails,
-
     summaryListImporterExporterDetails : data.permitType !== "article10" && summaryListImporterExporterDetails,
-    
     summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix),
-
     summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix),
-
     summaryListRemarks: summaryListRemarks,
   }
   return { ...commonContent, ...model }
 }
+
+function createSummaryListRow(classes, key, value, href, hiddenText) {
+ const summaryListRow =  {
+    classes: classes,
+    key: {
+      text: key
+    },
+    value: {
+      text: value
+    },
+    actions: {
+      items: [
+        {
+          href: href,
+          text: href ? "Change" : "",
+          visuallyHiddenText: hiddenText
+        }
+      ]
+    }
+  }
+  return summaryListRow
+}
+
 
 function getDateValue(date) {
   if (date.day) {
@@ -748,58 +407,10 @@ function getContactDetails(pageContent, contactDetailsData, hrefPrefix) {
     id: "contactDetails",
     name: "contactDetails",
     rows: [
-      {
-        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextFullName
-        },
-        value: {
-          text: contactDetailsData.fullName
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails,
-              text: "Change",
-              visuallyHiddenText: "contact details"
-            }
-          ]
-        }
-      },
-     {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextBusinessName
-        },
-        value: {
-          text: contactDetailsData.businessName
-        }
-      },
-     {
-        key: {
-          text: pageContent.rowTextEmailAddress
-        },
-        value: {
-          text: contactDetailsData.email
-        }
-      },
-      {
-        key: {
-          text: pageContent.rowTextAddress
-        },
-        value: {
-          text: `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + contactDetailsData.hrefPathSuffixAddress,
-              text:  "Change",
-              visuallyHiddenText: "address"
-            }
-          ]
-        }
-      }
+      createSummaryListRow( "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",  pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details"),    
+      createSummaryListRow( "govuk-summary-list__row--no-border",  pageContent.rowTextBusinessName, contactDetailsData.businessName, "", ""),   
+      createSummaryListRow( "",  pageContent.rowTextEmailAddress, contactDetailsData.email, "", ""),    
+      createSummaryListRow( "",  pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address"),
     ]
   }
   return summaryListContactDetails
@@ -811,47 +422,13 @@ function getPermitDetails(pageContent, permitDetailsData, hrefPrefix) {
     name: "permitDetails",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      {
-        classes: "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextCountry
-        },
-        value: {
-          text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country 
-        },
-        actions: {
-          items: [
-            {
-              href: hrefPrefix + "/permitDetails",
-              text: "Change",
-              visuallyHiddenText: "permit details"
-            }
-          ]
-        }
-      },
-      {
-        classes: "govuk-summary-list__row--no-border",
-        key: {
-          text: pageContent.rowTextPermitNumber
-        },
-        value: {
-          text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber
-        },
-      },
-      {
-        key: {
-          text: pageContent.rowTextPermitIssueDate
-        },
-        value: {
-          text: permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate)
-        },
-      },
+      createSummaryListRow(  "govuk-summary-list__row-border-top govuk-summary-list__row--no-border",  pageContent.rowTextCountry, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country ,  hrefPrefix + "/permitDetails", "permit details"),  
+      createSummaryListRow( "govuk-summary-list__row--no-border",  pageContent.rowTextPermitNumber, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber, "", ""),  
+      createSummaryListRow( "govuk-summary-list__row--no-border", pageContent.rowTextPermitIssueDate, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate), "", ""),  
     ]
   }
   return summaryListPermitDetails
  }
-
-
 
 
 module.exports = [
@@ -861,7 +438,8 @@ module.exports = [
     options: {
       validate: {
         params: Joi.object({
-          summaryType: Joi.string().valid(...summaryTypes),
+          summaryType: Joi.
+          string().valid(...summaryTypes),
           applicationIndex: Joi.
           
           number().required()
@@ -959,3 +537,4 @@ module.exports = [
     }
   }
 ]
+
