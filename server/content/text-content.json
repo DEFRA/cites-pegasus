@@ -1069,7 +1069,7 @@
     "yourContactDetails": {
       "defaultTitle": "Are you sure that you want to change your contact details?",
       "pageHeader": "Are you sure that you want to change your contact details?",
-      "pageBody": "Any changes you make will apply to all applications.",
+      "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change your contact details"
       }
@@ -1077,7 +1077,7 @@
     "deliveryAddress": {
       "defaultTitle": "Are you sure that you want to change the delivery address?",
       "pageHeader": "Are you sure that you want to change the delivery address?",
-      "pageBody": "Any changes you make will apply to all applications.",
+      "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change the delivery address"
       }
@@ -1085,7 +1085,7 @@
     "importerContactDetails": {
       "defaultTitle": "Are you sure that you want to change the importer’s contact details?",
       "pageHeader": "Are you sure that you want to change the importer’s contact details?",
-      "pageBody": "Any changes you make will apply to all applications.",
+      "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change the importer’s contact details"
       }
@@ -1093,7 +1093,7 @@
     "exporterContactDetails": {
       "defaultTitle": "Are you sure that you want to change the exporter’s contact details?",
       "pageHeader": "Are you sure that you want to change the exporter’s contact details?",
-      "pageBody": "Any changes you make will apply to all applications.",
+      "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change the exporter’s contact details"
       }
@@ -1101,7 +1101,7 @@
     "reexporterContactDetails": {
       "defaultTitle": "Are you sure that you want to change the re-exporter’s contact details?",
       "pageHeader": "Are you sure that you want to change the re-exporter’s contact details?",
-      "pageBody": "Any changes you make will apply to all applications.",
+      "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change the re-exporter’s contact details"
       }
@@ -1109,7 +1109,7 @@
     "article10ContactDetails": {
       "defaultTitle": "Are you sure that you want to change the applicant’s contact details?",
       "pageHeader": "Are you sure that you want to change the applicant’s contact details?",
-      "pageBody": "Any changes you make will apply to all applications.",
+      "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change the applicant’s contact details"
       }

@@ -182,7 +182,7 @@ const sourceCodeSchema = Joi.object({
 const areYouSureSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   pageHeader: Joi.string().required(),
-  pageBody2: Joi.string().required(),
+  pageBody1: Joi.string().required(),
   pageBody2: Joi.string().allow("", null),
   errorMessages: Joi.object({
     "error.areYouSure.any.required": Joi.string().required(),
