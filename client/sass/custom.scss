@@ -1,0 +1,39 @@
+hr.hr-light {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, .1);
+}
+
+li.no-bullets {
+    list-style: none;
+}
+
+.inline-full-width {
+    display: flex;
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.align-items-end {
+    align-items: end;
+}
+
+.file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 30px;
+    padding-right: 10px;   
+}
+
+ul.smaller-indent {
+    padding-inline-start: 10px;
+}
+
+.border-top {
+    border-top: 1px solid #b1b4b6;
+}

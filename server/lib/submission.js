@@ -12,7 +12,7 @@ function mergeSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
+    //console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
 
     const mergedSubmission = lodash.merge(existingSubmission, data)
     //const mergedSubmission = { ...emptySubmission, ...existingSubmission, ...data }
@@ -27,7 +27,7 @@ function setSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
+    //console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
 
     setYarValue(request, 'submission', data)
     console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
@@ -39,7 +39,7 @@ function clearSubmission(request) {
 
 function validateSubmission(submission, path) {
     const appFlow = getAppFlow(submission)
-    console.table(appFlow)
+    //console.table(appFlow)
     if (!appFlow.includes(path)) {
         throw `Invalid navigation to ${path}`
     }
@@ -48,6 +48,8 @@ function validateSubmission(submission, path) {
 function getAppFlow(submission) {
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
+
+        appFlow.push('upload-supporting-documents')//TODO Remove this
 
 
         if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
@@ -60,10 +62,10 @@ function getAppFlow(submission) {
                 if (submission.agent?.fullName) {
                     appFlow.push('postcode/agent')
                     appFlow.push('enter-address/agent')
-                    if (submission.agent.addressSearchData?.postcode) {
+                    if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/agent')
                     }
-                    if (submission.agent.address) {
+                    if (submission.agent.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/agent')
                     }
                 }
@@ -74,10 +76,10 @@ function getAppFlow(submission) {
                 if (submission.applicant?.fullName) {
                     appFlow.push('postcode/applicant')
                     appFlow.push('enter-address/applicant')
-                    if (submission.applicant?.addressSearchData?.postcode) {
+                    if (submission.applicant?.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/applicant')
                     }
-                    if (submission.applicant?.address) {
+                    if (submission.applicant?.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/applicant')
                     }
                 }
@@ -87,13 +89,16 @@ function getAppFlow(submission) {
                 appFlow.push('select-delivery-address')
                 appFlow.push('postcode/delivery')
                 appFlow.push('enter-address/delivery')
-                if (submission.delivery?.addressSearchData?.postcode) {
+                if (submission.delivery?.candidateAddressData?.addressSearchData?.postcode) {
                     appFlow.push('select-address/delivery')
                 }
-                if (submission.delivery?.address) {
+                if (submission.delivery?.candidateAddressData?.selectedAddress) {
                     appFlow.push('confirm-address/delivery')
-                    appFlow.push('species-name/0')
                 }
+            }
+
+            if(submission.delivery?.address) {
+                appFlow.push('species-name/0')
             }
 
             if (submission.applications?.length > 0) {
@@ -175,8 +180,20 @@ function getAppFlow(submission) {
                         }
 
                         if (application.importerExporterDetails || species.isEverImportedExported) {
-                            //PERMIT DETAILS
+                            appFlow.push(`permit-details/${applicationIndex}`)
                         }
+
+                        if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
+                            appFlow.push(`comments/${applicationIndex}`)
+                        }
+
+                        if (application.comments || (application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
+                            appFlow.push(`application-summary/check/${applicationIndex}`)
+                        }
+
+                        // if (application.comments) {
+                        //     appFlow.push(`check-answers/${applicationIndex}`)
+                        // }
 
 
                         // if (species.specimenType === 'animalLiving') {

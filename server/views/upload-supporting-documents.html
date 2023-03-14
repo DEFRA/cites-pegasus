@@ -1,0 +1,102 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+<div id="divErrorSummaryContainer">
+  {% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+        "titleText": errorSummaryTitle,
+        "errorList": errorList
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form method="POST" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">
+
+        <h1 class="govuk-heading-l">{{pageHeader}}</h1>
+        <p>{{pageBody1}}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          {% for item in bulletList1Items %}
+            <li>{{item.bulletListItem}}</li>
+          {% endfor %}
+          {% if isAgent %}
+            <li>{{agentBulletListItem}}</li>
+          {% endif %}
+        </ul>
+        <h2 class="govuk-heading-m">{{heading1}}</h2>
+        <p>{{pageBody2}}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          {% for item in bulletList2Items %}
+            <li>{{item.bulletListItem}}</li>
+          {% endfor %}
+        </ul>
+        <div class="inline-full-width align-items-end">
+          {{ govukFileUpload(inputFile) }}
+          {{ govukButton({
+            text: buttonUpload,
+            type: "submit",
+            attributes: {
+              formAction: formActionPage + '/upload'
+            }
+          }) }}
+        </div>
+
+        <hr class="hr-light"/>
+
+        <h2 class="govuk-heading-m">{{heading2}}</h2>
+        {% if supportingDocuments.length == 0 %}
+          <p>{{spanNoFilesUploaded}}</p>
+        {% endif %}
+        <ul class="smaller-indent">
+          {% for supportingDocument in supportingDocuments %}
+
+            <li class="no-bullets">
+              <div class="inline-full-width align-items-center">
+                <div class="govuk-body file-name">{{supportingDocument.fileName}}</div>
+                <div>
+                  {{ govukButton({
+                    text: buttonDelete,
+                    type: "submit",
+                    classes: "govuk-button--secondary",
+                    attributes: {
+                      formAction: supportingDocument.formActionDelete
+                    }
+                  }) }}
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+        <hr class="hr-light"/>
+
+        {{ govukButton({
+              text: continueButton,
+              type: "submit",            
+              attributes: {
+                    formAction: formActionPage + '/continue'
+                  }
+            }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block localJS %}
+  <input id="clientJSConfig" type="hidden" value="{{clientJSConfig}}"/>
+  <script src="{{assetPath}}/js/upload-supporting-documents.client.js"></script>
+{% endblock %}

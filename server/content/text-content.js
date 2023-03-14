@@ -88,22 +88,22 @@ const enterAddressSchema = Joi.object({
   inputLabelPostcode: Joi.string(),
   inputLabelCountry: Joi.string(),
   errorMessages: Joi.object({
-    'error.addressLine1.string.empty': Joi.string(),
-    'error.addressLine1.string.max': Joi.string(),
-    'error.addressLine1.string.pattern.base': Joi.string(),
-    'error.addressLine2.string.empty': Joi.string(),
-    'error.addressLine2.string.max': Joi.string(),
-    'error.addressLine2.string.pattern.base': Joi.string(),
-    'error.addressLine3.string.empty': Joi.string(),
-    'error.addressLine3.string.max': Joi.string(),
-    'error.addressLine3.string.pattern.base': Joi.string(),
-    'error.addressLine4.string.max': Joi.string(),
-    'error.addressLine4.string.pattern.base': Joi.string(),
-    'error.postcode.string.empty': Joi.string(),
-    'error.postcode.string.max': Joi.string(),
-    'error.postcode.string.pattern.base': Joi.string(),
-    'error.country.string.empty': Joi.string(),
-    'error.country.string.max': Joi.string()
+    "error.addressLine1.string.empty": Joi.string(),
+    "error.addressLine1.string.max": Joi.string(),
+    "error.addressLine1.string.pattern.base": Joi.string(),
+    "error.addressLine2.string.empty": Joi.string(),
+    "error.addressLine2.string.max": Joi.string(),
+    "error.addressLine2.string.pattern.base": Joi.string(),
+    "error.addressLine3.string.empty": Joi.string(),
+    "error.addressLine3.string.max": Joi.string(),
+    "error.addressLine3.string.pattern.base": Joi.string(),
+    "error.addressLine4.string.max": Joi.string(),
+    "error.addressLine4.string.pattern.base": Joi.string(),
+    "error.postcode.string.empty": Joi.string(),
+    "error.postcode.string.max": Joi.string(),
+    "error.postcode.string.pattern.base": Joi.string(),
+    "error.country.string.empty": Joi.string(),
+    "error.country.string.max": Joi.string()
   })
 })
 
@@ -187,6 +187,7 @@ const schema = Joi.object().keys({
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
+    confirmAndSubmitButton: Joi.string().required(),
     searchButton: Joi.string().required(),
     startButton: Joi.string().required(),
     finishButton: Joi.string().required(),
@@ -227,8 +228,7 @@ const schema = Joi.object().keys({
     pageBody: Joi.string().required(),
     bullet1: Joi.string().required(),
     bullet2: Joi.string().required(),
-    linkText: Joi.string().required(),
-    linkUrl: Joi.string().uri({ allowRelative: true }).required(),
+    link: Joi.string().required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
   }).required(),
   applyingOnBehalf: Joi.object({
@@ -261,7 +261,8 @@ const schema = Joi.object().keys({
       linkTextEnterAddress: Joi.string().required(),
       inputLabelPostcode: Joi.string().required(),
       errorMessages: Joi.object({
-        "error.postcode.string.empty": Joi.string().required()
+        "error.postcode.string.empty": Joi.string().required(),
+        "error.postcode.string.pattern.base": Joi.string().required()
       }).required()
     }).required(),
     agent: postcodeSchema,
@@ -350,7 +351,7 @@ const schema = Joi.object().keys({
     bodyText2: Joi.string().required(),
     inputLabelSpeciesName: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.speciesName.string.empty": Joi.string().required()    
+      "error.speciesName.string.empty": Joi.string().required()
     }).required()
   }).required(),
   couldNotConfirm: Joi.object({
@@ -493,7 +494,8 @@ const schema = Joi.object().keys({
     radioOptionDivider: Joi.string().required(),
     radioOptionUnmarked: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.uniqueIdentificationMarkType.any.required": Joi.string().required(),
+      "error.uniqueIdentificationMarkType.any.required":
+        Joi.string().required(),
       "error.uniqueIdentificationMarkType.any.only": Joi.string().required(),
       "error.inputCR.string.empty": Joi.string().required(),
       "error.inputCR.string.max": Joi.string().required(),
@@ -529,7 +531,8 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     errorMessages: Joi.object({
       "error.specimenDescriptionGeneric.string.empty": Joi.string().required(),
-      "error.specimenDescriptionGeneric.string.pattern.base": Joi.string().required(),
+      "error.specimenDescriptionGeneric.string.pattern.base":
+        Joi.string().required(),
       "error.specimenDescriptionGeneric.string.min": Joi.string().required(),
       "error.specimenDescriptionGeneric.string.max": Joi.string().required()
     }).required()
@@ -548,19 +551,21 @@ const schema = Joi.object().keys({
     radioOptionSexMale: Joi.string().required(),
     radioOptionSexFemale: Joi.string().required(),
     radioOptionSexUndetermined: Joi.string().required(),
-    errorMessages: Joi.object().keys({
-      'error.sex.any.required': Joi.string().required(),
-      'error.sex.any.only': Joi.string().required(),
-      'error.parentDetails.string.empty': Joi.string().required(),
-      'error.parentDetails.string.min': Joi.string().required(),
-      'error.parentDetails.string.max': Joi.string().required(),
-      'error.description.string.max': Joi.string().required(),
-      'error.dateOfBirth.any.future': Joi.string().required(),
-      'error.dateOfBirth.any.invalid': Joi.string().required(),
-      'error.dateOfBirth-day.number.base': Joi.string().required(),
-      'error.dateOfBirth-month.number.base': Joi.string().required(),
-      'error.dateOfBirth-year.number.base': Joi.string().required()
-    }).required()
+    errorMessages: Joi.object()
+      .keys({
+        "error.sex.any.required": Joi.string().required(),
+        "error.sex.any.only": Joi.string().required(),
+        "error.parentDetails.string.empty": Joi.string().required(),
+        "error.parentDetails.string.min": Joi.string().required(),
+        "error.parentDetails.string.max": Joi.string().required(),
+        "error.description.string.max": Joi.string().required(),
+        "error.dateOfBirth.any.future": Joi.string().required(),
+        "error.dateOfBirth.any.invalid": Joi.string().required(),
+        "error.dateOfBirth-day.number.base": Joi.string().required(),
+        "error.dateOfBirth-month.number.base": Joi.string().required(),
+        "error.dateOfBirth-year.number.base": Joi.string().required()
+      })
+      .required()
   }).required(),
   importerExporter: Joi.object({
     common: Joi.object({
@@ -606,10 +611,10 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.isEverImportedExported.any.required": Joi.string().required(),
+      "error.isEverImportedExported.any.required": Joi.string().required()
     }).required()
   }).required(),
-  unmarkedSpecimens: Joi.object({    
+  unmarkedSpecimens: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageHeaderHint: Joi.string().required(),
@@ -628,10 +633,12 @@ const schema = Joi.object().keys({
     inputLabelQuantity: Joi.string().required(),
     selectLabelUnitOfMeasurement: Joi.string().required(),
     unitOfMeasurementPrompt: Joi.string().required(),
-    unitsOfMeasurement: Joi.array().items(Joi.object({
-      "text": Joi.string().required(),
-      "value": Joi.string().required(),
-    }).required()),
+    unitsOfMeasurement: Joi.array().items(
+      Joi.object({
+        "text": Joi.string().required(),
+        "value": Joi.string().required()
+      }).required()
+    ),
     errorMessages: Joi.object({
       "error.unitOfMeasurement.any.only": Joi.string().required(),
       "error.quantity.any.empty": Joi.string().required(),
@@ -641,14 +648,203 @@ const schema = Joi.object().keys({
       "error.quantity.number.unsafe": Joi.string().required()
     }).required()
   }).required(),
+  permitDetails: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    headingImport: Joi.string().required(),
+    headingReexportA10: Joi.string().required(),
+    inputLabelCountry: Joi.string().required(),
+    inputLabelPermitNumber: Joi.string().required(),
+    inputLabelPermitIssueDate: Joi.string().required(),
+    inputLabelHintPermitIssueDate: Joi.string().required(),
+    dividerText: Joi.string().required(),
+    checkboxLabelNotApplicable: Joi.string().required(),
+    headingCountryOfOrigin: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.exportOrReexportCountry.string.empty": Joi.string().required(),
+      "error.exportOrReexportCountry.any.empty": Joi.string().required(),
+      "error.exportOrReexportCountry.any.required": Joi.string().required(),
+      "error.exportOrReexportCountry.string.max": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.any.required":
+        Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.pattern.base":
+        Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.min": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.max": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.future":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.invalid":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day.any.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day-month.any.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day-year.any.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-month.any.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-month-year.any.empty":
+        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-year.any.empty":
+        Joi.string().required(),
+      "error.countryOfOrigin.string.empty": Joi.string().required(),
+      "error.countryOfOrigin.any.empty": Joi.string().required(),
+      "error.countryOfOrigin.any.required": Joi.string().required(),
+      "error.countryOfOrigin.string.max": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.any.required": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.empty": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.pattern.base":
+        Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.min": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.max": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.custom":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.future":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.invalid":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day.any.empty":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day-month.any.empty":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day-year.any.empty":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-month.any.empty":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-month-year.any.empty":
+        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-year.any.empty":
+        Joi.string().required()
+    }).required()
+  }).required(),
+  uploadSupportingDocuments: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),
+    bulletList1Items: Joi.array().items(
+      Joi.object().keys({ bulletListItem: Joi.string().required() })
+    ),
+    agentBulletListItem: Joi.string().required(),
+    heading1: Joi.string().required(),
+    pageBody2: Joi.string().required(),
+    bulletList2Items: Joi.array().items(
+      Joi.object().keys({ bulletListItem: Joi.string().required() })
+    ),
+    buttonUpload: Joi.string().required(),
+    heading2: Joi.string().required(),
+    spanNoFilesUploaded: Joi.string().required(),
+    buttonDelete: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
+      "error.fileUpload.hapi.headers.content-type.any.only": Joi.string().required(),
+      "error.fileUpload.any.custom": Joi.string().required(),
+      "error.fileUpload.upload.exception": Joi.string().required(),
+      "error.file.delete.exception": Joi.string().required(),
+      "error.fileUpload.any.filesize": Joi.string().required(),
+    }).required(),
+  }).required(),
+  comments: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputHintAddRemarks: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.comments.string.max": Joi.string().required()
+    }).required()
+  }).required(),
+  applicationSummary: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    headerPermit: Joi.string().required(),
+    rowTextPermitType: Joi.string().required(),
+    headerYourContactDetails: Joi.string().required(),
+    headerApplicantContactDetails: Joi.string().required(),
+    headerExportOrReexporterContactDetails: Joi.string().required(),
+    headerImporterContactDetails: Joi.string().required(),
+    headerExporterContactDetails: Joi.string().required(),
+    headerReexporterContactDetails: Joi.string().required(),
+    headerArticle10ContactDetails: Joi.string().required(),
+    rowTextFullName: Joi.string().required(),
+    rowTextBusinessName: Joi.string().required(),
+    rowTextEmailAddress: Joi.string().required(),
+    rowTextAddress: Joi.string().required(),
+    headerDeliveryAddress: Joi.string().required(),
+    headerSpecimenDetails: Joi.string().required(),
+    rowTextScientificName: Joi.string().required(),
+    rowTextQuantity: Joi.string().required(),
+    rowTextUnitOfMeasurement: Joi.string().required(),
+    rowTextUnitsOfMeasurementNoOfSpecimens: Joi.string().required(),
+    rowTextUnitsOfMeasurementNoOfPiecesOrParts: Joi.string().required(),
+    rowTextSourceCode: Joi.string().required(),
+    rowTextPurposeCode: Joi.string().required(),
+    rowTextTradeTermCode: Joi.string().required(),
+    rowTextUniqueIdentificationMark: Joi.string().required(),
+    rowTextSpecimenIsNotMarked: Joi.string().required(),
+    rowTextSex: Joi.string().required(),
+    rowTextDateOfBirth: Joi.string().required(),
+    rowTextParentDetails: Joi.string().required(),
+    rowTextOtherDescription: Joi.string().required(),
+    rowTextA10CertificatePurpose: Joi.string().required(),
+    rowTextLegallyAcquired: Joi.string().required(),
+    rowTextCommercialActivities: Joi.string().required(),
+    rowTextOther: Joi.string().required(),
+    rowTextMoveALiveSpecimen: Joi.string().required(),
+    rowTextAcquiredDate: Joi.string().required(),
+    rowTextExistingArticle10Certificate: Joi.string().required(),
+    rowTextUnmarkedSpecimens: Joi.string().required(),
+    rowTextCreatedDate: Joi.string().required(),
+    rowTextDescription: Joi.string().required(),
+    headerExportOrReexportPermitDetails: Joi.string().required(),
+    headerPermitDetailsFromExportIntoGreatBritain: Joi.string().required(),
+    rowTextCountry: Joi.string().required(),
+    rowTextPermitNumber: Joi.string().required(),
+    rowTextPermitIssueDate: Joi.string().required(),
+    headerCountryOfOriginPermitDetails: Joi.string().required(),
+    rowTextNotApplicable: Joi.string().required(),
+    headerRemarks: Joi.string().required(),
+    rowTextSourceCodeW: Joi.string().required(),
+    rowTextSourceCodeR: Joi.string().required(),
+    rowTextSourceCodeDAnimal: Joi.string().required(),
+    rowTextSourceCodeDPlant: Joi.string().required(),
+    rowTextSourceCodeC: Joi.string().required(),
+    rowTextSourceCodeF: Joi.string().required(),
+    rowTextSourceCodeA: Joi.string().required(),
+    rowTextSourceCodeI: Joi.string().required(),
+    rowTextSourceCodeO: Joi.string().required(),
+    rowTextSourceCodeX: Joi.string().required(),
+    rowTextPurposeCodeB: Joi.string().required(),
+    rowTextPurposeCodeE:Joi.string().required(),
+    rowTextPurposeCodeG: Joi.string().required(),
+    rowTextPurposeCodeH: Joi.string().required(),
+    rowTextPurposeCodeL: Joi.string().required(),
+    rowTextPurposeCodeM: Joi.string().required(),
+    rowTextPurposeCodeN: Joi.string().required(),
+    rowTextPurposeCodeP: Joi.string().required(),
+    rowTextPurposeCodeQ: Joi.string().required(),
+    rowTextPurposeCodeS: Joi.string().required(),
+    rowTextPurposeCodeT: Joi.string().required(),
+    rowTextPurposeCodeZ: Joi.string().required(),
+    rowTextSpecimenType: Joi.string().required(),
+    rowTextSpecimenTypeAnimalLiving: Joi.string().required(),
+    rowTextSpecimenTypeAnimalPart: Joi.string().required(),
+    rowTextSpecimenTypeAnimalWorked: Joi.string().required(),
+    rowTextSpecimenTypeAnimalCoral: Joi.string().required(),
+    rowTextSpecimenTypePlantLiving: Joi.string().required(),
+    rowTextSpecimenTypePlantProduct: Joi.string().required(),
+    rowTextSpecimenTypePlantWorked: Joi.string().required(),
+  }).required()
 })
 
 // Validate config
 const { error, value } = schema.validate(textContent)
 
 // Throw if config is invalid
-if(error) {
-    throw new Error(`The text-content.json file is invalid. ${error.message}`)
-  }
+if (error) {
+  throw new Error(`The text-content.json file is invalid. ${error.message}`)
+}
 
 module.exports = value

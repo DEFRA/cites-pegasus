@@ -4,6 +4,7 @@
 {% block head %}
   <!--[if !IE 8]><!-->
     <link href="{{ assetPath }}/stylesheets/application.css" rel="stylesheet" />
+    <link href="{{ assetPath }}/stylesheets/custom.css" rel="stylesheet" />
   <!--<![endif]-->
 
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
@@ -25,13 +26,15 @@
     serviceName: serviceName,
     serviceUrl: "#"
   }) }}
-    {{ govukPhaseBanner({
+{% if phaseBannerPhase != null %} 
+    {{  govukPhaseBanner({
       tag: {
         text: phaseBannerPhase
       },
       html: phaseBannerHTML,
       classes: 'govuk-width-container'
     }) }}
+{% endif %}
 {% endblock %}
 
 {% block pageTitle %}
@@ -45,4 +48,6 @@
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
   <script src="{{ assetPath }}/all.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
+  {% block localJS %}
+  {% endblock %}  
 {% endblock %}

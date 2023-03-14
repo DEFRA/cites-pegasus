@@ -3,16 +3,18 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
-const pageId = "ever-imported-exported"
+const pageId = "comments"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/already-have-a10`
-const nextPathPermitDetails = `${urlPrefix}/permit-details`
-const nextPathComments = `${urlPrefix}/comments`
+const previousPathPermitDetails = `${urlPrefix}/permit-details`
+const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
+const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
+const nextPath = `${urlPrefix}/application-summary/`
 const invalidSubmissionPath = urlPrefix
+
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.everImportedExported
+  const pageContent = textContent.comments
 
   let errorList = null
   if (errors) {
@@ -21,7 +23,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["isEverImportedExported"]
+    const fields = ["comments"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -33,39 +35,39 @@ function createModel(errors, data) {
     })
   }
 
+  let previousPath = ''
+  if (data.permitType === 'export') {
+      previousPath = previousPathImporterExporter
+  } else if (!data.isEverImportedExported && data.permitType === 'article10') {
+      previousPath = previousPathEverImportedExported
+  } else if (data.permitDetails) {
+    previousPath = previousPathPermitDetails
+  }
+
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
     pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
-    captionText: data.speciesName,
+    ? commonContent.errorSummaryTitlePrefix + errorList[0].text
+    : `${pageContent.defaultTitle}`,
 
-    inputIsEverImportedExported: {
-      idPrefix: "isEverImportedExported",
-      name: "isEverImportedExported",
-      classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
+    inputComments: {
+      id: "comments",
+      name: "comments",
+      maxlength: 500,
+      classes: "govuk-textarea govuk-js-character-count",
+      label: {
+        text: pageContent.pageHeader,
+        isPageHeading: true,
+        classes: "govuk-label--l"
       },
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-          checked: data.isEverImportedExported
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-          checked: data.isEverImportedExported === false
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#isEverImportedExported")
+      hint: {
+        text: pageContent.inputHintAddRemarks
+      },
+      ...(data.comments ? { value: data.comments } : {}),
+      errorMessage: getFieldError(errorList, "#comments")
     }
   }
   return { ...commonContent, ...model }
@@ -87,22 +89,24 @@ module.exports = [
       const submission = getSubmission(request)
 
       try {
-        validateSubmission(submission, `${pageId}/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
 
-      const species = submission.applications[applicationIndex].species
-
       const pageData = {
         applicationIndex: applicationIndex,
-        speciesName: species?.speciesName,
-        isEverImportedExported: species.isEverImportedExported
+        permitType: submission.permitType,
+        permitDetails: submission.applications[applicationIndex]?.permitDetails,
+        isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
+        comments: submission.applications[applicationIndex].comments
       }
+
       return h.view(pageId, createModel(null, pageData))
     }
   },
+
   {
     method: "POST",
     path: `${currentPath}/{applicationIndex}`,
@@ -113,56 +117,39 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isEverImportedExported: Joi.boolean().required()
+            comments: Joi.string().max(500).optional().allow(null, ""),
         }),
-
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
-          const species = submission.applications[applicationIndex].species
-
-          let isEverImportedExported = null
-          switch (request.payload.isEverImportedExported) {
-            case "true":
-              isEverImportedExported = true
-              break
-            case "false":
-              isEverImportedExported = false
-              break
-          }
 
           const pageData = {
             applicationIndex: applicationIndex,
-            speciesName: species?.speciesName,
-            isEverImportedExported: isEverImportedExported
+            permitType: submission.permitType,
+            permitDetails: submission.applications[applicationIndex].permitDetails,
+            isEverImportedExported: submission.applications[applicationIndex].species.isEverImportedExported,
+            ...request.payload
           }
-
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        const species = submission.applications[applicationIndex].species
-
-        species.isEverImportedExported = request.payload.isEverImportedExported
+      
+        submission.applications[applicationIndex].comments = request.payload.comments ? request.payload.comments : ""
 
         try {
-          mergeSubmission(
-            request,
-            { applications: submission.applications },
-            `${pageId}/${applicationIndex}`
-          )
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (request.payload.isEverImportedExported && submission.permitType !== 'export') {
-          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
-        } else {
-          return h.redirect(`${nextPathComments}/${applicationIndex}`)
-        }
+        const pathSuffix = 'check'
+
+        return h.redirect(`${nextPath}${pathSuffix}/${applicationIndex}`)
+
       }
     }
   }

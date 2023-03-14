@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+        <h1 class="govuk-heading-l">{{pageHeader}}</h1>
+
+        <h2 class="govuk-heading-m ">{{headerPermit}}</h2>
+        {{ govukSummaryList (summaryListAboutThePermit) }}
+
+        <h2 class="govuk-heading-m">{{headerYourContactDetails}}</h2>
+        {{ govukSummaryList (summaryListYourContactDetails) }}
+
+        <h2 class="govuk-heading-m">{{headerApplicantContactDetails}}</h2>
+        {{ govukSummaryList (summaryListApplicantContactDetails) }}
+
+        <h2 class="govuk-heading-m">{{headerDeliveryAddress}}</h2>
+        {{ govukSummaryList (summaryListDeliveryAddress) }}
+
+        <h2 class="govuk-heading-m">{{headerSpecimenDetails}}</h2>
+        {{ govukSummaryList (summaryListSpecimenDetails) }}
+
+        <h2 class="govuk-heading-m">{{headingImporterExporterDetails}}</h2>
+        {{ govukSummaryList (summaryListImporterExporterDetails) }}
+
+        <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
+        {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
+
+        <h2 class="govuk-heading-m">{{headerCountryOfOriginPermitDetails}}</h2>
+        {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
+
+        <h2 class="govuk-heading-m">{{headerRemarks}}</h2>
+        {{ govukSummaryList (summaryListRemarks) }}
+       
+        {{ govukButton({
+        text: confirmAndSubmitButton,
+        type: "submit"
+      }) }}
+     
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -5,6 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/s
 const { ALPHA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
@@ -89,8 +90,11 @@ function createModel(errors, data) {
     }
   })
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -139,7 +143,7 @@ function createModel(errors, data) {
         isAnimal && {
           value: "C",
           text: pageContent.radioOptionC,
-          hint: { text: pageContent.radioOptionCHint },
+          hint: { html: pageContent.radioOptionCHint },
           label: {
             classes: "govuk-!-font-weight-bold"
           },
@@ -148,7 +152,7 @@ function createModel(errors, data) {
         isAnimal && {
           value: "F",
           text: pageContent.radioOptionF,
-          hint: { text: pageContent.radioOptionFHint },
+          hint: { html: pageContent.radioOptionFHint },
           label: {
             classes: "govuk-!-font-weight-bold"
           },
@@ -225,6 +229,7 @@ function failAction(request, h, err) {
   const submission = getSubmission(request)
   const species = submission.applications[request.params.applicationIndex].species
   const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: request.params.applicationIndex,
     speciesName: species.speciesName,
     kingdom: species.kingdom,
@@ -245,7 +250,7 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const {applicationIndex} = request.params
+      const { applicationIndex } = request.params
       const submission = getSubmission(request)
 
       try {
@@ -256,8 +261,9 @@ module.exports = [
       }
 
       const species = submission.applications[applicationIndex].species
-      
+
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
         kingdom: species.kingdom,
@@ -333,11 +339,17 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if(submission.permitType === 'article10'){
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+
+        if (submission.permitType === 'article10') {
           return h.redirect(`${nextPathUseCertFor}/${applicationIndex}`)
         } else {
           return h.redirect(`${nextPathPurposeCode}/${applicationIndex}`)
-        }        
+        }
+
       }
     }
   }
