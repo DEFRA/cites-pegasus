@@ -13,23 +13,23 @@ const invalidSubmissionPath = urlPrefix
 const lodash = require('lodash')
 
 function createModel(errors, data) {
-    const commonContent =  textContent.common;
+    const commonContent = textContent.common;
     let pageContent = null
 
     const enterAddressText = lodash.cloneDeep(textContent.enterAddress) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = lodash.merge(enterAddressText.common, enterAddressText.agentLed )
+            pageContent = lodash.merge(enterAddressText.common, enterAddressText.agentLed)
         } else {
-            pageContent = lodash.merge(enterAddressText.common, enterAddressText.applicant )
+            pageContent = lodash.merge(enterAddressText.common, enterAddressText.applicant)
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(enterAddressText.common, enterAddressText.agent )
+        pageContent = lodash.merge(enterAddressText.common, enterAddressText.agent)
     } else {
         pageContent = lodash.merge(enterAddressText.common, enterAddressText.delivery)
     }
-    
+
     let defaultTitle = ''
     let pageHeader = ''
     let pageBody = ''
@@ -172,7 +172,7 @@ module.exports = [{
             contactType: request.params.contactType,
             isAgent: submission?.isAgent,
             permitType: submission?.permitType,
-            ...submission[request.params.contactType]?.address
+            ...submission[request.params.contactType]?.candidateAddressData?.selectedAddress
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -224,22 +224,28 @@ module.exports = [{
             }
 
 
-            const submission = {
+            const newSubmission = {
                 [contactType]: {
-                    address: {
-                        addressLine1: request.payload.addressLine1.trim(),
-                        addressLine2: request.payload.addressLine2.trim(),
-                        addressLine3: request.payload.addressLine3.trim(),
-                        addressLine4: request.payload.addressLine4.trim(),
-                        postcode: request.payload.postcode.trim(),
-                        country: request.payload.country ? request.payload.country.trim() : 'UK',
-                        uprn: null
+                    candidateAddressData: {
+                        selectedAddress: {
+                            addressLine1: request.payload.addressLine1.trim(),
+                            addressLine2: request.payload.addressLine2.trim(),
+                            addressLine3: request.payload.addressLine3.trim(),
+                            addressLine4: request.payload.addressLine4.trim(),
+                            postcode: request.payload.postcode.trim(),
+                            country: request.payload.country ? request.payload.country.trim() : 'UK',
+                            uprn: null
+                        }
                     }
                 }
             }
 
+            if (contactType === "delivery") {
+                newSubmission[contactType].addressOption = "different"
+            }
+
             try {
-                mergeSubmission(request, submission, `${pageId}/${contactType}`)
+                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);

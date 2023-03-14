@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['sourceCode', 'applicantContactDetails']
+const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function clearChangeRoute(request) {
@@ -15,28 +15,28 @@ function setChangeRoute(request, changeType, applicationIndex) {
     switch (changeType) {
         case "permitType":
             startUrl = `${urlPrefix}/permit-type`
-            endUrl = 'to be defined'
+            endUrl = null
             confirm = true
             break
-        case "agentContactDetails":
+        case "agentContactDetails"://DONE
             startUrl = `${urlPrefix}/contact-details/agent`
             confirm = true
             break
-        case "agentAddress":
+        case "agentAddress"://DONE
             startUrl = `${urlPrefix}/postcode/agent`
             endUrl = `${urlPrefix}/confirm-address/agent`
             confirm = true
             break
-        case "applicantContactDetails":
+        case "applicantContactDetails"://DONE
             startUrl = `${urlPrefix}/contact-details/applicant`
             confirm = true
             break
-        case "applicantAddress":
+        case "applicantAddress"://DONE
             startUrl = `${urlPrefix}/postcode/applicant`
             endUrl = `${urlPrefix}/confirm-address/applicant`
             confirm = true
             break
-        case "deliveryAddress":
+        case "deliveryAddress"://DONE
             startUrl = `${urlPrefix}/postcode/delivery`
             endUrl = `${urlPrefix}/confirm-address/delivery`
             confirm = true
@@ -46,7 +46,13 @@ function setChangeRoute(request, changeType, applicationIndex) {
             endUrl = 'to be defined'
             confirm = true
             break
-        case "sourceCode":
+
+
+        case "specimenType":
+        case "quantity":
+
+        
+        case "sourceCode"://DONE
             startUrl = `${urlPrefix}/source-code/${applicationIndex}`
             break
         case "purposeCode":
@@ -69,6 +75,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
         case "a10CertificateNumber":
         case "importerExporterDetails":
         case "permitDetails":
+        case "comments":
             throw new Error(`Change type not handled yet: ${changeType}`)
         default:
             throw new Error(`Invalid change type: ${changeType}`)

@@ -156,16 +156,21 @@ module.exports = [{
                 delivery: {
                     address: deliveryAddress,
                     addressOption: request.payload.deliveryAddressOption,
-                    addressSearchData: null
+                    candidateAddressData: {
+                        addressSearchData: null,
+                        selectedAddress: null
+                        
+                    }
                 }
             }
+
 
             try {
                 mergeSubmission(request, newSubmission, `${pageId}`)
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidSubmissionPath}/`)
+                return h.redirect(`${invalidSubmissionPath} / `)
             }
 
             return h.redirect(nextPath)
