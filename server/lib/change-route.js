@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['sourceCode', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress']
+const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function clearChangeRoute(request) {
@@ -15,7 +15,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
     switch (changeType) {
         case "permitType":
             startUrl = `${urlPrefix}/permit-type`
-            endUrl = 'to be defined'
+            endUrl = null
             confirm = true
             break
         case "agentContactDetails"://DONE
@@ -36,7 +36,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
             endUrl = `${urlPrefix}/confirm-address/applicant`
             confirm = true
             break
-        case "deliveryAddress":
+        case "deliveryAddress"://DONE
             startUrl = `${urlPrefix}/postcode/delivery`
             endUrl = `${urlPrefix}/confirm-address/delivery`
             confirm = true
@@ -46,6 +46,12 @@ function setChangeRoute(request, changeType, applicationIndex) {
             endUrl = 'to be defined'
             confirm = true
             break
+
+
+        case "specimenType":
+        case "quantity":
+
+        
         case "sourceCode"://DONE
             startUrl = `${urlPrefix}/source-code/${applicationIndex}`
             break
