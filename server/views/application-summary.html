@@ -19,31 +19,31 @@
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
         <h1 class="govuk-heading-l">{{pageHeader}}</h1>
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerPermit}}</h2>
+        <h2 class="govuk-heading-m ">{{headerPermit}}</h2>
         {{ govukSummaryList (summaryListAboutThePermit) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerYourContactDetails}}</h2>
+        <h2 class="govuk-heading-m">{{headerYourContactDetails}}</h2>
         {{ govukSummaryList (summaryListYourContactDetails) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerApplicantContactDetails}}</h2>
+        <h2 class="govuk-heading-m">{{headerApplicantContactDetails}}</h2>
         {{ govukSummaryList (summaryListApplicantContactDetails) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerDeliveryAddress}}</h2>
+        <h2 class="govuk-heading-m">{{headerDeliveryAddress}}</h2>
         {{ govukSummaryList (summaryListDeliveryAddress) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerSpecimenDetails}}</h2>
+        <h2 class="govuk-heading-m">{{headerSpecimenDetails}}</h2>
         {{ govukSummaryList (summaryListSpecimenDetails) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headingImporterExporterDetails}}</h2>
+        <h2 class="govuk-heading-m">{{headingImporterExporterDetails}}</h2>
         {{ govukSummaryList (summaryListImporterExporterDetails) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headingPermitDetails}}</h2>
+        <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
         {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerCountryOfOriginPermitDetails}}</h2>
+        <h2 class="govuk-heading-m">{{headerCountryOfOriginPermitDetails}}</h2>
         {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
 
-        <h2 class="govuk-heading-m govuk-summary-list__row-border-bottom">{{headerRemarks}}</h2>
+        <h2 class="govuk-heading-m">{{headerRemarks}}</h2>
         {{ govukSummaryList (summaryListRemarks) }}
        
         {{ govukButton({
