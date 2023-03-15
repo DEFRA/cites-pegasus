@@ -2,28 +2,38 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "are-you-sure"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/already-have-a10`
-const nextPathPermitDetails = `${urlPrefix}/permit-details`
-const nextPathComments = `${urlPrefix}/comments`
+const previousPath = `${urlPrefix}/application-summary/check`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
  
   let pageContent = null
-  if(data.contactType === 'applicant'){
-    if(data.isAgent){
-        pageContent = textContent.contactDetails.agentLed
-    } else {
-        pageContent = textContent.contactDetails.applicant
-    }
-} else {
-    pageContent = textContent.contactDetails.agent
+  if (data.changeRouteData.changeType === "permitType" ) {
+    pageContent = textContent.areYouSure.permitType
+  } else if (data.changeRouteData.changeType === "speciesName" ) {
+    pageContent = textContent.areYouSure.scientificName
+  } else if (data.changeRouteData.changeType === "deliveryAddress" ) {
+    pageContent = textContent.areYouSure.deliveryAddress
+  } else if (data.changeRouteData.changeType === "agentContactDetails" ) {
+    pageContent = textContent.areYouSure.yourContactDetails
+  } else if (data.changeRouteData.changeType === "applicantContactDetails" && !data.isAgent) {
+   pageContent = textContent.areYouSure.yourContactDetails
+  } else if (data.changeRouteData.changeType === "applicantContactDetails" && data.isAgent) {
+    if (data.permitType === "import") {
+        pageContent = textContent.areYouSure.importerContactDetails
+    } else if(data.permitType === "export") {
+        pageContent = textContent.areYouSure.exporterContactDetails
+    } else if(data.permitType === "reexport") {
+        pageContent = textContent.areYouSure.reexporterContactDetails
+    } else if(data.permitType === "article10") {
+        pageContent = textContent.areYouSure.importerContactDetails
+    } 
 }
-
 
   let errorList = null
   if (errors) {
@@ -51,7 +61,9 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    captionText: data.speciesName,
+    pageHeader: pageContent.pageHeader,
+    pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
+    
 
     inputAreYouSure: {
       idPrefix: "areYouSure",
@@ -68,15 +80,15 @@ function createModel(errors, data) {
         {
           value: true,
           text: commonContent.radioOptionYes,
-          checked: data.isEverImportedExported
+          checked: data.areYouSure
         },
         {
           value: false,
           text: commonContent.radioOptionNo,
-          checked: data.isEverImportedExported === false
+          checked: data.areYouSure === false
         }
       ],
-      errorMessage: getFieldError(errorList, "#isEverImportedExported")
+      errorMessage: getFieldError(errorList, "#areYouSure")
     }
   }
   return { ...commonContent, ...model }
@@ -96,20 +108,19 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
+      const changeRouteData = getChangeRouteData(request)
 
-      try {
-        validateSubmission(submission, `${pageId}/${applicationIndex}`)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
-      }
-
-      const species = submission.applications[applicationIndex].species
+    //   try {
+    //     validateSubmission(submission, `${pageId}/${applicationIndex}`)
+    //   } catch (err) {
+    //     console.log(err)
+    //     return h.redirect(`${invalidSubmissionPath}/`)
+    //   }
 
       const pageData = {
         applicationIndex: applicationIndex,
-        speciesName: species?.speciesName,
-        isEverImportedExported: species.isEverImportedExported
+        changeRouteData:changeRouteData,
+        areYouSure: submission.areYouSure
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -124,29 +135,26 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isEverImportedExported: Joi.boolean().required()
+          areYouSure: Joi.boolean().required()
         }),
 
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
-          const submission = getSubmission(request)
-          const species = submission.applications[applicationIndex].species
 
-          let isEverImportedExported = null
-          switch (request.payload.isEverImportedExported) {
+          let areYouSure = null
+          switch (request.payload.areYouSure) {
             case "true":
-              isEverImportedExported = true
+              areYouSure = true
               break
             case "false":
-              isEverImportedExported = false
+              areYouSure = false
               break
           }
 
           const pageData = {
             applicationIndex: applicationIndex,
-            speciesName: species?.speciesName,
-            isEverImportedExported: isEverImportedExported
-          }
+           areYouSure: areYouSure
+           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -154,9 +162,9 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        const species = submission.applications[applicationIndex].species
-
-        species.isEverImportedExported = request.payload.isEverImportedExported
+        const changeRouteData = getChangeRouteData(request)
+       
+        submission.areYouSure = request.payload.areYouSure
 
         try {
           mergeSubmission(
@@ -169,12 +177,43 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        if (request.payload.isEverImportedExported && submission.permitType !== 'export') {
+        if (request.payload.areYouSure) {
           return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
         } else {
-          return h.redirect(`${nextPathComments}/${applicationIndex}`)
+          return h.redirect(`${previousPath}/${applicationIndex}`)
         }
       }
     }
   }
 ]
+
+
+
+// switch (data.changeRouteData.changeType) {
+//     case "permitType" :
+//       pageContent = textContent.areYouSure.permitType
+//       break
+//     case "speciesName":
+//       pageContent = textContent.areYouSure.scientificName
+//       break
+//     case "agentContactDetails":
+//     case "applicantContactDetails":
+//       pageContent = textContent.areYouSure.yourContactDetails
+//       break
+//     case "deliveryAddress":
+//       pageContent = textContent.areYouSure.deliveryAddress
+//       break
+//     case "applicantContactDetails":
+//       pageContent = textContent.areYouSure.importerContactDetails
+//       break
+//     case "applicantContactDetails":
+//       pageContent = textContent.areYouSure.exporterContactDetails
+//       break
+//     case "applicantContactDetails":
+//       pageContent = textContent.areYouSure.reexporterContactDetails
+//       break
+//     case "applicantContactDetails":
+//       pageContent = textContent.areYouSure.article10ContactDetails
+//       break
+//     }
+  
