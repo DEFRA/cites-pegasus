@@ -3,6 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { POSTCODE_REGEX } = require('../lib/regex-validation')
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'postcode'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -16,7 +17,7 @@ const lodash = require('lodash')
 function createModel(errors, data) {
     const commonContent = textContent.common;
     let pageContent = null
-    let backLink = `${previousPathContactDetails}/${data.contactType}`
+    let defaultBackLink = `${previousPathContactDetails}/${data.contactType}`
 
     const postcodeText = lodash.cloneDeep(textContent.postcode) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
@@ -30,8 +31,10 @@ function createModel(errors, data) {
         pageContent = lodash.merge(postcodeText.common, postcodeText.agent)
     } else {
         pageContent = lodash.merge(postcodeText.common, postcodeText.delivery)
-        backLink = previousPathSelectDeliveryAddress
+        defaultBackLink = previousPathSelectDeliveryAddress
     }
+    
+    backLink = data.backLinkOverride ? data.backLinkOverride : defaultBackLink
 
     let defaultTitle = ''
     let pageHeader = ''
@@ -125,10 +128,11 @@ module.exports = [{
         }
 
         const pageData = { 
+            backLinkOverride: checkChangeRouteExit(request, true),
             contactType: request.params.contactType, 
             isAgent: submission?.isAgent, 
             permitType: submission?.permitType, 
-            postcode: submission[request.params.contactType]?.addressSearchData?.postcode 
+            postcode: submission[request.params.contactType]?.candidateAddressData?.addressSearchData?.postcode 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -149,6 +153,7 @@ module.exports = [{
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
                 const pageData = { 
+                    backLinkOverride: checkChangeRouteExit(request, true),
                     contactType: request.params.contactType, 
                     isAgent: submission?.isAgent, 
                     permitType: submission?.permitType, 
@@ -164,8 +169,10 @@ module.exports = [{
 
             const submission = {
                 [contactType]: {
-                    addressSearchData: {               
-                        postcode: request.payload.postcode.trim().toUpperCase()
+                    candidateAddressData: {
+                        addressSearchData: {               
+                            postcode: request.payload.postcode.trim().toUpperCase()
+                        }
                     }
                 }
             }

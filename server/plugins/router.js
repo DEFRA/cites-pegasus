@@ -34,7 +34,8 @@ const routes = [].concat(
   require('../routes/upload-supporting-documents'),
   require('../routes/public'),
   require('../routes/test'),
-  require('../routes/oidc')
+  require('../routes/oidc'),
+  require('../routes/profile')
 )
 
 module.exports = {
