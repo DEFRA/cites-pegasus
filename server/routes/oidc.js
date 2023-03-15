@@ -1,16 +1,16 @@
 const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'oidc'
 //const Joi = require('joi')
-const { client } = require('../services/oidc-client')
+const { getOpenIdClient } = require('../services/oidc-client')
 
-async function getAuthorizationUri() {
-  const authorizationUri = await client.authorizationUrl({
-    scope: 'openid profile email',
-    redirect_uri: 'http://localhost:3000/callback',
-    response_type: 'code',
-  });
-  return authorizationUri;
-}
+// async function getAuthorizationUri() {
+//   const authorizationUri = await client.authorizationUrl({
+//     scope: 'openid profile email',
+//     redirect_uri: 'https://localhost:3000/callback',
+//     response_type: 'code',
+//   });
+//   return authorizationUri;
+// }
 
 module.exports = [
   // {
@@ -23,10 +23,14 @@ module.exports = [
   {
     method: 'GET',
     path: '/callback',
+    config: {
+      auth: false // authentication is not required
+    },
     handler: async (request, h) => {
-      const params = await client.callbackParams(request.raw.req);
-      const tokenSet = await client.callback(
-        'http://localhost:3000/callback',
+      const oidcClient = await getOpenIdClient()
+      const params = await oidcClient.callbackParams(request.raw.req);
+      const tokenSet = await oidcClient.callback(
+        'https://localhost:3000/callback',
         params,
         { code_verifier: 'your-code-verifier' }
       );
@@ -37,8 +41,20 @@ module.exports = [
   {
     method: 'GET',
     path: '/login',
+    config: {
+      auth: false // authentication is not required
+    },
     handler: async (request, h) => {
-      const authorizationUri = await getAuthorizationUri();
+      const authOptions = {
+        scope: 'openid email profile',
+        response_type: 'code',
+        redirect_uri: 'https://localhost:3000/callback',
+        serviceId: '8d13a162-ed6b-ed11-9561-000d3adeabd5'
+      }
+
+      const oidcClient = await getOpenIdClient()      
+      const authorizationUri = oidcClient.authorizationUrl(authOptions)
+
       return h.redirect(authorizationUri);
     },
   },
@@ -48,7 +64,7 @@ module.exports = [
     handler: (request, h) => {
       const logoutUri = client.endSessionUrl({
         id_token_hint: request.state.token,
-        post_logout_redirect_uri: 'http://localhost:3000',
+        post_logout_redirect_uri: 'https://localhost:3000',
       });
       return h.redirect(logoutUri).unstate('token');
     },
