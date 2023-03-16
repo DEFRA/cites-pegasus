@@ -310,7 +310,7 @@ function createModel(errors, data) {
       (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && (data.permitType === "article10") && 
       createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextParentDetails, data.species.parentDetails, hrefPrefix + "/describeLivingAnimal", "parent details"),
       (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && 
-      createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherDescription,data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description"),
+      createSummaryListRow(data.permitType == "article10" ? "govuk-summary-list__row--no-border": "", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description"),
       (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") && 
       createSummaryListRow("govuk-summary-list__row--no-border",  pageContent.rowTextCreatedDate, data.species.createdDate.isExactDateUnknown ? data.species.createdDate.approximateDate : getDateValue(data.species.createdDate), "/createdDate", "created date"),
       ((data.species.specimenType !== "animalLiving")|| (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) && 
@@ -354,8 +354,8 @@ function createModel(errors, data) {
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
     headingImporterExporterDetails: headingImporterExporterDetails,
-    headingPermitDetails: headingPermitDetails,
-    headerCountryOfOriginPermitDetails: pageContent.headerCountryOfOriginPermitDetails,
+    headingPermitDetails: data.permitDetails && headingPermitDetails,
+    headerCountryOfOriginPermitDetails: data.permitDetails && pageContent.headerCountryOfOriginPermitDetails,
     headerRemarks: pageContent.headerRemarks,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
@@ -393,12 +393,13 @@ function createSummaryListRow(classes, key, value, href, hiddenText) {
   return summaryListRow
 }
 
-
 function getDateValue(date) {
+  const day = date.day?.toString().padStart(2, '0')
+  const month = date.month.toString().padStart(2, '0')
   if (date.day) {
-    return `${date.day}.${date.month}.${date.year}`
+    return `${day} ${month} ${date.year}`
   } else {
-    return `${date.month}.${date.year}`
+    return `${month} ${date.year}`
   }
 }
 
