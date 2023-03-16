@@ -353,9 +353,8 @@ function createModel(errors, data) {
     headerApplicantContactDetails: data.isAgent ? headerApplicantContactDetails : "",
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
-    headingImporterExporterDetails: headingImporterExporterDetails,
-    headingPermitDetails: headingPermitDetails,
-    headerCountryOfOriginPermitDetails: pageContent.headerCountryOfOriginPermitDetails,
+    headingImporterExporterDetails: data.permitDetails &&  headingImporterExporterDetails,
+    headerCountryOfOriginPermitDetails: data.permitDetails &&  pageContent.headerCountryOfOriginPermitDetails,
     headerRemarks: pageContent.headerRemarks,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
@@ -394,8 +393,8 @@ function createSummaryListRow(classes, key, value, href, hiddenText) {
 }
 
 function getDateValue(date) {
-  const day = date.day && date.day < 10 ? `0${date.day}` : date.day
-  const month = date.month < 10 ? `0${date.month}` : date.month
+  const day = date.day?.toString().padStart(2, '0')
+  const month = date.month.toString().padStart(2, '0')
   if (date.day) {
     return `${day} ${month} ${date.year}`
   } else {
