@@ -353,8 +353,9 @@ function createModel(errors, data) {
     headerApplicantContactDetails: data.isAgent ? headerApplicantContactDetails : "",
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
-    headingImporterExporterDetails: data.permitDetails &&  headingImporterExporterDetails,
-    headerCountryOfOriginPermitDetails: data.permitDetails &&  pageContent.headerCountryOfOriginPermitDetails,
+    headingImporterExporterDetails: headingImporterExporterDetails,
+    headingPermitDetails: data.permitDetails && headingPermitDetails,
+    headerCountryOfOriginPermitDetails: data.permitDetails && pageContent.headerCountryOfOriginPermitDetails,
     headerRemarks: pageContent.headerRemarks,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
