@@ -500,7 +500,11 @@ module.exports = [
 
       const changeRouteData = setChangeRoute(request, changeType, applicationIndex)
 
-      return h.redirect(changeRouteData.startUrl)
+      if(changeRouteData.showConfirmationPage) {
+        return h.redirect(`${urlPrefix}/are-you-sure/${applicationIndex}`)
+      } else {
+        return h.redirect(changeRouteData.startUrl)
+      }
     }
   },
   {

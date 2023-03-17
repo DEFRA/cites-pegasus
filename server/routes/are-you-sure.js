@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
+const { getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "are-you-sure"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -11,6 +11,8 @@ const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
+
+  console.log("DATA", data)
  
   let pageContent = null
   if (data.changeRouteData.changeType === "permitType" ) {
@@ -19,11 +21,11 @@ function createModel(errors, data) {
     pageContent = textContent.areYouSure.scientificName
   } else if (data.changeRouteData.changeType === "deliveryAddress" ) {
     pageContent = textContent.areYouSure.deliveryAddress
-  } else if (data.changeRouteData.changeType === "agentContactDetails" ) {
+  } else if (data.changeRouteData.changeType === "agentContactDetails" || data.changeRouteData.changeType === "agentAddress") {
     pageContent = textContent.areYouSure.yourContactDetails
-  } else if (data.changeRouteData.changeType === "applicantContactDetails" && !data.isAgent) {
+  } else if (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress" && !data.isAgent) {
    pageContent = textContent.areYouSure.yourContactDetails
-  } else if (data.changeRouteData.changeType === "applicantContactDetails" && data.isAgent) {
+  } else if (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress" && data.isAgent) {
     if (data.permitType === "import") {
         pageContent = textContent.areYouSure.importerContactDetails
     } else if(data.permitType === "export") {
@@ -69,13 +71,6 @@ function createModel(errors, data) {
       idPrefix: "areYouSure",
       name: "areYouSure",
       classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
       items: [
         {
           value: true,
@@ -110,6 +105,7 @@ module.exports = [
       const submission = getSubmission(request)
       const changeRouteData = getChangeRouteData(request)
 
+
     //   try {
     //     validateSubmission(submission, `${pageId}/${applicationIndex}`)
     //   } catch (err) {
@@ -119,8 +115,11 @@ module.exports = [
 
       const pageData = {
         applicationIndex: applicationIndex,
+        permitType: submission.permitType,
+        isAgent: submission.isAgent,
         changeRouteData:changeRouteData,
-        areYouSure: submission.areYouSure
+        areYouSure: submission.areYouSure,
+
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -140,7 +139,9 @@ module.exports = [
 
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
-
+          const submission = getSubmission(request)
+          const changeRouteData = getChangeRouteData(request)
+        
           let areYouSure = null
           switch (request.payload.areYouSure) {
             case "true":
@@ -153,7 +154,10 @@ module.exports = [
 
           const pageData = {
             applicationIndex: applicationIndex,
-           areYouSure: areYouSure
+            permitType: submission.permitType,
+            isAgent: submission.isAgent,
+            changeRouteData:changeRouteData,
+            areYouSure: areYouSure,
            }
 
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -164,21 +168,22 @@ module.exports = [
         const submission = getSubmission(request)
         const changeRouteData = getChangeRouteData(request)
        
+       
         submission.areYouSure = request.payload.areYouSure
 
-        try {
-          mergeSubmission(
-            request,
-            { applications: submission.applications },
-            `${pageId}/${applicationIndex}`
-          )
-        } catch (err) {
-          console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
-        }
+        // try {
+        //   mergeSubmission(
+        //     request,
+        //     { applications: submission.applications },
+        //     `${pageId}/${applicationIndex}`
+        //   )
+        // } catch (err) {
+        //   console.log(err)
+        //   return h.redirect(`${invalidSubmissionPath}/`)
+        // }
 
         if (request.payload.areYouSure) {
-          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
+          return h.redirect(changeRouteData.startUrl)
         } else {
           return h.redirect(`${previousPath}/${applicationIndex}`)
         }
