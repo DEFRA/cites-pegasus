@@ -38,6 +38,10 @@ async function createServer() {
     }
   })
 
+  //Create the OpenID client
+  //TODO Add a call to the oidc-client.js file here to get the client
+  //server.app.openidClient = client;
+
   // Register the plugins
   await server.register(require('@hapi/inert'))
   await server.register(require('./plugins/oidc-auth'))

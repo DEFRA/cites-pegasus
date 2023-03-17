@@ -39,7 +39,8 @@ module.exports = [
       const user = tokenSet.claims();
 //or
       //const user2 = await oidcClient.userinfo(tokenSet);
-      const token = jwt.sign({ user: user }, (await readSecret('CIDM-API-CLIENT-SECRET')).value)
+      const clientSecret = await readSecret('CIDM-API-CLIENT-SECRET')//TODO Is there a better value to use than this?  Needs to match the value used in the authOptions in server/plugins/oidc-auth.js
+      const token = jwt.sign({ user: user }, clientSecret.value)
       console.log(user)
 
       return h.response().state('token', token).redirect('/permit-type');      
