@@ -11,6 +11,7 @@ const schema = Joi.object().keys({
   urlPrefix: Joi.string().default(urlPrefix),
   
   keyVaultUri: Joi.string().required(),
+  cidmApiDiscoveryUrl: Joi.string().required(),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
   cookieOptions: Joi.object({
@@ -35,6 +36,7 @@ const config = {
   env: process.env.NODE_ENV || 'dev',
   urlPrefix: process.env.URL_PREFIX,
   keyVaultUri: process.env.KEY_VAULT_URI,
+  cidmApiDiscoveryUrl: process.env.CIDM_API_DISCOVERY_URL,
   addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
   cookieOptions: {

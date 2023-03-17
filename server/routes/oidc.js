@@ -2,6 +2,8 @@ const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'oidc'
 //const Joi = require('joi')
 const { getOpenIdClient } = require('../services/oidc-client')
+const { readSecret } = require('../lib/key-vault')
+const jwt = require('jsonwebtoken');
 
 // async function getAuthorizationUri() {
 //   const authorizationUri = await client.authorizationUrl({
@@ -34,8 +36,13 @@ module.exports = [
         params,
         { code_verifier: 'your-code-verifier' }
       );
-      const user = tokenSet.claims().sub;
-      return h.redirect('/profile').state('token', tokenSet.access_token);
+      const user = tokenSet.claims();
+//or
+      //const user2 = await oidcClient.userinfo(tokenSet);
+      const token = jwt.sign({ user: user }, (await readSecret('CIDM-API-CLIENT-SECRET')).value)
+      console.log(user)
+
+      return h.response().state('token', token).redirect('/permit-type');      
     }
   },
   {
@@ -45,11 +52,12 @@ module.exports = [
       auth: false // authentication is not required
     },
     handler: async (request, h) => {
+      const serviceId = (await readSecret('CIDM-API-SERVICE-ID')).value
       const authOptions = {
         scope: 'openid email profile',
         response_type: 'code',
         redirect_uri: 'https://localhost:3000/callback',
-        serviceId: '8d13a162-ed6b-ed11-9561-000d3adeabd5'
+        serviceId: serviceId
       }
 
       const oidcClient = await getOpenIdClient()      
@@ -61,12 +69,17 @@ module.exports = [
   {
     method: 'GET',
     path: '/logout',
-    handler: (request, h) => {
-      const logoutUri = client.endSessionUrl({
+    config: {
+      auth: false // authentication is not required
+    },
+    handler: async (request, h) => {
+      const oidcClient = await getOpenIdClient() 
+      const logoutUri = oidcClient.endSessionUrl({
         id_token_hint: request.state.token,
         post_logout_redirect_uri: 'https://localhost:3000',
       });
-      return h.redirect(logoutUri).unstate('token');
+      return h.response().unstate('token').unstate('session').redirect('/');   
+      //return h.redirect(logoutUri).unstate('token').unstate('session');
     },
   }
 ]

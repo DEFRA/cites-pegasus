@@ -7,7 +7,7 @@ const { client } = require('../services/oidc-client')
 async function validate(decoded, request) {
   const key = await client.getSigningKeyAsync(kid);
   const secret = key.publicKey || key.rsaPublicKey;
-  return { isValid: true, credentials: { user: decoded.sub } };
+  return { isValid: true, credentials: { user: decoded.user } };
 }
 
 
@@ -21,8 +21,11 @@ module.exports = {
 
       const authOptions = {
         key: 'bVQ8Q~8tDWwLk4sP6FPWmNnXQn4C6NTgjgH3fda7',
-        validate,
-        verifyOptions: { algorithms: ['RS256'] },
+        validate: (decoded, request, h) => {
+          return { isValid: true };
+      }
+        //validate
+        //verifyOptions: { algorithms: ['RS256'] },
       };
       
       server.auth.strategy('jwt', 'jwt', authOptions);
