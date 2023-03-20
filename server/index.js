@@ -2,7 +2,7 @@ const hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
 var Fs = require('fs');
-
+const { getOpenIdClient } = require('./services/oidc-client');
 //Run this command line to create certs
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
@@ -39,8 +39,9 @@ async function createServer() {
   })
 
   //Create the OpenID client
-  //TODO Add a call to the oidc-client.js file here to get the client
-  //server.app.openidClient = client;
+  const oidcClient = await getOpenIdClient()
+  server.app.oidcClient = oidcClient;
+  
 
   // Register the plugins
   await server.register(require('@hapi/inert'))

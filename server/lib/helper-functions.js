@@ -156,7 +156,7 @@ function setLabelData(data, labelData) {
 function findErrorList({ details }, inputFields, errorMessages) {
   const errorCodes = inputFields.map((input) => {
     const foundErrorList = details.filter(
-      ({ context: { label: valLabel, customLabel } }) => customLabel ? customLabel === input : valLabel === input 
+      ({ context: { label: valLabel, customLabel } }) => customLabel ? customLabel === input : valLabel === input
     )
 
     if (foundErrorList.length === 0) {
@@ -191,6 +191,15 @@ function findErrorList({ details }, inputFields, errorMessages) {
 //   return errorList
 // }
 
+const getDomain = (request) => {
+  const protocol = request.server.info.protocol
+  const host = request.server.info.host
+  const port = request.server.info.port
+console.log(process)
+  // Construct the full URL
+  return `${protocol}://${host}:${port}`
+}
+
 const getFieldError = (errorList, href) => {
   const err = getErrorMessage(errorList, href)
   return err ? { text: err } : null
@@ -204,12 +213,12 @@ const getErrorMessage = (errorList, href) => {
 
 const getAddressSummary = (address) => {
   const addressComponents = [
-      address.addressLine1, 
-      address.addressLine2, 
-      address.addressLine3, 
-      address.addressLine4,
-      address.postcode,
-      address.country
+    address.addressLine1,
+    address.addressLine2,
+    address.addressLine3,
+    address.addressLine4,
+    address.postcode,
+    address.country
   ].filter(Boolean)
 
   return addressComponents.join(', ')
@@ -231,6 +240,7 @@ module.exports = {
   //   formatApplicationCode,
   //   getSbiHtml,
   //   getErrorList
+  getDomain,
   getFieldError,
   getErrorMessage,
   getAddressSummary

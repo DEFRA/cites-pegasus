@@ -3,30 +3,38 @@ const jwksClient = require('jwks-rsa');
 const { decode } = require('jsonwebtoken');
 const { client } = require('../services/oidc-client')
 const { readSecret } = require('../lib/key-vault')
+const { getYarValue } = require('../lib/session')
 
 module.exports = {
   plugin: {
     name: 'oidc-auth',
     register: async (server, options) => {
 
-      server.register(jwtAuth)
+      await server.register(jwtAuth)
 
-      const clientSecret = await readSecret('CIDM-API-CLIENT-SECRET')//TODO Is there a better value to use than this?  Needs to match the value used in oidc.js callback handler
+      const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
 
       const authOptions = {
-        key: clientSecret.value,
+        key: secret,
         validate: async (decoded, request, h) => {
+          const auth = getYarValue(request, 'CIDMAuth')
+
+          if (decoded.userSub === auth?.user.sub) {
+            return { isValid: true, credentials: { user: decoded.user } }
+          } else {
+            return { isValid: false }
+          }
+
           //TODO:  Validate the token
           // const kid = decode(decoded.token).header.kid;
           // const key = await client.getSigningKeyAsync(kid);
           // const secret = key.publicKey || key.rsaPublicKey;
 
           // return { isValid: true, credentials: { user: decoded.user } };
-          return { isValid: true };
 
-        }
-        //validate
-        //verifyOptions: { algorithms: ['RS256'] },
+
+        },
+        verifyOptions: { algorithms: ['HS256'] },
       };
 
       server.auth.strategy('jwt', 'jwt', authOptions);
