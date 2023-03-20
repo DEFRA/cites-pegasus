@@ -191,6 +191,10 @@ function getAppFlow(submission) {
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                         }
 
+                        if (submission.showConfirmationPage) {
+                            appFlow.push(`are-you-sure/${applicationIndex}`)
+                        }
+
                         // if (application.comments) {
                         //     appFlow.push(`check-answers/${applicationIndex}`)
                         // }

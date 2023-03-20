@@ -11,8 +11,6 @@ const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-
-  console.log("DATA", data)
  
   let pageContent = null
   if (data.changeRouteData.changeType === "permitType" ) {
@@ -23,9 +21,9 @@ function createModel(errors, data) {
     pageContent = textContent.areYouSure.deliveryAddress
   } else if (data.changeRouteData.changeType === "agentContactDetails" || data.changeRouteData.changeType === "agentAddress") {
     pageContent = textContent.areYouSure.yourContactDetails
-  } else if (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress" && !data.isAgent) {
+  } else if (!data.isAgent && (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress" )) {
    pageContent = textContent.areYouSure.yourContactDetails
-  } else if (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress" && data.isAgent) {
+  } else if ( data.isAgent && (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress")) {
     if (data.permitType === "import") {
         pageContent = textContent.areYouSure.importerContactDetails
     } else if(data.permitType === "export") {
@@ -33,7 +31,7 @@ function createModel(errors, data) {
     } else if(data.permitType === "reexport") {
         pageContent = textContent.areYouSure.reexporterContactDetails
     } else if(data.permitType === "article10") {
-        pageContent = textContent.areYouSure.importerContactDetails
+        pageContent = textContent.areYouSure.article10ContactDetails
     } 
 }
 
@@ -105,13 +103,14 @@ module.exports = [
       const submission = getSubmission(request)
       const changeRouteData = getChangeRouteData(request)
 
+      submission.showConfirmationPage = changeRouteData.showConfirmationPage
 
-    //   try {
-    //     validateSubmission(submission, `${pageId}/${applicationIndex}`)
-    //   } catch (err) {
-    //     console.log(err)
-    //     return h.redirect(`${invalidSubmissionPath}/`)
-    //   }
+      try {
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
 
       const pageData = {
         applicationIndex: applicationIndex,
@@ -165,22 +164,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const submission = getSubmission(request)
         const changeRouteData = getChangeRouteData(request)
-       
-       
-        submission.areYouSure = request.payload.areYouSure
-
-        // try {
-        //   mergeSubmission(
-        //     request,
-        //     { applications: submission.applications },
-        //     `${pageId}/${applicationIndex}`
-        //   )
-        // } catch (err) {
-        //   console.log(err)
-        //   return h.redirect(`${invalidSubmissionPath}/`)
-        // }
 
         if (request.payload.areYouSure) {
           return h.redirect(changeRouteData.startUrl)
@@ -191,34 +175,3 @@ module.exports = [
     }
   }
 ]
-
-
-
-// switch (data.changeRouteData.changeType) {
-//     case "permitType" :
-//       pageContent = textContent.areYouSure.permitType
-//       break
-//     case "speciesName":
-//       pageContent = textContent.areYouSure.scientificName
-//       break
-//     case "agentContactDetails":
-//     case "applicantContactDetails":
-//       pageContent = textContent.areYouSure.yourContactDetails
-//       break
-//     case "deliveryAddress":
-//       pageContent = textContent.areYouSure.deliveryAddress
-//       break
-//     case "applicantContactDetails":
-//       pageContent = textContent.areYouSure.importerContactDetails
-//       break
-//     case "applicantContactDetails":
-//       pageContent = textContent.areYouSure.exporterContactDetails
-//       break
-//     case "applicantContactDetails":
-//       pageContent = textContent.areYouSure.reexporterContactDetails
-//       break
-//     case "applicantContactDetails":
-//       pageContent = textContent.areYouSure.article10ContactDetails
-//       break
-//     }
-  
