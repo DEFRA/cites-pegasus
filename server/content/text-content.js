@@ -189,6 +189,10 @@ const areYouSureSchema = Joi.object({
   }).required()
 }).required()
 
+const submitApplicationsSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+}).required()
 
 const schema = Joi.object().keys({
   common: Joi.object({
@@ -199,6 +203,7 @@ const schema = Joi.object().keys({
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
     confirmAndSubmitButton: Joi.string().required(),
+    submitButton: Joi.string().required(),
     searchButton: Joi.string().required(),
     startButton: Joi.string().required(),
     finishButton: Joi.string().required(),
@@ -857,6 +862,21 @@ const schema = Joi.object().keys({
     exporterContactDetails: areYouSureSchema,
     reexporterContactDetails: areYouSureSchema,
     article10ContactDetails: areYouSureSchema
+  }).required(),
+  submitApplications: Joi.object({
+    common: Joi.object({
+      tableHeadScientificName: Joi.string(),
+      tableHeadQuantity: Joi.string(),
+      tableHeadUnitOfMeasurement: Joi.string(),
+      tableHeadCopy: Joi.string(),
+      tableHeadRemove: Joi.string(),
+      addAnotherSpeciesLinkText: Joi.string(),
+      applyForADifferentTypeOfPermitLinkText: Joi.string()
+    }).required(),
+  importApplications : submitApplicationsSchema,
+  exportApplications : submitApplicationsSchema,
+  reexportApplications : submitApplicationsSchema,
+  article10Applications : submitApplicationsSchema, 
   }).required(),
 })
 

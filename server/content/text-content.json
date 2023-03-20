@@ -7,6 +7,7 @@
     "continueButton": "Continue",
     "confirmButton": "Confirm",
     "confirmAndSubmitButton": "Confirm and submit",
+    "submitButton": "Submit",
     "searchButton": "Search",
     "startButton": "Start now",
     "finishButton": "Finish",
@@ -1114,5 +1115,33 @@
         "error.areYouSure.any.required": "Select yes if you want to change the applicant’s contact details"
       }
     }
+  },
+  "submitApplications": {
+   "common": {
+      "tableHeadScientificName": "Scientific name",
+      "tableHeadQuantity": "Quantity",
+      "tableHeadUnitOfMeasurement": "Unit of measurement",
+      "tableHeadCopy": "Copy",
+      "tableHeadRemove": "Remove",
+      "addAnotherSpeciesLinkText": "Add another species",
+      "applyForADifferentTypeOfPermitLinkText": "Apply for a different type of permit"
+    },
+  "importApplications" : {
+    "defaultTitle": "Your import application",
+    "pageHeader": "Your import application"
+  },
+  "exportApplications" : {
+    "defaultTitle": "Your export application",
+    "pageHeader": "Your export application"
+  },
+  "reexportApplications" : {
+    "defaultTitle": "Your reexport application",
+    "pageHeader": "Your reexport application"
+  },
+  "article10Applications" : {
+    "defaultTitle": "Your article 10 application",
+    "pageHeader": "Your article 10 application"
   }
+  }
+  
 }
