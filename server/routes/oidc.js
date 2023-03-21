@@ -1,10 +1,10 @@
 const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'oidc'
 //const Joi = require('joi')
-const { getYarValue, setYarValue } = require('../lib/session')
+const { getYarValue, setYarValue, clearYarSession } = require('../lib/session')
 const { getDomain } = require('../lib/helper-functions')
 const { getOpenIdClient } = require('../services/oidc-client')
-const { cidmCallbackUrl } = require('../../config/config')
+const { cidmCallbackUrl, postLogoutRedirectUrl } = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
 
@@ -22,8 +22,8 @@ module.exports = [
       
       const tokenSet = await oidcClient.callback(
         cidmCallbackUrl,
-        params,
-        { code_verifier: 'your-code-verifier' }
+        params
+        //{ code_verifier: 'your-code-verifier' }
       );
 
       //const userDetails = oidcClient.userinfo(tokenSet);//THIS IS NOT CONFIGURED ON THE ISSUERS ENDPOINT
@@ -86,12 +86,13 @@ module.exports = [
 
       const auth = getYarValue(request, 'CIDMAuth')
       const endSessionParams = {
-        id_token_hint: auth?.idToken || null
-        //post_logout_redirect_uri: 'https://localhost:3000',
+        id_token_hint: auth?.idToken || null,
+        post_logout_redirect_uri: postLogoutRedirectUrl,
       }
 
       const logoutUri = oidcClient.endSessionUrl(endSessionParams)
-      //TODO Clear session data
+      
+      clearYarSession(request)
       return h.redirect(logoutUri).unstate('token').unstate('session');
     },
   }
