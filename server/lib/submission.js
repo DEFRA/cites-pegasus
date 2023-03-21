@@ -189,15 +189,8 @@ function getAppFlow(submission) {
 
                         if (application.comments || (application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
                             appFlow.push(`application-summary/check/${applicationIndex}`)
-                        }
-
-                        if (submission.showConfirmationPage) {
                             appFlow.push(`are-you-sure/${applicationIndex}`)
                         }
-
-                        // if (application.comments) {
-                        //     appFlow.push(`check-answers/${applicationIndex}`)
-                        // }
 
 
                         // if (species.specimenType === 'animalLiving') {

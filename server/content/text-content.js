@@ -852,11 +852,16 @@ const schema = Joi.object().keys({
     permitType: areYouSureSchema,
     scientificName: areYouSureSchema,
     yourContactDetails: areYouSureSchema,
+    yourAddress: areYouSureSchema,
     deliveryAddress: areYouSureSchema,
     importerContactDetails: areYouSureSchema,
     exporterContactDetails: areYouSureSchema,
     reexporterContactDetails: areYouSureSchema,
-    article10ContactDetails: areYouSureSchema
+    article10ContactDetails: areYouSureSchema,
+    importerAddress: areYouSureSchema,
+    exporterAddress: areYouSureSchema,
+    reexporterAddress: areYouSureSchema,
+    article10Address: areYouSureSchema
   }).required(),
 })
 
