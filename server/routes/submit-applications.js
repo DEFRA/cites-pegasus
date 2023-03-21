@@ -2,14 +2,18 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
-const { NAME_REGEX } = require('../lib/regex-validation')
 const textContent = require('../content/text-content')
 const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/application-summary`
-const nextPath = `${urlPrefix}/upload-supporting-documents`
+const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
+const nextPathViewApplication = `${urlPrefix}/application-summary/view`//TO DO
+const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`//TO DO
+const nextPathAreYouSure = `${urlPrefix}/are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
+
+
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -32,16 +36,29 @@ function createModel(errors, data) {
       break
   }
 
-  const copyText = "<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>pageContent.tableHeadCopy</a>"
+  const applicationsData = data.applications
+
+  const rowItems = applicationsData.map(application => {
+    const speciesName = `<a href= ${nextPathViewApplication}/${application.applicationIndex}>${application.species.speciesName}</a>`
+    const copyText = `<a href=${nextPathCopyApplication}/${application.applicationIndex + 1}>${pageContent.tableHeadCopy}</a>`
+    const removeText = `<a href=${nextPathAreYouSure}/${application.applicationIndex}>${pageContent.tableHeadRemove}</a>`
+    return createTableRow(speciesName, application.species.quantity, application.species.unitOfMeasurement, copyText, removeText)
+  })
+
+  console.log("rowItems", rowItems)
+
+ 
+
+//   const copyText = `<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>${pageContent.tableHeadCopy}</a>`
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
-    addAnotherSpeciesUrl: `${urlPrefix}/permit-type`,
+    addAnotherSpeciesUrl: `${urlPrefix}/species-name/${data.applicationIndex}`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
-    applyForADifferentTypeOfPermitUrl: `${urlPrefix}/species-name/${data.applicationIndex}`,
+    applyForADifferentTypeOfPermitUrl: `${urlPrefix}/permit-type`, 
    
     submitApplicationsTable: {
         id: "submitApplications",
@@ -67,63 +84,7 @@ function createModel(errors, data) {
             text: ""
           }
         ],
-        rows: [
-            [
-              {
-                text: "January"
-              },
-              {
-                text: "5"
-              },
-              {
-                text: "kg"
-              },
-              {
-                    html: pageContent.tableHeadCopy,
-              },
-              {
-                html: copyText
-              }
-             
-            ],
-            [
-              {
-                text: "February"
-              },
-              {
-                text: "£55"
-              },
-              {
-                html:  "9"
-              },
-              {
-                actions: {
-                    items: [
-                      {
-                        href: "#",
-                        text: "Change",
-                        visuallyHiddenText: "name"
-                      }
-                    ]
-                  }
-              },
-              
-              {
-                attributes: {
-                    href: "#",
-                    text: pageContent.tableHeadCopy,
-                }
-              },
-            ],
-            [
-              {
-                text: "March"
-              },
-              {
-                text: "£125"
-              }
-            ]
-          ]
+        rows: rowItems
       }
    
 
@@ -131,6 +92,28 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+
+function createTableRow(speciesName, quantity, unitOfMeasurement, copyLink, removeLink ) {
+    const tableRow =  [
+        {
+          html: speciesName
+        },
+        {
+          text: quantity
+        },
+        {
+          text: unitOfMeasurement
+        },
+        {
+          html: copyLink,
+        },
+        {
+          html: removeLink
+        }
+      ]
+      console.log("tableRow", tableRow)
+     return tableRow
+   }
 
 
 module.exports = [
