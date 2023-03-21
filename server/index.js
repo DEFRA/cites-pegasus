@@ -39,8 +39,7 @@ async function createServer() {
   })
 
   //Create the OpenID client
-  const oidcClient = await getOpenIdClient()
-  server.app.oidcClient = oidcClient;
+  server.app.oidcClient = await getOpenIdClient()
   
 
   // Register the plugins

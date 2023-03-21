@@ -4,8 +4,10 @@ const pageId = 'oidc'
 const { getYarValue, setYarValue } = require('../lib/session')
 const { getDomain } = require('../lib/helper-functions')
 const { getOpenIdClient } = require('../services/oidc-client')
+const { cidmCallbackUrl } = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
+
 
 module.exports = [
   {
@@ -16,22 +18,15 @@ module.exports = [
     },
     handler: async (request, h) => {
       const oidcClient = request.server.app.oidcClient
-
-      //const oidcClient = await getOpenIdClient()
       const params = await oidcClient.callbackParams(request.raw.req);
       
-console.log(getDomain(request))
-
-
       const tokenSet = await oidcClient.callback(
-        'https://localhost:3000/callback',
+        cidmCallbackUrl,
         params,
         { code_verifier: 'your-code-verifier' }
       );
 
       //const userDetails = oidcClient.userinfo(tokenSet);//THIS IS NOT CONFIGURED ON THE ISSUERS ENDPOINT
-
-      
       const user = tokenSet.claims();
       console.log(`User logged in: ${user.firstName} ${user.lastName} (${user.email}) - subject: ${user.sub}`)
 
@@ -39,9 +34,7 @@ console.log(getDomain(request))
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
       const token = jwt.sign({ userSub: user.sub }, secret, { algorithm: 'HS256' })
-      //const token = jwt.sign({ user: user, id_token: tokenSet.id_token }, secret, { algorithm: 'HS256' })
       //const token = jwt.sign({ user: user }, secret.value, { algorithm: 'HS256', expiresIn: "1h" })
-
 
       const stateOptions = {
         // ttl: 60 * 60 * 1000, // Cookie expiration time, for example, 1 hour
@@ -52,10 +45,9 @@ console.log(getDomain(request))
         sameSite: 'Strict' // The cookie will be sent only on the same site, preventing CSRF attacks
       }
 
-      
-      //return h.redirect('/permit-type').state('token', token, stateOptions)
-
-      return h.redirect('/permit-type?token=' + token).state('token', token, stateOptions)//Set a cookie with the token
+      h.state('token', token, stateOptions)
+      return h.redirect('/permit-type?token=' + token)//TODO Shouldn't need to pass the token as a query param but can't get the cookie to work for this first page after login
+      //return h.redirect('/permit-type')//.state('token', token, stateOptions)
     }
   },
   {
@@ -69,7 +61,7 @@ console.log(getDomain(request))
       const authOptions = {
         scope: 'openid email profile',
         response_type: 'code',
-        redirect_uri: 'https://localhost:3000/callback',
+        redirect_uri: cidmCallbackUrl,
         serviceId: serviceId
       }
       const oidcClient = request.server.app.oidcClient
@@ -93,12 +85,13 @@ console.log(getDomain(request))
       //const id_token = reques
 
       const auth = getYarValue(request, 'CIDMAuth')
-      const logoutUri = oidcClient.endSessionUrl({
-        id_token_hint: auth.idToken,
-        post_logout_redirect_uri: 'https://localhost:3000',
-      });
+      const endSessionParams = {
+        id_token_hint: auth?.idToken || null
+        //post_logout_redirect_uri: 'https://localhost:3000',
+      }
+
+      const logoutUri = oidcClient.endSessionUrl(endSessionParams)
       //TODO Clear session data
-      //return h.response().unstate('token').unstate('session').redirect('/');   
       return h.redirect(logoutUri).unstate('token').unstate('session');
     },
   }

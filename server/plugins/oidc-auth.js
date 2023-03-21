@@ -20,12 +20,11 @@ module.exports = {
           const auth = getYarValue(request, 'CIDMAuth')
 
           if (decoded.userSub === auth?.user.sub) {
-            return { isValid: true, credentials: { user: decoded.user } }
+            return { isValid: true, credentials: { user: decoded.userSub } }
           } else {
             return { isValid: false }
           }
 
-          //TODO:  Validate the token
           // const kid = decode(decoded.token).header.kid;
           // const key = await client.getSigningKeyAsync(kid);
           // const secret = key.publicKey || key.rsaPublicKey;
@@ -35,6 +34,7 @@ module.exports = {
 
         },
         verifyOptions: { algorithms: ['HS256'] },
+//        tokenType: 'Bearer'
       };
 
       server.auth.strategy('jwt', 'jwt', authOptions);
