@@ -1,9 +1,9 @@
 function setYarValue(request, key, value) {
   request.yar.set(key, value)
 
-  if(key === 'changeRouteData') {     //TODO REMOVE THIS DEBUGGING CODE
-      console.log(`${key}: ${JSON.stringify(value)}`)
-  }
+  // if(key === 'changeRouteData') {     //TODO REMOVE THIS DEBUGGING CODE
+  //     console.log(`${key}: ${JSON.stringify(value)}`)
+  // }
 }
 
 function getYarValue(request, key) {
@@ -13,7 +13,12 @@ function getYarValue(request, key) {
   return null
 }
 
+function clearYarSession(request) {
+  request.yar.reset()
+}
+
 module.exports = {
   setYarValue,
-  getYarValue
+  getYarValue,
+  clearYarSession
 }

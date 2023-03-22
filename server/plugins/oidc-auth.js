@@ -2,29 +2,33 @@ const jwtAuth = require('hapi-auth-jwt2');
 const jwksClient = require('jwks-rsa');
 const { decode } = require('jsonwebtoken');
 const { client } = require('../services/oidc-client')
-
-
-async function validate(decoded, request) {
-  const key = await client.getSigningKeyAsync(kid);
-  const secret = key.publicKey || key.rsaPublicKey;
-  return { isValid: true, credentials: { user: decoded.sub } };
-}
-
-
+const { readSecret } = require('../lib/key-vault')
+const { getYarValue, setYarValue } = require('../lib/session')
 
 module.exports = {
   plugin: {
     name: 'oidc-auth',
-    register: (server, options) => {
+    register: async (server, options) => {
 
-      server.register(jwtAuth)
+      await server.register(jwtAuth)
+
+      const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
 
       const authOptions = {
-        key: 'bVQ8Q~8tDWwLk4sP6FPWmNnXQn4C6NTgjgH3fda7',
-        validate,
-        verifyOptions: { algorithms: ['RS256'] },
+        key: secret,
+        validate: async (decoded, request, h) => {
+          const sessionCIDMAuth = getYarValue(request, 'CIDMAuth')
+
+          if (decoded.contactId === sessionCIDMAuth?.user.contactId) {
+            return { isValid: true, credentials: { contactId: decoded.contactId } }
+          } else {
+            return { isValid: false }
+          }
+
+        },
+        verifyOptions: { algorithms: ['HS256'] },
       };
-      
+
       server.auth.strategy('jwt', 'jwt', authOptions);
       server.auth.default('jwt');
 

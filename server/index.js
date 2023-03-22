@@ -2,7 +2,7 @@ const hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
 var Fs = require('fs');
-
+const { getOpenIdClient } = require('./services/oidc-client');
 //Run this command line to create certs
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
@@ -10,15 +10,15 @@ async function createServer() {
   const cacheConfig = await getCacheConfig()
   const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
-// const tlsConfig = {
-//     key: Fs.readFileSync('certs/key.pem'),
-//     cert: Fs.readFileSync('certs/cert.pem')
-//     }
+  const tlsConfig = {
+    key: Fs.readFileSync('certs/key.pem'),
+    cert: Fs.readFileSync('certs/cert.pem')
+  }
 
   // Create the hapi server
   const server = hapi.server({
     port: config.port,
-    // tls: tlsConfig,
+    tls: tlsConfig, //COMMENT THIS OUT TO GO BACK TO HTTP
     cache: [{
       name: 'session',
       provider: {
@@ -27,9 +27,9 @@ async function createServer() {
       }
     }],
     routes: {
-      auth: {
-        mode: 'optional'
-      },
+      // auth: {
+      //   mode: 'optional' //UNCOMMENT THIS TO DISABLE SECURITY
+      // },
       validate: {
         options: {
           abortEarly: false
@@ -38,9 +38,13 @@ async function createServer() {
     }
   })
 
+  //Create the OpenID client
+  server.app.oidcClient = await getOpenIdClient()
+  
+
   // Register the plugins
   await server.register(require('@hapi/inert'))
-  await server.register(require('./plugins/oidc-auth')) 
+  await server.register(require('./plugins/oidc-auth'))
   await server.register(require('./plugins/views'))
   await server.register(require('./plugins/router'))
   await server.register(require('./plugins/error-pages'))

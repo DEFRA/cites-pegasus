@@ -5,6 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/s
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
+const { getYarValue } = require('../lib/session')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['agent', 'applicant']
@@ -14,10 +15,10 @@ const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
-    
+
     let pageContent = null
-    if(data.contactType === 'applicant'){
-        if(data.isAgent){
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
             pageContent = textContent.contactDetails.agentLed
         } else {
             pageContent = textContent.contactDetails.applicant
@@ -59,7 +60,7 @@ function createModel(errors, data) {
     }
 
     let errorList = null
-    if(errors){
+    if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...textContent.contactDetails.errorMessages, ...pageContent.errorMessages }
         const fields = ['fullName', 'businessName', 'email']
@@ -73,7 +74,7 @@ function createModel(errors, data) {
             }
         })
     }
-    
+
     const backLink = data.backLinkOverride ? data.backLinkOverride : previousPath
 
     const model = {
@@ -138,12 +139,36 @@ module.exports = [{
             console.log(err);
             return h.redirect(`${invalidSubmissionPath}/`)
         }
-        const pageData = { 
+
+        let email, fullName, businessName
+
+        //= submission[request.params.contactType] 
+
+        if (submission[request.params.contactType]) {
+            email = submission[request.params.contactType].email
+            fullName = submission[request.params.contactType].fullName
+            businessName = submission[request.params.contactType].businessName
+        } else {
+            if ((request.params.contactType === 'applicant' && !submission?.isAgent)
+                || (request.params.contactType === 'agent' && submission?.isAgent)) {
+
+                //get applicant details from auth credentials
+                const { user } = getYarValue(request, 'CIDMAuth')
+
+                email = user.email
+                fullName = user.firstName + ' ' + user.lastName
+                businessName = ''
+            }
+        }
+        const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
-            contactType: request.params.contactType, 
-            isAgent: submission?.isAgent, 
+            contactType: request.params.contactType,
+            isAgent: submission?.isAgent,
             permitType: submission?.permitType,
-            ...submission[request.params.contactType] 
+            email: email,
+            fullName: fullName,
+            businessName: businessName
+            //...submission[request.params.contactType] 
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -173,12 +198,12 @@ module.exports = [{
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
-                const pageData = { 
+                const pageData = {
                     backLinkOverride: checkChangeRouteExit(request, true),
-                    contactType: request.params.contactType, 
-                    isAgent: submission?.isAgent, 
+                    contactType: request.params.contactType,
+                    isAgent: submission?.isAgent,
                     permitType: submission?.permitType,
-                    ...request.payload 
+                    ...request.payload
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
@@ -204,7 +229,7 @@ module.exports = [{
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)
             if (exitChangeRouteUrl) {
-              return h.redirect(exitChangeRouteUrl)
+                return h.redirect(exitChangeRouteUrl)
             }
 
             return h.redirect(`${nextPath}/${request.params.contactType}`)
