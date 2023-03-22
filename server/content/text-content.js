@@ -179,6 +179,17 @@ const sourceCodeSchema = Joi.object({
   })
 })
 
+const areYouSureSchema = Joi.object({
+  defaultTitle: Joi.string().required(),
+  pageHeader: Joi.string().required(),
+  pageBody1: Joi.string().required(),
+  pageBody2: Joi.string().allow("", null),
+  errorMessages: Joi.object({
+    "error.areYouSure.any.required": Joi.string().required(),
+  }).required()
+}).required()
+
+
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
@@ -836,7 +847,22 @@ const schema = Joi.object().keys({
     rowTextSpecimenTypePlantLiving: Joi.string().required(),
     rowTextSpecimenTypePlantProduct: Joi.string().required(),
     rowTextSpecimenTypePlantWorked: Joi.string().required(),
-  }).required()
+  }).required(),
+  areYouSure: Joi.object({
+    permitType: areYouSureSchema,
+    scientificName: areYouSureSchema,
+    yourContactDetails: areYouSureSchema,
+    yourAddress: areYouSureSchema,
+    deliveryAddress: areYouSureSchema,
+    importerContactDetails: areYouSureSchema,
+    exporterContactDetails: areYouSureSchema,
+    reexporterContactDetails: areYouSureSchema,
+    article10ContactDetails: areYouSureSchema,
+    importerAddress: areYouSureSchema,
+    exporterAddress: areYouSureSchema,
+    reexporterAddress: areYouSureSchema,
+    article10Address: areYouSureSchema
+  }).required(),
 })
 
 // Validate config
