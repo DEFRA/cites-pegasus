@@ -3,7 +3,7 @@ const jwksClient = require('jwks-rsa');
 const { decode } = require('jsonwebtoken');
 const { client } = require('../services/oidc-client')
 const { readSecret } = require('../lib/key-vault')
-const { getYarValue } = require('../lib/session')
+const { getYarValue, setYarValue } = require('../lib/session')
 
 module.exports = {
   plugin: {
@@ -17,24 +17,16 @@ module.exports = {
       const authOptions = {
         key: secret,
         validate: async (decoded, request, h) => {
-          const auth = getYarValue(request, 'CIDMAuth')
+          const sessionCIDMAuth = getYarValue(request, 'CIDMAuth')
 
-          if (decoded.userSub === auth?.user.sub) {
-            return { isValid: true, credentials: { user: decoded.userSub } }
+          if (decoded.contactId === sessionCIDMAuth?.user.contactId) {
+            return { isValid: true, credentials: { contactId: decoded.contactId } }
           } else {
             return { isValid: false }
           }
 
-          // const kid = decode(decoded.token).header.kid;
-          // const key = await client.getSigningKeyAsync(kid);
-          // const secret = key.publicKey || key.rsaPublicKey;
-
-          // return { isValid: true, credentials: { user: decoded.user } };
-
-
         },
         verifyOptions: { algorithms: ['HS256'] },
-//        tokenType: 'Bearer'
       };
 
       server.auth.strategy('jwt', 'jwt', authOptions);

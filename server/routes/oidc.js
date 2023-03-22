@@ -14,53 +14,62 @@ module.exports = [
     method: 'GET',
     path: '/callback',
     config: {
-      auth: false // authentication is not required
+      auth: false
     },
     handler: async (request, h) => {
       const oidcClient = request.server.app.oidcClient
       const params = await oidcClient.callbackParams(request.raw.req);
-      
+
       const tokenSet = await oidcClient.callback(
         cidmCallbackUrl,
         params
-        //{ code_verifier: 'your-code-verifier' }
       );
 
-      //const userDetails = oidcClient.userinfo(tokenSet);//THIS IS NOT CONFIGURED ON THE ISSUERS ENDPOINT
-      const user = tokenSet.claims();
-      console.log(`User logged in: ${user.firstName} ${user.lastName} (${user.email}) - subject: ${user.sub}`)
+      const user = tokenSet.claims();//Retrieve the user details from the CIDM jww token
+      console.log(`User logged in: ${user.firstName} ${user.lastName} (${user.email})`)
 
       setYarValue(request, 'CIDMAuth', { idToken: tokenSet.id_token, user: user })
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
-      const token = jwt.sign({ userSub: user.sub }, secret, { algorithm: 'HS256' })
-      //const token = jwt.sign({ user: user }, secret.value, { algorithm: 'HS256', expiresIn: "1h" })
+      const token = jwt.sign({ contactId: user.contactId }, secret, { algorithm: 'HS256' })
+      //const token = jwt.sign({ contactId: user.contactId }, secret.value, { algorithm: 'HS256', expiresIn: "1h" })
 
       const stateOptions = {
         // ttl: 60 * 60 * 1000, // Cookie expiration time, for example, 1 hour
         // path: '/', // The cookie will be accessible from any path
         // isSecure: true, //process.env.NODE_ENV === 'production', // Set to true in production, false in development
         // isHttpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-        // encoding: 'none', // Do not encode the cookie value
+        // encoding: 'base64json' // 'none' =  Do not encode the cookie value
         sameSite: 'Strict' // The cookie will be sent only on the same site, preventing CSRF attacks
       }
 
-      h.state('token', token, stateOptions)
-      return h.redirect('/permit-type?token=' + token)//TODO Shouldn't need to pass the token as a query param but can't get the cookie to work for this first page after login
-      //return h.redirect('/permit-type')//.state('token', token, stateOptions)
+      h.state('token', token, stateOptions)//Store the token in a cookie called token
+      //The token stored in the cookie will not be available on the first page after login if we redirect to it at this stage.
+      //So we are instead returning a page which will cause the browser to perform the redirect instead
+      
+      const htmlContent = `<!DOCTYPE html>
+                            <html>
+                              <head>
+                                <meta http-equiv="refresh" content="0; URL='/permit-type'" />
+                              </head>
+                              <body>
+                              </body>
+                            </html>`
+
+      return h.response(htmlContent).header('Content-Type', 'text/html')
     }
   },
   {
     method: 'GET',
     path: '/login',
     config: {
-      auth: false // authentication is not required
+      auth: false
     },
     handler: async (request, h) => {
       const serviceId = (await readSecret('CIDM-API-SERVICE-ID')).value
       const authOptions = {
         scope: 'openid email profile',
-        response_type: 'code',
+        response_type: 'code',//id_token
         redirect_uri: cidmCallbackUrl,
         serviceId: serviceId
       }
@@ -75,18 +84,14 @@ module.exports = [
     method: 'GET',
     path: '/logout',
     config: {
-      auth: false // authentication is not required
+      auth: false
     },
     handler: async (request, h) => {
       const oidcClient = request.server.app.oidcClient
-      //const oidcClient = await getOpenIdClient() 
-      // const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
-      // const decodedToken = jwt.verify(request.state.token, secret);
-      //const id_token = reques
-
-      const auth = getYarValue(request, 'CIDMAuth')
+      
+      const cidmAuth = getYarValue(request, 'CIDMAuth')
       const endSessionParams = {
-        id_token_hint: auth?.idToken || null,
+        id_token_hint: cidmAuth?.idToken || null,
         post_logout_redirect_uri: postLogoutRedirectUrl,
       }
 
