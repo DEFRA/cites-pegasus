@@ -534,8 +534,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const {applicationIndex } = request.params
-        return h.redirect(`${nextPath}/${applicationIndex}`)
+        return h.redirect(nextPath)
       }
     }
   }

@@ -870,6 +870,8 @@ const schema = Joi.object().keys({
       tableHeadUnitOfMeasurement: Joi.string(),
       tableHeadCopy: Joi.string(),
       tableHeadRemove: Joi.string(),
+      rowTextUnitsOfMeasurementNoOfSpecimens: Joi.string().required(),
+      rowTextUnitsOfMeasurementNoOfPiecesOrParts: Joi.string().required(),
       addAnotherSpeciesLinkText: Joi.string(),
       applyForADifferentTypeOfPermitLinkText: Joi.string()
     }).required(),

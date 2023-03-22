@@ -5,7 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/s
 const textContent = require('../content/text-content')
 const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/application-summary`
+const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/view`//TO DO
 const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`//TO DO
@@ -40,23 +40,29 @@ function createModel(errors, data) {
 
   const rowItems = applicationsData.map(application => {
     const speciesName = `<a href= ${nextPathViewApplication}/${application.applicationIndex}>${application.species.speciesName}</a>`
-    const copyText = `<a href=${nextPathCopyApplication}/${application.applicationIndex + 1}>${pageContent.tableHeadCopy}</a>`
+    // const copyText = `<a href=${nextPathCopyApplication}/${application.applicationIndex + 1}>${pageContent.tableHeadCopy}</a>`
+    const copyText = `<a href=${currentPath}/copy/${application.applicationIndex}>${pageContent.tableHeadCopy}</a>`
     const removeText = `<a href=${nextPathAreYouSure}/${application.applicationIndex}>${pageContent.tableHeadRemove}</a>`
-    return createTableRow(speciesName, application.species.quantity, application.species.unitOfMeasurement, copyText, removeText)
+   
+    let unitsOfMeasurementText = null
+    if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
+      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
+    } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfPiecesOrParts") {
+      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
+    } else {
+      unitsOfMeasurementText = application.species?.unitOfMeasurement
+    }
+
+    return createTableRow(speciesName, application.species.quantity, unitsOfMeasurementText, copyText, removeText)
   })
 
-  console.log("rowItems", rowItems)
-
- 
-
-//   const copyText = `<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>${pageContent.tableHeadCopy}</a>`
-
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
-    formActionPage: `${currentPath}/${data.applicationIndex}`,
+    backLink: previousPath,
+    formActionPage: currentPath,
+    // formActionPage: `${currentPath}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
-    addAnotherSpeciesUrl: `${urlPrefix}/species-name/${data.applicationIndex}`,
+    addAnotherSpeciesUrl: `${urlPrefix}/species-name`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
     applyForADifferentTypeOfPermitUrl: `${urlPrefix}/permit-type`, 
    
@@ -111,7 +117,6 @@ function createTableRow(speciesName, quantity, unitOfMeasurement, copyLink, remo
           html: removeLink
         }
       ]
-      console.log("tableRow", tableRow)
      return tableRow
    }
 
@@ -119,89 +124,86 @@ function createTableRow(speciesName, quantity, unitOfMeasurement, copyLink, remo
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}/{applicationIndex}`,
+    path: currentPath,
+    // path: `${currentPath}/{applicationIndex}`,
+    // options: {
+    //   validate: {
+    //     params: Joi.object({
+    //       applicationIndex: Joi.number().required()
+    //     }),
+    //     failAction: (request, h, error) => {
+    //         console.log(error)
+    //       }
+    //   }
+    // },
+    handler: async (request, h) => {
+      // const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+      const applications= submission.applications
+
+      console.log("submission", submission)
+
+      console.log("applications", applications)
+
+      try {
+        validateSubmission(submission, pageId)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
+      const pageData = {
+        permitType: submission.permitType,
+        applications : applications
+      }
+      return h.view(pageId, createModel(null, pageData))
+    }
+  },
+  {
+    method: "GET",
+    path: `${currentPath}/copy/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          applicationIndex: Joi.number().required()
+          applicationIndex: Joi.number().required(),
         }),
         failAction: (request, h, error) => {
-            console.log(error)
-          }
+          console.log(error)
+        }
       }
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      const applications= submission.applications
+      const application= submission.applications[applicationIndex]
 
-    //   try {
-    //     validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
-    //   } catch (err) {
-    //     console.log(err)
-    //     return h.redirect(`${invalidSubmissionPath}/`)
-    //   }
+      console.log("submission", submission)
 
-      const pageData = {
-        applicationIndex: applicationIndex,
-        permitType: submission.permitType,
-        applications : applications
-      }
+      console.log("application", application)
 
-      return h.view(pageId, createModel(null, pageData))
+      const copiedApplications = lodash.cloneDeep(application);
 
+      console.log("copiedapp", copiedApplications)
+        return h.redirect(nextPathCopyApplication)
+      
     }
   },
   {
     method: "POST",
-    path: `${currentPath}/{applicationIndex}`,
+    path: `${currentPath}`,
     options: {
       validate: {
-        params: Joi.object({
-          applicationIndex: Joi.number().required()
-        }),
-        
         failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const pageData = {
-            applicationIndex: applicationIndex,
             permitType: submission.permitType,
-            sex: submission.applications[applicationIndex].species.sex,
-            ...request.payload
+            applications : applications
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
-        const { applicationIndex } = request.params
-        const submission = getSubmission(request)
-
-        const importerExporterDetails = {
-          country: request.payload.country.trim(),
-          name: request.payload.name.trim(),
-          addressLine1: request.payload.addressLine1.trim(),
-          addressLine2: request.payload.addressLine2.trim(),
-          addressLine3: request.payload.addressLine3.trim(),
-          addressLine4: request.payload.addressLine4.trim(),
-          postcode: request.payload.postcode.trim()
-        }
-
-        submission.applications[applicationIndex].importerExporterDetails = importerExporterDetails
-
-        try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
-          )
-        } catch (err) {
-          console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
-        }
-
-        if (submission.permitType === 'export') {
-          return h.redirect(`${nextPathComments}/${applicationIndex}`)
-        } else {
-          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
-        }
+        return h.redirect(nextPathUploadSupportingDocuments)
       }
     }
   }

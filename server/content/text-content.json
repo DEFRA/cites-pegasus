@@ -1123,6 +1123,8 @@
       "tableHeadUnitOfMeasurement": "Unit of measurement",
       "tableHeadCopy": "Copy",
       "tableHeadRemove": "Remove",
+      "rowTextUnitsOfMeasurementNoOfSpecimens": "Number of specimens",
+      "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts",
       "addAnotherSpeciesLinkText": "Add another species",
       "applyForADifferentTypeOfPermitLinkText": "Apply for a different type of permit"
     },
