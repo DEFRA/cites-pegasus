@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode']
+const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function clearChangeRoute(request) {
@@ -94,7 +94,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
         endUrl = startUrl
     }
 
-    changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrl: endUrl, applicationIndex: applicationIndex }
+    const changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrl: endUrl, applicationIndex: applicationIndex }
 
     setYarValue(request, "changeRouteData", changeRouteData)
 
