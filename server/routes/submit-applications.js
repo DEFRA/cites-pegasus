@@ -3,6 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, cloneApplication} = require('../lib/submission')
 const textContent = require('../content/text-content')
+const nunjucks = require("nunjucks")
 const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/application-summary/check/0`
@@ -36,12 +37,32 @@ function createModel(errors, data) {
       break
   }
 
+   var renderString = "{% from 'govuk/components/button/macro.njk' import govukButton %} \n {{govukButton(input)}}"
+
+  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+
+  const copyButton = nunjucks.renderString(renderString, {
+   input: {
+      id: "copyButton",
+      classes: "govuk-button--secondary",
+      text: commonContent.copyButton,
+    }
+  })
+
+  const removeButton = nunjucks.renderString(renderString, {
+   input: {
+      id: "copyButton",
+      classes: "govuk-button--warning",
+      text: commonContent.removeButton,
+    }
+  })
+
   const applicationsData = data.applications
 
   const rowItems = applicationsData.map(application => {
     const speciesName = `<a href= ${nextPathViewApplication}/${application.applicationIndex}>${application.species.speciesName}</a>`
-    const copyText = `<a href=${currentPath}/copy/${application.applicationIndex}>${pageContent.tableHeadCopy}</a>`
-    const removeText = `<a href=${nextPathAreYouSure}/${application.applicationIndex}>${pageContent.tableHeadRemove}</a>`
+    // const copyText = `<a href=${currentPath}/copy/${application.applicationIndex}>${pageContent.tableHeadCopy}</a>`
+    // const removeText = `<a href=${nextPathAreYouSure}/${application.applicationIndex}>${pageContent.tableHeadRemove}</a>`
    
     let unitsOfMeasurementText = null
     if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
@@ -52,7 +73,11 @@ function createModel(errors, data) {
       unitsOfMeasurementText = application.species?.unitOfMeasurement
     }
 
-    return createTableRow(speciesName, application.species.quantity, unitsOfMeasurementText, copyText, removeText)
+    // const copyButton = createButton(copyButton, "govuk-button--secondary", commonContent.copyButton, `${currentPath}/copy/${application.applicationIndex}`)
+
+    // const removeButton = createButton(removeButton, "govuk-button--warning", commonContent.removeButton, `${nextPathAreYouSure}/${application.applicationIndex}`)
+
+    return createTableRow(speciesName, application.species.quantity, unitsOfMeasurementText, copyButton, removeButton)
   })
 
   const model = {
@@ -118,6 +143,20 @@ function createTableRow(speciesName, quantity, unitOfMeasurement, copyLink, remo
      return tableRow
    }
 
+// function createButton(id, classes, text, href) {
+//   var renderString = "{% from 'govuk/components/button/macro.njk' import govukButton %} \n {{govukButton(input)}}"
+//   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+//   const button = nunjucks.renderString(renderString, {
+//    input: {
+//       id: id,
+//       classes: classes,
+//       text: text,
+//       href: href
+//     }
+//   })
+//   return button
+// }
+
 
 module.exports = [
   {
@@ -142,7 +181,7 @@ module.exports = [
     }
   },
   {
-    method: "GET",
+    method: "POST",
     path: `${currentPath}/copy/{applicationIndex}`,
     options: {
       validate: {
@@ -158,8 +197,6 @@ module.exports = [
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
       const applications= submission.applications
-      console.log("submission", submission)
-      console.log("applications", applications)
 
       try {
         cloneApplication(request, applicationIndex)
@@ -167,7 +204,6 @@ module.exports = [
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-
       return h.redirect(`${nextPathCopyApplication}/${applications.length - 1}`)
       
     }

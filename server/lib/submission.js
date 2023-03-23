@@ -50,7 +50,7 @@ function cloneApplication(request, applicationIndex) {
     const applications= submission.applications
     const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
     applications.push(clonedApplication)
-    setYarValue(request, 'submission', null)
+    setYarValue(request, 'submission', submission)
 }
 
 function getAppFlow(submission) {
