@@ -8,6 +8,22 @@ const { cidmCallbackUrl, postLogoutRedirectUrl } = require('../../config/config'
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
 
+function getRelationshipDetails(user) {
+  const relationshipDetails = {
+    organisation: null,
+    userType: null
+  }
+
+  if (user.relationships && user.relationships.length === 1) {
+    const parts = user.relationships[0].split(':')
+    if (parts.length >= 5) {
+      relationshipDetails.organisation = parts[2]
+      relationshipDetails.userType = parts[4]
+    }
+  }
+  
+  return relationshipDetails
+}
 
 module.exports = [
   {
@@ -28,7 +44,8 @@ module.exports = [
       const user = tokenSet.claims();//Retrieve the user details from the CIDM jww token
       console.log(`User logged in: ${user.firstName} ${user.lastName} (${user.email})`)
 
-      setYarValue(request, 'CIDMAuth', { idToken: tokenSet.id_token, user: user })
+      const relationshipDetails = getRelationshipDetails(user)
+      setYarValue(request, 'CIDMAuth', { idToken: tokenSet.id_token, user: { ...user, ...relationshipDetails } })
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
       const token = jwt.sign({ contactId: user.contactId }, secret, { algorithm: 'HS256' })
@@ -46,7 +63,7 @@ module.exports = [
       h.state('token', token, stateOptions)//Store the token in a cookie called token
       //The token stored in the cookie will not be available on the first page after login if we redirect to it at this stage.
       //So we are instead returning a page which will cause the browser to perform the redirect instead
-      
+
       const htmlContent = `<!DOCTYPE html>
                             <html>
                               <head>
@@ -88,7 +105,7 @@ module.exports = [
     },
     handler: async (request, h) => {
       const oidcClient = request.server.app.oidcClient
-      
+
       const cidmAuth = getYarValue(request, 'CIDMAuth')
       const endSessionParams = {
         id_token_hint: cidmAuth?.idToken || null,
@@ -96,7 +113,7 @@ module.exports = [
       }
 
       const logoutUri = oidcClient.endSessionUrl(endSessionParams)
-      
+
       clearYarSession(request)
       return h.redirect(logoutUri).unstate('token').unstate('session');
     },
