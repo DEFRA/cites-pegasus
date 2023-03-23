@@ -157,7 +157,7 @@ module.exports = [{
 
                 email = user.email
                 fullName = user.firstName + ' ' + user.lastName
-                businessName = ''
+                businessName = user.organisation
             }
         }
         const pageData = {
