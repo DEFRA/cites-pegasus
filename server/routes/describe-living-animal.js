@@ -3,6 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
+const { checkChangeRouteExit } = require("../lib/change-route")
 const { isValidDate, isPastDate } = require("../lib/validators")
 const nunjucks = require("nunjucks")
 const pageId = 'describe-living-animal'
@@ -78,8 +79,11 @@ function createModel(errors, data) {
   //nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => x = getRadioItem(data.sex, x, errorList))
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -244,6 +248,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
         permitType: submission.permitType,
@@ -281,6 +286,7 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: request.params.applicationIndex,
             speciesName: submission.applications[applicationIndex].species.speciesName,
             permitType: submission.permitType,
@@ -313,6 +319,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         if (submission.permitType === 'article10') {
           return h.redirect(`${nextPathAcquiredDate}/${applicationIndex}`)
         } else {

@@ -1,13 +1,9 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const {
-  findErrorList,
-  getFieldError,
-  isChecked
-} = require("../lib/helper-functions")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-
 const textContent = require("../content/text-content")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
@@ -38,9 +34,11 @@ function createModel(errors, data) {
     })
   }
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -201,6 +199,7 @@ module.exports = [
       const species = submission.applications[request.params.applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: request.params.applicationIndex,
         speciesName: species.speciesName,
         purposeCode: species.purposeCode
@@ -227,6 +226,7 @@ module.exports = [
           const species = submission.applications[request.params.applicationIndex].species
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: request.params.applicationIndex,
             speciesName: species.speciesName,
             ...request.payload
@@ -247,6 +247,11 @@ module.exports = [
         catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
+        }
+
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
         }
 
         return h.redirect(`${nextPathSpecimenType}/${applicationIndex}`)        
