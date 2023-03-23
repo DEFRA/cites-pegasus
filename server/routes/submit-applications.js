@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, cloneApplication} = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -40,7 +40,6 @@ function createModel(errors, data) {
 
   const rowItems = applicationsData.map(application => {
     const speciesName = `<a href= ${nextPathViewApplication}/${application.applicationIndex}>${application.species.speciesName}</a>`
-    // const copyText = `<a href=${nextPathCopyApplication}/${application.applicationIndex + 1}>${pageContent.tableHeadCopy}</a>`
     const copyText = `<a href=${currentPath}/copy/${application.applicationIndex}>${pageContent.tableHeadCopy}</a>`
     const removeText = `<a href=${nextPathAreYouSure}/${application.applicationIndex}>${pageContent.tableHeadRemove}</a>`
    
@@ -59,7 +58,6 @@ function createModel(errors, data) {
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
-    // formActionPage: `${currentPath}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
     addAnotherSpeciesUrl: `${urlPrefix}/species-name`,
@@ -125,25 +123,9 @@ module.exports = [
   {
     method: "GET",
     path: currentPath,
-    // path: `${currentPath}/{applicationIndex}`,
-    // options: {
-    //   validate: {
-    //     params: Joi.object({
-    //       applicationIndex: Joi.number().required()
-    //     }),
-    //     failAction: (request, h, error) => {
-    //         console.log(error)
-    //       }
-    //   }
-    // },
     handler: async (request, h) => {
-      // const { applicationIndex } = request.params
       const submission = getSubmission(request)
       const applications= submission.applications
-
-      console.log("submission", submission)
-
-      console.log("applications", applications)
 
       try {
         validateSubmission(submission, pageId)
@@ -175,16 +157,18 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      const application= submission.applications[applicationIndex]
-
+      const applications= submission.applications
       console.log("submission", submission)
+      console.log("applications", applications)
 
-      console.log("application", application)
+      try {
+        cloneApplication(request, applicationIndex)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
 
-      const copiedApplications = lodash.cloneDeep(application);
-
-      console.log("copiedapp", copiedApplications)
-        return h.redirect(nextPathCopyApplication)
+      return h.redirect(`${nextPathCopyApplication}/${applications.length - 1}`)
       
     }
   },

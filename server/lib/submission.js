@@ -45,6 +45,14 @@ function validateSubmission(submission, path) {
     }
 }
 
+function cloneApplication(request, applicationIndex) {
+    const submission = getSubmission(request)
+    const applications= submission.applications
+    const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
+    applications.push(clonedApplication)
+    setYarValue(request, 'submission', null)
+}
+
 function getAppFlow(submission) {
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
@@ -271,5 +279,6 @@ module.exports = {
     mergeSubmission,
     getSubmission,
     clearSubmission,
-    validateSubmission
+    validateSubmission,
+    cloneApplication
 }
