@@ -13,9 +13,7 @@ const nextPathAreYouSure = `${urlPrefix}/are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
 
-
-
-function createModel(errors, data) {
+function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
   
   let pageContent = null
@@ -37,7 +35,6 @@ function createModel(errors, data) {
   }
 
   const applicationsData = data.applications
-
   const applicationsTableData= applicationsData.map(application => {
     const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
@@ -49,16 +46,12 @@ function createModel(errors, data) {
       unitsOfMeasurementText = application.species?.unitOfMeasurement
     }
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
-    const formActionRemove = `${nextPathAreYouSure}/remove/${application.applicationIndex}`
-
+    const formActionRemove = `${currentPath}/remove/are-you-sure/${application.applicationIndex}`
     return {speciesName: application.species.speciesName, speciesNameUrl, quantity: application.species.quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
   })
 
-  console.log("applicationsTableData", applicationsTableData)
-
   const model = {
     backLink: previousPath,
-    formActionPage: currentPath,
     pageTitle: pageContent.defaultTitle,
     captionText: pageContent.pageHeader,
     tableHeadScientificName: pageContent.tableHeadScientificName,
@@ -69,36 +62,69 @@ function createModel(errors, data) {
     addAnotherSpeciesUrl: `${urlPrefix}/species-name`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
     applyForADifferentTypeOfPermitUrl: `${urlPrefix}/permit-type`, 
-   
-    // submitApplicationsTable: {
-    //     id: "submitApplications",
-    //     name: "submitApplications",
-    //     caption: pageContent.pageHeader,
-    //     captionClasses: "govuk-table__caption--l",
-    //     firstCellIsHeader: true,
-    //     head: [
-    //       {
-    //         text: pageContent.tableHeadScientificName,
-    //         classes: 'govuk-!-width-one-half'
-    //       },
-    //       {
-    //         text: pageContent.tableHeadQuantity
-    //       },
-    //       {
-    //         text: pageContent.tableHeadUnitOfMeasurement
-    //       },
-    //       {
-    //         text: ""
-    //       },
-    //       {
-    //         text: ""
-    //       }
-    //     ],
-    //     rows: rowItems
-    //   }
+    isSubmitApplications: true,
+    areYouSure: false
   }
   return { ...commonContent, ...model }
 }
+
+function createAreYouSureModel(errors, data) {
+  const commonContent = textContent.common
+  const pageContent = textContent.submitApplications.areYouSureRemove
+  const defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
+
+  let errorList = null
+  if (errors) {
+    errorList = []
+    const mergedErrorMessages = {
+      ...commonContent.errorMessages,
+      ...pageContent.errorMessages
+    }
+    const fields = ["areYouSure"]
+    fields.forEach((field) => {
+      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+      if (fieldError) {
+        errorList.push({
+          text: fieldError,
+          href: `#${field}`
+        })
+      }
+    })
+  }
+
+  const model = {
+    backLink: `${currentPath}`,
+    formActionPage: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
+    ...(errorList ? { errorList } : {}),
+    pageTitle: errorList
+      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
+      : defaultTitle,
+    pageHeader: `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`,
+    areYouSure: true,
+    isSubmitApplications:false,
+
+    inputAreYouSure: {
+      idPrefix: "areYouSure",
+      name: "areYouSure",
+      classes: "govuk-radios--inline",
+      items: [
+        {
+          value: true,
+          text: commonContent.radioOptionYes,
+          checked: data.areYouSure
+        },
+        {
+          value: false,
+          text: commonContent.radioOptionNo,
+          checked: data.areYouSure === false
+        }
+      ],
+      errorMessage: getFieldError(errorList, "#areYouSure")
+    }
+  }
+  return { ...commonContent, ...model }
+}
+
 
 module.exports = [
   {
@@ -119,7 +145,38 @@ module.exports = [
         permitType: submission.permitType,
         applications : applications
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(pageId, createSubmitApplicationModel(null, pageData))
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+        }),
+        failAction: (request, h, error) => {
+          console.log(error)
+        }
+      }
+    },
+    handler: async (request, h) => {
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+     
+      try {
+        validateSubmission(submission, pageId)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
+      const pageData = {
+        speciesName: submission.applications[applicationIndex].species.speciesName,
+        areYouSure: submission.areYouSure,
+      }
+      return h.view(pageId, createAreYouSureModel(null, pageData))
     }
   },
   {
@@ -160,7 +217,7 @@ module.exports = [
             permitType: submission.permitType,
             applications : applications
           }
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

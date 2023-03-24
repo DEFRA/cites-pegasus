@@ -879,6 +879,16 @@ const schema = Joi.object().keys({
   exportApplications : submitApplicationsSchema,
   reexportApplications : submitApplicationsSchema,
   article10Applications : submitApplicationsSchema, 
+  areYouSureRemove: Joi.object({
+    defaultTitlePart1: Joi.string().required(),
+    defaultTitlePart2: Joi.string().required(),
+    pageHeaderPart1: Joi.string().required(),
+    pageHeaderPart2: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.areYouSure.part1.any.required": Joi.string().required(),
+      "error.areYouSure.part2.any.required": Joi.string().required(),
+    }).required()
+  }).required()
   }).required(),
 })
 

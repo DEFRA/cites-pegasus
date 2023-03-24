@@ -1119,7 +1119,7 @@
     }
   },
   "submitApplications": {
-   "common": {
+    "common": {
       "tableHeadScientificName": "Scientific name",
       "tableHeadQuantity": "Quantity",
       "tableHeadUnitOfMeasurement": "Unit of measurement",
@@ -1128,22 +1128,31 @@
       "addAnotherSpeciesLinkText": "Add another species",
       "applyForADifferentTypeOfPermitLinkText": "Apply for a different type of permit"
     },
-  "importApplications" : {
-    "defaultTitle": "Your import application",
-    "pageHeader": "Your import application"
-  },
-  "exportApplications" : {
-    "defaultTitle": "Your export application",
-    "pageHeader": "Your export application"
-  },
-  "reexportApplications" : {
-    "defaultTitle": "Your reexport application",
-    "pageHeader": "Your reexport application"
-  },
-  "article10Applications" : {
-    "defaultTitle": "Your article 10 application",
-    "pageHeader": "Your article 10 application"
+    "importApplications": {
+      "defaultTitle": "Your import application",
+      "pageHeader": "Your import application"
+    },
+    "exportApplications": {
+      "defaultTitle": "Your export application",
+      "pageHeader": "Your export application"
+    },
+    "reexportApplications": {
+      "defaultTitle": "Your reexport application",
+      "pageHeader": "Your reexport application"
+    },
+    "article10Applications": {
+      "defaultTitle": "Your article 10 application",
+      "pageHeader": "Your article 10 application"
+    },
+    "areYouSureRemove": {
+      "defaultTitlePart1": "Are you sure that you want to remove",
+      "defaultTitlePart2": "from your application?",
+      "pageHeaderPart1": "Are you sure that you want to remove",
+      "pageHeaderPart2": "from your application?",
+      "errorMessages": {
+        "error.areYouSure.part1.any.required": "Select yes if you want to remove",
+        "error.areYouSure.part2.any.required": "from your application"
+      }
+    }
   }
-  }
-  
 }
