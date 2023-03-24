@@ -17,9 +17,52 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-      
-        {{ govukTable (submitApplicationsTable) }}
+      <form method="POST"  autocomplete="off" novalidate="novalidate">
+
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-table__caption--l">{{captionText}}</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header govuk-!-width-one-half">{{tableHeadScientificName}}</th>
+              <th scope="col" class="govuk-table__header">{{tableHeadQuantity}}</th>
+              <th scope="col" class="govuk-table__header">{{tableHeadUnitOfMeasurement}}</th>
+              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header"></th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for application in applicationsData %}
+            <tr class="govuk-table__row">
+              
+              <td class="govuk-table__cell">
+                <a href="{{application.speciesNameUrl}}">{{application.speciesName}}</a>
+              </td>
+              <td class="govuk-table__cell">{{application.quantity}}</td>
+              <td class="govuk-table__cell">{{application.unitsOfMeasurementText}}</td>
+              <td class="govuk-table__cell">
+                {{ govukButton({
+                  text: copyButton,
+                  type: "submit",
+                  classes: "govuk-button--secondary",
+                  attributes: {
+                    formAction: application.formActionCopy
+                  }
+                }) }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ govukButton({
+                  text: removeButton,
+                  type: "submit",
+                  classes: "govuk-button--warning",
+                  attributes: {
+                    formAction: application.formActionRemove
+                  }
+                }) }}
+              </td>
+            </tr> 
+            {% endfor %}         
+          </tbody>
+        </table>   
        
         {{ govukButton({
         text: submitButton,

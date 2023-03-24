@@ -3,13 +3,12 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, cloneApplication} = require('../lib/submission')
 const textContent = require('../content/text-content')
-const nunjucks = require("nunjucks")
 const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/view`//TO DO
-const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`//TO DO
+const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
 const nextPathAreYouSure = `${urlPrefix}/are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
@@ -37,33 +36,10 @@ function createModel(errors, data) {
       break
   }
 
-   var renderString = "{% from 'govuk/components/button/macro.njk' import govukButton %} \n {{govukButton(input)}}"
-
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-
-  const copyButton = nunjucks.renderString(renderString, {
-   input: {
-      id: "copyButton",
-      classes: "govuk-button--secondary",
-      text: commonContent.copyButton,
-    }
-  })
-
-  const removeButton = nunjucks.renderString(renderString, {
-   input: {
-      id: "copyButton",
-      classes: "govuk-button--warning",
-      text: commonContent.removeButton,
-    }
-  })
-
   const applicationsData = data.applications
 
-  const rowItems = applicationsData.map(application => {
-    const speciesName = `<a href= ${nextPathViewApplication}/${application.applicationIndex}>${application.species.speciesName}</a>`
-    // const copyText = `<a href=${currentPath}/copy/${application.applicationIndex}>${pageContent.tableHeadCopy}</a>`
-    // const removeText = `<a href=${nextPathAreYouSure}/${application.applicationIndex}>${pageContent.tableHeadRemove}</a>`
-   
+  const applicationsTableData= applicationsData.map(application => {
+    const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
     if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
       unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
@@ -72,91 +48,57 @@ function createModel(errors, data) {
     } else {
       unitsOfMeasurementText = application.species?.unitOfMeasurement
     }
+    const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
+    const formActionRemove = `${nextPathAreYouSure}/remove/${application.applicationIndex}`
 
-    // const copyButton = createButton(copyButton, "govuk-button--secondary", commonContent.copyButton, `${currentPath}/copy/${application.applicationIndex}`)
-
-    // const removeButton = createButton(removeButton, "govuk-button--warning", commonContent.removeButton, `${nextPathAreYouSure}/${application.applicationIndex}`)
-
-    return createTableRow(speciesName, application.species.quantity, unitsOfMeasurementText, copyButton, removeButton)
+    return {speciesName: application.species.speciesName, speciesNameUrl, quantity: application.species.quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
   })
+
+  console.log("applicationsTableData", applicationsTableData)
 
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
     pageTitle: pageContent.defaultTitle,
+    captionText: pageContent.pageHeader,
+    tableHeadScientificName: pageContent.tableHeadScientificName,
+    tableHeadQuantity: pageContent.tableHeadQuantity,
+    tableHeadUnitOfMeasurement: pageContent.tableHeadUnitOfMeasurement,
+    applicationsData : applicationsTableData,
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
     addAnotherSpeciesUrl: `${urlPrefix}/species-name`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
     applyForADifferentTypeOfPermitUrl: `${urlPrefix}/permit-type`, 
    
-    submitApplicationsTable: {
-        id: "submitApplications",
-        name: "submitApplications",
-        caption: pageContent.pageHeader,
-        captionClasses: "govuk-table__caption--l",
-        firstCellIsHeader: true,
-        head: [
-          {
-            text: pageContent.tableHeadScientificName,
-            classes: 'govuk-!-width-one-half'
-          },
-          {
-            text: pageContent.tableHeadQuantity
-          },
-          {
-            text: pageContent.tableHeadUnitOfMeasurement
-          },
-          {
-            text: ""
-          },
-          {
-            text: ""
-          }
-        ],
-        rows: rowItems
-      }
-   
-
+    // submitApplicationsTable: {
+    //     id: "submitApplications",
+    //     name: "submitApplications",
+    //     caption: pageContent.pageHeader,
+    //     captionClasses: "govuk-table__caption--l",
+    //     firstCellIsHeader: true,
+    //     head: [
+    //       {
+    //         text: pageContent.tableHeadScientificName,
+    //         classes: 'govuk-!-width-one-half'
+    //       },
+    //       {
+    //         text: pageContent.tableHeadQuantity
+    //       },
+    //       {
+    //         text: pageContent.tableHeadUnitOfMeasurement
+    //       },
+    //       {
+    //         text: ""
+    //       },
+    //       {
+    //         text: ""
+    //       }
+    //     ],
+    //     rows: rowItems
+    //   }
   }
   return { ...commonContent, ...model }
 }
-
-
-function createTableRow(speciesName, quantity, unitOfMeasurement, copyLink, removeLink ) {
-    const tableRow =  [
-        {
-          html: speciesName
-        },
-        {
-          text: quantity
-        },
-        {
-          text: unitOfMeasurement
-        },
-        {
-          html: copyLink,
-        },
-        {
-          html: removeLink
-        }
-      ]
-     return tableRow
-   }
-
-// function createButton(id, classes, text, href) {
-//   var renderString = "{% from 'govuk/components/button/macro.njk' import govukButton %} \n {{govukButton(input)}}"
-//   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-//   const button = nunjucks.renderString(renderString, {
-//    input: {
-//       id: id,
-//       classes: classes,
-//       text: text,
-//       href: href
-//     }
-//   })
-//   return button
-// }
-
 
 module.exports = [
   {
@@ -204,8 +146,7 @@ module.exports = [
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-      return h.redirect(`${nextPathCopyApplication}/${applications.length - 1}`)
-      
+      return h.redirect(`${nextPathCopyApplication}/${applications.length}`)
     }
   },
   {
@@ -228,3 +169,4 @@ module.exports = [
     }
   }
 ]
+

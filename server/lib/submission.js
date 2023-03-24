@@ -199,6 +199,7 @@ function getAppFlow(submission) {
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                             appFlow.push(`are-you-sure/${applicationIndex}`)
                             appFlow.push(`submit-applications`)
+                            appFlow.push(`application-summary/copy/${applicationIndex}`)
                         }
                         
 
