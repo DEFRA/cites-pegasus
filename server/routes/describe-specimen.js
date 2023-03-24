@@ -2,6 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
@@ -37,8 +38,11 @@ function createModel(errors, data) {
 
   const previousPath = data.numberOfUnmarkedSpecimens ? previousPathUnmarkedSpecimens : previousPathUniqueId 
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -88,6 +92,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
         numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
@@ -116,6 +121,7 @@ module.exports = [
           const species = submission.applications[applicationIndex].species
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species.speciesName,
             numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
@@ -142,6 +148,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         if (submission.permitType === "article10") {
           return h.redirect(`${nextPathArticle10}/${applicationIndex}`
           )

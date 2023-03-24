@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName', 'quantity', 'purposeCode', 'tradeTermCode', 'describeLivingAnimal', 'useCertificateFor', 'acquiredDate', 'a10CertificateNumber']
+const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName', 'quantity', 'purposeCode', 'tradeTermCode', 'describeLivingAnimal', 'useCertificateFor', 'acquiredDate', 'a10CertificateNumber', 'unmarkedSpecimens', 'createdDate', 'specimenType', 'descriptionGeneric', 'importerExporterDetails', 'permitDetails', 'comments']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function setChangeRoute(request, changeType, applicationIndex) {
@@ -47,12 +47,15 @@ function setChangeRoute(request, changeType, applicationIndex) {
             break
         case "sourceCode"://DONE
             startUrl = `${urlPrefix}/source-code/${applicationIndex}`
-            break            
+            break
         case "purposeCode"://DONE
             startUrl = `${urlPrefix}/purpose-code/${applicationIndex}`
             break
-
         case "specimenType"://Change flow
+            startUrl = `${urlPrefix}/specimen-type/${applicationIndex}`
+            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            break
         case "tradeTermCode"://DONE
             startUrl = `${urlPrefix}/trade-term-code/${applicationIndex}`
             break
@@ -71,14 +74,24 @@ function setChangeRoute(request, changeType, applicationIndex) {
         case "a10CertificateNumber"://DONE
             startUrl = `${urlPrefix}/already-have-a10/${applicationIndex}`
             break
-        case "unmarkedSpecimens":
-        case "createdDate":
-        case "descriptionGeneric":
-
-        case "importerExporterDetails":
+        case "unmarkedSpecimens"://DONE
+            startUrl = `${urlPrefix}/unmarked-specimens/${applicationIndex}`
+            break
+        case "createdDate"://DONE
+            startUrl = `${urlPrefix}/created-date/${applicationIndex}`
+            break
+        case "descriptionGeneric"://DONE
+            startUrl = `${urlPrefix}/describe-specimen/${applicationIndex}`
+            break
+        case "importerExporterDetails"://DONE
+            startUrl = `${urlPrefix}/importer-exporter/${applicationIndex}`
+            break
         case "permitDetails":
+            startUrl = `${urlPrefix}/permit-details/${applicationIndex}`
+            break
         case "comments":
-            throw new Error(`Change type not handled yet: ${changeType}`)
+            startUrl = `${urlPrefix}/comments/${applicationIndex}`
+            break
         default:
             throw new Error(`Invalid change type: ${changeType}`)
     }
@@ -110,7 +123,7 @@ function checkChangeRouteExit(request, isBack = false) {
         //     || (isBack && request.path.endsWith(changeData.startUrl))) {
         //     return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
         // }
-                
+
         const matchesEndUrl = changeData.endUrls.some(endUrl => request.headers.referer?.endsWith(endUrl))
         const matchesStartUrl = request.path.endsWith(changeData.startUrl)
 

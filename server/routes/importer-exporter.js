@@ -3,6 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const { NAME_REGEX } = require('../lib/regex-validation')
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'importer-exporter'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -16,25 +17,7 @@ const invalidSubmissionPath = urlPrefix
 function createModel(errors, data) {
 
   const commonContent = textContent.common
-  //const pageContent = textContent.importerExporter
-
-  // let defaultTitle = ''
-  // let pageHeader = ''
-  // let heading = ''
-
-  // switch (data.permitType) {
-  //   case 'import':
-  //     defaultTitle = pageContent.defaultTitleImport
-  //     pageHeader = pageContent.pageHeaderImport
-  //     heading = pageContent.headingImport
-  //     break;
-  //   default:
-  //     defaultTitle = pageContent.defaultTitleNonImport
-  //     pageHeader = pageContent.pageHeaderNonImport
-  //     heading = pageContent.headingNonImport
-  //     break;
-  // }
-
+ 
   let pageContent = null
 
   const importerExporterText = lodash.cloneDeep(textContent.importerExporter) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
@@ -66,8 +49,11 @@ function createModel(errors, data) {
 
   const previousPath = data.sex ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -171,6 +157,7 @@ module.exports = [
       const importerExporter = submission.applications[applicationIndex].importerExporterDetails
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         sex: submission.applications[applicationIndex].species.sex,
@@ -209,6 +196,7 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             sex: submission.applications[applicationIndex].species.sex,
@@ -241,6 +229,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         if (submission.permitType === 'export') {
           return h.redirect(`${nextPathComments}/${applicationIndex}`)
         } else {
