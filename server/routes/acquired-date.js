@@ -3,6 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { isValidDate, isPastDate } = require("../lib/validators")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "acquired-date"
@@ -95,10 +96,13 @@ function createModel(errors, data) {
     }
   })
 
-  const previousPath = data.sex ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
+  const previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
+
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -217,17 +221,18 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      
+
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-      
+
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
         sex: species.sex,
@@ -267,6 +272,7 @@ module.exports = [
           const { "acquiredDate-day": day, "acquiredDate-month": month, "acquiredDate-year": year, isExactDateUnknown, approximateDate } = request.payload
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species.speciesName,
             sex: species.sex,
@@ -298,6 +304,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         return h.redirect(
           `${nextPath}/${applicationIndex}`
         )

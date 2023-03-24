@@ -1,6 +1,6 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName', 'quantity', 'purposeCode', 'tradeTermCode', 'describeLivingAnimal']
+const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName', 'quantity', 'purposeCode', 'tradeTermCode', 'describeLivingAnimal', 'useCertificateFor', 'acquiredDate', 'a10CertificateNumber']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function setChangeRoute(request, changeType, applicationIndex) {
@@ -48,28 +48,33 @@ function setChangeRoute(request, changeType, applicationIndex) {
         case "sourceCode"://DONE
             startUrl = `${urlPrefix}/source-code/${applicationIndex}`
             break            
-        case "purposeCode":
+        case "purposeCode"://DONE
             startUrl = `${urlPrefix}/purpose-code/${applicationIndex}`
             break
 
         case "specimenType"://Change flow
-        case "tradeTermCode":
+        case "tradeTermCode"://DONE
             startUrl = `${urlPrefix}/trade-term-code/${applicationIndex}`
             break
         case "uniqueIdentificationMark"://Change flow
             startUrl = `${urlPrefix}/unique-identification-mark/${applicationIndex}`
             break
-        case "useCertificateFor":
+        case "useCertificateFor"://DONE
             startUrl = `${urlPrefix}/use-certificate-for/${applicationIndex}`
             break
-        case "describeLivingAnimal":
+        case "describeLivingAnimal"://DONE
             startUrl = `${urlPrefix}/describe-living-animal/${applicationIndex}`
+            break
+        case "acquiredDate"://DONE
+            startUrl = `${urlPrefix}/acquired-date/${applicationIndex}`
+            break
+        case "a10CertificateNumber"://DONE
+            startUrl = `${urlPrefix}/already-have-a10/${applicationIndex}`
             break
         case "unmarkedSpecimens":
         case "createdDate":
         case "descriptionGeneric":
-        case "acquiredDate":
-        case "a10CertificateNumber":
+
         case "importerExporterDetails":
         case "permitDetails":
         case "comments":

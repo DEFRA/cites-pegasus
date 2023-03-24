@@ -266,6 +266,7 @@ function createModel(errors, data) {
       postcode: data.importerExporterDetails?.postcode,
     }
   }
+  
   const importerExporterAddressValue = `${importerExporterDetailsData.address.addressLine1} ${importerExporterDetailsData.address.addressLine2} ${importerExporterDetailsData.address.addressLine3} ${importerExporterDetailsData.address.addressLine4} ${importerExporterDetailsData.address.postcode}`
  
   const summaryListAboutThePermit = {
@@ -328,36 +329,6 @@ function createModel(errors, data) {
     name: "specimenDetails",
     classes: "govuk-!-margin-bottom-9",
     rows: summaryListSpecimenDetailsRows
-    
-      //createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextScientificName, data.species.speciesName, hrefPrefix + "/speciesName", "species name"),
-      //createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextQuantity, quantityValue, hrefPrefix + "/quantity", "quantity"),
-      //(data.species.specimenType !== "animalLiving") &&  
-      //createSummaryListRow( "govuk-summary-list__row--no-border", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity", "unit of measurement"),
-      //createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText}`, hrefPrefix + "/sourceCode", "source code"),
-      //(data.permitType !== "article10") && 
-      //createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText}`, hrefPrefix + "/purposeCode", "purpose code"),
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type"),
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo, hrefPrefix + "/tradeTermCode", "trade term code"),
-      // (data.permitType === "article10") && 
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for"),
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMark ? data.species.uniqueIdentificationMark : pageContent.rowTextSpecimenIsNotMarked, hrefPrefix + "/uniqueIdentificationMark", "unique identification mark"),
-      // (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && 
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSex, data.species.sex, hrefPrefix + "/describeLivingAnimal", "sex"),
-      // (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') &&
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextDateOfBirth, data.species.dateOfBirth.year ? getDateValue(data.species.dateOfBirth) : "", hrefPrefix + "/describeLivingAnimal", "date of birth"),
-      // (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && (data.permitType === "article10") && 
-      // createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextParentDetails, data.species.parentDetails, hrefPrefix + "/describeLivingAnimal", "parent details"),
-      // (data.species.specimenType === "animalLiving") && (data.species.uniqueIdentificationMarkType !== 'unmarked') && 
-      // createSummaryListRow(data.permitType == "article10" ? "govuk-summary-list__row--no-border": "", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description"),
-      // (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") && 
-      // createSummaryListRow("govuk-summary-list__row--no-border",  pageContent.rowTextCreatedDate, data.species.createdDate.isExactDateUnknown ? data.species.createdDate.approximateDate : getDateValue(data.species.createdDate), "/createdDate", "created date"),
-      // ((data.species.specimenType !== "animalLiving")|| (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) && 
-      // createSummaryListRow(data.permitType === "article10" ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, hrefPrefix + "/descriptionGeneric", "description"),
-      // (data.permitType === "article10") && 
-      // createSummaryListRow( "govuk-summary-list__row--no-border", pageContent.rowTextAcquiredDate, data.species.acquiredDate.isExactDateUnknown ? data.species.acquiredDate.approximateDate : getDateValue(data.species.acquiredDate), hrefPrefix + "/acquiredDate", "acquired date"),
-      // (data.permitType === "article10") && 
-      // createSummaryListRow( "", pageContent.rowTextExistingArticle10Certificate, data.species.isA10CertificateNumberKnown ? data.species.a10CertificateNumber : commonContent.radioOptionNo,  hrefPrefix + "/a10CertificateNumber", "existing a10 certificate"),
-   
   }
 
   const summaryListImporterExporterDetailsRows = []
@@ -371,11 +342,6 @@ function createModel(errors, data) {
     id: "importerExporterDetail",
     name: "importerExporterDetail",
     rows: summaryListImporterExporterDetailsRows
-      // (importerExporterDetailsData.country) && 
-      // createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextCountry, importerExporterDetailsData.country, hrefPrefix + "/importerExporterDetails", "country"),
-      // createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, importerExporterDetailsData.fullName, hrefPrefix + "/importerExporterDetails", "contact details"),
-      // createSummaryListRow("", pageContent.rowTextAddress, importerExporterAddressValue, "", ""),
-    
   }
  
   const summaryListRemarks = {
@@ -386,7 +352,11 @@ function createModel(errors, data) {
       createSummaryListRow("govuk-summary-list__row border-top", pageContent.headerRemarks, data.comments, hrefPrefix + "/comments", "remarks"),      
     ]
   }
-
+  const summaryListYourContactDetails = getContactDetails (pageContent, yourContactDetailsData, hrefPrefix)
+  const summaryListApplicantContactDetails = data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix)
+  const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix)
+  const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix)
+  
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     pageHeader: pageContent.pageHeader,
@@ -403,13 +373,13 @@ function createModel(errors, data) {
     headerRemarks: pageContent.headerRemarks,
 
     summaryListAboutThePermit: summaryListAboutThePermit,
-    summaryListYourContactDetails: getContactDetails (pageContent, yourContactDetailsData, hrefPrefix),
-    summaryListApplicantContactDetails: data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix),
+    summaryListYourContactDetails: summaryListYourContactDetails,
+    summaryListApplicantContactDetails: summaryListApplicantContactDetails,
     summaryListDeliveryAddress : summaryListDeliveryAddress,
     summaryListSpecimenDetails: summaryListSpecimenDetails,
     summaryListImporterExporterDetails : data.permitType !== "article10" && summaryListImporterExporterDetails,
-    summaryListExportOrReexportPermitDetails :  data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix),
-    summaryListCountryOfOriginPermitDetails : data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix),
+    summaryListExportOrReexportPermitDetails : summaryListExportOrReexportPermitDetails,
+    summaryListCountryOfOriginPermitDetails : summaryListCountryOfOriginPermitDetails,
     summaryListRemarks: summaryListRemarks,
   }
   return { ...commonContent, ...model }
@@ -448,31 +418,31 @@ function getDateValue(date) {
 }
 
 function getContactDetails(pageContent, contactDetailsData, hrefPrefix) {
-  const summaryListContactDetails = {
+  const summaryListContactDetailsRows = []
+  summaryListContactDetailsRows.push(createSummaryListRow( "govuk-summary-list__row--no-border border-top",  pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
+  summaryListContactDetailsRows.push(createSummaryListRow( "govuk-summary-list__row--no-border",  pageContent.rowTextBusinessName, contactDetailsData.businessName, "", ""))
+  summaryListContactDetailsRows.push(createSummaryListRow( "",  pageContent.rowTextEmailAddress, contactDetailsData.email, "", ""))
+  summaryListContactDetailsRows.push(createSummaryListRow( "",  pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address"))
+
+  return {
     id: "contactDetails",
     name: "contactDetails",
-    rows: [
-      createSummaryListRow( "govuk-summary-list__row--no-border border-top",  pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details"),    
-      createSummaryListRow( "govuk-summary-list__row--no-border",  pageContent.rowTextBusinessName, contactDetailsData.businessName, "", ""),   
-      createSummaryListRow( "",  pageContent.rowTextEmailAddress, contactDetailsData.email, "", ""),    
-      createSummaryListRow( "",  pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address"),
-    ]
+    rows: summaryListContactDetailsRows
   }
-  return summaryListContactDetails
 }
 
 function getPermitDetails(pageContent, permitDetailsData, hrefPrefix) {
-  const summaryListPermitDetails = {
+  const summaryListPermitDetailsRows = []
+  summaryListPermitDetailsRows.push(createSummaryListRow( "govuk-summary-list__row--no-border border-top",  pageContent.rowTextCountry, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country ,  hrefPrefix + "/permitDetails", "permit details"))
+  summaryListPermitDetailsRows.push(createSummaryListRow( "govuk-summary-list__row--no-border",  pageContent.rowTextPermitNumber, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber, "", ""))
+  summaryListPermitDetailsRows.push(createSummaryListRow( "", pageContent.rowTextPermitIssueDate, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate), "", ""))
+
+  return {
     id: "permitDetails",
     name: "permitDetails",
     classes: "govuk-!-margin-bottom-9",
-    rows: [
-      createSummaryListRow( "govuk-summary-list__row--no-border border-top",  pageContent.rowTextCountry, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country ,  hrefPrefix + "/permitDetails", "permit details"),  
-      createSummaryListRow( "govuk-summary-list__row--no-border",  pageContent.rowTextPermitNumber, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber, "", ""),  
-      createSummaryListRow( "", pageContent.rowTextPermitIssueDate, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate), "", ""),  
-    ]
+    rows: summaryListPermitDetailsRows
   }
-  return summaryListPermitDetails
  }
 
 
