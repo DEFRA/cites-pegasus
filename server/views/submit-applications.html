@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
@@ -108,6 +109,8 @@
               isPageHeading: true
             }
           }) %}
+
+          <p>{{pageBody}}</p>
           {{ govukRadios(inputAreYouSure) }}
 
           {{ govukButton({

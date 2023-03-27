@@ -12,6 +12,7 @@ const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
 const nextPathAreYouSure = `${urlPrefix}/are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
+const confirmTypes = ['remove', 'permit-type' ]
 
 function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
@@ -46,7 +47,7 @@ function createSubmitApplicationModel(errors, data) {
       unitsOfMeasurementText = application.species?.unitOfMeasurement
     }
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
-    const formActionRemove = `${currentPath}/remove/are-you-sure/${application.applicationIndex}`
+    const formActionRemove = `${currentPath}/are-you-sure/remove/${application.applicationIndex}`
     return {speciesName: application.species.speciesName, speciesNameUrl, quantity: application.species.quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
   })
 
@@ -59,9 +60,9 @@ function createSubmitApplicationModel(errors, data) {
     tableHeadUnitOfMeasurement: pageContent.tableHeadUnitOfMeasurement,
     applicationsData : applicationsTableData,
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
-    addAnotherSpeciesUrl: `${urlPrefix}/species-name`,
+    addAnotherSpeciesUrl: `${urlPrefix}/species-name/${data.applications.length}`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
-    applyForADifferentTypeOfPermitUrl: `${urlPrefix}/permit-type`, 
+    applyForADifferentTypeOfPermitUrl: `${currentPath}/are-you-sure/permit-type`,
     isSubmitApplications: true,
     areYouSure: false
   }
@@ -70,9 +71,25 @@ function createSubmitApplicationModel(errors, data) {
 
 function createAreYouSureModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.submitApplications.areYouSureRemove
-  const defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
-
+  
+  let pageHeader = null
+  let defaultTitle = null
+  let formActionPage = null
+  let pageBody = null
+  if(data.confirmType === 'remove') {
+    pageContent = textContent.submitApplications.areYouSureRemove,
+    defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
+    pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`,
+    formActionPage= `${currentPath}/are-you-sure/{confirmType}/{applicationIndex}`
+  } else {
+    pageContent = textContent.submitApplications.areYouSurePermitType,
+    defaultTitle = pageContent.defaultTitle
+    pageHeader =pageContent.pageHeader
+    pageBody= `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}`
+    formActionPage= `${currentPath}/are-you-sure/permit-type`
+  }
+  
+ 
   let errorList = null
   if (errors) {
     errorList = []
@@ -94,12 +111,13 @@ function createAreYouSureModel(errors, data) {
 
   const model = {
     backLink: `${currentPath}`,
-    formActionPage: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
+    formActionPage: formActionPage,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : defaultTitle,
-    pageHeader: `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`,
+    pageHeader: pageHeader,
+    pageBody: pageBody,
     areYouSure: true,
     isSubmitApplications:false,
 
@@ -146,6 +164,18 @@ module.exports = [
         applications : applications
       }
       return h.view(pageId, createSubmitApplicationModel(null, pageData))
+    }
+  },
+  {
+    method: "GET",
+    path: `${currentPath}/are-you-sure/permit-type`,
+    handler: async (request, h) => {
+      const submission = getSubmission(request)
+      const pageData = {
+        changeType: 'permit-type',
+        permitType: submission.permitType
+      }
+      return h.view(pageId, createAreYouSureModel(null, pageData))
     }
   },
   {
@@ -196,10 +226,11 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
+    path: `${currentPath}/are-you-sure/{confirmType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          confirmType: Joi.string().valid(...confirmTypes),
           applicationIndex: Joi.number().required(),
         }),
         failAction: (request, h, error) => {
@@ -208,7 +239,7 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const { applicationIndex } = request.params
+      const {confirmType, applicationIndex } = request.params
       const submission = getSubmission(request)
      
       try {
@@ -219,12 +250,55 @@ module.exports = [
       }
 
       const pageData = {
+        confirmType: confirmType,
+        applicationIndex: applicationIndex,
         speciesName: submission.applications[applicationIndex].species.speciesName,
         areYouSure: submission.areYouSure,
       }
       return h.view(pageId, createAreYouSureModel(null, pageData))
     }
   },
+  {
+    method: "POST",
+    path: `${currentPath}/are-you-sure/permit-type`,
+    options: {
+      validate: {
+        options: { abortEarly: false },
+        payload: Joi.object({
+          areYouSure: Joi.boolean().required()
+        }),
+
+        failAction: (request, h, err) => {
+          const submission = getSubmission(request)
+       
+          let areYouSure = null
+          switch (request.payload.areYouSure) {
+            case "true":
+              areYouSure = true
+              break
+            case "false":
+              areYouSure = false
+              break
+          }
+
+          const pageData = {
+            confirmType: 'permit-type',
+            permitType: submission.permitType,
+            areYouSure: areYouSure,
+           }
+
+          return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
+        }
+      },
+      handler: async (request, h) => {     
+        if (request.payload.areYouSure) {
+          return h.redirect(`${urlPrefix}/permit-type`)
+        } else {
+          return h.redirect(`${currentPath}`)
+        }
+      }
+    }
+  }
   // {
   //   method: "POST",
   //   path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,

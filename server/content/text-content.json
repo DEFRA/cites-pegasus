@@ -1153,6 +1153,15 @@
         "error.areYouSure.part1.any.required": "Select yes if you want to remove",
         "error.areYouSure.part2.any.required": "from your application"
       }
+    },
+    "areYouSurePermitType": {
+      "defaultTitle": "Are you sure that you want to change the permit type?",
+      "pageHeader": "Are you sure that you want to change the permit type?",
+      "pageBody1": "If you change the permit type, we will cancel all of your",
+      "pageBody2": " applications and you will need to start again.",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to change the permit type"
+      }
     }
   }
 }

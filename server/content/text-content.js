@@ -888,7 +888,8 @@ const schema = Joi.object().keys({
       "error.areYouSure.part1.any.required": Joi.string().required(),
       "error.areYouSure.part2.any.required": Joi.string().required(),
     }).required()
-  }).required()
+  }).required(),
+  areYouSurePermitType: areYouSureSchema,
   }).required(),
 })
 
