@@ -150,37 +150,6 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
-    options: {
-      validate: {
-        params: Joi.object({
-          applicationIndex: Joi.number().required(),
-        }),
-        failAction: (request, h, error) => {
-          console.log(error)
-        }
-      }
-    },
-    handler: async (request, h) => {
-      const { applicationIndex } = request.params
-      const submission = getSubmission(request)
-     
-      try {
-        validateSubmission(submission, pageId)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
-      }
-
-      const pageData = {
-        speciesName: submission.applications[applicationIndex].species.speciesName,
-        areYouSure: submission.areYouSure,
-      }
-      return h.view(pageId, createAreYouSureModel(null, pageData))
-    }
-  },
-  {
-    method: "POST",
     path: `${currentPath}/copy/{applicationIndex}`,
     options: {
       validate: {
@@ -224,6 +193,68 @@ module.exports = [
         return h.redirect(nextPathUploadSupportingDocuments)
       }
     }
-  }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+        }),
+        failAction: (request, h, error) => {
+          console.log(error)
+        }
+      }
+    },
+    handler: async (request, h) => {
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+     
+      try {
+        validateSubmission(submission, pageId)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
+      const pageData = {
+        speciesName: submission.applications[applicationIndex].species.speciesName,
+        areYouSure: submission.areYouSure,
+      }
+      return h.view(pageId, createAreYouSureModel(null, pageData))
+    }
+  },
+  // {
+  //   method: "POST",
+  //   path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
+  //   options: {
+  //     validate: {
+  //       params: Joi.object({
+  //         applicationIndex: Joi.number().required(),
+  //       }),
+  //       failAction: (request, h, error) => {
+  //         console.log(error)
+  //       }
+  //     }
+  //   },
+  //   handler: async (request, h) => {
+  //     const { applicationIndex } = request.params
+  //     const submission = getSubmission(request)
+     
+  //     try {
+  //       validateSubmission(submission, pageId)
+  //     } catch (err) {
+  //       console.log(err)
+  //       return h.redirect(`${invalidSubmissionPath}/`)
+  //     }
+
+  //     const pageData = {
+  //       speciesName: submission.applications[applicationIndex].species.speciesName,
+  //       areYouSure: submission.areYouSure,
+  //     }
+  //     return h.view(pageId, createAreYouSureModel(null, pageData))
+  //   }
+  // },
 ]
 
