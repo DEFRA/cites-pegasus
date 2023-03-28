@@ -847,6 +847,9 @@ const schema = Joi.object().keys({
     rowTextSpecimenTypePlantLiving: Joi.string().required(),
     rowTextSpecimenTypePlantProduct: Joi.string().required(),
     rowTextSpecimenTypePlantWorked: Joi.string().required(),
+    rowTextSexMale: Joi.string().required(),
+    rowTextSexFemale: Joi.string().required(),
+    rowTextSexUndetermined: Joi.string().required(),
   }).required(),
   areYouSure: Joi.object({
     permitType: areYouSureSchema,

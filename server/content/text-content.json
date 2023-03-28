@@ -1046,7 +1046,10 @@
     "rowTextSpecimenTypeAnimalCoral": "Coral",
     "rowTextSpecimenTypePlantLiving": "A living plant",
     "rowTextSpecimenTypePlantProduct": "A plant product",
-    "rowTextSpecimenTypePlantWorked": "A worked item or finished product"
+    "rowTextSpecimenTypePlantWorked": "A worked item or finished product",
+    "rowTextSexMale": "Male",
+    "rowTextSexFemale": "Female",
+    "rowTextSexUndetermined": "Not known"
   },
   "areYouSure": {
     "permitType": {
