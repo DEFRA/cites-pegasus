@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { checkChangeRouteExit } = require("../lib/change-route")
+const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -193,7 +193,25 @@ module.exports = [
 
         const isWorkedItem = request.payload.specimenType === 'animalWorked' || request.payload.specimenType === 'plantWorked'
 
+        const isChange = species.specimenType && species.specimenType !== request.payload.specimenType
+
         species.specimenType = request.payload.specimenType
+
+        if(isChange){
+          species.quantity = null
+          species.unitOfMeasurement = null
+          species.createdDate = null
+          species.isTradeTermCode = null
+          species.tradeTermCode = null
+          species.uniqueIdentificationMarkType = null
+          species.uniqueIdentificationMark = null
+          species.numberOfUnmarkedSpecimens = null
+          species.specimenDescriptionLivingAnimal = null
+          species.specimenDescriptionGeneric = null
+          species.parentDetails = null
+          species.sex = null
+          species.dateOfBirth = null
+        }
 
         if(!isWorkedItem){
           species.createdDate = null
@@ -205,6 +223,10 @@ module.exports = [
         catch (err) {
           console.log(err);
           return h.redirect(`${invalidSubmissionPath}/`)
+        }
+
+        if (isChange) {
+          setDataRemoved(request)
         }
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
