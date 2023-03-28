@@ -45,6 +45,22 @@ function validateSubmission(submission, path) {
     }
 }
 
+function cloneApplication(request, applicationIndex) {
+    const submission = getSubmission(request)
+    const applications= submission.applications
+    const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
+    applications.push(clonedApplication)
+    setYarValue(request, 'submission', submission)
+}
+
+function deleteApplication(request, applicationIndex) {
+    const submission = getSubmission(request)
+    const applications = submission.applications
+    applications.splice(applicationIndex, 1);
+    submission.applications = applications
+    setYarValue(request, 'submission', submission)
+}
+
 function getAppFlow(submission) {
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
@@ -226,6 +242,8 @@ function getAppFlow(submission) {
                             appFlow.push(`comments/${applicationIndex}`)
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                             appFlow.push(`are-you-sure/${applicationIndex}`)
+                            appFlow.push(`submit-applications`)
+                            appFlow.push(`application-summary/copy/${applicationIndex}`)
                         } else {
                             return appFlow
                         }
@@ -244,5 +262,7 @@ module.exports = {
     mergeSubmission,
     getSubmission,
     clearSubmission,
-    validateSubmission
+    validateSubmission,
+    cloneApplication,
+    deleteApplication
 }

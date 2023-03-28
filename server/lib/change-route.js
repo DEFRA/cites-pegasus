@@ -63,7 +63,8 @@ function setChangeRoute(request, changeType, applicationIndex) {
             break
         case "speciesName"://Change flow
             startUrl = `${urlPrefix}/species-name/${applicationIndex}`
-            endUrls.push('to be defined')
+            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             confirm = true
             break
         case "quantity"://DONE

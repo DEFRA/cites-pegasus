@@ -6,7 +6,7 @@ const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/comments`
-const nextPath = `${urlPrefix}/your-applications-pre-submission` //TO DO
+const nextPath = `${urlPrefix}/submit-applications` //TO DO
 const invalidSubmissionPath = urlPrefix
 const summaryTypes = ['check', 'view', 'copy']
 
