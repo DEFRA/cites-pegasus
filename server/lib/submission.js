@@ -39,7 +39,7 @@ function clearSubmission(request) {
 
 function validateSubmission(submission, path) {
     const appFlow = getAppFlow(submission)
-    //console.table(appFlow)
+    console.table(appFlow)
     if (!appFlow.includes(path)) {
         throw `Invalid navigation to ${path}`
     }
@@ -51,13 +51,13 @@ function cloneApplication(request, applicationIndex) {
     const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
     applications.push(clonedApplication)
     setYarValue(request, 'submission', submission)
+    return applications.length - 1
 }
 
 function deleteApplication(request, applicationIndex) {
     const submission = getSubmission(request)
     const applications = submission.applications
-    applications.splice(applicationIndex, 1);
-    submission.applications = applications
+    applications.splice(applicationIndex, 1)
     setYarValue(request, 'submission', submission)
 }
 
@@ -80,10 +80,16 @@ function getAppFlow(submission) {
                     appFlow.push('enter-address/agent')
                     if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/agent')
+                    } else {
+                        return appFlow
                     }
                     if (submission.agent.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/agent')
+                    } else {
+                        return appFlow
                     }
+                } else {
+                    return appFlow
                 }
             }
 
@@ -99,6 +105,8 @@ function getAppFlow(submission) {
                         appFlow.push('confirm-address/applicant')
                     }
                 }
+            } else {
+                return appFlow
             }
 
             if (submission.applicant?.address) {
@@ -111,10 +119,14 @@ function getAppFlow(submission) {
                 if (submission.delivery?.candidateAddressData?.selectedAddress) {
                     appFlow.push('confirm-address/delivery')
                 }
+            } else {
+                return appFlow
             }
 
-            if(submission.delivery?.address) {
+            if (submission.delivery?.address) {
                 appFlow.push('species-name/0')
+            } else {
+                return appFlow
             }
 
             if (submission.applications?.length > 0) {
@@ -122,160 +134,121 @@ function getAppFlow(submission) {
                     if (applicationIndex > 0) {
                         appFlow.push(`species-name/${applicationIndex}`)
                     }
+
                     if (application.species?.speciesName) {
                         appFlow.push(`source-code/${applicationIndex}`)
-                        const species = application.species
+                    } else {
+                        return appFlow
+                    }
+                    
+                    const species = application.species
+                    if (species.sourceCode) {
+                        if (submission.permitType === "article10") {
+                            appFlow.push(`use-certificate-for/${applicationIndex}`)
+                        } else {
+                            appFlow.push(`purpose-code/${applicationIndex}`)
+                        }
+                    } else {
+                        return appFlow
+                    }
 
-                        if (species.sourceCode) {
-                            if (submission.permitType === "article10") {
-                                appFlow.push(`use-certificate-for/${applicationIndex}`)
+                    if (species.purposeCode || species.useCertificateFor) {
+                        appFlow.push(`specimen-type/${applicationIndex}`)
+                    } else {
+                        return appFlow
+                    }
+
+                    if (species.specimenType) {
+                        if (species.specimenType === 'animalLiving') {//Living animal flow
+                            appFlow.push(`unique-identification-mark/${applicationIndex}`)
+
+                            if (species.uniqueIdentificationMarkType) {
+                                if (species.uniqueIdentificationMarkType === 'unmarked') {
+                                    appFlow.push(`unmarked-specimens/${applicationIndex}`)
+                                } else {
+                                    appFlow.push(`describe-living-animal/${applicationIndex}`)
+                                }
                             } else {
-                                appFlow.push(`purpose-code/${applicationIndex}`)
+                                return appFlow
                             }
-                        }
 
-                        if (species.purposeCode || species.useCertificateFor) {
-                            appFlow.push(`specimen-type/${applicationIndex}`)
-                        }
+                            if (species.numberOfUnmarkedSpecimens) {
+                                appFlow.push(`describe-specimen/${applicationIndex}`)
+                            } else {
+                                return appFlow
+                            }
 
-                        if (species.specimenType) {
-                            if (species.specimenType === 'animalLiving') {//Living animal flow
-                                appFlow.push(`unique-identification-mark/${applicationIndex}`)
+                        } else {//Not living animal flow
+                            appFlow.push(`quantity/${applicationIndex}`)
 
-                                if (species.uniqueIdentificationMarkType) {
-                                    if (species.uniqueIdentificationMarkType === 'unmarked') {
-                                        appFlow.push(`unmarked-specimens/${applicationIndex}`)
-                                    } else {
-                                        appFlow.push(`describe-living-animal/${applicationIndex}`)
-                                    }
-                                }
-
-                                if (species.numberOfUnmarkedSpecimens) {
-                                    appFlow.push(`describe-specimen/${applicationIndex}`)
-                                }
-
-                            } else {//Not living animal flow
-                                appFlow.push(`quantity/${applicationIndex}`)
-
-                                if (species.quantity) {
-                                    if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
-                                        appFlow.push(`created-date/${applicationIndex}`)
-                                    } else {
+                            if (species.quantity) {
+                                if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+                                    appFlow.push(`created-date/${applicationIndex}`)
+                                    if (species.createdDate) {
                                         appFlow.push(`trade-term-code/${applicationIndex}`)
+                                    } else {
+                                        return appFlow
                                     }
-                                }
-
-                                if (species.createdDate) {
+                                } else {
                                     appFlow.push(`trade-term-code/${applicationIndex}`)
                                 }
+                            } else {
+                                return appFlow
+                            }
 
-                                if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
-                                    appFlow.push(`unique-identification-mark/${applicationIndex}`)
-                                }
 
-                                if (species.uniqueIdentificationMarkType) {
-                                    appFlow.push(`describe-specimen/${applicationIndex}`)
-                                }
+                            if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
+                                appFlow.push(`unique-identification-mark/${applicationIndex}`)
+                            } else {
+                                return appFlow
+                            }
+
+                            if (species.uniqueIdentificationMarkType) {
+                                appFlow.push(`describe-specimen/${applicationIndex}`)
+                            } else {
+                                return appFlow
                             }
                         }
+                    } else {
+                        return appFlow
+                    }
 
-                        if (species.specimenDescriptionGeneric || species.sex) {
-                            if (submission.permitType === 'article10') { //Article 10 flow
-                                appFlow.push(`acquired-date/${applicationIndex}`)
+                    if (species.specimenDescriptionGeneric || species.sex) {
+                        if (submission.permitType === 'article10') { //Article 10 flow
+                            appFlow.push(`acquired-date/${applicationIndex}`)
 
-                                if (species.acquiredDate) {
-                                    appFlow.push(`already-have-a10/${applicationIndex}`)
-                                }
-                                if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
-                                    appFlow.push(`ever-imported-exported/${applicationIndex}`)
-                                }
-
-                            } else { //Not article 10 flow
-                                appFlow.push(`importer-exporter/${applicationIndex}`)
+                            if (species.acquiredDate) {
+                                appFlow.push(`already-have-a10/${applicationIndex}`)
+                            } else {
+                                return appFlow
                             }
+                            if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
+                                appFlow.push(`ever-imported-exported/${applicationIndex}`)
+                            } else {
+                                return appFlow
+                            }
+
+                        } else { //Not article 10 flow
+                            appFlow.push(`importer-exporter/${applicationIndex}`)
                         }
 
                         if (application.importerExporterDetails || species.isEverImportedExported) {
                             appFlow.push(`permit-details/${applicationIndex}`)
+                        } else {
+                            return appFlow
                         }
 
-                        if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
+                        if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
                             appFlow.push(`comments/${applicationIndex}`)
-                        }
-
-                        if (application.comments || (application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails ) {
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                             appFlow.push(`are-you-sure/${applicationIndex}`)
                             appFlow.push(`submit-applications`)
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
+                        } else {
+                            return appFlow
                         }
-                        
-
-
-                        // if (species.specimenType === 'animalLiving') {
-                        //     if (request.payload.uniqueIdentificationMarkType === 'unmarked') {
-                        //       return h.redirect(`${nextPathUnmarkedSpecimens}/${applicationIndex}`)
-                        //     } else {
-                        //       return h.redirect(`${nextPathDescLivingAnimal}/${applicationIndex}`)
-                        //     }
-                        //   } else {
-                        //     return h.redirect(`${nextPathDescGeneric}/${applicationIndex}`)
-                        //   }
-
-                        // appFlow.push(`purpose-code/${applicationIndex}`)
-                        // if (species.purposeCode) {
-                        //     if (submission.permitType === "article10") {
-                        //         appFlow.push(`use-certificate-for/${applicationIndex}`)
-                        //         if (species.useCertificateFor) {
-                        //             appFlow.push(`specimen-type/${applicationIndex}`)
-                        //         }
-                        //     } else {
-                        //         appFlow.push(`specimen-type/${applicationIndex}`)
-                        //     }
-                        // }
-                        // if (species.specimenType) {
-                        //     if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
-                        //         appFlow.push(`created-date/${applicationIndex}`)
-                        //     } else {
-                        //         appFlow.push(`trade-term-code/${applicationIndex}`)
-                        //     }
-
-                        //     if (species.createdDate) {
-                        //         appFlow.push(`trade-term-code/${applicationIndex}`)
-                        //     }
-                        // }
-
-                        // if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
-                        //     appFlow.push(`unique-identification-mark/${applicationIndex}`)
-                        // }
-
-                        // if (species.uniqueIdentificationMarkType) {
-                        //     if (species.specimenType === "animalLiving") {
-                        //         if(species.uniqueIdentificationMarkType === 'unmarked') {
-                        //             appFlow.push(`unmarked-specimens/${applicationIndex}`)
-                        //         } else {
-                        //             appFlow.push(`describe-living-animal/${applicationIndex}`)
-                        //         }
-                        //     } else {
-                        //         appFlow.push(`describe-specimen/${applicationIndex}`)
-                        //     }
-                        // }
-
-                        // if (species.specimenDescriptionGeneric || species.sex) {
-                        //     if (submission.permitType === "article10") {
-                        //         appFlow.push(`acquired-date/${applicationIndex}`)
-                        //     } else {
-                        //         appFlow.push(`importer-exporter/${applicationIndex}`)
-                        //     }
-                        // }
-
-                        // if (species.acquiredDate) {
-                        //     appFlow.push(`already-have-a10/${applicationIndex}`)
-                        // }
-                        // if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
-                        //     appFlow.push(`ever-imported-exported/${applicationIndex}`)
-                        // }
-                        //}
+                    } else {
+                        return appFlow
                     }
                 })
             }
@@ -289,6 +262,9 @@ module.exports = {
     mergeSubmission,
     getSubmission,
     clearSubmission,
+    validateSubmission,
+    cloneApplication,
+    deleteApplication,
     validateSubmission,
     cloneApplication,
     deleteApplication
