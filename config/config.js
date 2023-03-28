@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi')
 const urlPrefix = ''
-const envs = ['dev', 'test', 'snd', 'pre', 'prod']
+const envs = ['local', 'dev', 'test', 'snd', 'pre', 'prod']
 
 require('dotenv').config()
 
@@ -11,15 +11,18 @@ const schema = Joi.object().keys({
   urlPrefix: Joi.string().default(urlPrefix),
   
   keyVaultUri: Joi.string().required(),
+  cidmCallbackUrl: Joi.string().required(),
+  cidmApiDiscoveryUrl: Joi.string().required(),
+  postLogoutRedirectUrl: Joi.string().required(),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
-    encoding: Joi.string().valid('base64json').default('base64json'),
+    //encoding: Joi.string().valid('base64json').default('base64json'),
     isSecure: Joi.bool().default(true),
-    isHttpOnly: Joi.bool().default(true),
-    clearInvalid: Joi.bool().default(false),
-    strictHeader: Joi.bool().default(true)
+    //isHttpOnly: Joi.bool().default(true),
+    //clearInvalid: Joi.bool().default(false),
+    //strictHeader: Joi.bool().default(true)
   }),
   dynamicsAPI: Joi.object({
     knownAuthority: Joi.string().required(),
@@ -32,18 +35,21 @@ const schema = Joi.object().keys({
 // Build config
 const config = {
   port: process.env.PORT || 8080,
-  env: process.env.NODE_ENV || 'dev',
+  env: process.env.NODE_ENV || 'local',
   urlPrefix: process.env.URL_PREFIX,
   keyVaultUri: process.env.KEY_VAULT_URI,
+  cidmCallbackUrl: process.env.CIDM_CALLBACK_URL,
+  cidmApiDiscoveryUrl: process.env.CIDM_API_DISCOVERY_URL,
+  postLogoutRedirectUrl: process.env.POST_LOGOUT_REDIRECT_URL,
   addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
-    encoding: 'base64json',
-    isSecure: process.env.NODE_ENV === 'production',
-    isHttpOnly: true,
-    clearInvalid: false,
-    strictHeader: true
+    //encoding: 'base64json',
+    isSecure: true, //process.env.NODE_ENV === 'production',
+    //isHttpOnly: true,
+    //clearInvalid: false,
+    //strictHeader: true
   },
   dynamicsAPI: {
     knownAuthority: process.env.KNOWN_AUTHORITY,

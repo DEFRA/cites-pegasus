@@ -1077,6 +1077,14 @@
         "error.areYouSure.any.required": "Select yes if you want to change your contact details"
       }
     },
+    "yourAddress": {
+      "defaultTitle": "Are you sure that you want to change your address?",
+      "pageHeader": "Are you sure that you want to change your address?",
+      "pageBody1": "Any changes you make will apply to all applications.",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to change your address"
+      }
+    },
     "deliveryAddress": {
       "defaultTitle": "Are you sure that you want to change the delivery address?",
       "pageHeader": "Are you sure that you want to change the delivery address?",
@@ -1115,6 +1123,38 @@
       "pageBody1": "Any changes you make will apply to all applications.",
       "errorMessages": {
         "error.areYouSure.any.required": "Select yes if you want to change the applicant’s contact details"
+      }
+    },
+    "importerAddress": {
+      "defaultTitle": "Are you sure that you want to change the importer’s address?",
+      "pageHeader": "Are you sure that you want to change the importer’s address?",
+      "pageBody1": "Any changes you make will apply to all applications.",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to change the importer’s address"
+      }
+    },
+    "exporterAddress": {
+      "defaultTitle": "Are you sure that you want to change the exporter’s address?",
+      "pageHeader": "Are you sure that you want to change the exporter’s address?",
+      "pageBody1": "Any changes you make will apply to all applications.",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to change the exporter’s address"
+      }
+    },
+    "reexporterAddress": {
+      "defaultTitle": "Are you sure that you want to change the re-exporter’s address?",
+      "pageHeader": "Are you sure that you want to change the re-exporter’s address?",
+      "pageBody1": "Any changes you make will apply to all applications.",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to change the re-exporter’s address"
+      }
+    },
+    "article10Address": {
+      "defaultTitle": "Are you sure that you want to change the applicant’s address?",
+      "pageHeader": "Are you sure that you want to change the applicant’s address?",
+      "pageBody1": "Any changes you make will apply to all applications.",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to change the applicant’s address"
       }
     }
   },

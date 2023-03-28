@@ -2,13 +2,14 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "comments"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
-const nextPath = `${urlPrefix}/application-summary/`
+const nextPath = `${urlPrefix}/application-summary/check`
 const invalidSubmissionPath = urlPrefix
 
 
@@ -44,8 +45,11 @@ function createModel(errors, data) {
     previousPath = previousPathPermitDetails
   }
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -96,6 +100,7 @@ module.exports = [
       }
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         permitDetails: submission.applications[applicationIndex]?.permitDetails,
@@ -124,6 +129,7 @@ module.exports = [
           const submission = getSubmission(request)
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             permitDetails: submission.applications[applicationIndex].permitDetails,
@@ -146,9 +152,12 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        const pathSuffix = 'check'
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
 
-        return h.redirect(`${nextPath}${pathSuffix}/${applicationIndex}`)
+        return h.redirect(`${nextPath}/${applicationIndex}`)
 
       }
     }

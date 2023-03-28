@@ -4,6 +4,7 @@ const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "quantity"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
@@ -43,8 +44,11 @@ function createModel(errors, data) {
     })
   }
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     pageHeader: pageContent.pageHeader,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
@@ -122,6 +126,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,
         quantity: species.quantity,
@@ -150,6 +155,7 @@ module.exports = [
           const species = submission.applications[applicationIndex].species
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species?.speciesName,
             quantity: request.payload.quantity,
@@ -178,6 +184,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         if (
           species.specimenType === "animalWorked" ||
           species.specimenType === "plantWorked"

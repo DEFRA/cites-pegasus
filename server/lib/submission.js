@@ -203,6 +203,7 @@ function getAppFlow(submission) {
                         }
                         
 
+
                         // if (species.specimenType === 'animalLiving') {
                         //     if (request.payload.uniqueIdentificationMarkType === 'unmarked') {
                         //       return h.redirect(`${nextPathUnmarkedSpecimens}/${applicationIndex}`)

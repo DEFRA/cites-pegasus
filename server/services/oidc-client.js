@@ -1,4 +1,6 @@
 const openid = require('openid-client');
+const { readSecret } = require('../lib/key-vault')
+const { cidmApiDiscoveryUrl, cidmCallbackUrl } = require('../../config/config');
 
 async function getOpenIdClient() {
     // if (oidcClient) {
@@ -6,16 +8,22 @@ async function getOpenIdClient() {
     // }
   
     openid.custom.setHttpOptionsDefaults({
-      timeout: 10000,
+      timeout: 10000
     });
-    const issuer = await openid.Issuer.discover('https://condev5.azure.defra.cloud/idphub/b2c/b2c_1a_signupsignin/.well-known/openid-configuration');
+
+    const clientId = (await readSecret('CIDM-API-CLIENT-ID')).value
+    const clientSecret = (await readSecret('CIDM-API-CLIENT-SECRET')).value
+    
+    const issuer = await openid.Issuer.discover(cidmApiDiscoveryUrl);
     const clientCredentials = {
-      client_id: 'f566829d-3826-4ec7-9af9-e1229c5f6c25',
-      client_secret: 'bVQ8Q~8tDWwLk4sP6FPWmNnXQn4C6NTgjgH3fda7',
-      redirect_uris: ['https://localhost:3000/callback']
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uris: [cidmCallbackUrl]
     };
     
-    return new issuer.Client(clientCredentials);
+    const client = new issuer.Client(clientCredentials);
+    client[openid.custom.clock_tolerance] = 10
+    return client;
 }
 
 module.exports = { getOpenIdClient }

@@ -2,6 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -32,8 +33,11 @@ function createModel(errors, data) {
     })
   }
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -114,6 +118,7 @@ module.exports = [
       }
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         useCertificateFor: submission.applications[applicationIndex].species.useCertificateFor
       }
@@ -136,6 +141,7 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: request.params.applicationIndex,
             ...request.payload
           }
@@ -160,6 +166,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         return h.redirect(`${nextPath}/${applicationIndex}`
         )
       }

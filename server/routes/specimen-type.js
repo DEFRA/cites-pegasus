@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -80,8 +80,11 @@ function createModel(errors, data) {
     ]
   }
 
+  const defaultBacklink = data.permitType === 'article10' ? `${urlPrefix}/use-certificate-for/${data.applicationIndex}` : `${urlPrefix}/purpose-code/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: data.permitType === 'article10' ? `${urlPrefix}/use-certificate-for/${data.applicationIndex}` : `${urlPrefix}/purpose-code/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -111,6 +114,7 @@ function failAction(request, h, err) {
   const species = submission.applications[request.params.applicationIndex].species
 
   const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
     permitType: submission.permitType,
     applicationIndex: request.params.applicationIndex,
     speciesName: species.speciesName,
@@ -145,6 +149,7 @@ module.exports = [
 
       const species = submission.applications[applicationIndex].species
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         permitType: submission.permitType,
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
@@ -202,6 +207,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         if(species.specimenType === 'animalLiving'){
           return h.redirect(`${nextPathUniqueId}/${request.params.applicationIndex}`)
         }

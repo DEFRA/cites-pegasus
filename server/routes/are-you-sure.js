@@ -11,29 +11,59 @@ const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
   const commonContent = textContent.common
+  const changeType = data.changeRouteData.changeType
+  const areYouSureText = textContent.areYouSure 
  
   let pageContent = null
-  if (data.changeRouteData.changeType === "permitType" ) {
-    pageContent = textContent.areYouSure.permitType
-  } else if (data.changeRouteData.changeType === "speciesName" ) {
-    pageContent = textContent.areYouSure.scientificName
-  } else if (data.changeRouteData.changeType === "deliveryAddress" ) {
-    pageContent = textContent.areYouSure.deliveryAddress
-  } else if (data.changeRouteData.changeType === "agentContactDetails" || data.changeRouteData.changeType === "agentAddress") {
-    pageContent = textContent.areYouSure.yourContactDetails
-  } else if (!data.isAgent && (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress" )) {
-   pageContent = textContent.areYouSure.yourContactDetails
-  } else if ( data.isAgent && (data.changeRouteData.changeType === "applicantContactDetails" || data.changeRouteData.changeType === "applicantAddress")) {
-    if (data.permitType === "import") {
-        pageContent = textContent.areYouSure.importerContactDetails
-    } else if(data.permitType === "export") {
-        pageContent = textContent.areYouSure.exporterContactDetails
-    } else if(data.permitType === "reexport") {
-        pageContent = textContent.areYouSure.reexporterContactDetails
-    } else if(data.permitType === "article10") {
-        pageContent = textContent.areYouSure.article10ContactDetails
-    } 
-}
+  if (changeType === "permitType" ) {
+    pageContent = areYouSureText.permitType
+  } else if (changeType === "speciesName" ) {
+    pageContent = areYouSureText.scientificName
+  } else if (changeType === "deliveryAddress" ) {
+    pageContent = areYouSureText.deliveryAddress
+  } else if (changeType === "agentContactDetails") {
+    pageContent = areYouSureText.yourContactDetails
+  } else if (changeType === "agentAddress") {
+    pageContent = areYouSureText.yourAddress
+  } else if (!data.isAgent) {
+    if(changeType === "applicantContactDetails") {
+      pageContent = areYouSureText.yourContactDetails
+    } else if (changeType === "applicantAddress"){
+      pageContent = areYouSureText.yourAddress
+    }
+  } else if (data.isAgent) {
+    if (changeType === "applicantContactDetails") {
+      switch (data.permitType) {
+        case "import":
+          pageContent = areYouSureText.importerContactDetails
+          break
+        case "export":
+          pageContent = areYouSureText.exporterContactDetails
+          break
+        case "reexport":
+          pageContent = areYouSureText.reexporterContactDetails
+          break
+        case "article10":
+          pageContent = areYouSureText.article10ContactDetails
+          break
+      }
+    } else if (changeType === "applicantAddress") {
+      switch (data.permitType) {
+        case "import":
+          pageContent = areYouSureText.importerAddress
+          break
+        case "export":
+          pageContent = areYouSureText.exporterAddress
+          break
+        case "reexport":
+          pageContent = areYouSureText.reexporterAddress
+          break
+        case "article10":
+          pageContent = areYouSureText.article10Address
+          break
+      }
+    }
+  } 
 
   let errorList = null
   if (errors) {
@@ -102,8 +132,6 @@ module.exports = [
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
       const changeRouteData = getChangeRouteData(request)
-
-      submission.showConfirmationPage = changeRouteData.showConfirmationPage
 
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)

@@ -3,6 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "already-have-a10"
@@ -54,8 +55,11 @@ function createModel(errors, data) {
     }
   })
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -120,6 +124,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
       
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,
         isA10CertificateNumberKnown: species.isA10CertificateNumberKnown,
@@ -161,6 +166,7 @@ module.exports = [
           }
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species?.speciesName,
             isA10CertificateNumberKnown: isA10CertificateNumberKnown,
@@ -189,6 +195,11 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+        
         return h.redirect(
           `${nextPath}/${applicationIndex}`
         )

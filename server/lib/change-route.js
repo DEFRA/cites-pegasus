@@ -1,82 +1,97 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
-const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName']
+const changeTypes = ['permitType', 'applicantContactDetails', 'agentContactDetails', 'applicantAddress', 'agentAddress', 'deliveryAddress', 'sourceCode', 'speciesName', 'quantity', 'purposeCode', 'tradeTermCode', 'describeLivingAnimal', 'useCertificateFor', 'acquiredDate', 'a10CertificateNumber', 'unmarkedSpecimens', 'createdDate', 'specimenType', 'descriptionGeneric', 'importerExporterDetails', 'permitDetails', 'comments']
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
-
-function clearChangeRoute(request) {
-    setYarValue(request, "changeRouteData", null)
-}
 
 function setChangeRoute(request, changeType, applicationIndex) {
     let startUrl = ""
-    let endUrl = ""
+    const endUrls = []
     let confirm = false
 
     switch (changeType) {
-        case "permitType":
+        case "permitType"://Change flow
             startUrl = `${urlPrefix}/permit-type`
-            endUrl = null
+            endUrls.push('')//You must go all the way through the flow                        
             confirm = true
             break
         case "agentContactDetails"://DONE
             startUrl = `${urlPrefix}/contact-details/agent`
             confirm = true
             break
-        case "agentAddress"://DONE
+        case "agentAddress"://DONE  //Change flow
             startUrl = `${urlPrefix}/postcode/agent`
-            endUrl = `${urlPrefix}/confirm-address/agent`
+            endUrls.push(`${urlPrefix}/confirm-address/agent`)
             confirm = true
             break
         case "applicantContactDetails"://DONE
             startUrl = `${urlPrefix}/contact-details/applicant`
             confirm = true
             break
-        case "applicantAddress"://DONE
+        case "applicantAddress"://DONE      //Change flow
             startUrl = `${urlPrefix}/postcode/applicant`
-            endUrl = `${urlPrefix}/confirm-address/applicant`
+            endUrls.push(`${urlPrefix}/confirm-address/applicant`)
             confirm = true
             break
-        case "deliveryAddress"://DONE
+        case "deliveryAddress"://DONE       //Change flow
             startUrl = `${urlPrefix}/postcode/delivery`
-            endUrl = `${urlPrefix}/confirm-address/delivery`
+            endUrls.push(`${urlPrefix}/confirm-address/delivery`)
             confirm = true
             break
-        case "speciesName":
+        case "speciesName"://Change flow
             startUrl = `${urlPrefix}/species-name/${applicationIndex}`
-            endUrl = 'to be defined'
+            endUrls.push('to be defined')
             confirm = true
             break
-
-
-        case "specimenType":
-        case "quantity":
-
-        
+        case "quantity"://DONE
+            startUrl = `${urlPrefix}/quantity/${applicationIndex}`
+            break
         case "sourceCode"://DONE
             startUrl = `${urlPrefix}/source-code/${applicationIndex}`
             break
-        case "purposeCode":
+        case "purposeCode"://DONE
             startUrl = `${urlPrefix}/purpose-code/${applicationIndex}`
             break
-        case "uniqueIdentificationMark":
-            startUrl = `${urlPrefix}/unique-identification-mark/${applicationIndex}`
+        case "specimenType"://Change flow
+            startUrl = `${urlPrefix}/specimen-type/${applicationIndex}`
+            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             break
-        case "tradeTermCode":
+        case "tradeTermCode"://DONE
             startUrl = `${urlPrefix}/trade-term-code/${applicationIndex}`
             break
-        case "useCertificateFor":
+        case "uniqueIdentificationMark"://Change flow
+            startUrl = `${urlPrefix}/unique-identification-mark/${applicationIndex}`
+            break
+        case "useCertificateFor"://DONE
             startUrl = `${urlPrefix}/use-certificate-for/${applicationIndex}`
             break
-        case "describeLivingAnimal":
-        case "unmarkedSpecimens":
-        case "createdDate":
-        case "descriptionGeneric":
-        case "acquiredDate":
-        case "a10CertificateNumber":
-        case "importerExporterDetails":
+        case "describeLivingAnimal"://DONE
+            startUrl = `${urlPrefix}/describe-living-animal/${applicationIndex}`
+            break
+        case "acquiredDate"://DONE
+            startUrl = `${urlPrefix}/acquired-date/${applicationIndex}`
+            break
+        case "a10CertificateNumber"://DONE
+            startUrl = `${urlPrefix}/already-have-a10/${applicationIndex}`
+            break
+        case "unmarkedSpecimens"://DONE
+            startUrl = `${urlPrefix}/unmarked-specimens/${applicationIndex}`
+            break
+        case "createdDate"://DONE
+            startUrl = `${urlPrefix}/created-date/${applicationIndex}`
+            break
+        case "descriptionGeneric"://DONE
+            startUrl = `${urlPrefix}/describe-specimen/${applicationIndex}`
+            break
+        case "importerExporterDetails"://DONE
+            startUrl = `${urlPrefix}/importer-exporter/${applicationIndex}`
+            break
         case "permitDetails":
+            startUrl = `${urlPrefix}/permit-details/${applicationIndex}`
+            break
         case "comments":
-            throw new Error(`Change type not handled yet: ${changeType}`)
+            startUrl = `${urlPrefix}/comments/${applicationIndex}`
+            break
         default:
             throw new Error(`Invalid change type: ${changeType}`)
     }
@@ -90,11 +105,11 @@ function setChangeRoute(request, changeType, applicationIndex) {
     // Delivery address
     // Scientific name
 
-    if (!endUrl) {
-        endUrl = startUrl
+    if (endUrls.length === 0) {
+        endUrls.push(startUrl)
     }
 
-    const changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrl: endUrl, applicationIndex: applicationIndex }
+    const changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrls: endUrls, applicationIndex: applicationIndex }
 
     setYarValue(request, "changeRouteData", changeRouteData)
 
@@ -104,8 +119,15 @@ function setChangeRoute(request, changeType, applicationIndex) {
 function checkChangeRouteExit(request, isBack = false) {
     const changeData = getYarValue(request, "changeRouteData")
     if (changeData) {
-        if ((!isBack && request.headers.referer.endsWith(changeData.endUrl))
-            || (isBack && request.path.endsWith(changeData.startUrl))) {
+        // if ((!isBack && request.headers.referer.endsWith(changeData.endUrl))
+        //     || (isBack && request.path.endsWith(changeData.startUrl))) {
+        //     return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
+        // }
+
+        const matchesEndUrl = changeData.endUrls.some(endUrl => request.headers.referer?.endsWith(endUrl))
+        const matchesStartUrl = request.path.endsWith(changeData.startUrl)
+
+        if ((!isBack && matchesEndUrl) || (isBack && matchesStartUrl)) {
             return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
         }
     }
@@ -114,6 +136,10 @@ function checkChangeRouteExit(request, isBack = false) {
 
 function getChangeRouteData(request) {
     return getYarValue(request, "changeRouteData")
+}
+
+function clearChangeRoute(request) {
+    setYarValue(request, "changeRouteData", null)
 }
 
 module.exports = {
