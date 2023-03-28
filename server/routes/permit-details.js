@@ -1,13 +1,10 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const {
-  getSubmission,
-  mergeSubmission,
-  validateSubmission
-} = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { isValidDate, isPastDate } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "permit-details"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -108,22 +105,6 @@ function createModel(errors, data) {
     })
   }
 
-
-  // const exportOrReexportPermitIssueDateErrorMessage =
-  //   exportOrReexportPermitIssueDateErrors[0]
-  //     .map((item) => {
-  //       return item.message
-  //     })
-  //     .join('</p> <p class="govuk-error-message">')
-
-  // const countryOfOriginPermitIssueDateErrorMessage =
-  //   countryOfOriginPermitIssueDateErrors[0]
-  //     .map((item) => {
-  //       return item.message
-  //     })
-  //     .join('</p> <p class="govuk-error-message">')
-
-
   const exportOrReexportPermitIssueDateErrorMessage =
     exportOrReexportPermitIssueDateErrors[0]?.message
 
@@ -142,8 +123,11 @@ function createModel(errors, data) {
     { name: "year", value: data.countryOfOriginPermitIssueDateYear }
   ]
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -389,10 +373,10 @@ module.exports = [
         return h.redirect(`${invalidSubmissionPath}/`)
       }
 
-      const permitDetails =
-        submission.applications[applicationIndex].permitDetails
+      const permitDetails = submission.applications[applicationIndex].permitDetails
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
@@ -467,6 +451,7 @@ module.exports = [
             const submission = getSubmission(request)
   
             const pageData = {
+              backLinkOverride: checkChangeRouteExit(request, true),
               applicationIndex: applicationIndex,
               permitType: submission.permitType,
               isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
@@ -544,6 +529,12 @@ module.exports = [
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
         }
+        
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+
         return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }

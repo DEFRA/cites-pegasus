@@ -2,6 +2,7 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'unmarked-specimens'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -33,8 +34,11 @@ function createModel(errors, data) {
     })
   }
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -101,6 +105,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens
       }
@@ -124,6 +129,7 @@ module.exports = [
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             ...request.payload
           }
@@ -141,6 +147,11 @@ module.exports = [
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
+        }
+        
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
         }
 
         return h.redirect(`${nextPath}/${applicationIndex}`)
