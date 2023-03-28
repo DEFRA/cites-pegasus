@@ -7,9 +7,8 @@ const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
-const nextPathViewApplication = `${urlPrefix}/application-summary/view`//TO DO
+const nextPathViewApplication = `${urlPrefix}/application-summary/check`//TO DO
 const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
-const nextPathAreYouSure = `${urlPrefix}/are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
 const confirmTypes = ['remove', 'permit-type' ]
@@ -35,7 +34,13 @@ function createSubmitApplicationModel(errors, data) {
       break
   }
 
+
+
   const applicationsData = data.applications
+
+  console.log("applicationsData", applicationsData)
+
+
   const applicationsTableData= applicationsData.map(application => {
     const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
@@ -47,7 +52,7 @@ function createSubmitApplicationModel(errors, data) {
       unitsOfMeasurementText = application.species?.unitOfMeasurement
     }
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
-    const formActionRemove = `${currentPath}/are-you-sure/remove/${application.applicationIndex}`
+    const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
     return {speciesName: application.species.speciesName, speciesNameUrl, quantity: application.species.quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
   })
 
@@ -80,7 +85,7 @@ function createAreYouSureModel(errors, data) {
     pageContent = textContent.submitApplications.areYouSureRemove,
     defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`,
-    formActionPage= `${currentPath}/are-you-sure/{confirmType}/{applicationIndex}`
+    formActionPage= `${currentPath}/are-you-sure/remove/{applicationIndex}`
   } else {
     pageContent = textContent.submitApplications.areYouSurePermitType,
     defaultTitle = pageContent.defaultTitle
@@ -180,6 +185,25 @@ module.exports = [
   },
   {
     method: "POST",
+    path: `${currentPath}`,
+    options: {
+      validate: {
+        failAction: (request, h, err) => {
+          const submission = getSubmission(request)
+          const pageData = {
+            permitType: submission.permitType,
+            applications : applications
+          }
+          return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
+        }
+      },
+      handler: async (request, h) => {
+        return h.redirect(nextPathUploadSupportingDocuments)
+      }
+    }
+  },
+  {
+    method: "POST",
     path: `${currentPath}/copy/{applicationIndex}`,
     options: {
       validate: {
@@ -207,30 +231,10 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}`,
-    options: {
-      validate: {
-        failAction: (request, h, err) => {
-          const submission = getSubmission(request)
-          const pageData = {
-            permitType: submission.permitType,
-            applications : applications
-          }
-          return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
-        }
-      },
-      handler: async (request, h) => {
-        return h.redirect(nextPathUploadSupportingDocuments)
-      }
-    }
-  },
-  {
-    method: "POST",
-    path: `${currentPath}/are-you-sure/{confirmType}/{applicationIndex}`,
+    path: `${currentPath}/remove/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          confirmType: Joi.string().valid(...confirmTypes),
           applicationIndex: Joi.number().required(),
         }),
         failAction: (request, h, error) => {
@@ -239,25 +243,45 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const {confirmType, applicationIndex } = request.params
-      const submission = getSubmission(request)
-     
-      try {
-        validateSubmission(submission, pageId)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
-      }
+      const { applicationIndex } = request.params
 
-      const pageData = {
-        confirmType: confirmType,
-        applicationIndex: applicationIndex,
-        speciesName: submission.applications[applicationIndex].species.speciesName,
-        areYouSure: submission.areYouSure,
-      }
-      return h.view(pageId, createAreYouSureModel(null, pageData))
+      return h.redirect(`${currentPath}/are-you-sure/remove/${applicationIndex}`,)
     }
   },
+  // {
+  //   method: "POST",
+  //   path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
+  //   options: {
+  //     validate: {
+  //       params: Joi.object({
+  //         confirmType: Joi.string().valid(...confirmTypes),
+  //         applicationIndex: Joi.number().required(),
+  //       }),
+  //       failAction: (request, h, error) => {
+  //         console.log(error)
+  //       }
+  //     }
+  //   },
+  //   handler: async (request, h) => {
+  //     const {confirmType, applicationIndex } = request.params
+  //     const submission = getSubmission(request)
+     
+  //     try {
+  //       validateSubmission(submission, pageId)
+  //     } catch (err) {
+  //       console.log(err)
+  //       return h.redirect(`${invalidSubmissionPath}/`)
+  //     }
+
+  //     const pageData = {
+  //       confirmType: confirmType,
+  //       applicationIndex: applicationIndex,
+  //       speciesName: submission.applications[applicationIndex].species.speciesName,
+  //       areYouSure: submission.areYouSure,
+  //     }
+  //     return h.view(pageId, createAreYouSureModel(null, pageData))
+  //   }
+  // },
   {
     method: "POST",
     path: `${currentPath}/are-you-sure/permit-type`,
@@ -267,10 +291,8 @@ module.exports = [
         payload: Joi.object({
           areYouSure: Joi.boolean().required()
         }),
-
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
-       
           let areYouSure = null
           switch (request.payload.areYouSure) {
             case "true":
@@ -280,13 +302,11 @@ module.exports = [
               areYouSure = false
               break
           }
-
           const pageData = {
             confirmType: 'permit-type',
             permitType: submission.permitType,
             areYouSure: areYouSure,
            }
-
           return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
         }
       },
