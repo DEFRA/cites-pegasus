@@ -95,7 +95,7 @@ function createAreYouSureModel(errors, data) {
     pageContent = textContent.submitApplications.areYouSureRemove,
     defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`,
-    formActionPage= `${currentPath}/are-you-sure/remove/{applicationIndex}`
+    formActionPage= `${currentPath}/are-you-sure/remove/${data.applicationIndex}`
   } else {
     pageContent = textContent.submitApplications.areYouSurePermitType,
     defaultTitle = pageContent.defaultTitle
@@ -258,16 +258,14 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex } = request.params
-      const submission = getSubmission(request)
-      const applications= submission.applications
-
+      let newApplicationIndex
       try {
-        cloneApplication(request, applicationIndex)
+        newApplicationIndex = cloneApplication(request, applicationIndex)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-      return h.redirect(`${nextPathCopyApplication}/${applications.length}`)
+      return h.redirect(`${nextPathCopyApplication}/${newApplicationIndex}`)
     }
   },
   {

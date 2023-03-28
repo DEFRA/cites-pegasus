@@ -51,29 +51,13 @@ function cloneApplication(request, applicationIndex) {
     const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
     applications.push(clonedApplication)
     setYarValue(request, 'submission', submission)
+    return applications.length - 1
 }
 
 function deleteApplication(request, applicationIndex) {
     const submission = getSubmission(request)
     const applications = submission.applications
-    applications.splice(applicationIndex, 1);
-    submission.applications = applications
-    setYarValue(request, 'submission', submission)
-}
-
-function cloneApplication(request, applicationIndex) {
-    const submission = getSubmission(request)
-    const applications= submission.applications
-    const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
-    applications.push(clonedApplication)
-    setYarValue(request, 'submission', submission)
-}
-
-function deleteApplication(request, applicationIndex) {
-    const submission = getSubmission(request)
-    const applications = submission.applications
-    applications.splice(applicationIndex, 1);
-    submission.applications = applications
+    applications.splice(applicationIndex, 1)
     setYarValue(request, 'submission', submission)
 }
 
