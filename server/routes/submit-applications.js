@@ -41,16 +41,29 @@ function createSubmitApplicationModel(errors, data) {
   const applicationsTableData= applicationsData.map(application => {
     const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
-    if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
+    if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
+      unitsOfMeasurementText = `specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
+    } else if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType !== "unmarked") {
+      unitsOfMeasurementText =  `specimen`
+    } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
       unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
     } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfPiecesOrParts") {
       unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
     } else {
       unitsOfMeasurementText = application.species?.unitOfMeasurement
     }
+
+    let quantity = null
+    if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
+      quantity = application.species.numberOfUnmarkedSpecimens
+    } else if (application.species.specimenType === "animalLiving") {
+      quantity = 1
+    } else {
+      quantity = application.species?.quantity
+    }
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
     const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
-    return {speciesName: application.species.speciesName, speciesNameUrl, quantity: application.species.quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
+    return {speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
   })
 
   const model = {
@@ -91,7 +104,6 @@ function createAreYouSureModel(errors, data) {
     formActionPage= `${currentPath}/are-you-sure/permit-type`
   }
   
- 
   let errorList = null
   if (errors) {
     errorList = []
