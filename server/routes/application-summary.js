@@ -170,6 +170,17 @@ function createModel(errors, data) {
     unitsOfMeasurementValue = data.species?.unitOfMeasurement
   }
 
+  let sexDescription = null
+  if (data.species.sex && data.species.sex === "M") {
+    sexDescription = pageContent.rowTextSexMale
+  } else if (data.species.sex && data.species.sex === "F") {
+    sexDescription = pageContent.rowTextSexFemale
+  } else if (data.species.sex && data.species.sex === "U"){
+    sexDescription = pageContent.rowTextSexUndetermined
+  }
+
+
+
   let yourContactDetailsData = null
   if (!data.isAgent) {
     yourContactDetailsData = {
@@ -316,7 +327,7 @@ function createModel(errors, data) {
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMark ? data.species.uniqueIdentificationMark : pageContent.rowTextSpecimenIsNotMarked, hrefPrefix + "/uniqueIdentificationMark", "unique identification mark"))
   if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSex, data.species.sex, hrefPrefix + "/describeLivingAnimal", "sex"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSex, sexDescription, hrefPrefix + "/describeLivingAnimal", "sex"))
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextDateOfBirth, data.species.dateOfBirth.year ? getDateValue(data.species.dateOfBirth) : "", hrefPrefix + "/describeLivingAnimal", "date of birth"))
   }
   if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked' && data.permitType === "article10") {
