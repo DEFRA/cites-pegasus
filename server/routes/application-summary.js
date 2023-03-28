@@ -6,7 +6,7 @@ const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/comments`
-const nextPath = `${urlPrefix}/your-applications-pre-submission` //TO DO
+const nextPath = `${urlPrefix}/submit-applications` //TO DO
 const invalidSubmissionPath = urlPrefix
 const summaryTypes = ['check', 'view', 'copy']
 
@@ -476,11 +476,8 @@ module.exports = [
     options: {
       validate: {
         params: Joi.object({
-          summaryType: Joi.
-            string().valid(...summaryTypes),
-          applicationIndex: Joi.
-
-            number().required()
+          summaryType: Joi.string().valid(...summaryTypes),
+          applicationIndex: Joi.number().required()
         }),
         failAction: (request, h, error) => {
           console.log(error)
