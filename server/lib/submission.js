@@ -53,6 +53,14 @@ function cloneApplication(request, applicationIndex) {
     setYarValue(request, 'submission', submission)
 }
 
+function deleteApplication(request, applicationIndex) {
+    const submission = getSubmission(request)
+    const applications = submission.applications
+    applications.splice(applicationIndex, 1);
+    submission.applications = applications
+    setYarValue(request, 'submission', submission)
+}
+
 function getAppFlow(submission) {
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
@@ -282,5 +290,6 @@ module.exports = {
     getSubmission,
     clearSubmission,
     validateSubmission,
-    cloneApplication
+    cloneApplication,
+    deleteApplication
 }

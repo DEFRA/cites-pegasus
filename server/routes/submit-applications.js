@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, cloneApplication} = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, cloneApplication, deleteApplication} = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'submit-applications'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -33,8 +33,6 @@ function createSubmitApplicationModel(errors, data) {
       pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.article10Applications)
       break
   }
-
-
 
   const applicationsData = data.applications
 
@@ -184,6 +182,39 @@ module.exports = [
     }
   },
   {
+    method: "GET",
+    path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+        }),
+        failAction: (request, h, error) => {
+          console.log(error)
+        }
+      }
+    },
+    handler: async (request, h) => {
+      const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+     
+      try {
+        validateSubmission(submission, pageId)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
+      const pageData = {
+        applicationIndex: applicationIndex,
+        confirmType: "remove",
+        speciesName: submission.applications[applicationIndex].species.speciesName,
+        areYouSure: submission.areYouSure,
+      }
+      return h.view(pageId, createAreYouSureModel(null, pageData))
+    }
+  },
+  {
     method: "POST",
     path: `${currentPath}`,
     options: {
@@ -245,43 +276,9 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
 
-      return h.redirect(`${currentPath}/are-you-sure/remove/${applicationIndex}`,)
+      return h.redirect(`${currentPath}/are-you-sure/remove/${applicationIndex}`)
     }
   },
-  // {
-  //   method: "POST",
-  //   path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
-  //   options: {
-  //     validate: {
-  //       params: Joi.object({
-  //         confirmType: Joi.string().valid(...confirmTypes),
-  //         applicationIndex: Joi.number().required(),
-  //       }),
-  //       failAction: (request, h, error) => {
-  //         console.log(error)
-  //       }
-  //     }
-  //   },
-  //   handler: async (request, h) => {
-  //     const {confirmType, applicationIndex } = request.params
-  //     const submission = getSubmission(request)
-     
-  //     try {
-  //       validateSubmission(submission, pageId)
-  //     } catch (err) {
-  //       console.log(err)
-  //       return h.redirect(`${invalidSubmissionPath}/`)
-  //     }
-
-  //     const pageData = {
-  //       confirmType: confirmType,
-  //       applicationIndex: applicationIndex,
-  //       speciesName: submission.applications[applicationIndex].species.speciesName,
-  //       areYouSure: submission.areYouSure,
-  //     }
-  //     return h.view(pageId, createAreYouSureModel(null, pageData))
-  //   }
-  // },
   {
     method: "POST",
     path: `${currentPath}/are-you-sure/permit-type`,
@@ -318,37 +315,54 @@ module.exports = [
         }
       }
     }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+        }),
+        options: { abortEarly: false },
+        payload: Joi.object({
+          areYouSure: Joi.boolean().required()
+        }),
+        failAction: (request, h, err) => {
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
+          let areYouSure = null
+          switch (request.payload.areYouSure) {
+            case "true":
+              areYouSure = true
+              break
+            case "false":
+              areYouSure = false
+              break
+          }
+          const pageData = {
+            applicationIndex: applicationIndex,
+            confirmType: "remove",
+            speciesName: submission.applications[applicationIndex].species.speciesName,
+            areYouSure: submission.areYouSure,
+           }
+          return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
+        }
+      },
+      handler: async (request, h) => {
+        const { applicationIndex } = request.params
+        
+        if (request.payload.areYouSure) {
+          try {
+            deleteApplication(request, applicationIndex)
+          } catch (err) {
+            console.log(err)
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+        } 
+        return h.redirect(`${currentPath}`)
+      }
+    }
   }
-  // {
-  //   method: "POST",
-  //   path: `${currentPath}/remove/are-you-sure/{applicationIndex}`,
-  //   options: {
-  //     validate: {
-  //       params: Joi.object({
-  //         applicationIndex: Joi.number().required(),
-  //       }),
-  //       failAction: (request, h, error) => {
-  //         console.log(error)
-  //       }
-  //     }
-  //   },
-  //   handler: async (request, h) => {
-  //     const { applicationIndex } = request.params
-  //     const submission = getSubmission(request)
-     
-  //     try {
-  //       validateSubmission(submission, pageId)
-  //     } catch (err) {
-  //       console.log(err)
-  //       return h.redirect(`${invalidSubmissionPath}/`)
-  //     }
-
-  //     const pageData = {
-  //       speciesName: submission.applications[applicationIndex].species.speciesName,
-  //       areYouSure: submission.areYouSure,
-  //     }
-  //     return h.view(pageId, createAreYouSureModel(null, pageData))
-  //   }
-  // },
 ]
 
