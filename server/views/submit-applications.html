@@ -1,0 +1,131 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+{% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+         "titleText": errorSummaryTitle,
+         "errorList": errorList
+      }) }}
+      </div>
+    </div>
+  {% endif %}
+  {% endblock %}
+
+{% block content %}
+{% if isSubmitApplications %}
+ 
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <form method="POST"  autocomplete="off" novalidate="novalidate">
+          <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--l">{{captionText}}</caption>
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">{{tableHeadScientificName}}</th>
+                <th scope="col" class="govuk-table__header">{{tableHeadQuantity}}</th>
+                <th scope="col" class="govuk-table__header">{{tableHeadUnitOfMeasurement}}</th>
+                <th scope="col" class="govuk-table__header"></th>
+                <th scope="col" class="govuk-table__header"></th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for application in applicationsData %}
+              <tr class="govuk-table__row">
+
+                <td class="govuk-table__cell">
+                  <a href="{{application.speciesNameUrl}}">{{application.speciesName}}</a>
+                </td>
+                <td class="govuk-table__cell">{{application.quantity}}</td>
+                <td class="govuk-table__cell">{{application.unitsOfMeasurementText}}</td>
+                <td class="govuk-table__cell">
+                  {{ govukButton({
+                    text: copyButton,
+                    type: "submit",
+                    classes: "govuk-button--secondary",
+                    attributes: {
+                      formAction: application.formActionCopy
+                    }
+                  }) }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ govukButton({
+                    text: removeButton,
+                    type: "submit",
+                    classes: "govuk-button--warning",
+                    attributes: {
+                      formAction: application.formActionRemove
+                    }
+                  }) }}
+                </td>
+              </tr> 
+              {% endfor %}         
+            </tbody>
+          </table>   
+        
+          {{ govukButton({
+          text: submitButton,
+          type: "submit"
+        }) }}
+
+        <p class="govuk-body">
+          <a href="{{addAnotherSpeciesUrl}}">{{addAnotherSpeciesLinkText}}</a>
+        </p>
+
+        <p class="govuk-body">
+          <a href="{{applyForADifferentTypeOfPermitUrl}}">{{applyForADifferentTypeOfPermitLinkText}}</a>
+        </p>
+      
+        </form>
+      </div>
+    </div>
+   
+    {% endif %}
+
+{% if areYouSure %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+          {% call govukFieldset({
+            legend: {
+              text: pageHeader,
+              classes: "govuk-fieldset__legend--l govuk-!-margin-bottom-5",
+              isPageHeading: true
+            }
+          }) %}
+
+          <p>{{pageBody}}</p>
+          {{ govukRadios(inputAreYouSure) }}
+
+          {{ govukButton({
+                      text: continueButton,
+                      type: "submit"
+                  }) }}
+          {% endcall %}
+        </form>
+      </div>
+    </div>
+   
+{% endif %}
+{% endblock %}
+
+
+
+
+
