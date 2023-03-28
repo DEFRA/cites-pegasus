@@ -300,15 +300,6 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
-          // let areYouSure = null
-          // switch (request.payload.areYouSure) {
-          //   case "true":
-          //     areYouSure = true
-          //     break
-          //   case "false":
-          //     areYouSure = false
-          //     break
-          // }
           const pageData = {
             confirmType: 'permit-type',
             permitType: submission.permitType,
@@ -339,7 +330,8 @@ module.exports = [
           areYouSure: Joi.boolean().required()
         }),
         failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
+          const applicationIndex = request.params.applicationIndex;
+          // const { applicationIndex } = request.params
           const submission = getSubmission(request)
          
           const pageData = {
@@ -352,7 +344,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { applicationIndex } = request.params
+        const applicationIndex = request.params.applicationIndex;
         
         if (request.payload.areYouSure) {
           try {
