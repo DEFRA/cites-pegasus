@@ -11,7 +11,6 @@ const nextPathViewApplication = `${urlPrefix}/application-summary/check`//TO DO
 const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
-const confirmTypes = ['remove', 'permit-type' ]
 
 function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
@@ -204,7 +203,6 @@ module.exports = [
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-
       const pageData = {
         applicationIndex: applicationIndex,
         confirmType: "remove",
@@ -290,19 +288,19 @@ module.exports = [
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
-          let areYouSure = null
-          switch (request.payload.areYouSure) {
-            case "true":
-              areYouSure = true
-              break
-            case "false":
-              areYouSure = false
-              break
-          }
+          // let areYouSure = null
+          // switch (request.payload.areYouSure) {
+          //   case "true":
+          //     areYouSure = true
+          //     break
+          //   case "false":
+          //     areYouSure = false
+          //     break
+          // }
           const pageData = {
             confirmType: 'permit-type',
             permitType: submission.permitType,
-            areYouSure: areYouSure,
+            areYouSure: request.payload.areYouSure,
            }
           return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
         }
@@ -321,30 +319,22 @@ module.exports = [
     path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
     options: {
       validate: {
+        options: { abortEarly: false },
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        options: { abortEarly: false },
         payload: Joi.object({
           areYouSure: Joi.boolean().required()
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
-          let areYouSure = null
-          switch (request.payload.areYouSure) {
-            case "true":
-              areYouSure = true
-              break
-            case "false":
-              areYouSure = false
-              break
-          }
+         
           const pageData = {
             applicationIndex: applicationIndex,
             confirmType: "remove",
             speciesName: submission.applications[applicationIndex].species.speciesName,
-            areYouSure: submission.areYouSure,
+            areYouSure: request.payload.areYouSure
            }
           return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
         }
