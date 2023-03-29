@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
@@ -27,7 +26,6 @@
 {% endblock %}
 
 {% block content %}
-{% if isApplicationSummary %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
@@ -68,33 +66,6 @@
       </form>
     </div>
   </div>
-  {% endif %}
-
-  {% if areYouSure %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {% call govukFieldset({
-          legend: {
-            text: pageHeader,
-            classes: "govuk-fieldset__legend--l",
-            isPageHeading: true
-          }
-        }) %}
-
-        <p>{{pageBody}}</p>
-        {{ govukRadios(inputAreYouSure) }}
-
-        {{ govukButton({
-                    text: continueButton,
-                    type: "submit"
-                }) }}
-        {% endcall %}
-      </form>
-    </div>
-  </div>
-  {% endif %}
-  
 {% endblock %}
 
 

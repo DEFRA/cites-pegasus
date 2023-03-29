@@ -404,9 +404,7 @@ function createApplicationSummaryModel(errors, data) {
     summaryListImporterExporterDetails: data.permitType !== "article10" && summaryListImporterExporterDetails,
     summaryListExportOrReexportPermitDetails: summaryListExportOrReexportPermitDetails,
     summaryListCountryOfOriginPermitDetails: summaryListCountryOfOriginPermitDetails,
-    summaryListRemarks: summaryListRemarks,
-    isApplicationSummary: true,
-    areYouSure: false
+    summaryListRemarks: summaryListRemarks
   }
   return { ...commonContent, ...model }
 }
@@ -556,8 +554,6 @@ function createAreYouSureModel(errors, data) {
       : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
-    isApplicationSummary: false,
-    areYouSure: true,
 
     inputAreYouSure: {
       idPrefix: "areYouSure",
@@ -686,7 +682,7 @@ module.exports = [
         changeRouteData:changeRouteData,
         areYouSure: submission.areYouSure,
       }
-      return h.view(pageId, createAreYouSureModel(null, pageData))
+      return h.view('are-you-sure', createAreYouSureModel(null, pageData))
     }
   },
 //POST for Application Summary Page
@@ -761,7 +757,7 @@ module.exports = [
             areYouSure: areYouSure,
            }
 
-          return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
+          return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
