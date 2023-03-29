@@ -91,11 +91,15 @@ function createAreYouSureModel(errors, data) {
   let defaultTitle = null
   let formActionPage = null
   let pageBody = null
+  let errorMessageRemove = null
   if(data.confirmType === 'remove') {
     pageContent = textContent.submitApplications.areYouSureRemove,
     defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
-    pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`,
+    pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`
     formActionPage= `${currentPath}/are-you-sure/remove/${data.applicationIndex}`
+    errorMessageRemove = {
+      'error.areYouSure.any.required': `${pageContent.errorMessages['error.areYouSure.part1.any.required']} ${data.speciesName} ${pageContent.errorMessages['error.areYouSure.part2.any.required']}`
+    } 
   } else {
     pageContent = textContent.submitApplications.areYouSurePermitType,
     defaultTitle = pageContent.defaultTitle
@@ -109,7 +113,8 @@ function createAreYouSureModel(errors, data) {
     errorList = []
     const mergedErrorMessages = {
       ...commonContent.errorMessages,
-      ...pageContent.errorMessages
+      ...pageContent.errorMessages,
+      ...errorMessageRemove
     }
     const fields = ["areYouSure"]
     fields.forEach((field) => {
