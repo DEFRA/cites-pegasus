@@ -2,6 +2,8 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
+const lodash = require('lodash')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
@@ -58,8 +60,11 @@ function createModel(errors, data) {
 
   const previousPath = data.specimenType === 'animalLiving' ? previousPathSpecimenType : previousPathTradeTermCode
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -152,6 +157,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         specimenType: species.specimenType,
         uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
@@ -189,6 +195,7 @@ module.exports = [
 
           var uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: request.params.applicationIndex,
             specimenType: species.specimenType,
             uniqueIdentificationMark: uniqueIdentificationMark,
@@ -200,18 +207,43 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
+        //const previousSubmission = getSubmission(request)
+        // const newSubmission = lodash.cloneDeep(previousSubmission)
+        // const previousSpecies = previousSubmission.applications[applicationIndex].species
         const species = submission.applications[applicationIndex].species
+
+        const isMinorChange = species.kingdom === 'Plantae' || (species.uniqueIdentificationMarkType === 'unmarked') === (request.payload.uniqueIdentificationMarkType === 'unmarked')
 
         const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         species.uniqueIdentificationMark = uniqueIdentificationMark || ""
 
+        
+        //Didn't change from unmarked to marked or vice versa
+        if (!isMinorChange) {
+          species.numberOfUnmarkedSpecimens = null
+          species.specimenDescriptionLivingAnimal = null
+          species.specimenDescriptionGeneric = null
+          species.parentDetails = null
+          species.sex = null
+          species.dateOfBirth = null
+        }
+
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
+        }
+
+        if (!isMinorChange) {
+          setDataRemoved(request)
+        }
+
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false, isMinorChange)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
         }
 
         if (species.specimenType === 'animalLiving') {

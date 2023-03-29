@@ -590,11 +590,8 @@ module.exports = [
     options: {
       validate: {
         params: Joi.object({
-          summaryType: Joi.
-            string().valid(...summaryTypes),
-          applicationIndex: Joi.
-
-            number().required()
+          summaryType: Joi.string().valid(...summaryTypes),
+          applicationIndex: Joi.number().required()
         }),
         failAction: (request, h, error) => {
           console.log(error)
