@@ -857,21 +857,21 @@ const schema = Joi.object().keys({
     rowTextSexMale: Joi.string().required(),
     rowTextSexFemale: Joi.string().required(),
     rowTextSexUndetermined: Joi.string().required(),
-  }).required(),
-  areYouSure: Joi.object({
-    permitType: areYouSureSchema,
-    scientificName: areYouSureSchema,
-    yourContactDetails: areYouSureSchema,
-    yourAddress: areYouSureSchema,
-    deliveryAddress: areYouSureSchema,
-    importerContactDetails: areYouSureSchema,
-    exporterContactDetails: areYouSureSchema,
-    reexporterContactDetails: areYouSureSchema,
-    article10ContactDetails: areYouSureSchema,
-    importerAddress: areYouSureSchema,
-    exporterAddress: areYouSureSchema,
-    reexporterAddress: areYouSureSchema,
-    article10Address: areYouSureSchema
+    areYouSure: Joi.object({
+      permitType: areYouSureSchema,
+      scientificName: areYouSureSchema,
+      yourContactDetails: areYouSureSchema,
+      yourAddress: areYouSureSchema,
+      deliveryAddress: areYouSureSchema,
+      importerContactDetails: areYouSureSchema,
+      exporterContactDetails: areYouSureSchema,
+      reexporterContactDetails: areYouSureSchema,
+      article10ContactDetails: areYouSureSchema,
+      importerAddress: areYouSureSchema,
+      exporterAddress: areYouSureSchema,
+      reexporterAddress: areYouSureSchema,
+      article10Address: areYouSureSchema
+    }).required(),
   }).required(),
   submitApplications: Joi.object({
     common: Joi.object({
