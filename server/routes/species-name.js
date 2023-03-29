@@ -3,6 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { getSpecies } = require("../services/dynamics-service")
+const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "species-name"
@@ -35,9 +36,11 @@ function createModel(errors, data) {
       }
     })
   }
+  const defaultBacklink = previousPath
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
-    backLink: previousPath,
+    backLink: backLink,
     pageHeader: pageContent.pageHeader,
     speciesName: data.speciesName,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -107,6 +110,7 @@ module.exports = [
       }
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         speciesName: submission.applications[applicationIndex].species?.speciesSearchData,
         deliveryAddressOption: submission.delivery.addressOption,
         applicationIndex: applicationIndex
@@ -130,6 +134,7 @@ module.exports = [
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             speciesName: request.payload.speciesName,
             deliveryAddressOption: submission?.delivery?.addressOption,
             applicationIndex: request.params.applicationIndex
@@ -144,39 +149,74 @@ module.exports = [
           request,
           request.payload.speciesName
         )
-        const previousSubmission = getSubmission(request)
-        const newSubmission = lodash.cloneDeep(previousSubmission)
-        const newSubmissionApplication = newSubmission.applications[applicationIndex]
-        const previousSubmissionApplication = previousSubmission.applications[applicationIndex]
+        const submission = getSubmission(request)
+        const application = submission.applications[applicationIndex]
 
-        if (previousSubmission.applications.length < applicationIndex + 1) {
+        //const previousSubmission = getSubmission(request)
+        // const newSubmission = lodash.cloneDeep(previousSubmission)
+        // const newSubmissionApplication = newSubmission.applications[applicationIndex]
+        // const previousSubmissionApplication = previousSubmission.applications[applicationIndex]
+
+        if (submission.applications.length < applicationIndex + 1) {
           return h.redirect(invalidSubmissionPath)
         }
 
-        if (previousSubmissionApplication.species?.speciesName !== speciesData?.scientificname) {
-          //TODO If changing speciesName , remove all other species data
-          newSubmissionApplication.species = null
-        }
-        
-        if(!newSubmissionApplication.species){
-          newSubmissionApplication.species = {}
+        const isChange = application.species && application.species?.speciesName !== speciesData?.scientificname
+
+        if (!application.species) {
+          application.species = {}
         }
 
-        newSubmissionApplication.species.speciesName = speciesData?.scientificname
-        newSubmissionApplication.species.speciesSearchData = request.payload.speciesName
-        newSubmissionApplication.species.kingdom = speciesData?.kingdom
+        const species = application.species
+
+        species.speciesName = speciesData?.scientificname
+        species.speciesSearchData = request.payload.speciesName
+        species.kingdom = speciesData?.kingdom
+
+        if (isChange) {
+          //If changing speciesName, remove all other species data as far as the specimen description pages
+          species.sourceCode = null
+          species.anotherSourceCodeForI = null
+          species.anotherSourceCodeForO = null
+          species.enterAReason = null
+          species.purposeCode = null
+          species.useCertificateFor = null
+          species.specimenType = null
+          species.quantity = null
+          species.unitOfMeasurement = null
+          species.createdDate = null
+          species.isTradeTermCode = null
+          species.tradeTermCode = null
+          species.uniqueIdentificationMarkType = null
+          species.uniqueIdentificationMark = null
+          species.numberOfUnmarkedSpecimens = null
+          species.specimenDescriptionLivingAnimal = null
+          species.specimenDescriptionGeneric = null
+          species.parentDetails = null
+          species.sex = null
+          species.dateOfBirth = null
+        }
 
         try {
-          setSubmission(request, newSubmission)          
+          setSubmission(request, submission)
         } catch (err) {
           console.log(err)
           return h.redirect(invalidSubmissionPath)
         }
 
+        if (isChange) {
+          setDataRemoved(request)
+        }
+
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
+        if (exitChangeRouteUrl) {
+          return h.redirect(exitChangeRouteUrl)
+        }
+
         if (!speciesData?.scientificname || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
           return h.redirect(`${unknownSpeciesPath}/${applicationIndex}`)
         }
-        
+
         return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }

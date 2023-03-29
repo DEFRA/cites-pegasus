@@ -128,7 +128,7 @@ function getAppFlow(submission) {
             } else {
                 return appFlow
             }
-
+            let completeApplications = 0
             if (submission.applications?.length > 0) {
                 submission.applications.forEach((application, applicationIndex) => {
                     if (applicationIndex > 0) {
@@ -165,6 +165,11 @@ function getAppFlow(submission) {
                             if (species.uniqueIdentificationMarkType) {
                                 if (species.uniqueIdentificationMarkType === 'unmarked') {
                                     appFlow.push(`unmarked-specimens/${applicationIndex}`)
+                                    if (species.numberOfUnmarkedSpecimens) {
+                                        appFlow.push(`describe-specimen/${applicationIndex}`)
+                                    } else {
+                                        return appFlow
+                                    }
                                 } else {
                                     appFlow.push(`describe-living-animal/${applicationIndex}`)
                                 }
@@ -172,11 +177,6 @@ function getAppFlow(submission) {
                                 return appFlow
                             }
 
-                            if (species.numberOfUnmarkedSpecimens) {
-                                appFlow.push(`describe-specimen/${applicationIndex}`)
-                            } else {
-                                return appFlow
-                            }
 
                         } else {//Not living animal flow
                             appFlow.push(`quantity/${applicationIndex}`)
@@ -242,8 +242,8 @@ function getAppFlow(submission) {
                             appFlow.push(`comments/${applicationIndex}`)
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                             appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
-                            appFlow.push(`submit-applications`)
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
+                            completeApplications++
                         } else {
                             return appFlow
                         }
@@ -251,6 +251,10 @@ function getAppFlow(submission) {
                         return appFlow
                     }
                 })
+                
+                if (completeApplications > 0 && completeApplications === submission.applications.length) {
+                    appFlow.push(`submit-applications`)
+                }
             }
         }
     }

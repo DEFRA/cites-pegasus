@@ -28,7 +28,7 @@ const changeTypes = [
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
 function setChangeRoute(request, changeType, applicationIndex) {
-    let startUrl = "", minorChangeEndUrl = ""
+    let startUrl = ""
     const endUrls = []
     let confirm = false
 
@@ -86,7 +86,6 @@ function setChangeRoute(request, changeType, applicationIndex) {
             break
         case "uniqueIdentificationMark"://Change flow   //DDNE
             startUrl = `${urlPrefix}/unique-identification-mark/${applicationIndex}`
-            minorChangeEndUrl = `${urlPrefix}/unique-identification-mark/${applicationIndex}`
             endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             break
@@ -137,14 +136,14 @@ function setChangeRoute(request, changeType, applicationIndex) {
         endUrls.push(startUrl)
     }
 
-    const changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrls: endUrls, minorChangeEndUrl: minorChangeEndUrl, applicationIndex: applicationIndex }
+    const changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrls: endUrls, applicationIndex: applicationIndex }
 
     setYarValue(request, "changeRouteData", changeRouteData)
 
     return changeRouteData
 }
 
-function checkChangeRouteExit(request, isBack, isMinorChange = false) {
+function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
     const changeData = getYarValue(request, "changeRouteData")
     if (changeData) {
         // if ((!isBack && request.headers.referer.endsWith(changeData.endUrl))
@@ -153,10 +152,10 @@ function checkChangeRouteExit(request, isBack, isMinorChange = false) {
         // }
 
         const matchesEndUrl = changeData.endUrls.some(endUrl => request.headers.referer?.endsWith(endUrl))
-        const matchesMinorChangeEndUrl = request.path.endsWith(changeData.minorChangeEndUrl)
+        
         const matchesStartUrl = request.path.endsWith(changeData.startUrl)
 
-        if ((!isBack && matchesEndUrl) || (!isBack && isMinorChange && !changeData.dataRemoved && matchesMinorChangeEndUrl) || (isBack && !changeData.dataRemoved && matchesStartUrl)) {
+        if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesStartUrl) || (isBack && !changeData.dataRemoved && matchesStartUrl)) {
             return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
         }
     }
