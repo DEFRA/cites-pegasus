@@ -159,6 +159,7 @@ function createAreYouSureModel(errors, data) {
 
 
 module.exports = [
+  //GET for submit applications page
   {
     method: "GET",
     path: currentPath,
@@ -180,6 +181,7 @@ module.exports = [
       return h.view(pageId, createSubmitApplicationModel(null, pageData))
     }
   },
+  //GET for are you page from apply for a different type of permit link
   {
     method: "GET",
     path: `${currentPath}/are-you-sure/permit-type`,
@@ -192,6 +194,7 @@ module.exports = [
       return h.view(pageId, createAreYouSureModel(null, pageData))
     }
   },
+  //GET for are you page from remove button
   {
     method: "GET",
     path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
@@ -224,6 +227,7 @@ module.exports = [
       return h.view(pageId, createAreYouSureModel(null, pageData))
     }
   },
+ //POST for submit applications page
   {
     method: "POST",
     path: `${currentPath}`,
@@ -243,6 +247,7 @@ module.exports = [
       }
     }
   },
+  //POST for COPY button
   {
     method: "POST",
     path: `${currentPath}/copy/{applicationIndex}`,
@@ -268,6 +273,7 @@ module.exports = [
       return h.redirect(`${nextPathCopyApplication}/${newApplicationIndex}`)
     }
   },
+  //POST for REMOVE button
   {
     method: "POST",
     path: `${currentPath}/remove/{applicationIndex}`,
@@ -287,6 +293,7 @@ module.exports = [
       return h.redirect(`${currentPath}/are-you-sure/remove/${applicationIndex}`)
     }
   },
+   //POST for are you page from apply for a different type of permit link
   {
     method: "POST",
     path: `${currentPath}/are-you-sure/permit-type`,
@@ -315,6 +322,7 @@ module.exports = [
       }
     }
   },
+  //POST for are you page from remove button
   {
     method: "POST",
     path: `${currentPath}/are-you-sure/remove/{applicationIndex}`,
