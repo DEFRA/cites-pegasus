@@ -242,8 +242,11 @@ function getAppFlow(submission) {
                             appFlow.push(`comments/${applicationIndex}`)
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                             appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
-                            appFlow.push(`submit-applications`)
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
+                            appFlow.push(`submit-applications`)
+                            appFlow.push(`submit-applications/are-you-sure/permit-type`)
+                            appFlow.push(`submit-applications/are-you-sure/remove/${applicationIndex}`)
+                            
                         } else {
                             return appFlow
                         }

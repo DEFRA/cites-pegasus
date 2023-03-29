@@ -185,6 +185,12 @@ module.exports = [
     path: `${currentPath}/are-you-sure/permit-type`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
+      try {
+        validateSubmission(submission, `${pageId}/are-you-sure/permit-type`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
       const pageData = {
         changeType: 'permit-type',
         permitType: submission.permitType
@@ -211,7 +217,7 @@ module.exports = [
       const submission = getSubmission(request)
      
       try {
-        validateSubmission(submission, pageId)
+        validateSubmission(submission, `${pageId}/are-you-sure/remove/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
