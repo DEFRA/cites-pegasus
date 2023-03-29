@@ -144,30 +144,35 @@ module.exports = [
           request,
           request.payload.speciesName
         )
-        const previousSubmission = getSubmission(request)
-        const newSubmission = lodash.cloneDeep(previousSubmission)
-        const newSubmissionApplication = newSubmission.applications[applicationIndex]
-        const previousSubmissionApplication = previousSubmission.applications[applicationIndex]
-
-        if (previousSubmission.applications.length < applicationIndex + 1) {
+        const submission = getSubmission(request)
+        const application = submission.applications[applicationIndex]
+        
+        //const previousSubmission = getSubmission(request)
+        // const newSubmission = lodash.cloneDeep(previousSubmission)
+        // const newSubmissionApplication = newSubmission.applications[applicationIndex]
+        // const previousSubmissionApplication = previousSubmission.applications[applicationIndex]
+        
+        if (submission.applications.length < applicationIndex + 1) {
           return h.redirect(invalidSubmissionPath)
         }
-
-        if (previousSubmissionApplication.species?.speciesName !== speciesData?.scientificname) {
+        
+        if (application.species && application.species?.speciesName !== speciesData?.scientificname) {
           //TODO If changing speciesName , remove all other species data
-          newSubmissionApplication.species = null
+          application.species = null
         }
         
-        if(!newSubmissionApplication.species){
-          newSubmissionApplication.species = {}
+        if(!application.species){
+          application.species = {}
         }
+        
+        const species = application.species
 
-        newSubmissionApplication.species.speciesName = speciesData?.scientificname
-        newSubmissionApplication.species.speciesSearchData = request.payload.speciesName
-        newSubmissionApplication.species.kingdom = speciesData?.kingdom
+        species.speciesName = speciesData?.scientificname
+        species.speciesSearchData = request.payload.speciesName
+        species.kingdom = speciesData?.kingdom
 
         try {
-          setSubmission(request, newSubmission)          
+          setSubmission(request, submission)          
         } catch (err) {
           console.log(err)
           return h.redirect(invalidSubmissionPath)
