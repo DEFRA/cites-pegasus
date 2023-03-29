@@ -37,7 +37,6 @@ function createSubmitApplicationModel(errors, data) {
 
   console.log("applicationsData", applicationsData)
 
-
   const applicationsTableData= applicationsData.map(application => {
     const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
@@ -78,8 +77,6 @@ function createSubmitApplicationModel(errors, data) {
     addAnotherSpeciesUrl: `${urlPrefix}/species-name/${data.applications.length}`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
     applyForADifferentTypeOfPermitUrl: `${currentPath}/are-you-sure/permit-type`,
-    isSubmitApplications: true,
-    areYouSure: false
   }
   return { ...commonContent, ...model }
 }
@@ -137,9 +134,7 @@ function createAreYouSureModel(errors, data) {
       : defaultTitle,
     pageHeader: pageHeader,
     pageBody: pageBody,
-    areYouSure: true,
-    isSubmitApplications:false,
-
+  
     inputAreYouSure: {
       idPrefix: "areYouSure",
       name: "areYouSure",
@@ -162,7 +157,6 @@ function createAreYouSureModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-
 module.exports = [
   //GET for submit applications page
   {
@@ -178,7 +172,6 @@ module.exports = [
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-
       const pageData = {
         permitType: submission.permitType,
         applications : applications
@@ -196,7 +189,7 @@ module.exports = [
         changeType: 'permit-type',
         permitType: submission.permitType
       }
-      return h.view(pageId, createAreYouSureModel(null, pageData))
+      return h.view('are-you-sure', createAreYouSureModel(null, pageData))
     }
   },
   //GET for are you page from remove button
@@ -229,7 +222,7 @@ module.exports = [
         speciesName: submission.applications[applicationIndex].species.speciesName,
         areYouSure: submission.areYouSure,
       }
-      return h.view(pageId, createAreYouSureModel(null, pageData))
+      return h.view('are-you-sure', createAreYouSureModel(null, pageData))
     }
   },
  //POST for submit applications page
@@ -315,7 +308,7 @@ module.exports = [
             permitType: submission.permitType,
             areYouSure: request.payload.areYouSure,
            }
-          return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
+          return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {     
@@ -341,8 +334,7 @@ module.exports = [
           areYouSure: Joi.boolean().required()
         }),
         failAction: (request, h, err) => {
-          const applicationIndex = request.params.applicationIndex;
-          // const { applicationIndex } = request.params
+          const { applicationIndex } = request.params
           const submission = getSubmission(request)
          
           const pageData = {
@@ -351,7 +343,7 @@ module.exports = [
             speciesName: submission.applications[applicationIndex].species.speciesName,
             areYouSure: request.payload.areYouSure
            }
-          return h.view(pageId, createAreYouSureModel(err, pageData)).takeover()
+          return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
