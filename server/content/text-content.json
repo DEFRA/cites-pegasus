@@ -1049,113 +1049,114 @@
     "rowTextSpecimenTypePlantWorked": "A worked item or finished product",
     "rowTextSexMale": "Male",
     "rowTextSexFemale": "Female",
-    "rowTextSexUndetermined": "Not known"
-  },
-  "areYouSure": {
-    "permitType": {
-      "defaultTitle": "Are you sure that you want to change the permit type?",
-      "pageHeader": "Are you sure that you want to change the permit type?",
-      "pageBody1": "If you change the permit type, we will cancel all of your",
-      "pageBody2": " applications and you will need to start again.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the permit type"
-      }
-    },
-    "scientificName": {
-      "defaultTitle": "Are you sure that you want to change the scientific name?",
-      "pageHeader": "Are you sure that you want to change the scientific name?",
-      "pageBody1": "If you change the scientific name, you will have to enter the specimen’s details again.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the scientific name"
-      }
-    },
-    "yourContactDetails": {
-      "defaultTitle": "Are you sure that you want to change your contact details?",
-      "pageHeader": "Are you sure that you want to change your contact details?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change your contact details"
-      }
-    },
-    "yourAddress": {
-      "defaultTitle": "Are you sure that you want to change your address?",
-      "pageHeader": "Are you sure that you want to change your address?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change your address"
-      }
-    },
-    "deliveryAddress": {
-      "defaultTitle": "Are you sure that you want to change the delivery address?",
-      "pageHeader": "Are you sure that you want to change the delivery address?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the delivery address"
-      }
-    },
-    "importerContactDetails": {
-      "defaultTitle": "Are you sure that you want to change the importer’s contact details?",
-      "pageHeader": "Are you sure that you want to change the importer’s contact details?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the importer’s contact details"
-      }
-    },
-    "exporterContactDetails": {
-      "defaultTitle": "Are you sure that you want to change the exporter’s contact details?",
-      "pageHeader": "Are you sure that you want to change the exporter’s contact details?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the exporter’s contact details"
-      }
-    },
-    "reexporterContactDetails": {
-      "defaultTitle": "Are you sure that you want to change the re-exporter’s contact details?",
-      "pageHeader": "Are you sure that you want to change the re-exporter’s contact details?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the re-exporter’s contact details"
-      }
-    },
-    "article10ContactDetails": {
-      "defaultTitle": "Are you sure that you want to change the applicant’s contact details?",
-      "pageHeader": "Are you sure that you want to change the applicant’s contact details?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the applicant’s contact details"
-      }
-    },
-    "importerAddress": {
-      "defaultTitle": "Are you sure that you want to change the importer’s address?",
-      "pageHeader": "Are you sure that you want to change the importer’s address?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the importer’s address"
-      }
-    },
-    "exporterAddress": {
-      "defaultTitle": "Are you sure that you want to change the exporter’s address?",
-      "pageHeader": "Are you sure that you want to change the exporter’s address?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the exporter’s address"
-      }
-    },
-    "reexporterAddress": {
-      "defaultTitle": "Are you sure that you want to change the re-exporter’s address?",
-      "pageHeader": "Are you sure that you want to change the re-exporter’s address?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the re-exporter’s address"
-      }
-    },
-    "article10Address": {
-      "defaultTitle": "Are you sure that you want to change the applicant’s address?",
-      "pageHeader": "Are you sure that you want to change the applicant’s address?",
-      "pageBody1": "Any changes you make will apply to all applications.",
-      "errorMessages": {
-        "error.areYouSure.any.required": "Select yes if you want to change the applicant’s address"
+    "rowTextSexUndetermined": "Not known",
+    "areYouSure": {
+      "permitType": {
+        "defaultTitle": "Are you sure that you want to change the permit type?",
+        "pageHeader": "Are you sure that you want to change the permit type?",
+        "pageBody1": "If you change the permit type, we will cancel all of your",
+        "pageBody2": " applications and you will need to start again.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the permit type"
+        }
+      },
+      "scientificName": {
+        "defaultTitle": "Are you sure that you want to change the scientific name?",
+        "pageHeader": "Are you sure that you want to change the scientific name?",
+        "pageBody1": "If you change the scientific name, you will have to enter the specimen’s details again.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the scientific name"
+        }
+      },
+      "yourContactDetails": {
+        "defaultTitle": "Are you sure that you want to change your contact details?",
+        "pageHeader": "Are you sure that you want to change your contact details?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change your contact details"
+        }
+      },
+      "yourAddress": {
+        "defaultTitle": "Are you sure that you want to change your address?",
+        "pageHeader": "Are you sure that you want to change your address?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change your address"
+        }
+      },
+      "deliveryAddress": {
+        "defaultTitle": "Are you sure that you want to change the delivery address?",
+        "pageHeader": "Are you sure that you want to change the delivery address?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the delivery address"
+        }
+      },
+      "importerContactDetails": {
+        "defaultTitle": "Are you sure that you want to change the importer’s contact details?",
+        "pageHeader": "Are you sure that you want to change the importer’s contact details?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the importer’s contact details"
+        }
+      },
+      "exporterContactDetails": {
+        "defaultTitle": "Are you sure that you want to change the exporter’s contact details?",
+        "pageHeader": "Are you sure that you want to change the exporter’s contact details?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the exporter’s contact details"
+        }
+      },
+      "reexporterContactDetails": {
+        "defaultTitle": "Are you sure that you want to change the re-exporter’s contact details?",
+        "pageHeader": "Are you sure that you want to change the re-exporter’s contact details?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the re-exporter’s contact details"
+        }
+      },
+      "article10ContactDetails": {
+        "defaultTitle": "Are you sure that you want to change the applicant’s contact details?",
+        "pageHeader": "Are you sure that you want to change the applicant’s contact details?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the applicant’s contact details"
+        }
+      },
+      "importerAddress": {
+        "defaultTitle": "Are you sure that you want to change the importer’s address?",
+        "pageHeader": "Are you sure that you want to change the importer’s address?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the importer’s address"
+        }
+      },
+      "exporterAddress": {
+        "defaultTitle": "Are you sure that you want to change the exporter’s address?",
+        "pageHeader": "Are you sure that you want to change the exporter’s address?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the exporter’s address"
+        }
+      },
+      "reexporterAddress": {
+        "defaultTitle": "Are you sure that you want to change the re-exporter’s address?",
+        "pageHeader": "Are you sure that you want to change the re-exporter’s address?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the re-exporter’s address"
+        }
+      },
+      "article10Address": {
+        "defaultTitle": "Are you sure that you want to change the applicant’s address?",
+        "pageHeader": "Are you sure that you want to change the applicant’s address?",
+        "pageBody1": "Any changes you make will apply to all applications.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the applicant’s address"
+        }
       }
     }
   }
+ 
 }
