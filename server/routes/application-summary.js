@@ -176,7 +176,7 @@ function createApplicationSummaryModel(errors, data) {
     sexDescription = pageContent.rowTextSexMale
   } else if (data.species.sex && data.species.sex === "F") {
     sexDescription = pageContent.rowTextSexFemale
-  } else if (data.species.sex && data.species.sex === "U"){
+  } else if (data.species.sex && data.species.sex === "U") {
     sexDescription = pageContent.rowTextSexUndetermined
   }
 
@@ -322,6 +322,7 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText}`, hrefPrefix + "/purposeCode", "purpose code"))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type"))
+  
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo, hrefPrefix + "/tradeTermCode", "trade term code"))
   if (data.permitType === "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for"))
@@ -472,23 +473,23 @@ function getPermitDetails(pageContent, permitDetailsData, hrefPrefix) {
 function createAreYouSureModel(errors, data) {
   const commonContent = textContent.common
   const changeType = data.changeRouteData.changeType
-  const areYouSureText = textContent.applicationSummary.areYouSure 
- 
+  const areYouSureText = textContent.applicationSummary.areYouSure
+
   let pageContent = null
-  if (changeType === "permitType" ) {
+  if (changeType === "permitType") {
     pageContent = areYouSureText.permitType
-  } else if (changeType === "speciesName" ) {
+  } else if (changeType === "speciesName") {
     pageContent = areYouSureText.scientificName
-  } else if (changeType === "deliveryAddress" ) {
+  } else if (changeType === "deliveryAddress") {
     pageContent = areYouSureText.deliveryAddress
   } else if (changeType === "agentContactDetails") {
     pageContent = areYouSureText.yourContactDetails
   } else if (changeType === "agentAddress") {
     pageContent = areYouSureText.yourAddress
   } else if (!data.isAgent) {
-    if(changeType === "applicantContactDetails") {
+    if (changeType === "applicantContactDetails") {
       pageContent = areYouSureText.yourContactDetails
-    } else if (changeType === "applicantAddress"){
+    } else if (changeType === "applicantAddress") {
       pageContent = areYouSureText.yourAddress
     }
   } else if (data.isAgent) {
@@ -523,7 +524,7 @@ function createAreYouSureModel(errors, data) {
           break
       }
     }
-  } 
+  }
 
   let errorList = null
   if (errors) {
@@ -597,7 +598,6 @@ module.exports = [
     handler: async (request, h) => {
       const { summaryType, applicationIndex } = request.params
       const submission = getSubmission(request)
-      clearChangeRoute(request)
 
       try {
         validateSubmission(
@@ -608,6 +608,8 @@ module.exports = [
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
+
+      clearChangeRoute(request)
 
       const pageData = {
         summaryType: summaryType,
@@ -625,7 +627,7 @@ module.exports = [
       return h.view(pageId, createApplicationSummaryModel(null, pageData))
     }
   },
-   //GET for change links
+  //GET for change links
   {
     method: "GET",
     path: `${currentPath}/change/{applicationIndex}/{changeType}`,
@@ -652,7 +654,7 @@ module.exports = [
       }
     }
   },
-//GET for Are You Sure page
+  //GET for Are You Sure page
   {
     method: "GET",
     path: `${currentPath}/are-you-sure/{applicationIndex}`,
@@ -679,13 +681,13 @@ module.exports = [
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
-        changeRouteData:changeRouteData,
+        changeRouteData: changeRouteData,
         areYouSure: submission.areYouSure,
       }
       return h.view('are-you-sure', createAreYouSureModel(null, pageData))
     }
   },
-//POST for Application Summary Page
+  //POST for Application Summary Page
   {
     method: "POST",
     path: `${currentPath}/{summaryType}/{applicationIndex}`,
@@ -738,7 +740,7 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const changeRouteData = getChangeRouteData(request)
-        
+
           let areYouSure = null
           switch (request.payload.areYouSure) {
             case "true":
@@ -753,9 +755,9 @@ module.exports = [
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
-            changeRouteData:changeRouteData,
+            changeRouteData: changeRouteData,
             areYouSure: areYouSure,
-           }
+          }
 
           return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
         }
