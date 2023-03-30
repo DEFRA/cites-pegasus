@@ -23,7 +23,8 @@ const changeTypes = [
     'importerExporterDetails', 
     'permitDetails', 
     'comments', 
-    'uniqueIdentificationMark']
+    'uniqueIdentificationMark',
+    'everImportedExported']
 
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
@@ -109,6 +110,11 @@ function setChangeRoute(request, changeType, applicationIndex) {
             break
         case "descriptionGeneric"://DONE
             startUrl = `${urlPrefix}/describe-specimen/${applicationIndex}`
+            break
+        case "everImportedExported"://CHANGE FLOW
+            startUrl = `${urlPrefix}/ever-imported-exported/${applicationIndex}`
+            endUrls.push(`${urlPrefix}/ever-imported-exported/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/permit-details/${applicationIndex}`)
             break
         case "importerExporterDetails"://DONE
             startUrl = `${urlPrefix}/importer-exporter/${applicationIndex}`

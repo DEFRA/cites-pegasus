@@ -229,7 +229,7 @@ function getAppFlow(submission) {
                             appFlow.push(`importer-exporter/${applicationIndex}`)
                         }
 
-                        if (application.importerExporterDetails || species.isEverImportedExported) {
+                        if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
                             appFlow.push(`permit-details/${applicationIndex}`)
                         } else {
                             return appFlow
