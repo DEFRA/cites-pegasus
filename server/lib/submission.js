@@ -65,9 +65,6 @@ function getAppFlow(submission) {
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
 
-        appFlow.push('upload-supporting-documents')//TODO Remove this
-
-
         if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
 
         if (submission.permitType && submission.permitType !== 'other') {
@@ -254,6 +251,7 @@ function getAppFlow(submission) {
                 
                 if (completeApplications > 0 && completeApplications === submission.applications.length) {
                     appFlow.push(`submit-applications`)
+                    appFlow.push('upload-supporting-documents')
                 }
             }
         }
