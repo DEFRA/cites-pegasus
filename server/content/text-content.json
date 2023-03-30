@@ -1052,7 +1052,7 @@
     "rowTextSpecimenTypePlantWorked": "A worked item or finished product",
     "rowTextSexMale": "Male",
     "rowTextSexFemale": "Female",
-    "rowTextSexUndetermined": "Not known",
+    "rowTextNotKnown": "Not known",
     "areYouSure": {
       "permitType": {
         "defaultTitle": "Are you sure that you want to change the permit type?",
@@ -1192,6 +1192,7 @@
       "defaultTitlePart2": "from your application?",
       "pageHeaderPart1": "Are you sure that you want to remove",
       "pageHeaderPart2": "from your application?",
+      "pageBody": "If you remove the specimen you will need to add at least one species to your application to continue.",
       "errorMessages": {
         "error.areYouSure.part1.any.required": "Select yes if you want to remove",
         "error.areYouSure.part2.any.required": "from your application"

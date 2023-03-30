@@ -9,6 +9,7 @@ const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/check`//TO DO
 const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
+const nextPathspeciesName = `${urlPrefix}/species-name`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
 
@@ -93,6 +94,7 @@ function createAreYouSureModel(errors, data) {
     pageContent = textContent.submitApplications.areYouSureRemove,
     defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`
+    pageBody = data.applications.length === 1 ? pageContent.pageBody : ""
     formActionPage= `${currentPath}/are-you-sure/remove/${data.applicationIndex}`
     errorMessageRemove = {
       'error.areYouSure.any.required': `${pageContent.errorMessages['error.areYouSure.part1.any.required']} ${data.speciesName} ${pageContent.errorMessages['error.areYouSure.part2.any.required']}`
@@ -215,6 +217,7 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
+      const applications = submission.applications
      
       try {
         validateSubmission(submission, `${pageId}/are-you-sure/remove/${applicationIndex}`)
@@ -225,6 +228,7 @@ module.exports = [
       const pageData = {
         applicationIndex: applicationIndex,
         confirmType: "remove",
+        applications: applications,
         speciesName: submission.applications[applicationIndex].species.speciesName,
         areYouSure: submission.areYouSure,
       }
@@ -342,10 +346,12 @@ module.exports = [
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
+          const applications = submission.applications
          
           const pageData = {
             applicationIndex: applicationIndex,
             confirmType: "remove",
+            applications: applications,
             speciesName: submission.applications[applicationIndex].species.speciesName,
             areYouSure: request.payload.areYouSure
            }
@@ -354,6 +360,8 @@ module.exports = [
       },
       handler: async (request, h) => {
         const applicationIndex = request.params.applicationIndex;
+        const submission = getSubmission(request)
+        const applications = submission.applications
         
         if (request.payload.areYouSure) {
           try {
@@ -361,6 +369,9 @@ module.exports = [
           } catch (err) {
             console.log(err)
             return h.redirect(`${invalidSubmissionPath}/`)
+          }
+          if (applications.length === 1 ) {
+            return h.redirect(`${nextPathspeciesName}/0`)
           }
         } 
         return h.redirect(`${currentPath}`)
