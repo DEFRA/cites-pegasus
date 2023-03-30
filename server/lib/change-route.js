@@ -23,7 +23,8 @@ const changeTypes = [
     'importerExporterDetails', 
     'permitDetails', 
     'comments', 
-    'uniqueIdentificationMark']
+    'uniqueIdentificationMark',
+    'everImportedExported']
 
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
@@ -35,7 +36,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
     switch (changeType) {
         case "permitType"://Change flow
             startUrl = `${urlPrefix}/permit-type`
-            endUrls.push('')//You must go all the way through the flow                        
+            endUrls.push(applicationSummaryCheckUrl)//You must go all the way through the flow                        
             confirm = true
             break
         case "agentContactDetails"://DONE
@@ -61,7 +62,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
             endUrls.push(`${urlPrefix}/confirm-address/delivery`)
             confirm = true
             break
-        case "speciesName"://Change flow
+        case "speciesName"://DONE           //Change flow
             startUrl = `${urlPrefix}/species-name/${applicationIndex}`
             endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
@@ -109,6 +110,11 @@ function setChangeRoute(request, changeType, applicationIndex) {
             break
         case "descriptionGeneric"://DONE
             startUrl = `${urlPrefix}/describe-specimen/${applicationIndex}`
+            break
+        case "everImportedExported"://CHANGE FLOW
+            startUrl = `${urlPrefix}/ever-imported-exported/${applicationIndex}`
+            endUrls.push(`${urlPrefix}/ever-imported-exported/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/permit-details/${applicationIndex}`)
             break
         case "importerExporterDetails"://DONE
             startUrl = `${urlPrefix}/importer-exporter/${applicationIndex}`

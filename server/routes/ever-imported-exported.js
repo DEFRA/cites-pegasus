@@ -2,6 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "ever-imported-exported"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -33,8 +34,11 @@ function createModel(errors, data) {
     })
   }
 
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
@@ -96,6 +100,7 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,
         isEverImportedExported: species.isEverImportedExported
@@ -132,6 +137,7 @@ module.exports = [
           }
 
           const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species?.speciesName,
             isEverImportedExported: isEverImportedExported
@@ -143,9 +149,19 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
+        const application = submission.applications[applicationIndex]
         const species = submission.applications[applicationIndex].species
 
+        const isChange = (species.isEverImportedExported === true || species.isEverImportedExported === false) && species.isEverImportedExported !== request.payload.isEverImportedExported
+
         species.isEverImportedExported = request.payload.isEverImportedExported
+
+        let permitDetailsRequired = false
+        if (isChange) {
+          if (species.isEverImportedExported === false) {
+            application.permitDetails = null
+          }          
+        }
 
         try {
           mergeSubmission(
@@ -156,6 +172,19 @@ module.exports = [
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
+        }
+
+        if (isChange) {
+          setDataRemoved(request)
+        }
+
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (exitChangeRouteUrl) {
+          const changeData = getChangeRouteData(request)
+          
+          if (species.isEverImportedExported !== true || !changeData.dataRemoved ) {
+            return h.redirect(exitChangeRouteUrl)
+          }
         }
 
         if (request.payload.isEverImportedExported && submission.permitType !== 'export') {
