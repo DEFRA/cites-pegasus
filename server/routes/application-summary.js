@@ -322,8 +322,9 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText}`, hrefPrefix + "/purposeCode", "purpose code"))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type"))
-  
-  summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo, hrefPrefix + "/tradeTermCode", "trade term code"))
+  if (data.species.specimenType !== "animalLiving") {
+     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo, hrefPrefix + "/tradeTermCode", "trade term code"))
+  }
   if (data.permitType === "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for"))
   }
