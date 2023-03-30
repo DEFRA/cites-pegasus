@@ -1,15 +1,17 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, setSubmission, validateSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/apply-cites-permit`
+const previousPath = `${urlPrefix}/`
 const nextPath = `${urlPrefix}/applying-on-behalf`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
+const invalidSubmissionPath = urlPrefix
 
-function createModel(errors, permitType) {
+function createModel(errors, data) {
   const commonContent = textContent.common;
   const pageContent = textContent.permitType;
 
@@ -28,9 +30,12 @@ function createModel(errors, permitType) {
           }
       })
   }
+
+  const defaultBacklink = previousPath
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
   
   const model = {
-    backLink: previousPath,
+    backLink: backLink,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
@@ -49,30 +54,30 @@ function createModel(errors, permitType) {
           value: "import",
           text: pageContent.radioOptionImport,
           hint: { text: pageContent.radioOptionImportHint },
-          checked: isChecked(permitType, "import")
+          checked: isChecked(data.permitType, "import")
         },
         {
           value: "export",
           text: pageContent.radioOptionExport,
           hint: { text: pageContent.radioOptionExportHint },
-          checked: isChecked(permitType, "export")
+          checked: isChecked(data.permitType, "export")
         },
         {
           value: "reexport",
           text: pageContent.radioOptionReexport,
           hint: { text: pageContent.radioOptionReexportHint },
-          checked: isChecked(permitType, "reexport")
+          checked: isChecked(data.permitType, "reexport")
         },
         {
           value: "article10",
           text: pageContent.radioOptionArticle10,
           hint: { text: pageContent.radioOptionArticle10Hint },
-          checked: isChecked(permitType, "article10")
+          checked: isChecked(data.permitType, "article10")
         },
         {
           value: "other",
           text: pageContent.radioOptionOther,
-          checked: isChecked(permitType, "other")
+          checked: isChecked(data.permitType, "other")
         }
       ],
       errorMessage: getFieldError(errorList, '#permitType')
@@ -86,9 +91,20 @@ module.exports = [{
   path: currentPath,
   handler: async (request, h) => {
     const submission = getSubmission(request);
-    validateSubmission(submission, pageId)
 
-    return h.view(pageId, createModel(null, submission?.permitType));
+    try {
+      validateSubmission(submission, pageId)
+    } catch (err) {
+      console.log(err)
+      return h.redirect(invalidSubmissionPath)
+    }
+
+    const pageData = {
+      backLinkOverride: checkChangeRouteExit(request, true),
+      permitType: submission?.permitType
+    }
+
+    return h.view(pageId, createModel(null, pageData));
   }
 },
 {
@@ -101,11 +117,42 @@ module.exports = [{
         permitType: Joi.string().required().valid('import', 'export', 'reexport', 'article10', 'other')
       }),
       failAction: (request, h, err) => {
-        return h.view(pageId, createModel(err, request.payload.permitType)).takeover()
+        const pageData = {
+          backLinkOverride: checkChangeRouteExit(request, true),
+          permitType: request.payload.permitType
+        }
+
+        return h.view(pageId, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
-      mergeSubmission(request, {permitType: request.payload.permitType});
+      //mergeSubmission(request, {permitType: request.payload.permitType});
+      let submission = getSubmission(request) || {}
+
+      const isChange = submission.permitType && submission.permitType !== request.payload.permitType
+
+      if (isChange) {
+        //Clear the whole submission if the permit type has changed
+        submission = {}
+      }
+
+      submission.permitType = request.payload.permitType
+
+      try {
+        setSubmission(request, submission, pageId)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
+      if (isChange) {
+        setDataRemoved(request)
+      }
+
+      const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
+      if (exitChangeRouteUrl) {
+        return h.redirect(exitChangeRouteUrl)
+      }
 
       return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
     }
