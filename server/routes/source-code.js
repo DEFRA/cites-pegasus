@@ -200,6 +200,15 @@ function createModel(errors, data) {
           },
           checked: isChecked(data.sourceCode, "X")
         },
+        !(isAnimal) && {
+          value: "Y",
+          text: pageContent.radioOptionY,
+          hint: { html: pageContent.radioOptionYHint },
+          label: {
+            classes: "govuk-!-font-weight-bold"
+          },
+          checked: isChecked(data.sourceCode, "Y")
+        },
         {
           divider: pageContent.dividerText
         },
@@ -288,7 +297,7 @@ module.exports = [
         payload: Joi.object({
           sourceCode: Joi.string()
             .required()
-            .valid("W", "R", "D", "C", "F", "I", "O", "X", "A", "U"),
+            .valid("W", "R", "D", "C", "F", "I", "O", "X", "A", "U", "Y"),
           anotherSourceCodeForI: Joi.when("sourceCode", {
             is: "I",
             then: Joi.string().length(1).regex(ALPHA_REGEX).required()
@@ -315,7 +324,7 @@ module.exports = [
           .valid("W", "R", "D", "C", "F", "I", "O", "X", "U")
         const plantSchema = Joi.string()
           .required()
-          .valid("W", "D", "A", "I", "O", "X", "U")
+          .valid("W", "D", "A", "I", "O", "X", "U", "Y")
 
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
 

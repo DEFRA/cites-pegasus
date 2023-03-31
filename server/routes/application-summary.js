@@ -104,6 +104,9 @@ function createApplicationSummaryModel(errors, data) {
     case "X":
       sourceCodeValueText = pageContent.rowTextSourceCodeX
       break
+    case "Y":
+      sourceCodeValueText = pageContent.rowTextSourceCodeY
+      break
     case "U":
       sourceCodeValueText = data.species.enterAReason
       break
