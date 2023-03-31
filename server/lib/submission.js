@@ -240,10 +240,6 @@ function getAppFlow(submission) {
                             appFlow.push(`application-summary/check/${applicationIndex}`)
                             appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
-                            appFlow.push(`submit-applications`)
-                            appFlow.push(`submit-applications/are-you-sure/permit-type`)
-                            appFlow.push(`submit-applications/are-you-sure/remove/${applicationIndex}`)
-                            
                             completeApplications++
                         } else {
                             return appFlow
@@ -255,6 +251,8 @@ function getAppFlow(submission) {
                 
                 if (completeApplications > 0 && completeApplications === submission.applications.length) {
                     appFlow.push(`submit-applications`)
+                    appFlow.push(`submit-applications/are-you-sure/permit-type`)
+                    appFlow.push(`submit-applications/are-you-sure/remove`)
                     appFlow.push('upload-supporting-documents')
                 }
             }
