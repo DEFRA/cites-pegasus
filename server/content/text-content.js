@@ -856,7 +856,7 @@ const schema = Joi.object().keys({
     rowTextSpecimenTypePlantWorked: Joi.string().required(),
     rowTextSexMale: Joi.string().required(),
     rowTextSexFemale: Joi.string().required(),
-    rowTextSexUndetermined: Joi.string().required(),
+    rowTextNotKnown: Joi.string().required(),
     areYouSure: Joi.object({
       permitType: areYouSureSchema,
       scientificName: areYouSureSchema,
@@ -892,6 +892,7 @@ const schema = Joi.object().keys({
     defaultTitlePart2: Joi.string().required(),
     pageHeaderPart1: Joi.string().required(),
     pageHeaderPart2: Joi.string().required(),
+    pageBody: Joi.string().required(),
     errorMessages: Joi.object({
       "error.areYouSure.part1.any.required": Joi.string().required(),
       "error.areYouSure.part2.any.required": Joi.string().required(),

@@ -251,6 +251,8 @@ function getAppFlow(submission) {
                 
                 if (completeApplications > 0 && completeApplications === submission.applications.length) {
                     appFlow.push(`submit-applications`)
+                    appFlow.push(`submit-applications/are-you-sure/permit-type`)
+                    appFlow.push(`submit-applications/are-you-sure/remove`)
                     appFlow.push('upload-supporting-documents')
                 }
             }

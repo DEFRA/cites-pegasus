@@ -176,8 +176,8 @@ function createApplicationSummaryModel(errors, data) {
     sexDescription = pageContent.rowTextSexMale
   } else if (data.species.sex && data.species.sex === "F") {
     sexDescription = pageContent.rowTextSexFemale
-  } else if (data.species.sex && data.species.sex === "U") {
-    sexDescription = pageContent.rowTextSexUndetermined
+  } else if (data.species.sex && data.species.sex === "U"){
+    sexDescription = pageContent.rowTextNotKnown
   }
 
 
@@ -323,7 +323,7 @@ function createApplicationSummaryModel(errors, data) {
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type"))
   if (data.species.specimenType !== "animalLiving") {
-     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : commonContent.radioOptionNo, hrefPrefix + "/tradeTermCode", "trade term code"))
+     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code"))
   }
   if (data.permitType === "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for"))
@@ -347,7 +347,7 @@ function createApplicationSummaryModel(errors, data) {
   }
   if (data.permitType === "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextAcquiredDate, data.species.acquiredDate.isExactDateUnknown ? data.species.acquiredDate.approximateDate : getDateValue(data.species.acquiredDate), hrefPrefix + "/acquiredDate", "acquired date"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow("", pageContent.rowTextExistingArticle10Certificate, data.species.isA10CertificateNumberKnown ? data.species.a10CertificateNumber : commonContent.radioOptionNo, hrefPrefix + "/a10CertificateNumber", "existing a10 certificate"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("", pageContent.rowTextExistingArticle10Certificate, data.species.isA10CertificateNumberKnown ? data.species.a10CertificateNumber : pageContent.rowTextNotKnown, hrefPrefix + "/a10CertificateNumber", "existing a10 certificate"))
   }
 
   const summaryListSpecimenDetails = {
