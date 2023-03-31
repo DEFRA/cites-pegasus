@@ -138,7 +138,7 @@ function createModel(errors, data) {
     inputDescription: {
       name: "description",
       id: "description",
-      maxlength: 100,
+      maxlength: 500,
       hint: {
         text: pageContent.inputHintDescription
       },
@@ -273,7 +273,7 @@ module.exports = [
         payload: Joi.object({
           sex: Joi.string().required().valid("M", "F", "U"),
           parentDetails: Joi.string().min(3).max(250),
-          description: Joi.string().max(100).optional().allow(null, ""),
+          description: Joi.string().max(500).optional().allow(null, ""),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
           "dateOfBirth-year": Joi.number().optional().allow(null, ""),
