@@ -24,7 +24,14 @@
     homepageUrl: "#",
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
-    serviceUrl: "#"
+    serviceUrl: "#",
+    navigation: [
+    {
+      href: "/logout",
+      text: navigationSignOut,
+      classes: "govuk-header__link--logout"
+    }
+    ]
   }) }}
 {% if phaseBannerPhase != null %} 
     {{  govukPhaseBanner({
