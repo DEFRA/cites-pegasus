@@ -8,6 +8,12 @@ function getSubmission(request) {
     return lodash.cloneDeep(session)
 }
 
+function createSubmission(request) {
+    const submission = { contactId: request.auth.credentials.contactId, applications: [{ applicationIndex: 0 }] }
+    setYarValue(request, 'submission', submission)
+    return submission
+}
+
 function mergeSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
@@ -40,11 +46,22 @@ function clearSubmission(request) {
 function validateSubmission(submission, path) {
     const { appFlow, applicationStatuses } = getAppFlow(submission)
     //console.table(appFlow)
-    console.table(applicationStatuses)
-    if (!appFlow.includes(path)) {
-        throw `Invalid navigation to ${path}`
+    //console.table(applicationStatuses)
+    if (path) {
+        if (!appFlow.includes(path)) {
+            throw `Invalid navigation to ${path}`
+        }
     }
     return applicationStatuses
+}
+
+function createApplication(request) {
+    const submission = getSubmission(request)
+    const applications = submission.applications
+    const newApplication = { applicationIndex: applications.length }
+    applications.push(newApplication)
+    setYarValue(request, 'submission', submission)
+    return newApplication.applicationIndex
 }
 
 function cloneApplication(request, applicationIndex) {
@@ -60,12 +77,34 @@ function deleteApplication(request, applicationIndex) {
     const submission = getSubmission(request)
     const applications = submission.applications
     applications.splice(applicationIndex, 1)
-    
+
     // Update the applicationIndex of each remaining application to ensure no gaps
     applications.forEach((application, index) => {
         application.applicationIndex = index;
     })
     setYarValue(request, 'submission', submission)
+}
+
+function getCompletedApplications(submission, appStatuses) {
+    return submission.applications.filter(app => {
+        const status = appStatuses.find(status => status.applicationIndex === app.applicationIndex);
+        return status && status.status === 'complete';
+    });
+}
+
+function getNewestInProgressApplicationIndex (submission, applicationStatuses) {
+
+    let applicationIndex = 0
+
+    //Get the applicationStatus with the highest applicationIndex that is in-progress
+    const appInProgressIndex = applicationStatuses.sort((a,b) => b.applicationIndex - a.applicationIndex).find(item => item.status === 'in-progress')
+
+    if (appInProgressIndex) {
+        applicationIndex = appInProgressIndex.applicationIndex
+    } else if (applicationStatuses.length > 0) {
+        applicationIndex = applicationStatuses.length - 1
+    }
+    return applicationIndex
 }
 
 function getAppFlow(submission) {
@@ -240,8 +279,6 @@ function getAppFlow(submission) {
 
                         if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
                             appFlow.push(`permit-details/${applicationIndex}`)
-                        } else {
-                            return { appFlow, applicationStatuses }
                         }
 
                         if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
@@ -259,10 +296,11 @@ function getAppFlow(submission) {
                     }
                 })
 
-                if (completeApplications > 0 && completeApplications === submission.applications.length) {
+                if (completeApplications > 0) {
                     appFlow.push(`your-applications`)
                     appFlow.push(`your-applications/are-you-sure/permit-type`)
                     appFlow.push(`your-applications/are-you-sure/remove`)
+                    appFlow.push(`your-applications/create-application`)
                     appFlow.push('upload-supporting-documents')
                 }
             }
@@ -272,14 +310,18 @@ function getAppFlow(submission) {
 }
 
 module.exports = {
+    createSubmission,
     setSubmission,
     mergeSubmission,
     getSubmission,
     clearSubmission,
     validateSubmission,
+    createApplication,
     cloneApplication,
     deleteApplication,
     validateSubmission,
     cloneApplication,
-    deleteApplication
+    deleteApplication,
+    getCompletedApplications,
+    getNewestInProgressApplicationIndex
 }

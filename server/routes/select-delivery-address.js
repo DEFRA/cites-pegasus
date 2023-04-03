@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, getNewestInProgressApplicationIndex } = require('../lib/submission')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
@@ -81,21 +81,6 @@ function createModel(errors, data) {
     return { ...commonContent, ...model }
 }
 
-function getApplicationIndex (submission, path) {
-
-    const applicationStatuses = validateSubmission(submission, path)
-
-    let applicationIndex = 0
-
-    const appInProgressIndex = applicationStatuses.find(item => item.status === 'in-progress')
-    if (appInProgressIndex) {
-        applicationIndex = appInProgressIndex.applicationIndex
-    } else if (applicationStatuses.length > 0) {
-        applicationIndex = applicationStatuses.length - 1
-    }
-    return applicationIndex
-}
-
 module.exports = [{
     method: 'GET',
     path: `${currentPath}`,
@@ -148,8 +133,8 @@ module.exports = [{
             const submission = getSubmission(request)
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
-                        
-            const applicationIndex = getApplicationIndex(submission, pageId)
+            const appStatuses = validateSubmission(submission, pageId)            
+            const applicationIndex = getNewestInProgressApplicationIndex(submission, appStatuses)
 
             let nextPath = `${urlPrefix}/species-name/${applicationIndex}`
 

@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, setSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, setSubmission, createSubmission, validateSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
@@ -127,13 +127,17 @@ module.exports = [{
     },
     handler: async (request, h) => {
       //mergeSubmission(request, {permitType: request.payload.permitType});
-      let submission = getSubmission(request) || {}
+      let submission = getSubmission(request)
+
+      if (!submission) {
+        submission = createSubmission(request)
+      }
 
       const isChange = submission.permitType && submission.permitType !== request.payload.permitType
 
       if (isChange) {
         //Clear the whole submission if the permit type has changed
-        submission = {}
+        submission = createSubmission(request)
       }
 
       submission.permitType = request.payload.permitType

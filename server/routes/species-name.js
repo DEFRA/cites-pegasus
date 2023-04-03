@@ -86,21 +86,11 @@ module.exports = [
         submission.applications = []
       }
 
-      if (submission.applications.length < applicationIndex) {
+      if(applicationIndex + 1 > submission.applications.length) {
         console.log("Invalid application index")
         return h.redirect(invalidSubmissionPath)
       }
 
-      if (submission.applications.length < applicationIndex + 1) {
-        submission.applications.push({ applicationIndex: applicationIndex })
-
-        try {
-          mergeSubmission(request, submission)
-        } catch (err) {
-          console.log(err)
-          return h.redirect(invalidSubmissionPath)
-        }
-      }
 
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)

@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, getNewestInProgressApplicationIndex } = require('../lib/submission')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
@@ -75,21 +75,6 @@ function createModel(errors, data) {
         changeAddressLink: `/postcode/${data.contactType}`,
     }
     return { ...commonContent, ...model }
-}
-
-function getApplicationIndex (submission, path) {
-
-    const applicationStatuses = validateSubmission(submission, path)
-
-    let applicationIndex = 0
-
-    const appInProgressIndex = applicationStatuses.find(item => item.status === 'in-progress')
-    if (appInProgressIndex) {
-        applicationIndex = appInProgressIndex
-    } else if (applicationStatuses.length > 0) {
-        applicationIndex = applicationStatuses.length - 1
-    }
-    return applicationIndex
 }
 
 module.exports = [{
@@ -178,7 +163,8 @@ module.exports = [{
             } else if (contactType === 'applicant') {
                 nextPath = `${urlPrefix}/select-delivery-address`                
             } else {
-                const applicationIndex = getApplicationIndex(submission, `${pageId}/${contactType}`)
+                const appStatuses = validateSubmission(submission, null)            
+                const applicationIndex = getNewestInProgressApplicationIndex(submission, appStatuses)
                 nextPath = `${urlPrefix}/species-name/${applicationIndex}`
             }
 
