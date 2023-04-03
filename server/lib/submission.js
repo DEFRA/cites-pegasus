@@ -254,7 +254,8 @@ function getAppFlow(submission) {
                     appFlow.push(`submit-applications/are-you-sure/permit-type`)
                     appFlow.push(`submit-applications/are-you-sure/remove`)
                     appFlow.push('upload-supporting-documents')
-                }
+                    appFlow.push('declaration')
+                } 
             }
         }
     }

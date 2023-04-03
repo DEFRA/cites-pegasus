@@ -13,6 +13,7 @@
     "finishButton": "Finish",
     "copyButton": "Copy",
     "removeButton": "Remove",
+    "agreeAndSubmitButton": "Agree and submit",
     "errorSummaryTitlePrefix": "Error: ",
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
@@ -1202,6 +1203,23 @@
         "error.areYouSure.any.required": "Select yes if you want to change the permit type"
       }
     }
+  },
+  "declaration": {
+    "defaultTitle": "Declaration",
+    "pageHeader": "Declaration",
+    "pageBodyAgent": "By submitting, you agree that:",
+    "pageBodyApplicant": "By submitting, you agree that the information you have provided is correct.",
+    "bulletListItems": [
+      {
+        "bulletListItem": "the information you have provided is correct"
+      },
+      {
+        "bulletListItem": "you have the owner’s permission to apply on their behalf"
+      }
+    ],
+    "checkboxLabelIAgree": "I agree",
+    "errorMessages": {
+      "error.declaration.any.required": "You must agree to the declaration"
+    }
   }
- 
 }
