@@ -83,4 +83,13 @@ async function getSpecies(request, speciesName) {
   }
 }
 
-module.exports = { whoAmI, getSpecies }
+//Stubs
+async function getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize) {
+  return [
+    { submissionId: 'AB1234', status: 'Received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' }, 
+    { submissionId: 'CD5678', status: 'Awaiting payment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'EF9012', status: 'Issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'article10'  }
+  ]
+}
+
+module.exports = { whoAmI, getSpecies, getSubmissions }

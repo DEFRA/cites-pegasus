@@ -81,6 +81,21 @@ function createModel(errors, data) {
     return { ...commonContent, ...model }
 }
 
+function getApplicationIndex (submission, path) {
+
+    const applicationStatuses = validateSubmission(submission, path)
+
+    let applicationIndex = 0
+
+    const appInProgressIndex = applicationStatuses.find(item => item.status === 'in-progress')
+    if (appInProgressIndex) {
+        applicationIndex = appInProgressIndex.applicationIndex
+    } else if (applicationStatuses.length > 0) {
+        applicationIndex = applicationStatuses.length - 1
+    }
+    return applicationIndex
+}
+
 module.exports = [{
     method: 'GET',
     path: `${currentPath}`,
@@ -133,8 +148,10 @@ module.exports = [{
             const submission = getSubmission(request)
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
+                        
+            const applicationIndex = getApplicationIndex(submission, pageId)
 
-            let nextPath = `${urlPrefix}/species-name/0`
+            let nextPath = `${urlPrefix}/species-name/${applicationIndex}`
 
             switch (deliveryAddressOption) {
                 case 'applicant':
@@ -166,7 +183,7 @@ module.exports = [{
 
 
             try {
-                mergeSubmission(request, newSubmission, `${pageId}`)
+                mergeSubmission(request, newSubmission, pageId)
             }
             catch (err) {
                 console.log(err);

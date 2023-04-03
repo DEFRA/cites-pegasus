@@ -30,7 +30,7 @@ const routes = [].concat(
   require('../routes/permit-details'),
   require('../routes/comments'),
   require('../routes/application-summary'),
-  require('../routes/submit-applications'),
+  require('../routes/your-applications'),
   require('../routes/upload-supporting-documents'),
   require('../routes/public'),
   require('../routes/test'),

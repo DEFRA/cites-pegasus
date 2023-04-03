@@ -77,6 +77,21 @@ function createModel(errors, data) {
     return { ...commonContent, ...model }
 }
 
+function getApplicationIndex (submission, path) {
+
+    const applicationStatuses = validateSubmission(submission, path)
+
+    let applicationIndex = 0
+
+    const appInProgressIndex = applicationStatuses.find(item => item.status === 'in-progress')
+    if (appInProgressIndex) {
+        applicationIndex = appInProgressIndex
+    } else if (applicationStatuses.length > 0) {
+        applicationIndex = applicationStatuses.length - 1
+    }
+    return applicationIndex
+}
+
 module.exports = [{
     method: 'GET',
     path: `${currentPath}/{contactType}`,
@@ -134,7 +149,7 @@ module.exports = [{
         },
         handler: async (request, h) => {
             const submission = getSubmission(request)
-            const {contactType} = request.params
+            const { contactType } = request.params
             const { candidateAddressData } = submission[contactType]
 
             const newSubmission = {
@@ -143,25 +158,28 @@ module.exports = [{
                 }
             }
 
-            if(candidateAddressData.addressOption){
+            if (candidateAddressData.addressOption) {
                 newSubmission[contactType].addressOption = candidateAddressData.addressOption
             }
-            
+
             try {
-                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)            
+                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidSubmissionPath}/`)
             }
 
+            
+
             let nextPath = ''
             if (contactType === 'agent') {
                 nextPath = `${urlPrefix}/contact-details/applicant`
             } else if (contactType === 'applicant') {
-                nextPath = `${urlPrefix}/select-delivery-address`
+                nextPath = `${urlPrefix}/select-delivery-address`                
             } else {
-                nextPath = `${urlPrefix}/species-name/0`
+                const applicationIndex = getApplicationIndex(submission, `${pageId}/${contactType}`)
+                nextPath = `${urlPrefix}/species-name/${applicationIndex}`
             }
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)

@@ -38,30 +38,38 @@ function clearSubmission(request) {
 }
 
 function validateSubmission(submission, path) {
-    const appFlow = getAppFlow(submission)
-    console.table(appFlow)
+    const { appFlow, applicationStatuses } = getAppFlow(submission)
+    //console.table(appFlow)
+    console.table(applicationStatuses)
     if (!appFlow.includes(path)) {
         throw `Invalid navigation to ${path}`
     }
+    return applicationStatuses
 }
 
 function cloneApplication(request, applicationIndex) {
     const submission = getSubmission(request)
-    const applications= submission.applications
-    const clonedApplication = {...applications[applicationIndex], applicationIndex: applications.length}
+    const applications = submission.applications
+    const clonedApplication = { ...applications[applicationIndex], applicationIndex: applications.length }
     applications.push(clonedApplication)
     setYarValue(request, 'submission', submission)
-    return applications.length - 1
+    return clonedApplication.applicationIndex
 }
 
 function deleteApplication(request, applicationIndex) {
     const submission = getSubmission(request)
     const applications = submission.applications
     applications.splice(applicationIndex, 1)
+    
+    // Update the applicationIndex of each remaining application to ensure no gaps
+    applications.forEach((application, index) => {
+        application.applicationIndex = index;
+    })
     setYarValue(request, 'submission', submission)
 }
 
 function getAppFlow(submission) {
+    let applicationStatuses = []
     let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
 
@@ -78,15 +86,15 @@ function getAppFlow(submission) {
                     if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/agent')
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
                     if (submission.agent.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/agent')
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
                 } else {
-                    return appFlow
+                    return { appFlow, applicationStatuses }
                 }
             }
 
@@ -103,7 +111,7 @@ function getAppFlow(submission) {
                     }
                 }
             } else {
-                return appFlow
+                return { appFlow, applicationStatuses }
             }
 
             if (submission.applicant?.address) {
@@ -117,17 +125,18 @@ function getAppFlow(submission) {
                     appFlow.push('confirm-address/delivery')
                 }
             } else {
-                return appFlow
+                return { appFlow, applicationStatuses }
             }
 
             if (submission.delivery?.address) {
                 appFlow.push('species-name/0')
             } else {
-                return appFlow
+                return { appFlow, applicationStatuses }
             }
             let completeApplications = 0
             if (submission.applications?.length > 0) {
                 submission.applications.forEach((application, applicationIndex) => {
+                    applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
                     if (applicationIndex > 0) {
                         appFlow.push(`species-name/${applicationIndex}`)
                     }
@@ -135,9 +144,9 @@ function getAppFlow(submission) {
                     if (application.species?.speciesName) {
                         appFlow.push(`source-code/${applicationIndex}`)
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
-                    
+
                     const species = application.species
                     if (species.sourceCode) {
                         if (submission.permitType === "article10") {
@@ -146,13 +155,13 @@ function getAppFlow(submission) {
                             appFlow.push(`purpose-code/${applicationIndex}`)
                         }
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
 
                     if (species.purposeCode || species.useCertificateFor) {
                         appFlow.push(`specimen-type/${applicationIndex}`)
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
 
                     if (species.specimenType) {
@@ -165,13 +174,13 @@ function getAppFlow(submission) {
                                     if (species.numberOfUnmarkedSpecimens) {
                                         appFlow.push(`describe-specimen/${applicationIndex}`)
                                     } else {
-                                        return appFlow
+                                        return { appFlow, applicationStatuses }
                                     }
                                 } else {
                                     appFlow.push(`describe-living-animal/${applicationIndex}`)
                                 }
                             } else {
-                                return appFlow
+                                return { appFlow, applicationStatuses }
                             }
 
 
@@ -184,30 +193,30 @@ function getAppFlow(submission) {
                                     if (species.createdDate) {
                                         appFlow.push(`trade-term-code/${applicationIndex}`)
                                     } else {
-                                        return appFlow
+                                        return { appFlow, applicationStatuses }
                                     }
                                 } else {
                                     appFlow.push(`trade-term-code/${applicationIndex}`)
                                 }
                             } else {
-                                return appFlow
+                                return { appFlow, applicationStatuses }
                             }
 
 
                             if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
                                 appFlow.push(`unique-identification-mark/${applicationIndex}`)
                             } else {
-                                return appFlow
+                                return { appFlow, applicationStatuses }
                             }
 
                             if (species.uniqueIdentificationMarkType) {
                                 appFlow.push(`describe-specimen/${applicationIndex}`)
                             } else {
-                                return appFlow
+                                return { appFlow, applicationStatuses }
                             }
                         }
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
 
                     if (species.specimenDescriptionGeneric || species.sex) {
@@ -217,12 +226,12 @@ function getAppFlow(submission) {
                             if (species.acquiredDate) {
                                 appFlow.push(`already-have-a10/${applicationIndex}`)
                             } else {
-                                return appFlow
+                                return { appFlow, applicationStatuses }
                             }
                             if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
                                 appFlow.push(`ever-imported-exported/${applicationIndex}`)
                             } else {
-                                return appFlow
+                                return { appFlow, applicationStatuses }
                             }
 
                         } else { //Not article 10 flow
@@ -232,7 +241,7 @@ function getAppFlow(submission) {
                         if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
                             appFlow.push(`permit-details/${applicationIndex}`)
                         } else {
-                            return appFlow
+                            return { appFlow, applicationStatuses }
                         }
 
                         if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
@@ -241,24 +250,25 @@ function getAppFlow(submission) {
                             appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
                             completeApplications++
+                            applicationStatuses[applicationIndex].status = 'complete'
                         } else {
-                            return appFlow
+                            return { appFlow, applicationStatuses }
                         }
                     } else {
-                        return appFlow
+                        return { appFlow, applicationStatuses }
                     }
                 })
-                
+
                 if (completeApplications > 0 && completeApplications === submission.applications.length) {
-                    appFlow.push(`submit-applications`)
-                    appFlow.push(`submit-applications/are-you-sure/permit-type`)
-                    appFlow.push(`submit-applications/are-you-sure/remove`)
+                    appFlow.push(`your-applications`)
+                    appFlow.push(`your-applications/are-you-sure/permit-type`)
+                    appFlow.push(`your-applications/are-you-sure/remove`)
                     appFlow.push('upload-supporting-documents')
                 }
             }
         }
     }
-    return appFlow
+    return { appFlow, applicationStatuses }
 }
 
 module.exports = {
