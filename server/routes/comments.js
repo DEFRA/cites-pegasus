@@ -93,7 +93,7 @@ module.exports = [
       const submission = getSubmission(request)
 
       try {
-        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
