@@ -37,3 +37,9 @@ ul.smaller-indent {
 .border-top {
     border-top: 1px solid #b1b4b6;
 }
+
+.govuk-header__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

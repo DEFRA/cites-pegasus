@@ -201,6 +201,7 @@ const schema = Joi.object().keys({
     serviceName: Joi.string().required(),
     phaseBannerPhase: Joi.string().required(),
     phaseBannerHTML: Joi.string().required(),
+    navigationSignOut: Joi.string().required(),
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
@@ -210,6 +211,7 @@ const schema = Joi.object().keys({
     finishButton: Joi.string().required(),
     copyButton: Joi.string().required(),
     removeButton: Joi.string().required(),
+    agreeAndSubmitButton: Joi.string().required(),
     errorSummaryTitlePrefix: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
@@ -902,6 +904,19 @@ const schema = Joi.object().keys({
     }).required()
   }).required(),
   areYouSurePermitType: areYouSureSchema,
+  }).required(),
+  declaration: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBodyAgent: Joi.string().required(),
+    pageBodyApplicant: Joi.string().required(),
+    bulletListItems: Joi.array().items(
+      Joi.object().keys({ bulletListItem: Joi.string().required() })
+    ),
+    checkboxLabelIAgree: Joi.string().required(),
+    errorMessages: Joi.object({
+     "error.declaration.any.required": Joi.string().required(),
+    }).required(), 
   }).required(),
 })
 

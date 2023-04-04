@@ -3,6 +3,7 @@
     "serviceName": "Apply for a CITES permit",
     "phaseBannerPhase": "beta",
     "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
+    "navigationSignOut": "Sign out",
     "backLinkButton": "Back",
     "continueButton": "Continue",
     "confirmButton": "Confirm",
@@ -12,6 +13,7 @@
     "finishButton": "Finish",
     "copyButton": "Copy",
     "removeButton": "Remove",
+    "agreeAndSubmitButton": "Agree and submit",
     "errorSummaryTitlePrefix": "Error: ",
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
@@ -712,7 +714,7 @@
       "error.parentDetails.string.empty": "Enter the parent details",
       "error.parentDetails.string.min": "Parent details must be 3 characters or more",
       "error.parentDetails.string.max": "Parent details must be 250 characters or less",
-      "error.description.string.max": "Description must be 100 characters or less",
+      "error.description.string.max": "Description must be 500 characters or less",
       "error.dateOfBirth.any.future": "Date of birth must be in the past",
       "error.dateOfBirth.any.invalid": "Enter a real date of birth",
       "error.dateOfBirth-day.number.base": "Date of birth must only include numbers 0 to 9",
@@ -1202,6 +1204,23 @@
         "error.areYouSure.any.required": "Select yes if you want to change the permit type"
       }
     }
+  },
+  "declaration": {
+    "defaultTitle": "Declaration",
+    "pageHeader": "Declaration",
+    "pageBodyAgent": "By submitting, you agree that:",
+    "pageBodyApplicant": "By submitting, you agree that the information you have provided is correct.",
+    "bulletListItems": [
+      {
+        "bulletListItem": "the information you have provided is correct"
+      },
+      {
+        "bulletListItem": "you have the owner’s permission to apply on their behalf"
+      }
+    ],
+    "checkboxLabelIAgree": "I agree",
+    "errorMessages": {
+      "error.declaration.any.required": "You must agree to the declaration"
+    }
   }
- 
 }

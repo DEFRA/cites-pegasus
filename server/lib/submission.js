@@ -302,7 +302,8 @@ function getAppFlow(submission) {
                     appFlow.push(`your-submission/are-you-sure/remove`)
                     appFlow.push(`your-submission/create-application`)
                     appFlow.push('upload-supporting-documents')
-                }
+                    appFlow.push('declaration')
+                } 
             }
         }
     }
