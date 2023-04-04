@@ -231,8 +231,6 @@ function getAppFlow(submission) {
 
                         if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
                             appFlow.push(`permit-details/${applicationIndex}`)
-                        } else {
-                            return appFlow
                         }
 
                         if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
@@ -254,7 +252,8 @@ function getAppFlow(submission) {
                     appFlow.push(`submit-applications/are-you-sure/permit-type`)
                     appFlow.push(`submit-applications/are-you-sure/remove`)
                     appFlow.push('upload-supporting-documents')
-                }
+                    appFlow.push('declaration')
+                } 
             }
         }
     }
