@@ -6,7 +6,6 @@
     "backLinkButton": "Back",
     "continueButton": "Continue",
     "confirmButton": "Confirm",
-    "confirmAndSubmitButton": "Confirm and submit",
     "submitButton": "Submit",
     "searchButton": "Search",
     "startButton": "Start now",
@@ -51,7 +50,7 @@
     "bullet1": "import, export or re-export permits",
     "bullet2": "article 10 certificates",
     "link": "<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>Check how to apply for other CITES permits and certificates</a>",
-    "finishButtonUrl": "/your-applications"
+    "finishButtonUrl": "/your-submission"
   },
   "applyingOnBehalf": {
     "defaultTitle": "Are you applying on behalf of someone else?",
@@ -969,6 +968,7 @@
     "pageHeader": "Check and confirm application details",
     "headerPermit": "About the permit",
     "rowTextPermitType": "Permit type",
+    "confirmYourApplicationButton": "Confirm your application",
     "headerYourContactDetails": "Your contact details",
     "headerApplicantContactDetails": "Applicant's contact details",
     "headerImporterContactDetails": "Importer’s contact details",
@@ -1156,7 +1156,7 @@
       }
     }
   },
-  "submitApplications": {
+  "yourSubmission": {
     "common": {
       "tableHeadScientificName": "Scientific name",
       "tableHeadQuantity": "Quantity",

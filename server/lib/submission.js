@@ -297,10 +297,10 @@ function getAppFlow(submission) {
                 })
 
                 if (completeApplications > 0) {
-                    appFlow.push(`your-applications`)
-                    appFlow.push(`your-applications/are-you-sure/permit-type`)
-                    appFlow.push(`your-applications/are-you-sure/remove`)
-                    appFlow.push(`your-applications/create-application`)
+                    appFlow.push(`your-submission`)
+                    appFlow.push(`your-submission/are-you-sure/permit-type`)
+                    appFlow.push(`your-submission/are-you-sure/remove`)
+                    appFlow.push(`your-submission/create-application`)
                     appFlow.push('upload-supporting-documents')
                 }
             }

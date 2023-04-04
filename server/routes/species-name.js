@@ -11,6 +11,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const nextPath = `${urlPrefix}/source-code`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
+const yourSubmission = `${urlPrefix}/your-submission`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -36,7 +37,7 @@ function createModel(errors, data) {
       }
     })
   }
-  const defaultBacklink = previousPath
+  const defaultBacklink = data.applicationIndex === 0 ? previousPath : yourSubmission
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {

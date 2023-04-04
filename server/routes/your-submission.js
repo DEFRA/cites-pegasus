@@ -3,7 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications } = require('../lib/submission')
 const textContent = require('../content/text-content')
-const pageId = 'your-applications'
+const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
@@ -18,20 +18,20 @@ function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
   
   let pageContent = null
-  const submitApplicationsText = lodash.cloneDeep(textContent.submitApplications) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+  const yourSubmissionText = lodash.cloneDeep(textContent.yourSubmission) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
   switch (data.permitType) {
     case "import":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.importApplications)
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications)
       break
     case "export":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.importApplications) 
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications) 
       break
     case "reexport":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.reexportApplications)
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.reexportApplications)
       break
     case "article10":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.article10Applications)
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.article10Applications)
       break
   }
 
