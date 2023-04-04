@@ -1,9 +1,9 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, cloneApplication, deleteApplication} = require('../lib/submission')
+const { getSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications } = require('../lib/submission')
 const textContent = require('../content/text-content')
-const pageId = 'submit-applications'
+const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
@@ -18,20 +18,20 @@ function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
   
   let pageContent = null
-  const submitApplicationsText = lodash.cloneDeep(textContent.submitApplications) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+  const yourSubmissionText = lodash.cloneDeep(textContent.yourSubmission) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
   switch (data.permitType) {
     case "import":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.importApplications)
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications)
       break
     case "export":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.importApplications) 
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications) 
       break
     case "reexport":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.reexportApplications)
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.reexportApplications)
       break
     case "article10":
-      pageContent = lodash.merge(submitApplicationsText.common, submitApplicationsText.article10Applications)
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.article10Applications)
       break
   }
 
@@ -73,7 +73,7 @@ function createSubmitApplicationModel(errors, data) {
     tableHeadUnitOfMeasurement: pageContent.tableHeadUnitOfMeasurement,
     applicationsData : applicationsTableData,
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
-    addAnotherSpeciesUrl: `${urlPrefix}/species-name/${data.applications.length}`,
+    addAnotherSpeciesUrl: `${currentPath}/create-application`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
     applyForADifferentTypeOfPermitUrl: `${currentPath}/${areYouSurePath}/permit-type`,
   }
@@ -164,17 +164,20 @@ module.exports = [
     path: currentPath,
     handler: async (request, h) => {
       const submission = getSubmission(request)
-      const applications= submission.applications
+      let appStatuses = null
 
       try {
-        validateSubmission(submission, pageId)
+        appStatuses = validateSubmission(submission, pageId)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
+
+      const completeApplications = getCompletedApplications(submission, appStatuses)
+
       const pageData = {
         permitType: submission.permitType,
-        applications : applications
+        applications : completeApplications
       }
       return h.view(pageId, createSubmitApplicationModel(null, pageData))
     }
@@ -199,6 +202,25 @@ module.exports = [
     }
   },
   //GET for are you page from remove button
+  {
+    method: "GET",
+    path: `${currentPath}/create-application`,
+    handler: async (request, h) => {
+      const submission = getSubmission(request)
+      const applications = submission.applications
+     
+      try {
+        validateSubmission(submission, `${pageId}/create-application`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+      
+      const applicationIndex = createApplication(request)
+
+      return h.redirect(`${nextPathspeciesName}/${applicationIndex}`)
+    }
+  },
   {
     method: "GET",
     path: `${currentPath}/${areYouSurePath}/remove/{applicationIndex}`,
@@ -241,9 +263,12 @@ module.exports = [
       validate: {
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
+          const appStatuses = validateSubmission(submission, null)
+          const completeApplications = getCompleteApplications(submission, appStatuses)
+
           const pageData = {
             permitType: submission.permitType,
-            applications : applications
+            applications : completeApplications
           }
           return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
         }

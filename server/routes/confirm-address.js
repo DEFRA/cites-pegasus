@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, getNewestInProgressApplicationIndex } = require('../lib/submission')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
@@ -134,7 +134,7 @@ module.exports = [{
         },
         handler: async (request, h) => {
             const submission = getSubmission(request)
-            const {contactType} = request.params
+            const { contactType } = request.params
             const { candidateAddressData } = submission[contactType]
 
             const newSubmission = {
@@ -143,25 +143,29 @@ module.exports = [{
                 }
             }
 
-            if(candidateAddressData.addressOption){
+            if (candidateAddressData.addressOption) {
                 newSubmission[contactType].addressOption = candidateAddressData.addressOption
             }
-            
+
             try {
-                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)            
+                mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
             catch (err) {
                 console.log(err);
                 return h.redirect(`${invalidSubmissionPath}/`)
             }
 
+            
+
             let nextPath = ''
             if (contactType === 'agent') {
                 nextPath = `${urlPrefix}/contact-details/applicant`
             } else if (contactType === 'applicant') {
-                nextPath = `${urlPrefix}/select-delivery-address`
+                nextPath = `${urlPrefix}/select-delivery-address`                
             } else {
-                nextPath = `${urlPrefix}/species-name/0`
+                const appStatuses = validateSubmission(submission, null)            
+                const applicationIndex = getNewestInProgressApplicationIndex(submission, appStatuses)
+                nextPath = `${urlPrefix}/species-name/${applicationIndex}`
             }
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)

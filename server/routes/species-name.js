@@ -11,6 +11,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const nextPath = `${urlPrefix}/source-code`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
+const yourSubmission = `${urlPrefix}/your-submission`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -36,7 +37,7 @@ function createModel(errors, data) {
       }
     })
   }
-  const defaultBacklink = previousPath
+  const defaultBacklink = data.applicationIndex === 0 ? previousPath : yourSubmission
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -86,21 +87,11 @@ module.exports = [
         submission.applications = []
       }
 
-      if (submission.applications.length < applicationIndex) {
+      if(applicationIndex + 1 > submission.applications.length) {
         console.log("Invalid application index")
         return h.redirect(invalidSubmissionPath)
       }
 
-      if (submission.applications.length < applicationIndex + 1) {
-        submission.applications.push({ applicationIndex: applicationIndex })
-
-        try {
-          mergeSubmission(request, submission)
-        } catch (err) {
-          console.log(err)
-          return h.redirect(invalidSubmissionPath)
-        }
-      }
 
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)

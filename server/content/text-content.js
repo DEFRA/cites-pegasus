@@ -205,7 +205,6 @@ const schema = Joi.object().keys({
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
-    confirmAndSubmitButton: Joi.string().required(),
     submitButton: Joi.string().required(),
     searchButton: Joi.string().required(),
     startButton: Joi.string().required(),
@@ -783,6 +782,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     headerPermit: Joi.string().required(),
     rowTextPermitType: Joi.string().required(),
+    confirmYourApplicationButton: Joi.string().required(),
     headerYourContactDetails: Joi.string().required(),
     headerApplicantContactDetails: Joi.string().required(),
     headerExportOrReexporterContactDetails: Joi.string().required(),
@@ -878,7 +878,7 @@ const schema = Joi.object().keys({
       article10Address: areYouSureSchema
     }).required(),
   }).required(),
-  submitApplications: Joi.object({
+  yourSubmission: Joi.object({
     common: Joi.object({
       tableHeadScientificName: Joi.string(),
       tableHeadQuantity: Joi.string(),

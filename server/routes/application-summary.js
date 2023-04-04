@@ -7,7 +7,7 @@ const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/comments`
-const nextPath = `${urlPrefix}/submit-applications` //TO DO
+const nextPath = `${urlPrefix}/your-submission`
 const invalidSubmissionPath = urlPrefix
 const summaryTypes = ['check', 'view', 'copy']
 
@@ -389,6 +389,7 @@ function createApplicationSummaryModel(errors, data) {
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     pageHeader: pageContent.pageHeader,
+    confirmYourApplicationButton: pageContent.confirmYourApplicationButton,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     pageTitle: pageContent.defaultTitle,
     headerPermit: pageContent.headerPermit,
