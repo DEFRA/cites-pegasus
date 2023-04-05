@@ -89,7 +89,7 @@ function createAreYouSureModel(errors, data) {
   let pageBody = null
   let errorMessageRemove = null
   if(data.confirmType === 'remove') {
-    pageContent = textContent.submitApplications.areYouSureRemove,
+    pageContent = textContent.yourSubmission.areYouSureRemove,
     defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`
     pageBody = data.applications.length === 1 ? pageContent.pageBody : ""
@@ -98,7 +98,7 @@ function createAreYouSureModel(errors, data) {
       'error.areYouSure.any.required': `${pageContent.errorMessages['error.areYouSure.part1.any.required']} ${data.speciesName} ${pageContent.errorMessages['error.areYouSure.part2.any.required']}`
     } 
   } else {
-    pageContent = textContent.submitApplications.areYouSurePermitType,
+    pageContent = textContent.yourSubmission.areYouSurePermitType,
     defaultTitle = pageContent.defaultTitle
     pageHeader =pageContent.pageHeader
     pageBody= `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}`
@@ -207,14 +207,20 @@ module.exports = [
     path: `${currentPath}/create-application`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
-     
+      let appStatuses = null
       try {
-        validateSubmission(submission, `${pageId}/create-application`)
+        appStatuses = validateSubmission(submission, `${pageId}/create-application`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
-      }
+      }      
       
+      const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
+      
+      if(inProgressAppStatus) {
+        return h.redirect(`${nextPathspeciesName}/${inProgressAppStatus.applicationIndex}`)
+      }
+
       const applicationIndex = createApplication(request)
       return h.redirect(`${nextPathSpeciesName}/${applicationIndex}`)
     }

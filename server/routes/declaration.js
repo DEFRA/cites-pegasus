@@ -101,13 +101,16 @@ module.exports = [
       },
       handler: async (request, h) => {
         const submission = getSubmission(request)
-        submission.declaration = request.payload.declaration
-        try {
-          mergeSubmission(request, submission, pageId )
-        } catch (err) {
-          console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
-        }
+
+        //TODO: ADD CALL TO DYNAMICS TO SUBMIT THE SUBMISSION
+
+        // submission.declaration = request.payload.declaration
+        // try {
+        //   mergeSubmission(request, submission, pageId )
+        // } catch (err) {
+        //   console.log(err)
+        //   return h.redirect(`${invalidSubmissionPath}/`)
+        // }
         
         return h.redirect(nextPath)
       }
