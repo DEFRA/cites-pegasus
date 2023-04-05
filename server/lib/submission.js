@@ -92,8 +92,8 @@ function getCompletedApplications(submission, appStatuses) {
     });
 }
 
-function getNewestInProgressApplicationIndex (submission, applicationStatuses) {
-
+function getApplicationIndex (submission, applicationStatuses) {
+    //This function should be used as a last resort to get the applicationIndex when the applicationIndex is not available in the URL
     let applicationIndex = 0
 
     //Get the applicationStatus with the highest applicationIndex that is in-progress
@@ -324,5 +324,5 @@ module.exports = {
     cloneApplication,
     deleteApplication,
     getCompletedApplications,
-    getNewestInProgressApplicationIndex
+    getApplicationIndex
 }
