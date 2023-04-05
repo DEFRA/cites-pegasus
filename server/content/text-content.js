@@ -191,7 +191,7 @@ const areYouSureSchema = Joi.object({
   }).required()
 }).required()
 
-const submitApplicationsSchema = Joi.object({
+const yourSubmissionSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   pageHeader: Joi.string().required(),
 }).required()
@@ -840,7 +840,7 @@ const schema = Joi.object().keys({
     rowTextSourceCodeX: Joi.string().required(),
     rowTextSourceCodeY: Joi.string().required(),
     rowTextPurposeCodeB: Joi.string().required(),
-    rowTextPurposeCodeE:Joi.string().required(),
+    rowTextPurposeCodeE: Joi.string().required(),
     rowTextPurposeCodeG: Joi.string().required(),
     rowTextPurposeCodeH: Joi.string().required(),
     rowTextPurposeCodeL: Joi.string().required(),
@@ -888,22 +888,22 @@ const schema = Joi.object().keys({
       addAnotherSpeciesLinkText: Joi.string(),
       applyForADifferentTypeOfPermitLinkText: Joi.string()
     }).required(),
-  importApplications : submitApplicationsSchema,
-  exportApplications : submitApplicationsSchema,
-  reexportApplications : submitApplicationsSchema,
-  article10Applications : submitApplicationsSchema, 
-  areYouSureRemove: Joi.object({
-    defaultTitlePart1: Joi.string().required(),
-    defaultTitlePart2: Joi.string().required(),
-    pageHeaderPart1: Joi.string().required(),
-    pageHeaderPart2: Joi.string().required(),
-    pageBody: Joi.string().required(),
-    errorMessages: Joi.object({
-      "error.areYouSure.part1.any.required": Joi.string().required(),
-      "error.areYouSure.part2.any.required": Joi.string().required(),
-    }).required()
-  }).required(),
-  areYouSurePermitType: areYouSureSchema,
+    importApplications: yourSubmissionSchema,
+    exportApplications: yourSubmissionSchema,
+    reexportApplications: yourSubmissionSchema,
+    article10Applications: yourSubmissionSchema,
+    areYouSureRemove: Joi.object({
+      defaultTitlePart1: Joi.string().required(),
+      defaultTitlePart2: Joi.string().required(),
+      pageHeaderPart1: Joi.string().required(),
+      pageHeaderPart2: Joi.string().required(),
+      pageBody: Joi.string().required(),
+      errorMessages: Joi.object({
+        "error.areYouSure.part1.any.required": Joi.string().required(),
+        "error.areYouSure.part2.any.required": Joi.string().required(),
+      }).required()
+    }).required(),
+    areYouSurePermitType: areYouSureSchema,
   }).required(),
   declaration: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -915,8 +915,8 @@ const schema = Joi.object().keys({
     ),
     checkboxLabelIAgree: Joi.string().required(),
     errorMessages: Joi.object({
-     "error.declaration.any.required": Joi.string().required(),
-    }).required(), 
+      "error.declaration.any.required": Joi.string().required(),
+    }).required(),
   }).required(),
 })
 

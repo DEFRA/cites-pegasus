@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, getNewestInProgressApplicationIndex } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex } = require('../lib/submission')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
@@ -134,7 +134,7 @@ module.exports = [{
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
             const appStatuses = validateSubmission(submission, pageId)            
-            const applicationIndex = getNewestInProgressApplicationIndex(submission, appStatuses)
+            const applicationIndex = getApplicationIndex(submission, appStatuses)
 
             let nextPath = `${urlPrefix}/species-name/${applicationIndex}`
 
