@@ -9,7 +9,7 @@ const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/check`//TO DO
 const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
-const nextPathspeciesName = `${urlPrefix}/species-name`
+const nextPathSpeciesName = `${urlPrefix}/species-name`
 const areYouSurePath= `are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = urlPrefix
@@ -201,13 +201,12 @@ module.exports = [
       return h.view(areYouSurePath, createAreYouSureModel(null, pageData))
     }
   },
-  //GET for are you page from remove button
+  //GET for Add another species link
   {
     method: "GET",
     path: `${currentPath}/create-application`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
-      const applications = submission.applications
      
       try {
         validateSubmission(submission, `${pageId}/create-application`)
@@ -217,10 +216,10 @@ module.exports = [
       }
       
       const applicationIndex = createApplication(request)
-
-      return h.redirect(`${nextPathspeciesName}/${applicationIndex}`)
+      return h.redirect(`${nextPathSpeciesName}/${applicationIndex}`)
     }
   },
+  //GET for are you page from remove button
   {
     method: "GET",
     path: `${currentPath}/${areYouSurePath}/remove/{applicationIndex}`,
@@ -394,7 +393,7 @@ module.exports = [
             return h.redirect(`${invalidSubmissionPath}/`)
           }
           if (applications.length === 1 ) {
-            return h.redirect(`${nextPathspeciesName}/0`)
+            return h.redirect(`${nextPathSpeciesName}/0`)
           }
         } 
         return h.redirect(`${currentPath}`)

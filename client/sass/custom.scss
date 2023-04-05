@@ -43,3 +43,13 @@ ul.smaller-indent {
     justify-content: space-between;
     align-items: center;
 }
+
+.js-enabled .govuk-header__menu-button {
+    display: none;
+}
+
+.js-enabled .govuk-header__navigation-list {
+    display: inline-block;
+  }
+
+
