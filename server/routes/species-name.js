@@ -44,6 +44,7 @@ function createModel(errors, data) {
     backLink: backLink,
     pageHeader: pageContent.pageHeader,
     speciesName: data.speciesName,
+    containerClasses: 'hide-when-loading',
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
