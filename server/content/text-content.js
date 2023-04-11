@@ -918,6 +918,33 @@ const schema = Joi.object().keys({
       "error.declaration.any.required": Joi.string().required(),
     }).required(),
   }).required(),
+  mySubmissions: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputLabelSearch: Joi.string().required(),
+    linkTextClearSearch: Joi.string().required(),
+    buttonStartNewApplication: Joi.string().required(),
+    heading1: Joi.string().required(),
+    heading2: Joi.string().required(),
+    checkboxLabelImport: Joi.string().required(),
+    checkboxLabelExport: Joi.string().required(),
+    checkboxLabelReexport: Joi.string().required(),
+    checkboxLabelArticle10: Joi.string().required(),
+    heading3: Joi.string().required(),
+    checkboxLabelReceived: Joi.string().required(),
+    checkboxLabelAwaitingPayment: Joi.string().required(),
+    checkboxLabelAwaitingReply: Joi.string().required(),
+    checkboxLabelInProcess: Joi.string().required(),
+    checkboxLabelIssued: Joi.string().required(),
+    checkboxLabelRefused: Joi.string().required(),
+    checkboxLabelCancelled: Joi.string().required(),
+    buttonApplyFilters: Joi.string().required(),
+    linkTextClearFilters: Joi.string().required(),
+    rowTextReferenceNumber: Joi.string().required(),
+    rowTextDate: Joi.string().required(),
+    rowTextStatus: Joi.string().required(),
+    rowTextNoApplicationsFound: Joi.string().required(),
+  })
 })
 
 // Validate config

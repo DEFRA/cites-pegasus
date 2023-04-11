@@ -1222,5 +1222,32 @@
     "errorMessages": {
       "error.declaration.any.required": "You must agree to the declaration"
     }
+  },
+  "mySubmissions": {
+    "defaultTitle": "Your applications",
+    "pageHeader": "Your applications",
+    "inputLabelSearch": "Search",
+    "linkTextClearSearch": "Clear search",
+    "buttonStartNewApplication": "Start new application",
+    "heading1": "Filters",
+    "heading2": "Permit type",
+    "checkboxLabelImport": "Import",
+    "checkboxLabelExport": "Export",
+    "checkboxLabelReexport": "Re-export",
+    "checkboxLabelArticle10": "Article 10",
+    "heading3": "Status",
+    "checkboxLabelReceived": "Received",
+    "checkboxLabelAwaitingPayment": "Awaiting payment",
+    "checkboxLabelAwaitingReply": "Awaiting reply",
+    "checkboxLabelInProcess": "In process",
+    "checkboxLabelIssued": "Issued",
+    "checkboxLabelRefused": "Refused",
+    "checkboxLabelCancelled": "Cancelled",
+    "buttonApplyFilters": "Apply filters",
+    "linkTextClearFilters": "Clear filters",
+    "rowTextReferenceNumber": "Reference number",
+    "rowTextDate": "Date",
+    "rowTextStatus": "Status",
+    "rowTextNoApplicationsFound": "No applications found."
   }
 }

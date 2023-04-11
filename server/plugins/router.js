@@ -33,6 +33,7 @@ const routes = [].concat(
   require('../routes/your-submission'),
   require('../routes/upload-supporting-documents'),
   require('../routes/declaration'),
+  require('../routes/my-submissions'),
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc'),
