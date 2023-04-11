@@ -941,9 +941,16 @@ const schema = Joi.object().keys({
     buttonApplyFilters: Joi.string().required(),
     linkTextClearFilters: Joi.string().required(),
     rowTextReferenceNumber: Joi.string().required(),
-    rowTextDate: Joi.string().required(),
+    rowTextApplicationDate: Joi.string().required(),
     rowTextStatus: Joi.string().required(),
     rowTextNoApplicationsFound: Joi.string().required(),
+    rowTextReceived: Joi.string().required(),
+    rowTextAwaitingPayment: Joi.string().required(),
+    rowTextAwaitingReply:Joi.string().required(),
+    rowTextInProcess: Joi.string().required(),
+    rowTextIssued: Joi.string().required(),
+    rowTextRefused: Joi.string().required(),
+    rowTextCancelled: Joi.string().required(),
   })
 })
 

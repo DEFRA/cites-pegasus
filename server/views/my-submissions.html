@@ -4,6 +4,8 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% block beforeContent %}
 <div class="govuk-grid-row">
@@ -31,29 +33,70 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-  
         <form method="POST" autocomplete="off" novalidate="novalidate">
             <div class="govuk-grid-row govuk-!-margin-bottom-3">
-            <div class="govuk-grid-column-three-quarters">
+              <div class="govuk-grid-column-three-quarters">
                 <h1 class="govuk-heading-l">
                     {{pageHeader}}
                 </h1>
+             </div>
             </div>
-        </div>
             <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
-                {{ govukInput(inputSearch) }}
-            </div>
-            <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7"><p class="govuk-body">
-                <a href="{{clearSearchLink}}">{{clearSearchLinkText}}</a>
-              </p>   
-            </div>
-            <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7">
-                {{ govukButton({
-                    text: buttonStartNewApplication,
+              <div class="govuk-grid-column-one-half">
+                  {{ govukInput(inputSearch) }}
+              </div>
+              <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7"><p class="govuk-body">
+                  <a href="{{clearSearchLink}}">{{clearSearchLinkText}}</a>
+                </p>   
+              </div>
+              <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7">
+                  {{ govukButton({
+                      text: buttonStartNewApplication,
+                      type: "submit"
+                    }) }}
+              </div>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                  <h2 class="govuk-heading-m">
+                    {{headerFilters}}
+                  </h2>
+                  <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyPermitType}}</p>
+                  {{ govukCheckboxes(checkboxPermitType) }}
+                  <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyStatus}}</p>
+                  {{ govukCheckboxes(checkboxStatus) }}
+
+                  {{ govukButton({
+                    text: buttonApplyFilters,
+                    classes: "govuk-button--secondary",
                     type: "submit"
                   }) }}
-            </div>
+                </div>
+                <div class="govuk-grid-column-three-quarters">
+                  <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                      <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">{{tableHeadReferenceNumber}}</th>
+                        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter" style="text-align:right">{{tableHeadApplicationDate}}</th>
+                        <th scope="col" class="govuk-table__header govuk-!-width-one-third" style="text-align:right">{{tableHeadStatus}}</th>
+                      </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                      {% for submission in submissionsData %}
+                      <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">
+                          <a href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
+                        </td>
+                        <td class="govuk-table__cell" style="text-align:right">{{submission.applicationDate}}</td>
+                        <td class="govuk-table__cell" style="text-align:right">{{submission.status}}</td>
+                      </tr> 
+                      {% endfor %}         
+                    </tbody>
+                  </table>
+                </div>
+
+
+
+              </div>
         </div>
          
             

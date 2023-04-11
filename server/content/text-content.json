@@ -1246,8 +1246,15 @@
     "buttonApplyFilters": "Apply filters",
     "linkTextClearFilters": "Clear filters",
     "rowTextReferenceNumber": "Reference number",
-    "rowTextDate": "Date",
+    "rowTextApplicationDate": "Application date",
     "rowTextStatus": "Status",
-    "rowTextNoApplicationsFound": "No applications found."
+    "rowTextNoApplicationsFound": "No applications found.",
+    "rowTextReceived": "Received",
+    "rowTextAwaitingPayment": "Awaiting Payment",
+    "rowTextAwaitingReply": "Awaiting Reply",
+    "rowTextInProcess": "In Process",
+    "rowTextIssued": "Issued",
+    "rowTextRefused": "Refused",
+    "rowTextCancelled": "Cancelled"
   }
 }

@@ -1,13 +1,19 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmissions } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
+const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
+const permitTypes = ['import', 'export', 'reexport', 'article10']
+const statuses = ['received','awaiting payment', 'awaiting reply', 'in process', 'issued', 'refused', 'cancelled']
+
+
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -30,8 +36,41 @@ function createModel(errors, data) {
     }
   })
 
+  const submissionsData = data.submissions
+  const submissionsTableData= submissionsData.map(submission => {
+    const referenceNumber = submission.submissionId
+    const referenceNumberUrl = `${nextPathMySubmission}/${referenceNumber}`
+    const applicationDate = getApplicationDate(submission.dateSubmitted)
+    let status = null
+
+    switch (submission.status) {
+      case "received":
+        status = pageContent.rowTextReceived
+        break
+      case "awaiting payment":
+        status = pageContent.rowTextAwaitingPayment
+        break
+      case "awaiting reply":
+        status = pageContent.rowTextAwaitingReply
+        break
+      case "in process":
+        status = pageContent.rowTextInProcess
+        break
+      case "issued":
+        status = pageContent.rowTextIssued
+        break
+      case "refused":
+        status = pageContent.rowTextRefused
+        break
+      case "cancelled":
+        status = pageContent.rowTextCancelled
+        break
+    }
+   
  
-  
+    return {referenceNumber, referenceNumberUrl, applicationDate, status}
+  })
+
   
   const model = {
     backLink: currentPath,
@@ -41,8 +80,15 @@ function createModel(errors, data) {
     clearSearchLinkText: pageContent.linkTextClearSearch,
     clearSearchUrl: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
-   
-
+    headerFilters: pageContent.heading1,
+    pageBodyPermitType: pageContent.heading2,
+    pageBodyStatus: pageContent.heading3,
+    buttonApplyFilters: pageContent.buttonApplyFilters,
+    submissionsData: submissionsTableData,
+    tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
+    tableHeadApplicationDate: pageContent.rowTextApplicationDate,
+    tableHeadStatus: pageContent.rowTextStatus,
+     
     inputSearch: {
       id: "search",
       name: "search",
@@ -55,31 +101,91 @@ function createModel(errors, data) {
         classes:"govuk-input__suffix--search",
         html: searchButton
       },
-     
-      ...(data.searchValue
-        ? { value: data.searchValue }
-        : {}),
+      ...(data.searchValue ? { value: data.searchValue } : {}),
+    },
+
+    checkboxPermitType: {
+      idPrefix: "permitType",
+      name: "permitType",
+      items: [
+        {
+          value: "import",
+          text: pageContent.checkboxLabelImport,
+          checked: isChecked(data.permitType, "import")
+        },
+        {
+          value: "export",
+          text: pageContent.checkboxLabelExport,
+          checked: isChecked(data.permitType, "export")
+        },
+        {
+          value: "reexport",
+          text: pageContent.checkboxLabelReexport,
+          checked: isChecked(data.permitType, "reexport")
+        },
+        {
+          value: "article10",
+          text: pageContent.checkboxLabelArticle10,
+          checked: isChecked(data.permitType, "article10")
+        }
+      ],
+    },
+
+    checkboxStatus: {
+      idPrefix: "status",
+      name: "status",
+      items: [
+        {
+          value: "received",
+          text: pageContent.checkboxLabelReceived,
+          checked: isChecked(data.status, "received")
+        },
+        {
+          value: "awaitingPayment",
+          text: pageContent.checkboxLabelAwaitingPayment,
+          checked: isChecked(data.status, "awaitingPayment")
+        },
+        {
+          value: "awaitingReply",
+          text: pageContent.checkboxLabelAwaitingReply,
+          checked: isChecked(data.status, "awaitingReply")
+        },
+        {
+          value: "inProcess",
+          text: pageContent.checkboxLabelInProcess,
+          checked: isChecked(data.status, "inProcess")
+        },
+        {
+          value: "issued",
+          text: pageContent.checkboxLabelIssued,
+          checked: isChecked(data.status, "issued")
+        },
+        {
+          value: "refused",
+          text: pageContent.checkboxLabelRefused,
+          checked: isChecked(data.status, "refused")
+        },
+        {
+          value: "cancelled",
+          text: pageContent.checkboxLabelCancelled,
+          checked: isChecked(data.status, "cancelled")
+        }
+      ],
     },
    
-    // checkboxExportOrReexportNotApplicable: {
-    //   idPrefix: "isExportOrReexportNotApplicable",
-    //   name: "isExportOrReexportNotApplicable",
-    //   items: [
-    //     {
-    //       value: true,
-    //       text: pageContent.checkboxLabelNotApplicable,
-    //       checked: data.isExportOrReexportNotApplicable
-    //     }
-    //   ]
-    // },
-
-   
+  
     
    
   }
   return { ...commonContent, ...model }
 }
 
+function getApplicationDate(date) {
+  const dateObj = new Date(date);
+  const options = { day: 'numeric', month: 'long', year: 'numeric' };
+  const formattedDate = dateObj.toLocaleDateString('en-GB', options);
+  return formattedDate
+}
 
 module.exports = [
   //GET for my applications page
@@ -87,17 +193,24 @@ module.exports = [
     method: "GET",
     path: currentPath,
     handler: async (request, h) => {
-      const submission = getSubmission(request)
+      // const contactId = request.auth.credentials.contactId
+      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+      const pageSize = 15
+      const startIndex = 1
+
+      const submissions = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
+
+      console.log("submissions", submissions)
 
       try {
-        validateSubmission(submission, pageId)
+        validateSubmission(submissions, pageId)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
 
       const pageData = {
-        submission: submission
+        submissions: submissions
       }
       return h.view(pageId, createModel(null, pageData))
     }
