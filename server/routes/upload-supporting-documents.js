@@ -66,6 +66,7 @@ function createModel(errors, data) {
   const model = {
     assetPath: assetPath,
     clientJSConfig: JSON.stringify(clientJSConfig),
+    containerClasses: 'hide-when-loading',
     backLink: `${previousPath}`,
     formActionPage: `${currentPath}`,
         ...(errorList ? { errorList } : {}),

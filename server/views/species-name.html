@@ -46,9 +46,14 @@
       {% endcall %}
       {{ govukButton({
           text: continueButton,
+          classes: 'loading-message-trigger',
           type: "submit"
         }) }}
     </form>
     </div>
   </div>
+{% endblock %}
+
+{% block localJS %}
+  <script src="{{assetPath}}/js/loading-message.client.js"></script>
 {% endblock %}
