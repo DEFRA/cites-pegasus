@@ -123,10 +123,12 @@ async function getSubmissions(request, contactId, permitTypes, statuses, startIn
   })
 
   const endIndex = startIndex + pageSize;
-  filteredSubmissions = filteredSubmissions.slice(startIndex, endIndex);
-  console.log("filteredSubmissions", filteredSubmissions)
+  const filteredSlicedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
+  console.log("ALLLLLLLL", filteredSubmissions)
 
-  return filteredSubmissions;
+  console.log("filteredSlicedSubmissions", filteredSlicedSubmissions)
+
+  return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length};
 
 }
 

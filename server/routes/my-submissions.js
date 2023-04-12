@@ -6,7 +6,7 @@ const { getSubmissions } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
-const currentPath = `${urlPrefix}/${pageId}`
+const currentPath = `${urlPrefix}/${pageId}/1`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
@@ -71,6 +71,7 @@ function createModel(errors, data) {
     return {referenceNumber, referenceNumberUrl, applicationDate, status}
   })
 
+  const paragraphPagination = `${data.startIndex} to ${submissionsData.length} of ${data.totalSubmissions} applications`
   
   const model = {
     backLink: currentPath,
@@ -88,6 +89,7 @@ function createModel(errors, data) {
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
     tableHeadStatus: pageContent.rowTextStatus,
+    paragraphPagination: paragraphPagination,
      
     inputSearch: {
       id: "search",
@@ -191,14 +193,24 @@ module.exports = [
   //GET for my applications page
   {
     method: "GET",
-    path: currentPath,
+    path: `${currentPath}/{pageIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          pageIndex: Joi.number().required()
+        }),
+      }
+    },
+    
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
+      const { pageIndex } = request.params
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
       const pageSize = 15
       const startIndex = 1
 
-      const submissions = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
+      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
+      const submissions = submissionsData.submissions
 
       console.log("submissions", submissions)
 
@@ -210,7 +222,11 @@ module.exports = [
       }
 
       const pageData = {
-        submissions: submissions
+        pageIndex: pageIndex,
+        submissions: submissions,
+        pageSize: pageSize,
+        startIndex: startIndex,
+        totalSubmissions: submissionsData.totalSubmissions
       }
       return h.view(pageId, createModel(null, pageData))
     }
