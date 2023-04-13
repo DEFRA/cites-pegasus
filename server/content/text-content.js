@@ -925,12 +925,12 @@ const schema = Joi.object().keys({
     linkTextClearSearch: Joi.string().required(),
     buttonStartNewApplication: Joi.string().required(),
     heading1: Joi.string().required(),
-    heading2: Joi.string().required(),
+    pageBodyPermitType: Joi.string().required(),
     checkboxLabelImport: Joi.string().required(),
     checkboxLabelExport: Joi.string().required(),
     checkboxLabelReexport: Joi.string().required(),
     checkboxLabelArticle10: Joi.string().required(),
-    heading3: Joi.string().required(),
+    pageBodyStatus: Joi.string().required(),
     checkboxLabelReceived: Joi.string().required(),
     checkboxLabelAwaitingPayment: Joi.string().required(),
     checkboxLabelAwaitingReply: Joi.string().required(),
@@ -943,7 +943,6 @@ const schema = Joi.object().keys({
     rowTextReferenceNumber: Joi.string().required(),
     rowTextApplicationDate: Joi.string().required(),
     rowTextStatus: Joi.string().required(),
-    rowTextNoApplicationsFound: Joi.string().required(),
     rowTextReceived: Joi.string().required(),
     rowTextAwaitingPayment: Joi.string().required(),
     rowTextAwaitingReply:Joi.string().required(),
@@ -951,6 +950,8 @@ const schema = Joi.object().keys({
     rowTextIssued: Joi.string().required(),
     rowTextRefused: Joi.string().required(),
     rowTextCancelled: Joi.string().required(),
+    pagebodyNoApplicationsFound: Joi.string().required(),
+    pagebodyZeroApplication: Joi.string().required(),
   })
 })
 

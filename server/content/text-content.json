@@ -1230,12 +1230,12 @@
     "linkTextClearSearch": "Clear search",
     "buttonStartNewApplication": "Start new application",
     "heading1": "Filters",
-    "heading2": "Permit type",
+    "pageBodyPermitType": "Permit type",
     "checkboxLabelImport": "Import",
     "checkboxLabelExport": "Export",
     "checkboxLabelReexport": "Re-export",
     "checkboxLabelArticle10": "Article 10",
-    "heading3": "Status",
+    "pageBodyStatus": "Status",
     "checkboxLabelReceived": "Received",
     "checkboxLabelAwaitingPayment": "Awaiting payment",
     "checkboxLabelAwaitingReply": "Awaiting reply",
@@ -1248,13 +1248,16 @@
     "rowTextReferenceNumber": "Reference number",
     "rowTextApplicationDate": "Application date",
     "rowTextStatus": "Status",
-    "rowTextNoApplicationsFound": "No applications found.",
     "rowTextReceived": "Received",
     "rowTextAwaitingPayment": "Awaiting Payment",
     "rowTextAwaitingReply": "Awaiting Reply",
     "rowTextInProcess": "In Process",
     "rowTextIssued": "Issued",
     "rowTextRefused": "Refused",
-    "rowTextCancelled": "Cancelled"
+    "rowTextCancelled": "Cancelled",
+    "pagebodyNoApplicationsFound": "No applications found.",
+    "pagebodyZeroApplication": " You have not yet made an application using this service."
+    
+    
   }
 }

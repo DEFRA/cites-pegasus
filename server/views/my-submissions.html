@@ -81,7 +81,9 @@
                         <th scope="col" class="govuk-table__header govuk-!-width-one-third" style="text-align:right">{{tableHeadStatus}}</th>
                       </tr>
                     </thead>
+                    
                     <tbody class="govuk-table__body">
+                      {% if submissionsData !==0 %}
                       {% for submission in submissionsData %}
                       <tr class="govuk-table__row">
                         <td class="govuk-table__cell">
@@ -90,9 +92,19 @@
                         <td class="govuk-table__cell" style="text-align:right">{{submission.applicationDate}}</td>
                         <td class="govuk-table__cell" style="text-align:right">{{submission.status}}</td>
                       </tr> 
-                      {% endfor %}         
+                      {% endfor %}   
+                      {% endif %}      
                     </tbody>
                   </table>
+
+                  {% if pagebodyNoApplicationsFound %}
+                     <p class="govuk-body">{{pagebodyNoApplicationsFound}}</p>
+                  {% endif %}
+
+                  {% if pagebodyZeroApplication %}
+                    <p class="govuk-body">{{pagebodyZeroApplication}}</p>
+                  {% endif %}
+
                 </div>
               </div>
               <div class="govuk-grid-row">
@@ -137,7 +149,7 @@
 
                   </div>
                   <div class="govuk-grid-column-one-quarter">
-                    <p class="govuk-!-text-align-right">{{paragraphPagination}}</p>
+                    <p class="govuk-!-text-align-right">{{textPagination}}</p>
                   </div>
 
                 </div>

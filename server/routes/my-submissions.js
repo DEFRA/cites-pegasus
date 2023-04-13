@@ -6,7 +6,7 @@ const { getSubmissions } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
-const currentPath = `${urlPrefix}/${pageId}/1`
+const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
@@ -28,8 +28,7 @@ function createModel(errors, data) {
       id: "searchButton",
       name: "searchButton",
       type: "submit",
-    classes: "govuk-button--search",
-     
+      classes: "govuk-button--start govuk-button--search",
       attributes: {
         formAction: currentPath
       }
@@ -71,7 +70,7 @@ function createModel(errors, data) {
     return {referenceNumber, referenceNumberUrl, applicationDate, status}
   })
 
-  const paragraphPagination = `${data.startIndex} to ${submissionsData.length} of ${data.totalSubmissions} applications`
+  const textPagination = `${data.startIndex} to ${submissionsData.length} of ${data.totalSubmissions} applications`
   
   const model = {
     backLink: currentPath,
@@ -82,14 +81,17 @@ function createModel(errors, data) {
     clearSearchUrl: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
     headerFilters: pageContent.heading1,
-    pageBodyPermitType: pageContent.heading2,
-    pageBodyStatus: pageContent.heading3,
+    pageBodyPermitType: pageContent.pageBodyPermitType,
+    pageBodyStatus: pageContent.pageBodyStatus,
     buttonApplyFilters: pageContent.buttonApplyFilters,
     submissionsData: submissionsTableData,
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
     tableHeadStatus: pageContent.rowTextStatus,
-    paragraphPagination: paragraphPagination,
+    textPagination: textPagination,
+    pageBodyStatus: pageContent.heading3,
+    pagebodyNoApplicationsFound: submissionsData.length === 0 ? pageContent.pagebodyNoApplicationsFound : "",
+    pagebodyZeroApplication: submissionsData.length === 0 ? pageContent.pagebodyZeroApplication : "",
      
     inputSearch: {
       id: "search",
@@ -193,19 +195,19 @@ module.exports = [
   //GET for my applications page
   {
     method: "GET",
-    path: `${currentPath}/{pageIndex}`,
-    options: {
-      validate: {
-        params: Joi.object({
-          pageIndex: Joi.number().required()
-        }),
-      }
-    },
+    path: `${currentPath}`,
+    // options: {
+    //   validate: {
+    //     params: Joi.object({
+    //       pageIndex: Joi.number().required()
+    //     }),
+    //   }
+    // },
     
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
-      const { pageIndex } = request.params
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+      // const { pageIndex } = request.params
+      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90"
       const pageSize = 15
       const startIndex = 1
 
@@ -222,7 +224,7 @@ module.exports = [
       }
 
       const pageData = {
-        pageIndex: pageIndex,
+        // pageIndex: pageIndex,
         submissions: submissions,
         pageSize: pageSize,
         startIndex: startIndex,
