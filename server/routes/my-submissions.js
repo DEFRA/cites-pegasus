@@ -207,7 +207,7 @@ module.exports = [
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
       // const { pageIndex } = request.params
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90"
+      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
       const pageSize = 15
       const startIndex = 1
 
