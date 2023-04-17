@@ -251,8 +251,15 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           searchTerm: Joi.string().allow(''),
-          permitTypes: Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10')),
-          statuses: Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
+          permitTypes: Joi.alternatives().try(
+            Joi.string(),
+            Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10'))
+          ),
+          statuses: 
+          Joi.alternatives().try(
+            Joi.string(),
+            Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
+          ),
         }),
         failAction: (request, h, error) => {
           console.log(error)
@@ -265,6 +272,9 @@ module.exports = [
       const startIndex = 0
       const permitTypes = request.payload.permitTypes
       const statuses= request.payload.statuses
+
+
+      console.log("payload", permitTypes)
 
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
