@@ -8,7 +8,7 @@ const { cidmCallbackUrl, postLogoutRedirectUrl } = require('../../config/config'
 
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
-const landingPage = '/permit-type'
+const landingPage = '/my-submissions'
 
 function getRelationshipDetails(user) {
   const relationshipDetails = {

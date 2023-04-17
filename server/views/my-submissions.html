@@ -60,7 +60,8 @@
                       }
                     }) }}
               </div>
-              <div class="govuk-grid-row">
+            </div>
+            <div class="govuk-grid-row">
                 <div class="govuk-grid-column-one-quarter">
                   <h2 class="govuk-heading-m">
                     {{headerFilters}}
@@ -103,7 +104,6 @@
                       {% endif %}      
                     </tbody>
                   </table>
-
                   {% if pagebodyNoApplicationsFound %}
                      <p class="govuk-body">{{pagebodyNoApplicationsFound}}</p>
                   {% endif %}
@@ -111,56 +111,41 @@
                   {% if pagebodyZeroApplication %}
                     <p class="govuk-body">{{pagebodyZeroApplication}}</p>
                   {% endif %}
-
                 </div>
-              </div>
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-full">
-                  <div class="govuk-grid-column-one-quarter">
-                    <p></p>
-
-                  </div>
-                  <div class="govuk-grid-column-one-half">
-                    {{ govukPagination({
-                      previous: {
+            </div>
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-quarter">
+                  <p></p>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                  {{ govukPagination({
+                    previous: {
+                      href: "#"
+                    },
+                    next: {
+                      href: "#"
+                    },
+                    items: [
+                      {
+                        number: 1,
                         href: "#"
                       },
-                      next: {
+                      {
+                        number: 2,
+                        current: true,
                         href: "#"
                       },
-                      items: [
-                        {
-                          number: 1,
-                          href: "#"
-                        },
-                        {
-                          number: 2,
-                          current: true,
-                          href: "#"
-                        },
-                        {
-                          number: 3,
-                          href: "#"
-                        }
-                      ]
-                    }) }}
-
-                  </div>
-                  <div class="govuk-grid-column-one-quarter">
-                    <p class="govuk-!-text-align-right">{{textPagination}}</p>
-                  </div>
+                      {
+                        number: 3,
+                        href: "#"
+                      }
+                    ]
+                  }) }}
                 </div>
-              </div>
-        </div>
-         
-            
-
-       
-       
-        
-
-       
+                <div class="govuk-grid-column-one-quarter">
+                  <p class="govuk-!-text-align-right">{{textPagination}}</p>
+                </div> 
+            </div>
       </form>
-   
   </div>
 {% endblock %}
