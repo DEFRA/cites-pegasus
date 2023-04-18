@@ -53,7 +53,7 @@ function createModel(errors, data) {
     inputSpecimenDescriptionGeneric: {
       id: "specimenDescriptionGeneric",
       name: "specimenDescriptionGeneric",
-      maxlength: 448,
+      maxlength: 500,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: `${pageContent.pageHeader}`,
@@ -113,7 +113,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          specimenDescriptionGeneric: Joi.string().min(5).max(449).regex(COMMENTS_REGEX).required()
+          specimenDescriptionGeneric: Joi.string().min(5).max(500).regex(COMMENTS_REGEX).required()
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
