@@ -12,6 +12,7 @@ const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['received','awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
+const pageSize = 15
 
 
 
@@ -209,9 +210,7 @@ module.exports = [
       // const contactId = request.auth.credentials.contactId
       // const { pageIndex } = request.params
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const pageSize = 15
       const startIndex = 0
-
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
 
@@ -245,7 +244,16 @@ module.exports = [
       },
     },
       handler: async (request, h) => {
-        return h.redirect(nextPathPermitType)
+         // const contactId = request.auth.credentials.contactId
+        const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+        const startIndex = 0
+        const permitTypes = request.payload.permitTypes
+        const statuses= request.payload.statuses
+  
+        const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
+        const pageIndex = submissionsData.totalSubmissions
+
+        return h.redirect(`${nextPathPermitType}/${pageIndex}`)
       }
   },
    //POST for apply filter button
@@ -274,7 +282,6 @@ module.exports = [
       handler: async (request, h) => {
        // const contactId = request.auth.credentials.contactId
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const pageSize = 15
       const startIndex = 0
       const permitTypes = request.payload.permitTypes
       const statuses= request.payload.statuses
@@ -323,11 +330,8 @@ module.exports = [
       handler: async (request, h) => {
        // const contactId = request.auth.credentials.contactId
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const pageSize = 15
       const startIndex = 0
-      const searchTerm = request.payload.searchTerm
-
-
+      const searchTerm = request.payload.searchTerm.toUpperCase()
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
       const submissions = submissionsData.submissions
 
@@ -338,14 +342,12 @@ module.exports = [
         startIndex: startIndex,
         totalSubmissions: submissionsData.totalSubmissions,
         searchTerm: searchTerm,
-        noMatchingApplication: submissions.length === 0 ? true : false
+        noMatchingApplication: submissions.length === 0
       }
       return h.view(pageId, createModel(null, pageData))
       }
     }
   },
-
-
 
 ]
 

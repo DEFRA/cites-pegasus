@@ -123,7 +123,7 @@ async function getSubmissions(request, contactId, permitTypes, statuses, startIn
       if (statuses && !statuses.includes(submission.status)) {
         return false
       }
-      if (searchTerm !==  submission.submissionId){
+      if (searchTerm  && searchTerm !==  submission.submissionId){
         return false
       }
     
