@@ -1222,5 +1222,42 @@
     "errorMessages": {
       "error.declaration.any.required": "You must agree to the declaration"
     }
+  },
+  "mySubmissions": {
+    "defaultTitle": "Your applications",
+    "pageHeader": "Your applications",
+    "inputLabelSearch": "Search",
+    "linkTextClearSearch": "Clear search",
+    "buttonStartNewApplication": "Start new application",
+    "heading1": "Filters",
+    "pageBodyPermitType": "Permit type",
+    "checkboxLabelImport": "Import",
+    "checkboxLabelExport": "Export",
+    "checkboxLabelReexport": "Re-export",
+    "checkboxLabelArticle10": "Article 10",
+    "pageBodyStatus": "Status",
+    "checkboxLabelReceived": "Received",
+    "checkboxLabelAwaitingPayment": "Awaiting payment",
+    "checkboxLabelAwaitingReply": "Awaiting reply",
+    "checkboxLabelInProcess": "In process",
+    "checkboxLabelIssued": "Issued",
+    "checkboxLabelRefused": "Refused",
+    "checkboxLabelCancelled": "Cancelled",
+    "buttonApplyFilters": "Apply filters",
+    "linkTextClearFilters": "Clear filters",
+    "rowTextReferenceNumber": "Reference number",
+    "rowTextApplicationDate": "Application date",
+    "rowTextStatus": "Status",
+    "rowTextReceived": "Received",
+    "rowTextAwaitingPayment": "Awaiting Payment",
+    "rowTextAwaitingReply": "Awaiting Reply",
+    "rowTextInProcess": "In Process",
+    "rowTextIssued": "Issued",
+    "rowTextRefused": "Refused",
+    "rowTextCancelled": "Cancelled",
+    "pagebodyNoApplicationsFound": "No applications found.",
+    "pagebodyZeroApplication": " You have not yet made an application using this service."
+    
+    
   }
 }
