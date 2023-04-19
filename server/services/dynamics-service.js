@@ -111,24 +111,27 @@ async function getSubmissions(request, contactId, permitTypes, statuses, startIn
 
 
   submissions.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
-  
-const filteredSubmissions = submissions.
-  filter(submission => {
-    if (contactId && submission.contactId !== contactId) {
-      return false
-    }
-    if (permitTypes && !permitTypes.includes(submission.permitType)) {
-      return false
-    }
-    if (statuses && !statuses.includes(submission.status)) {
-      return false
-    }
-    return true
-  })
+
+  const filteredSubmissions = submissions.
+    filter(submission => {
+      if (contactId && submission.contactId !== contactId) {
+        return false
+      }
+      if (permitTypes && !permitTypes.includes(submission.permitType)) {
+        return false
+      }
+      if (statuses && !statuses.includes(submission.status)) {
+        return false
+      }
+      if (searchTerm !==  submission.submissionId){
+        return false
+      }
+    
+      return true
+    })
 
   const endIndex = startIndex + pageSize;
   const filteredSlicedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
- 
   return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length};
 
 }

@@ -10,8 +10,8 @@ const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
-// const permitTypes = ['import', 'export', 'reexport', 'article10']
-// const statuses = ['received','awaiting payment', 'awaiting reply', 'in process', 'issued', 'refused', 'cancelled']
+const permitTypes = ['import', 'export', 'reexport', 'article10']
+const statuses = ['received','awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
 
 
 
@@ -30,7 +30,7 @@ function createModel(errors, data) {
       type: "submit",
       classes: "govuk-button--start govuk-button--search",
       attributes: {
-        formAction: currentPath
+        formAction: `${currentPath}/search`
       }
     }
   })
@@ -69,6 +69,14 @@ function createModel(errors, data) {
   })
 
   const textPagination = `${data.startIndex +1} to ${submissionsData.length} of ${data.totalSubmissions} applications`
+
+  let pagebodyNoApplicationsFound = null
+  if (data.noApplicationMadeBefore && submissionsData.length === 0) {
+    pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
+  } else if ((data.noApplicationFound  || data.noMatchingApplication) && submissionsData.length === 0) {
+    pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
+  } 
+
   
   const model = {
     backLink: currentPath,
@@ -86,8 +94,7 @@ function createModel(errors, data) {
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
     tableHeadStatus: pageContent.rowTextStatus,
     textPagination: textPagination,
-    pagebodyNoApplicationsFound: submissionsData.length === 0 ? pageContent.pagebodyNoApplicationsFound : "",
-    pagebodyZeroApplication: submissionsData.length === 0 ? pageContent.pagebodyZeroApplication : "",
+    pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: currentPath,
     formActionApplyFilters: `${currentPath}/filter`,
     
@@ -204,8 +211,6 @@ module.exports = [
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
       const pageSize = 15
       const startIndex = 0
-      const permitTypes = ['import', 'export', 'reexport', 'article10']
-      const statuses = ['received','awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
 
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
@@ -223,6 +228,7 @@ module.exports = [
         pageSize: pageSize,
         startIndex: startIndex,
         totalSubmissions: submissionsData.totalSubmissions,
+        noApplicationMadeBefore: submissions.length === 0
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -242,7 +248,7 @@ module.exports = [
         return h.redirect(nextPathPermitType)
       }
   },
-   //POST for start new application button
+   //POST for apply filter button
    {
     method: "POST",
     path: `${currentPath}/filter`,
@@ -273,9 +279,6 @@ module.exports = [
       const permitTypes = request.payload.permitTypes
       const statuses= request.payload.statuses
 
-
-      console.log("payload", permitTypes)
-
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
 
@@ -286,12 +289,62 @@ module.exports = [
         startIndex: startIndex,
         totalSubmissions: submissionsData.totalSubmissions,
         permitTypes: permitTypes,
-        statuses: statuses
+        statuses: statuses,
+        noApplicationFound: submissions.length === 0
       }
       return h.view(pageId, createModel(null, pageData))
       }
     }
   },
+  //POST for Search button
+  {
+    method: "POST",
+    path: `${currentPath}/search`,
+    options: {
+      validate: {
+        options: { abortEarly: false },
+        payload: Joi.object({
+          searchTerm: Joi.string().allow(''),
+          searchButton: Joi.string().allow(''),
+          permitTypes: Joi.alternatives().try(
+            Joi.string(),
+            Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10'))
+          ),
+          statuses: 
+          Joi.alternatives().try(
+            Joi.string(),
+            Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
+          ),
+        }),
+        failAction: (request, h, error) => {
+          console.log(error)
+        }
+      },
+      handler: async (request, h) => {
+       // const contactId = request.auth.credentials.contactId
+      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+      const pageSize = 15
+      const startIndex = 0
+      const searchTerm = request.payload.searchTerm
+
+
+      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
+      const submissions = submissionsData.submissions
+
+      const pageData = {
+        // pageIndex: pageIndex,
+        submissions: submissions,
+        pageSize: pageSize,
+        startIndex: startIndex,
+        totalSubmissions: submissionsData.totalSubmissions,
+        searchTerm: searchTerm,
+        noMatchingApplication: submissions.length === 0 ? true : false
+      }
+      return h.view(pageId, createModel(null, pageData))
+      }
+    }
+  },
+
 
 
 ]
