@@ -1,9 +1,8 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { ALPHA_REGEX } = require("../lib/regex-validation")
-const { checkChangeRouteExit } = require("../lib/change-route")
+const { getSubmission, validateSubmission } = require("../lib/submission")
+const { postSubmission } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "declaration"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -34,7 +33,7 @@ function createModel(errors, data) {
     })
   }
 
-  
+
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -45,7 +44,7 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: data.isAgent ? pageContent.pageBodyAgent : pageContent.pageBodyApplicant,
     bulletListItems: data.isAgent ? pageContent.bulletListItems : "",
-   
+
 
     inputDeclaration: {
       idPrefix: "declaration",
@@ -76,7 +75,7 @@ module.exports = [
         return h.redirect(`${invalidSubmissionPath}/`)
       }
       const pageData = {
-        isAgent: submission?.isAgent, 
+        isAgent: submission?.isAgent,
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -102,17 +101,21 @@ module.exports = [
       handler: async (request, h) => {
         const submission = getSubmission(request)
 
-        //TODO: ADD CALL TO DYNAMICS TO SUBMIT THE SUBMISSION
+        let response
 
-        // submission.declaration = request.payload.declaration
-        // try {
-        //   mergeSubmission(request, submission, pageId )
-        // } catch (err) {
-        //   console.log(err)
-        //   return h.redirect(`${invalidSubmissionPath}/`)
-        // }
+        try {
+          response = await postSubmission(request, submission)
+          console.log(response)
+        } catch (err) {
+          console.log(err)
+          throw err
+        }
+
         
-        return h.redirect(nextPath)
+
+        //return h.redirect(nextPath)
+
+        return h.response(JSON.stringify(response))
       }
     }
   }

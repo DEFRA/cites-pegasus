@@ -1,10 +1,10 @@
-
 const MSAL = require('@azure/msal-node');
 const Wreck = require('@hapi/wreck');
 const { getYarValue, setYarValue } = require('../lib/session')
 var moment = require('moment');
 const config = require('../../config/config').dynamicsAPI
 const { readSecret } = require('../lib/key-vault')
+const lodash = require('lodash')
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -62,6 +62,82 @@ async function whoAmI(request) {
   }
 }
 
+async function postSubmission(request, submission) {
+
+  const accessToken = await getAccessToken(request)
+
+  try {
+    const url = `${config.baseURL}cites_CreateSubmissionForPortal`
+
+    const options = {
+      json: true,
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+      payload: JSON.stringify(mapSubmissionToPayload(submission))
+    }
+
+    const response = await Wreck.post(url, options)
+
+    const { res, payload } = response
+
+    // if (payload.cites_species_response) {
+    //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
+    //   return JSON.parse(json)
+    // }
+
+    return payload
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+function addOdataTypeProperty(obj) {
+  //console.log(Object.keys(obj)[0])
+  //if (typeof obj !== "object" || obj === null || Object.keys(obj)[0] === 'Payload') {
+  if (typeof obj !== "object" || obj === null) {
+    return;
+  }
+
+  if (Array.isArray(obj)) {
+    //obj.forEach(addOdataTypeProperty);
+    obj.forEach((item, index) => {
+      addOdataTypeProperty(item);
+    });
+    // const arrayName = Object.keys(obj)[0];
+    // obj[arrayName + "@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)";
+  } else {
+    obj["@odata.type"] = "#Microsoft.Dynamics.CRM.expando";
+    Object.values(obj).forEach(addOdataTypeProperty);
+  }
+}
+
+function mapSubmissionToPayload(submission) {
+  const payload = lodash.cloneDeep(submission)
+
+  if (payload.applicant.candidateAddressData?.addressSearchData?.results) {
+    payload.applicant.candidateAddressData.addressSearchData.results = null
+  }
+
+  if (payload.agent?.candidateAddressData?.addressSearchData?.results) {
+    payload.agent.candidateAddressData.addressSearchData.results = null
+  }
+
+  if (payload.delivery.candidateAddressData?.addressSearchData?.results) {
+    payload.delivery.candidateAddressData.addressSearchData.results = null
+  }
+
+  addOdataTypeProperty(payload)
+
+  if (payload.supportingDocuments) {
+    payload.supportingDocuments["files@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+  }
+
+  if (payload.applications) {
+    payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+  }
+  
+  return { Payload: payload }
+}
 
 async function getSpecies(request, speciesName) {
 
@@ -69,7 +145,12 @@ async function getSpecies(request, speciesName) {
 
   try {
     const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
-    const { res, payload } = await Wreck.get(url, { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
+    //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
+
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const response = await Wreck.get(url, options)
+
+    const { res, payload } = response
 
     if (payload.cites_species_response) {
       const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
@@ -94,7 +175,7 @@ async function getSubmissions(request, contactId, permitTypes, statuses, startIn
     { submissionId: 'KL4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
     { submissionId: 'MN5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' }
   ]
-  
+
   let filteredSubmissions = submissions.filter(submission => {
     if (contactId && submission.contactId !== contactId) {
       return false
@@ -115,4 +196,4 @@ async function getSubmissions(request, contactId, permitTypes, statuses, startIn
 
 }
 
-module.exports = { whoAmI, getSpecies, getSubmissions }
+module.exports = { whoAmI, getSpecies, getSubmissions, postSubmission }
