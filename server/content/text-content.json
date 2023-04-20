@@ -691,7 +691,7 @@
       "error.specimenDescriptionGeneric.string.empty": "Enter a description",
       "error.specimenDescriptionGeneric.string.pattern.base": "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
       "error.specimenDescriptionGeneric.string.min": "Description must be 5 characters or more",
-      "error.specimenDescriptionGeneric.string.max": "Description must be 448 characters or less"
+      "error.specimenDescriptionGeneric.string.max": "Description must be 500 characters or less"
     }
   },
   "describeLivingAnimal": {
@@ -812,7 +812,7 @@
         "value": "noOfPiecesOrParts"
       },
       {
-        "text": "cm3",
+        "text": "Cm3",
         "value": "cm3"
       },
       {
@@ -824,7 +824,7 @@
         "value": "Kg"
       },
       {
-        "text": "litres",
+        "text": "ltr",
         "value": "litres"
       },
       {

@@ -28,7 +28,7 @@ module.exports = [
       let response = null
 
       try {
-        response = await whoAmI(request);
+        response = await whoAmI(request.server);
       }
       catch (err) {
         return h.code(500)
