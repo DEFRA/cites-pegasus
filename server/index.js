@@ -3,6 +3,8 @@ const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
 var Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
+const { getSpecies } = require('./services/dynamics-service');
+
 //Run this command line to create certs
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
@@ -40,6 +42,8 @@ async function createServer() {
 
   //Create the OpenID client
   server.app.oidcClient = await getOpenIdClient()
+  //const x = await getSpecies(server, 'Antilocapra americana')
+  
   
 
   // Register the plugins

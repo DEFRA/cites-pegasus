@@ -1,10 +1,10 @@
-
 const MSAL = require('@azure/msal-node');
 const Wreck = require('@hapi/wreck');
 const { getYarValue, setYarValue } = require('../lib/session')
 var moment = require('moment');
 const config = require('../../config/config').dynamicsAPI
 const { readSecret } = require('../lib/key-vault')
+const lodash = require('lodash')
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -25,8 +25,9 @@ async function getClientCredentialsToken() {
   })
 }
 
-async function getAccessToken(request) {
-  const credentials = getYarValue(request, 'dynamicsClientCredentials') || null
+async function getAccessToken(server) {
+  const credentials = server.app.dynamicsClientCredentials
+
 
   const expiresOn = moment(credentials?.expiresOn)
   const now = moment()
@@ -35,7 +36,7 @@ async function getAccessToken(request) {
   if (credentials === null || minsUntilExpiry < 1) {
     try {
       credentialsResponse = await getClientCredentialsToken()
-      setYarValue(request, 'dynamicsClientCredentials', { accessToken: credentialsResponse.accessToken, expiresOn: credentialsResponse.expiresOn })
+      server.app.dynamicsClientCredentials = { accessToken: credentialsResponse.accessToken, expiresOn: credentialsResponse.expiresOn }
       return credentialsResponse.accessToken;
     }
     catch (err) {
@@ -46,9 +47,9 @@ async function getAccessToken(request) {
   }
 }
 
-async function whoAmI(request) {
+async function whoAmI(server) {
 
-  const accessToken = await getAccessToken(request)
+  const accessToken = await getAccessToken(server)
 
   try {
     const { res, payload } = await Wreck.get(config.baseURL + 'WhoAmI', { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -62,18 +63,103 @@ async function whoAmI(request) {
   }
 }
 
+async function postSubmission(server, submission) {
 
-async function getSpecies(request, speciesName) {
-
-  const accessToken = await getAccessToken(request)
+  const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
-    const { res, payload } = await Wreck.get(url, { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
+    const url = `${config.baseURL}cites_CreateSubmissionForPortal`
 
-    if (payload.cites_species_response) {
-      const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-      return JSON.parse(json)
+    const options = {
+      json: true,
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+      payload: JSON.stringify(mapSubmissionToPayload(submission))
+    }
+
+    const response = await Wreck.post(url, options)
+
+    const { res, payload } = response
+
+    // if (payload.cites_species_response) {
+    //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
+    //   return JSON.parse(json)
+    // }
+
+    return payload
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+function addOdataTypeProperty(obj) {
+  //console.log(Object.keys(obj)[0])
+  //if (typeof obj !== "object" || obj === null || Object.keys(obj)[0] === 'Payload') {
+  if (typeof obj !== "object" || obj === null) {
+    return;
+  }
+
+  if (Array.isArray(obj)) {
+    //obj.forEach(addOdataTypeProperty);
+    obj.forEach((item, index) => {
+      addOdataTypeProperty(item);
+    });
+    // const arrayName = Object.keys(obj)[0];
+    // obj[arrayName + "@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)";
+  } else {
+    obj["@odata.type"] = "#Microsoft.Dynamics.CRM.expando";
+    Object.values(obj).forEach(addOdataTypeProperty);
+  }
+}
+
+function mapSubmissionToPayload(submission) {
+  const payload = lodash.cloneDeep(submission)
+
+  if (payload.applicant.candidateAddressData?.addressSearchData?.results) {
+    payload.applicant.candidateAddressData.addressSearchData.results = null
+  }
+
+  if (payload.agent?.candidateAddressData?.addressSearchData?.results) {
+    payload.agent.candidateAddressData.addressSearchData.results = null
+  }
+
+  if (payload.delivery.candidateAddressData?.addressSearchData?.results) {
+    payload.delivery.candidateAddressData.addressSearchData.results = null
+  }
+
+  addOdataTypeProperty(payload)
+
+  if (payload.supportingDocuments) {
+    payload.supportingDocuments["files@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+  }
+
+  if (payload.applications) {
+    payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+  }
+  
+  return { Payload: payload }
+}
+
+async function getSpecies(server, speciesName) {
+
+  const accessToken = await getAccessToken(server)
+
+  try {
+    //const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
+    //const url = `${config.baseURL}cites_species(cites_name='${speciesName.trim()}')`
+    //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
+    const url = `${config.baseURL}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
+    //const url = `https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/defra_countries?$select=defra_name,defra_isocodealpha3`
+    //const url = 'https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/cites_derivativecodes?$select=cites_name,cites_description'
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const response = await Wreck.get(url, options)
+
+    const { res, payload } = response
+
+    if (payload) {
+      //const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
+      //return JSON.parse(payload)
+      return { scientificName: payload.cites_name, kingdom: payload.cites_kingdom }
     }
 
     return null
@@ -84,7 +170,7 @@ async function getSpecies(request, speciesName) {
 }
 
 //Stubs
-async function getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
+async function getSubmissions(server, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
   const submissions = [
     { submissionId: 'AB1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
     { submissionId: 'CD5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
@@ -136,4 +222,4 @@ async function getSubmissions(request, contactId, permitTypes, statuses, startIn
 
 }
 
-module.exports = { whoAmI, getSpecies, getSubmissions }
+module.exports = { whoAmI, getSpecies, getSubmissions, postSubmission }
