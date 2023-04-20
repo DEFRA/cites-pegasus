@@ -25,8 +25,9 @@ async function getClientCredentialsToken() {
   })
 }
 
-async function getAccessToken(request) {
-  const credentials = getYarValue(request, 'dynamicsClientCredentials') || null
+async function getAccessToken(server) {
+  const credentials = server.app.dynamicsClientCredentials
+
 
   const expiresOn = moment(credentials?.expiresOn)
   const now = moment()
@@ -35,7 +36,7 @@ async function getAccessToken(request) {
   if (credentials === null || minsUntilExpiry < 1) {
     try {
       credentialsResponse = await getClientCredentialsToken()
-      setYarValue(request, 'dynamicsClientCredentials', { accessToken: credentialsResponse.accessToken, expiresOn: credentialsResponse.expiresOn })
+      server.app.dynamicsClientCredentials = { accessToken: credentialsResponse.accessToken, expiresOn: credentialsResponse.expiresOn }
       return credentialsResponse.accessToken;
     }
     catch (err) {
@@ -46,9 +47,9 @@ async function getAccessToken(request) {
   }
 }
 
-async function whoAmI(request) {
+async function whoAmI(server) {
 
-  const accessToken = await getAccessToken(request)
+  const accessToken = await getAccessToken(server)
 
   try {
     const { res, payload } = await Wreck.get(config.baseURL + 'WhoAmI', { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
@@ -62,9 +63,9 @@ async function whoAmI(request) {
   }
 }
 
-async function postSubmission(request, submission) {
+async function postSubmission(server, submission) {
 
-  const accessToken = await getAccessToken(request)
+  const accessToken = await getAccessToken(server)
 
   try {
     const url = `${config.baseURL}cites_CreateSubmissionForPortal`
@@ -139,22 +140,26 @@ function mapSubmissionToPayload(submission) {
   return { Payload: payload }
 }
 
-async function getSpecies(request, speciesName) {
+async function getSpecies(server, speciesName) {
 
-  const accessToken = await getAccessToken(request)
+  const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
+    //const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
+    //const url = `${config.baseURL}cites_species(cites_name='${speciesName.trim()}')`
     //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
-
+    const url = `${config.baseURL}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
+    //const url = `https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/defra_countries?$select=defra_name,defra_isocodealpha3`
+    //const url = 'https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/cites_derivativecodes?$select=cites_name,cites_description'
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const response = await Wreck.get(url, options)
 
     const { res, payload } = response
 
-    if (payload.cites_species_response) {
-      const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-      return JSON.parse(json)
+    if (payload) {
+      //const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
+      //return JSON.parse(payload)
+      return { scientificName: payload.cites_name, kingdom: payload.cites_kingdom }
     }
 
     return null
@@ -165,34 +170,55 @@ async function getSpecies(request, speciesName) {
 }
 
 //Stubs
-async function getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
+async function getSubmissions(server, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
   const submissions = [
     { submissionId: 'AB1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-    { submissionId: 'CD5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaiting payment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'CD5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
     { submissionId: 'EF9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'GH1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
-    { submissionId: 'IJ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'GH1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'IJ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
     { submissionId: 'KL4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
-    { submissionId: 'MN5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' }
+    { submissionId: 'MN5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'AB1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
+    { submissionId: 'CD5679', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'EF9019', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-14T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'GH1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'IJ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'KL4549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
+    { submissionId: 'MN5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'AB1238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
+    { submissionId: 'CD5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'EF9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'GH1218', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-09-27T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'IJ2328', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2022-06-25T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'KL4548', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-05-01T22:59:59.000Z', permitType: 'reexport' },
+    { submissionId: 'MN5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' }
   ]
 
-  let filteredSubmissions = submissions.filter(submission => {
-    if (contactId && submission.contactId !== contactId) {
-      return false
-    }
-    if (permitTypes && !permitTypes.includes(submission.permitType)) {
-      return false
-    }
-    if (statuses && !statuses.includes(submission.status)) {
-      return false
-    }
-    return true
-  })
+
+  submissions.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+
+  const filteredSubmissions = submissions.
+    filter(submission => {
+      if (contactId && submission.contactId !== contactId) {
+        return false
+      }
+      if (permitTypes && !permitTypes.includes(submission.permitType)) {
+        return false
+      }
+      if (statuses && !statuses.includes(submission.status)) {
+        return false
+      }
+      if (searchTerm  && searchTerm !==  submission.submissionId){
+        return false
+      }
+    
+      return true
+    })
 
   const endIndex = startIndex + pageSize;
-  filteredSubmissions = filteredSubmissions.slice(startIndex, endIndex);
-
-  return filteredSubmissions;
+  const filteredSlicedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
+  return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length};
 
 }
 

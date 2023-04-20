@@ -104,7 +104,7 @@ module.exports = [
         let response
 
         try {
-          response = await postSubmission(request, submission)
+          response = await postSubmission(request.server, submission)
           console.log(response)
         } catch (err) {
           console.log(err)

@@ -50,7 +50,22 @@ ul.smaller-indent {
 
 .js-enabled .govuk-header__navigation-list {
     display: inline-block;
-  }
+}
+
+.govuk-input__suffix--search {
+    background-color: #1d70b8;
+    color: white;
+}
+
+.govuk-button--search {
+    background-color: #1d70b8;
+    box-shadow: 0 0 0  #1d70b8
+}
+.govuk-button--search:hover {
+    background-color: #1d70b8;
+    box-shadow: 0 0 0  #1d70b8
+}
+
 
 .loading-overlay-container {
     top: 100px;

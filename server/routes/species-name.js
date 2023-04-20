@@ -137,10 +137,7 @@ module.exports = [
 
       handler: async (request, h) => {
         const { applicationIndex } = request.params
-        const speciesData = await getSpecies(
-          request,
-          request.payload.speciesName
-        )
+        const speciesData = await getSpecies(request.server, request.payload.speciesName)
         const submission = getSubmission(request)
         const application = submission.applications[applicationIndex]
 
@@ -153,7 +150,7 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        const isChange = application.species && application.species?.speciesName !== speciesData?.scientificname
+        const isChange = application.species && application.species?.speciesName !== speciesData?.scientificName
 
         if (!application.species) {
           application.species = {}
@@ -161,7 +158,7 @@ module.exports = [
 
         const species = application.species
 
-        species.speciesName = speciesData?.scientificname
+        species.speciesName = speciesData?.scientificName
         species.speciesSearchData = request.payload.speciesName
         species.kingdom = speciesData?.kingdom
 
@@ -205,7 +202,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        if (!speciesData?.scientificname || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
+        if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
           return h.redirect(`${unknownSpeciesPath}/${applicationIndex}`)
         }
 
