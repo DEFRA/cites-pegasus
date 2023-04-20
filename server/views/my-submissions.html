@@ -114,29 +114,7 @@
                   <p></p>
                 </div>
                 <div class="govuk-grid-column-one-half">
-                  {{ govukPagination({
-                    previous: {
-                      href: "#"
-                    },
-                    next: {
-                      href: "#"
-                    },
-                    items: [
-                      {
-                        number: 1,
-                        href: "#"
-                      },
-                      {
-                        number: 2,
-                        current: true,
-                        href: "#"
-                      },
-                      {
-                        number: 3,
-                        href: "#"
-                      }
-                    ]
-                  }) }}
+                  {{ govukPagination(inputPagination) }}
                 </div>
                 <div class="govuk-grid-column-one-quarter">
                   <p class="govuk-!-text-align-right">{{textPagination}}</p>

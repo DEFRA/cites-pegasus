@@ -182,6 +182,8 @@ function createModel(errors, data) {
         }
       ],
     },
+
+    inputPagination: paginate(data.totalSubmissions, 1, pageSize)
   }
   return { ...commonContent, ...model }
 }
@@ -193,11 +195,55 @@ function getApplicationDate(date) {
   return formattedDate
 }
 
+function paginate(totalSubmissions, currentPage, pageSize) {
+  const totalPages = Math.ceil(totalSubmissions / pageSize);
+  currentPage = currentPage ? currentPage : 1
+  const startPage = Math.max(1, currentPage - 2);
+  const endPage = Math.min(totalPages, currentPage + 2);
+  
+  const paginationItems = [];
+  for (let i = startPage; i <= endPage; i++) {
+    const item = {
+      number: i,
+      href: currentPage ===1 ? `${currentPath}` : `${currentPath}/${i}`,
+    };
+    if (i === currentPage) {
+      item.current = true;
+    }
+    paginationItems.push(item);
+  }
+
+  const pagination = {
+    id: "pagination",
+    name: "pagination",
+    previous: {
+      href: `${currentPath}/${currentPage - 1}`
+    },
+    next: {
+      href: `${currentPath}/${currentPage + 1}`
+    },
+    items: paginationItems,
+  };
+
+  if (currentPage === 1) {
+    pagination.previous.disabled = true;
+  }
+  if (currentPage === totalPages) {
+    pagination.next.disabled = true;
+  }
+
+  return pagination
+}
+
+
+
+
+
 module.exports = [
   //GET for my applications page
   {
     method: "GET",
-    path: `${currentPath}`,
+    path: `${currentPath}` ,
     // options: {
     //   validate: {
     //     params: Joi.object({
