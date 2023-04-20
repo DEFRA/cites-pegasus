@@ -136,7 +136,7 @@ function mapSubmissionToPayload(submission) {
   if (payload.applications) {
     payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
   }
-  
+
   return { Payload: payload }
 }
 
@@ -170,56 +170,88 @@ async function getSpecies(server, speciesName) {
 }
 
 //Stubs
+const dynamicsStatusMappings = {
+  'received': 0,
+  'awaitingPayment': 1,
+  'awaitingReply': 2,
+  'inProcess': 3,
+  'issued': 4,
+  'refused': 5,
+  'cancelled': 6,
+}
+
+const dynamicsPermitTypesMappings = {
+  'import': 0,
+  'export': 1,
+  'reexport': 2,
+  'article10': 3,
+}
+
+const reverseMapper = (mapping, dynamicsValue) => Object.entries(mapping).find(x => x[1] == dynamicsValue)[0]
+
 async function getSubmissions(server, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
-  const submissions = [
-    { submissionId: 'AB1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-    { submissionId: 'CD5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
-    { submissionId: 'EF9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'GH1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
-    { submissionId: 'IJ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'KL4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
-    { submissionId: 'MN5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
-    { submissionId: 'AB1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-    { submissionId: 'CD5679', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
-    { submissionId: 'EF9019', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-14T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'GH1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
-    { submissionId: 'IJ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'KL4549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
-    { submissionId: 'MN5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
-    { submissionId: 'AB1238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
-    { submissionId: 'CD5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
-    { submissionId: 'EF9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'GH1218', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-09-27T22:59:59.000Z', permitType: 'article10' },
-    { submissionId: 'IJ2328', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2022-06-25T22:59:59.000Z', permitType: 'import' },
-    { submissionId: 'KL4548', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-05-01T22:59:59.000Z', permitType: 'reexport' },
-    { submissionId: 'MN5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' }
+  const select = "$select=cites_submissionreference,cites_submissionmethod,statuscode"
+  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
+  const orderby = "$orderby=createdon desc"
+  const count = "$count=true"
+  const filterParts = [
+    `cites_applicantagent eq '${contactId}'`,
+    "cites_submissionmethod eq 149900000",
+    "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]
 
+  if (statuses && statuses.length > 0) {
+    const statusMappedList = statuses.map(x => `'${dynamicsStatusMappings[x]}'`).join(",")
+    filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
+  }
 
-  submissions.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+  if (permitTypes && permitTypes.length > 0) {
+    const permitTypeMappedList = permitTypes.map(x => `'${dynamicsPermitTypesMappings[x]}'`).join(",")
+    filterParts.push(`cites_cites_submission_incident_submission/any(o1:(Microsoft.Dynamics.CRM.In(PropertyName='cites_permittype',PropertyValues=[${permitTypeMappedList}])))`)
+  }
 
-  const filteredSubmissions = submissions.
-    filter(submission => {
-      if (contactId && submission.contactId !== contactId) {
-        return false
-      }
-      if (permitTypes && !permitTypes.includes(submission.permitType)) {
-        return false
-      }
-      if (statuses && !statuses.includes(submission.status)) {
-        return false
-      }
-      if (searchTerm  && searchTerm !==  submission.submissionId){
-        return false
-      }
-    
-      return true
-    })
+  if (searchTerm) {
+    const searchTermParts = [
+      `cites_submissionreference eq '${searchTerm}'`,
+      `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${searchTerm}'))`,
+      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_certificatenumber eq '${searchTerm}'))`,
+      `cites_cites_submission_incident_submission/any(o4:(o4/cites_deliveryaddresspostcode eq '${searchTerm}'))`,
+      `cites_cites_submission_incident_submission/any(o5:(o5/cites_partyaddresspostcode eq '${searchTerm}'))`,
+      `cites_applicantfullname eq '${searchTerm}'`,
+    ];
+    filterParts.push(`(${searchTermParts.join(" or ")})`)
+  }
 
-  const endIndex = startIndex + pageSize;
-  const filteredSlicedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
-  return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length};
+  var filter = `$filter=${filterParts.join(" and ")}`
 
+  var url = `${config.baseURL}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
+
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}`, 'Prefer': `odata.maxpagesize=${pageSize}` } }
+    const response = await Wreck.get(url, options)
+
+    const { res, payload } = response
+
+    if (payload) {
+      return {
+        submissions: payload.value.map(x => ({
+          submissionId: x.cites_submissionreference,
+          contactId: contactId,
+          status: reverseMapper(dynamicsStatusMappings, x.statuscode),
+          dateSubmitted: x.createdon,
+          permitType: reverseMapper(dynamicsPermitTypesMappings, cites_cites_submission_incident_submission[0].cites_permittype)
+        })),
+        totalSubmissions: payload['@odata.count']
+      };
+    }
+
+    return null
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
 }
 
 module.exports = { whoAmI, getSpecies, getSubmissions, postSubmission }
