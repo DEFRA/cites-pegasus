@@ -4,7 +4,8 @@ const { getYarValue, setYarValue } = require('../lib/session')
 var moment = require('moment');
 const config = require('../../config/config').dynamicsAPI
 const { readSecret } = require('../lib/key-vault')
-const lodash = require('lodash')
+const lodash = require('lodash');
+//const tradeTermCode = require('../routes/trade-term-code');
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -70,15 +71,15 @@ async function postSubmission(server, submission) {
   try {
     const url = `${config.baseURL}cites_CreateSubmissionForPortal`
 
+    const requestPayload = mapSubmissionToPayload(submission)
+
     const options = {
       json: true,
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-      payload: JSON.stringify(mapSubmissionToPayload(submission))
+      payload: requestPayload
     }
 
-    const response = await Wreck.post(url, options)
-
-    const { res, payload } = response
+    const { payload } = await Wreck.post(url, options)
 
     // if (payload.cites_species_response) {
     //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
@@ -136,7 +137,7 @@ function mapSubmissionToPayload(submission) {
   if (payload.applications) {
     payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
   }
-  
+
   return { Payload: payload }
 }
 
@@ -163,6 +164,55 @@ async function getSpecies(server, speciesName) {
     }
 
     return null
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+async function getCountries(server) {
+  console.log('Getting countries')
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha3`
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const { res, payload } = await Wreck.get(url, options)
+
+    if (payload?.value) {
+      console.log('Got countries')
+      return payload.value.map(country => {
+        return {
+          name: country.defra_name,
+          code: country.defra_isocodealpha3
+          //id: country.defra_countryid
+        }
+      })
+    }
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+async function getTradeTermCodes(server) {
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description`
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const { res, payload } = await Wreck.get(url, options)
+
+    if (payload?.value) {
+
+      console.log(payload.value[0])
+      return payload.value.map(tradeTermCode => {
+        return tradeTermCode.cites_name
+          //name: tradeTermCode.cites_description,
+          //code: tradeTermCode.cites_name
+          //id: tradeTermCode.cites_derivativecodeid        
+      })
+    }
   } catch (err) {
     console.log(err)
     throw err
@@ -209,17 +259,17 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
       if (statuses && !statuses.includes(submission.status)) {
         return false
       }
-      if (searchTerm  && searchTerm !==  submission.submissionId){
+      if (searchTerm && searchTerm !== submission.submissionId) {
         return false
       }
-    
+
       return true
     })
 
   const endIndex = startIndex + pageSize;
   const filteredSlicedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
-  return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length};
+  return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length };
 
 }
 
-module.exports = { whoAmI, getSpecies, getSubmissions, postSubmission }
+module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, postSubmission, getCountries, getTradeTermCodes }
