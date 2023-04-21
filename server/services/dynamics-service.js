@@ -150,8 +150,6 @@ async function getSpecies(server, speciesName) {
     //const url = `${config.baseURL}cites_species(cites_name='${speciesName.trim()}')`
     //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
     const url = `${config.baseURL}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
-    //const url = `https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/defra_countries?$select=defra_name,defra_isocodealpha3`
-    //const url = 'https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/cites_derivativecodes?$select=cites_name,cites_description'
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const response = await Wreck.get(url, options)
 
@@ -171,16 +169,14 @@ async function getSpecies(server, speciesName) {
 }
 
 async function getCountries(server) {
-  console.log('Getting countries')
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha3`
+    const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha3&$orderby=defra_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const { res, payload } = await Wreck.get(url, options)
 
     if (payload?.value) {
-      console.log('Got countries')
       return payload.value.map(country => {
         return {
           name: country.defra_name,

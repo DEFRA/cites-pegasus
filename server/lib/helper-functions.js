@@ -218,7 +218,7 @@ const getAddressSummary = (address) => {
     address.addressLine3,
     address.addressLine4,
     address.postcode,
-    address.country
+    address.countryDesc
   ].filter(Boolean)
 
   return addressComponents.join(', ')

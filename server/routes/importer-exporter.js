@@ -17,7 +17,7 @@ const invalidSubmissionPath = urlPrefix
 function createModel(errors, data) {
 
   const commonContent = textContent.common
- 
+
   let pageContent = null
 
   const importerExporterText = lodash.cloneDeep(textContent.importerExporter) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
@@ -47,11 +47,23 @@ function createModel(errors, data) {
     })
   }
 
-  const previousPath = data.sex ? previousPathDescribeLivingAnimal: previousPathDescribeSpecimen
+  const countries = [{
+    value: '',
+    text: 'Select a country...'
+  }]
+  countries.push(...data.countries.map(country => {
+    return {
+      value: country.code,
+      text: country.name,
+      selected: data.country === country.code
+    }
+  }))
+
+  const previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -60,14 +72,15 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     heading: pageContent.heading,
     headingAddress: pageContent.headingAddress,
-    inputCountry: {
+    selectCountry: {
       label: {
         text: pageContent.inputLabelCountry
       },
       id: "country",
       name: "country",
       classes: "govuk-!-width-two-thirds",
-      ...(data.country ? { value: data.country } : {}),
+      items: countries,
+      //...(data.country ? { value: data.country } : {}),
       errorMessage: getFieldError(errorList, '#country')
     },
     inputFullName: {
@@ -167,7 +180,8 @@ module.exports = [
         addressLine2: importerExporter?.addressLine2,
         addressLine3: importerExporter?.addressLine3,
         addressLine4: importerExporter?.addressLine4,
-        postcode: importerExporter?.postcode
+        postcode: importerExporter?.postcode,
+        countries: request.server.app.countries,
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -200,7 +214,8 @@ module.exports = [
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             sex: submission.applications[applicationIndex].species.sex,
-            ...request.payload
+            ...request.payload,
+            countries: request.server.app.countries,
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -209,8 +224,12 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
 
+        const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'GBR'))
+
+
         const importerExporterDetails = {
-          country: request.payload.country.trim(),
+          country: selectedCountry.code,
+          countryDesc: selectedCountry.name,
           name: request.payload.name.trim(),
           addressLine1: request.payload.addressLine1.trim(),
           addressLine2: request.payload.addressLine2.trim(),
@@ -233,7 +252,7 @@ module.exports = [
         if (exitChangeRouteUrl) {
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         if (submission.permitType === 'export') {
           return h.redirect(`${nextPathComments}/${applicationIndex}`)
         } else {
