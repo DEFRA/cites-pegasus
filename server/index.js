@@ -3,7 +3,7 @@ const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
 var Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
-const { getSpecies } = require('./services/dynamics-service');
+const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service');
 
 //Run this command line to create certs
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
@@ -40,11 +40,19 @@ async function createServer() {
     }
   })
 
-  //Create the OpenID client
-  server.app.oidcClient = await getOpenIdClient()
-  //const x = await getSpecies(server, 'Antilocapra americana')
-  
-  
+  await getAccessToken(server)
+
+  const [oidcClient, countries, tradeTermCodes] = await Promise.all([
+    getOpenIdClient(),
+    getCountries(server),
+    getTradeTermCodes(server)
+  ]);
+
+  server.app.oidcClient = oidcClient;
+  server.app.countries = countries;
+  server.app.tradeTermCodes = tradeTermCodes;
+
+
 
   // Register the plugins
   await server.register(require('@hapi/inert'))
