@@ -235,6 +235,9 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
     const { res, payload } = response
 
     if (payload) {
+      // TODO store this for later
+      const nextLink = payload["@odata.nextLink"];
+
       return {
         submissions: payload.value.map(x => ({
           submissionId: x.cites_submissionreference,
