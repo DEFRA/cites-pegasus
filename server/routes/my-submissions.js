@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
 const { getSubmissions } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
@@ -290,16 +290,9 @@ module.exports = [
       },
     },
       handler: async (request, h) => {
-         // const contactId = request.auth.credentials.contactId
-        const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-        const startIndex = 0
-        const permitTypes = request.payload.permitTypes
-        const statuses= request.payload.statuses
-  
-        const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
-        const pageIndex = submissionsData.totalSubmissions
-
-        return h.redirect(`${nextPathPermitType}/${pageIndex}`)
+       
+        createSubmission(request)
+        return h.redirect(`${nextPathPermitType}`)
       }
   },
    //POST for apply filter button
