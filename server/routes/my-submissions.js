@@ -31,7 +31,7 @@ function createModel(errors, data) {
       type: "submit",
       classes: "govuk-button--start govuk-button--search",
       attributes: {
-        formAction: `${currentPath}/search`
+        formAction: `${currentPath}/filter`
       }
     }
   })
@@ -295,57 +295,10 @@ module.exports = [
         return h.redirect(`${nextPathPermitType}`)
       }
   },
-   //POST for apply filter button
+   //POST for apply filter button and search button
    {
     method: "POST",
     path: `${currentPath}/filter`,
-    options: {
-      validate: {
-        options: { abortEarly: false },
-        payload: Joi.object({
-          searchTerm: Joi.string().allow(''),
-          permitTypes: Joi.alternatives().try(
-            Joi.string(),
-            Joi.array().items(Joi.string().valid(...permitTypes))
-          ),
-          statuses: 
-          Joi.alternatives().try(
-            Joi.string(),
-            Joi.array().items(Joi.string().valid(...statuses))
-          ),
-        }),
-        failAction: (request, h, error) => {
-          console.log(error)
-        }
-      },
-      handler: async (request, h) => {
-       // const contactId = request.auth.credentials.contactId
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const startIndex = 0
-      const permitTypes = request.payload.permitTypes
-      const statuses= request.payload.statuses
-
-      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
-      const submissions = submissionsData.submissions
-
-      const pageData = {
-        // pageIndex: pageIndex,
-        submissions: submissions,
-        pageSize: pageSize,
-        startIndex: startIndex,
-        totalSubmissions: submissionsData.totalSubmissions,
-        permitTypes: permitTypes,
-        statuses: statuses,
-        noApplicationFound: submissions.length === 0
-      }
-      return h.view(pageId, createModel(null, pageData))
-      }
-    }
-  },
-  //POST for Search button
-  {
-    method: "POST",
-    path: `${currentPath}/search`,
     options: {
       validate: {
         options: { abortEarly: false },
@@ -370,7 +323,10 @@ module.exports = [
        // const contactId = request.auth.credentials.contactId
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
       const startIndex = 0
+      const permitTypes = request.payload.permitTypes
+      const statuses= request.payload.statuses
       const searchTerm = request.payload.searchTerm.toUpperCase()
+
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
       const submissions = submissionsData.submissions
 
@@ -380,13 +336,15 @@ module.exports = [
         pageSize: pageSize,
         startIndex: startIndex,
         totalSubmissions: submissionsData.totalSubmissions,
+        permitTypes: permitTypes,
+        statuses: statuses,
         searchTerm: searchTerm,
-        noMatchingApplication: submissions.length === 0
+        noApplicationFound: submissions.length === 0
       }
       return h.view(pageId, createModel(null, pageData))
       }
     }
   },
-
+ 
 ]
 
