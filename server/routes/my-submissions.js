@@ -313,12 +313,12 @@ module.exports = [
           searchTerm: Joi.string().allow(''),
           permitTypes: Joi.alternatives().try(
             Joi.string(),
-            Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10'))
+            Joi.array().items(Joi.string().valid(...permitTypes))
           ),
           statuses: 
           Joi.alternatives().try(
             Joi.string(),
-            Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
+            Joi.array().items(Joi.string().valid(...statuses))
           ),
         }),
         failAction: (request, h, error) => {
@@ -361,12 +361,12 @@ module.exports = [
           searchButton: Joi.string().allow(''),
           permitTypes: Joi.alternatives().try(
             Joi.string(),
-            Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10'))
+            Joi.array().items(Joi.string().valid(...permitTypes))
           ),
           statuses: 
           Joi.alternatives().try(
             Joi.string(),
-            Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
+            Joi.array().items(Joi.string().valid(...statuses))
           ),
         }),
         failAction: (request, h, error) => {
