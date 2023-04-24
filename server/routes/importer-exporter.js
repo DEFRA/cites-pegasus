@@ -48,14 +48,16 @@ function createModel(errors, data) {
   }
 
   const countries = [{
+    text: commonContent.countrySelectDefault,
     value: '',
-    text: 'Select a country...'
+    selected: false
   }]
+
   countries.push(...data.countries.map(country => {
     return {
-      value: country.code,
       text: country.name,
-      selected: data.country === country.code
+      value: country.code,
+      selected: country.code === (data.country || '')
     }
   }))
 
@@ -80,7 +82,6 @@ function createModel(errors, data) {
       name: "country",
       classes: "govuk-!-width-two-thirds",
       items: countries,
-      //...(data.country ? { value: data.country } : {}),
       errorMessage: getFieldError(errorList, '#country')
     },
     inputFullName: {

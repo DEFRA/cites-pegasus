@@ -75,16 +75,18 @@ function createModel(errors, data) {
     }
 
     const countries = [{
+        text: commonContent.countrySelectDefault,
         value: '',
-        text: 'Select a country...'
-    }]
-    countries.push(...data.countries.map(country => {
+        selected: false
+      }]
+    
+      countries.push(...data.countries.map(country => {
         return {
-            value: country.code,
-            text: country.name,
-            selected: data.country === country.code
+          text: country.name,
+          value: country.code,
+          selected: country.code === (data.country || '')
         }
-    }))
+      }))
 
     const model = {
         backLink: `${previousPath}/${data.contactType}`,
@@ -150,7 +152,6 @@ function createModel(errors, data) {
             name: "country",
             classes: "govuk-!-width-two-thirds",
             items: countries,
-            //...(data.country ? { value: data.country } : {}),
             errorMessage: getFieldError(errorList, '#country')
         }
     }

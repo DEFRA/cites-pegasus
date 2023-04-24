@@ -125,7 +125,7 @@ function createModel(errors, data) {
 
   const countries = [{
     code: '',
-    name: 'Select a country...'
+    name: commonContent.countrySelectDefault
   }]
   countries.push(...data.countries)
 
@@ -136,7 +136,6 @@ function createModel(errors, data) {
       selected: country.code === (data.exportOrReexportCountry || '')
     }
   })
-
 
   const countryOfOriginCountries = countries.map(country => {
     return {

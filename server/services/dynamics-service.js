@@ -179,7 +179,7 @@ async function getCountries(server) {
     if (payload?.value) {
       return payload.value.map(country => {
         return {
-          name: country.defra_name,
+          name: country.defra_name.toUpperCase(),
           code: country.defra_isocodealpha3
           //id: country.defra_countryid
         }
@@ -203,10 +203,11 @@ async function getTradeTermCodes(server) {
 
       console.log(payload.value[0])
       return payload.value.map(tradeTermCode => {
-        return tradeTermCode.cites_name
-          //name: tradeTermCode.cites_description,
-          //code: tradeTermCode.cites_name
-          //id: tradeTermCode.cites_derivativecodeid        
+        return {
+          name: tradeTermCode.cites_description,
+          code: tradeTermCode.cites_name,
+          id: tradeTermCode.cites_derivativecodeid
+        }
       })
     }
   } catch (err) {

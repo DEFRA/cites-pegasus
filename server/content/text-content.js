@@ -216,6 +216,7 @@ const schema = Joi.object().keys({
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
     radioOptionNo: Joi.string().required(),
+    countrySelectDefault: Joi.string().required(),
     errorMessages: Joi.object()
   }).required(),
   applyCitesPermit: Joi.object({
@@ -450,8 +451,8 @@ const schema = Joi.object().keys({
   tradeTermCode: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    inputLabelTradeCode: Joi.string().required(),
-    inputLabelTradeCodeHint: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    tradeTermCodeSelectDefault: Joi.string().required(),
     errorMessages: Joi.object({
       "error.isTradeTermCode.any.required": Joi.string().required(),
       "error.tradeTermCode.string.empty": Joi.string().required(),

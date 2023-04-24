@@ -4,7 +4,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -24,23 +24,27 @@
     </div>
   {% endif %}
 
-
-
-
-
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {# <span class="govuk-caption-l"> {{captionText}} </span> #}
+        {% call govukFieldset({
+          legend: {
+            text: pageHeader,
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+
+        <p>{{ pageBody | safe }}</p>
         {{ govukRadios(inputIsTradeTermCode) }}
-        
 
         {{ govukButton({
         text: continueButton,
         type: "submit"
       }) }}
+        {% endcall %}
       </form>
     </div>
   </div>

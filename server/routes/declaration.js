@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, validateSubmission } = require("../lib/submission")
+const { mergeSubmission, getSubmission, validateSubmission } = require("../lib/submission")
 const { postSubmission } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "declaration"
@@ -105,13 +105,21 @@ module.exports = [
 
         try {
           response = await postSubmission(request.server, submission)
-          console.log(response)
         } catch (err) {
           console.log(err)
           throw err
         }
 
-        
+        const { submissionId, submissionRef, applicationIntegrationJobId } = response
+
+        submission.submissionDetails = { submissionId, submissionRef, applicationIntegrationJobId }
+
+        try {
+          mergeSubmission(request, { submisisonDetails: submission.submissionDetails }, `${pageId}`)
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidSubmissionPath}/`)
+        }
 
         //return h.redirect(nextPath)
 
