@@ -37,6 +37,7 @@ function createModel(errors, data) {
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
+    containerClasses: 'hide-when-loading',
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text

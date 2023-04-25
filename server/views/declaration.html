@@ -48,10 +48,15 @@
 
         {{ govukButton({
                     text: agreeAndSubmitButton,
+                    classes: 'loading-message-trigger',
                     type: "submit"
                 }) }}
         {% endcall %}
       </form>
     </div>
   </div>
+{% endblock %}
+
+{% block localJS %}
+  <script src="{{assetPath}}/js/loading-message.client.js"></script>
 {% endblock %}
