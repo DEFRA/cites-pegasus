@@ -371,7 +371,7 @@ function createApplicationSummaryModel(errors, data) {
   if (importerExporterDetailsData.country) {
     summaryListImporterExporterDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextCountry, importerExporterDetailsData.countryDesc, hrefPrefix + "/importerExporterDetails", "country"))
   }
-  summaryListImporterExporterDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, importerExporterDetailsData.fullName, hrefPrefix + "/importerExporterDetails", "contact details"))
+  summaryListImporterExporterDetailsRows.push(createSummaryListRow(importerExporterDetailsData.country ? "govuk-summary-list__row--no-border" : "govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, importerExporterDetailsData.fullName, hrefPrefix + "/importerExporterDetails", "contact details"))
   summaryListImporterExporterDetailsRows.push(createSummaryListRow("", pageContent.rowTextAddress, importerExporterAddressValue, "", ""))
 
   const summaryListImporterExporterDetails = {
