@@ -69,7 +69,7 @@ function createModel(errors, data) {
     return {referenceNumber, referenceNumberUrl, applicationDate, status}
   })
 
-  const textPagination = `${data.startIndex +1} to ${submissionsData.length} of ${data.totalSubmissions} applications`
+  const textPagination = `${data.startIndex +1} to ${submissionsData.length} of ${data.totalSubmissions}`
 
   let pagebodyNoApplicationsFound = null
   if (data.noApplicationMadeBefore && submissionsData.length === 0) {
@@ -97,6 +97,9 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: currentPath,
     formActionApplyFilters: `${currentPath}/filter`,
+    // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
+    // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
+    // textPagination: textPagination,
     
     inputSearch: {
       id: "searchTerm",
@@ -182,7 +185,7 @@ function createModel(errors, data) {
       ],
     },
 
-    inputPagination: paginate(data.totalSubmissions, 1, pageSize)
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, 1, pageSize, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }
@@ -194,44 +197,35 @@ function getApplicationDate(date) {
   return formattedDate
 }
 
-function paginate(totalSubmissions, currentPage, pageSize) {
+function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
-  currentPage = currentPage ? currentPage : 1
-  const startPage = Math.max(1, currentPage - 2);
-  const endPage = Math.min(totalPages, currentPage + 2);
-  
-  const paginationItems = [];
-  for (let i = startPage; i <= endPage; i++) {
-    const item = {
-      number: i,
-      href: currentPage ===1 ? `${currentPath}` : `${currentPath}/${i}`,
-    };
-    if (i === currentPage) {
-      item.current = true;
-    }
-    paginationItems.push(item);
-  }
+  currentPage = currentPage ? currentPage : 1;
 
   const pagination = {
     id: "pagination",
     name: "pagination",
     previous: {
-      href: `${currentPath}/${currentPage - 1}`
+      href: currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
+      text: "Previous",
     },
     next: {
-      href: `${currentPath}/${currentPage + 1}`
+      href: currentPage === totalPages ?  "#" : `${currentPath}/${currentPage + 1}`,
+      text: "Next",
     },
-    items: paginationItems,
+    items: [{
+      number: textPagination
+    }],
   };
 
-  if (currentPage === 1) {
-    pagination.previous.disabled = true;
-  }
-  if (currentPage === totalPages) {
-    pagination.next.disabled = true;
-  }
+  // if (currentPage === 1) {
+  //   pagination.previous.disabled = true;
+  // }
 
-  return pagination
+  // if (currentPage === totalPages) {
+  //   pagination.next.disabled = true;
+  // }
+
+  return pagination;
 }
 
 
@@ -251,7 +245,8 @@ module.exports = [
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
       // const { pageIndex } = request.params
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+      const contactId = 
+      "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
       const startIndex = 0
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions

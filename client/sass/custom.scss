@@ -131,6 +131,17 @@ ul.smaller-indent {
     margin: 10px 0;
 }
 
+.govuk-pagination__item .govuk-pagination__link{
+    pointer-events:none;
+    text-decoration: none;
+    color: black;
+}
+
+.govuk-pagination__item:hover {
+   background-color: transparent;
+    text-decoration: none;
+}
+
 
 @-webkit-keyframes bounce {
 
