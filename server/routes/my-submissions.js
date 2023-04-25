@@ -194,6 +194,13 @@ function getApplicationDate(date) {
 }
 
 module.exports = [
+  {
+    method: 'GET',
+    path: `${urlPrefix}/`,
+    handler: (request, h) => {
+      return h.redirect(currentPath)// view(pageId, createModel()); 
+    }
+  },
   //GET for my applications page
   {
     method: "GET",
@@ -253,7 +260,7 @@ module.exports = [
         const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
         const pageIndex = submissionsData.totalSubmissions
 
-        return h.redirect(`${nextPathPermitType}/${pageIndex}`)
+        return h.redirect(`${nextPathPermitType}`)
       }
   },
    //POST for apply filter button

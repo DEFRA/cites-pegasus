@@ -19,14 +19,4 @@ module.exports = [{
   handler: (request, h) => {
     return h.view(pageId, createModel());  
   }
-},
-{
-  method: 'GET',
-  path: `${urlPrefix}/`,
-  config: {
-    auth: false // authentication is not required
-  },
-  handler: (request, h) => {
-    return h.redirect(currentPath)// view(pageId, createModel()); 
-  }
 }]
