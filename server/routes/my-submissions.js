@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
 const { getSubmissions } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
@@ -13,7 +14,6 @@ const invalidSubmissionPath = urlPrefix
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['received','awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
 const pageSize = 15
-
 
 
 function createModel(errors, data) {
@@ -78,7 +78,6 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   } 
 
-  
   const model = {
     backLink: currentPath,
     pageTitle: pageContent.defaultTitle,
@@ -236,9 +235,6 @@ function paginate(totalSubmissions, currentPage, pageSize) {
 }
 
 
-
-
-
 module.exports = [
   //GET for my applications page
   {
@@ -259,6 +255,7 @@ module.exports = [
       const startIndex = 0
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
+      const sessionData = getYarValue(request, 'filterData')
 
       try {
         validateSubmission(submissions, pageId)
@@ -273,7 +270,10 @@ module.exports = [
         pageSize: pageSize,
         startIndex: startIndex,
         totalSubmissions: submissionsData.totalSubmissions,
-        noApplicationMadeBefore: submissions.length === 0
+        noApplicationMadeBefore: submissions.length === 0,
+        permitTypes: sessionData?.permitTypes,
+        statuses: sessionData?.statuses,
+        searchTerm: sessionData?.searchTerm,
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -289,8 +289,7 @@ module.exports = [
         }
       },
     },
-      handler: async (request, h) => {
-       
+      handler: async (request, h) => {      
         createSubmission(request)
         return h.redirect(`${nextPathPermitType}`)
       }
@@ -341,6 +340,20 @@ module.exports = [
         searchTerm: searchTerm,
         noApplicationFound: submissions.length === 0
       }
+
+      const filterData = {
+        permitTypes: permitTypes,
+        statuses: statuses,
+        searchTerm: searchTerm
+      }
+
+      try {
+       const sessionData= setYarValue(request, 'filterdata', filterData)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
       return h.view(pageId, createModel(null, pageData))
       }
     }
