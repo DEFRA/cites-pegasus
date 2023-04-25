@@ -189,6 +189,11 @@ async function getSpecies(server, speciesName) {
 
     return null
   } catch (err) {
+    if (err.data?.res?.statusCode === 404){
+      //No species match
+      return null
+    }
+
     console.log(err)
     throw err
   }
