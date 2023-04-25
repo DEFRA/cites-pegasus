@@ -272,9 +272,12 @@ const schema = Joi.object().keys({
     agentLed: contactDetailsSchema,
     errorMessages: Joi.object({
       "error.fullName.string.empty": Joi.string().required(),
+      "error.fullName.string.max": Joi.string().required(),
       "error.fullName.string.pattern.base": Joi.string().required(),
       "error.businessName.string.pattern.base": Joi.string().required(),
-      "error.email.string.email": Joi.string().required()
+      "error.businessName.string.max": Joi.string().required(),
+      "error.email.string.email": Joi.string().required(),
+      "error.email.string.max": Joi.string().required()
     }).required()
   }).required(),
   postcode: Joi.object({
