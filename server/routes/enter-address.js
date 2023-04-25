@@ -74,6 +74,20 @@ function createModel(errors, data) {
         })
     }
 
+    const countries = [{
+        text: commonContent.countrySelectDefault,
+        value: '',
+        selected: false
+      }]
+    
+      countries.push(...data.countries.map(country => {
+        return {
+          text: country.name,
+          value: country.code,
+          selected: country.code === (data.country || '')
+        }
+      }))
+
     const model = {
         backLink: `${previousPath}/${data.contactType}`,
         pageHeader: pageHeader,
@@ -130,14 +144,14 @@ function createModel(errors, data) {
             ...(data.postcode ? { value: data.postcode } : {}),
             errorMessage: getFieldError(errorList, '#postcode')
         },
-        inputCountry: {
+        selectCountry: {
             label: {
                 text: pageContent.inputLabelCountry
             },
             id: "country",
             name: "country",
             classes: "govuk-!-width-two-thirds",
-            ...(data.country ? { value: data.country } : {}),
+            items: countries,
             errorMessage: getFieldError(errorList, '#country')
         }
     }
@@ -172,8 +186,10 @@ module.exports = [{
             contactType: request.params.contactType,
             isAgent: submission?.isAgent,
             permitType: submission?.permitType,
+            countries: request.server.app.countries,
             ...submission[request.params.contactType]?.candidateAddressData?.selectedAddress
         }
+
 
         return h.view(pageId, createModel(null, pageData));
     }
@@ -217,12 +233,14 @@ module.exports = [{
                     contactType: request.params.contactType,
                     isAgent: submission?.isAgent,
                     permitType: submission?.permitType,
+                    countries: request.server.app.countries,
                     ...request.payload
                 }
 
                 return h.view(pageId, createModel(result.error, pageData)).takeover()
             }
 
+            const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'UK'))
 
             const newSubmission = {
                 [contactType]: {
@@ -233,7 +251,8 @@ module.exports = [{
                             addressLine3: request.payload.addressLine3.trim(),
                             addressLine4: request.payload.addressLine4.trim(),
                             postcode: request.payload.postcode.trim(),
-                            country: request.payload.country ? request.payload.country.trim() : 'UK',
+                            country: selectedCountry.code,
+                            countryDesc: selectedCountry.name,
                             uprn: null
                         }
                     }

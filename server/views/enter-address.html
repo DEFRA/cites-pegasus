@@ -4,6 +4,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -45,7 +46,7 @@
         {{ govukInput(inputAddressLine4) }}
         {{ govukInput(inputPostcode) }}
         {% if internationalAddress %}
-          {{ govukInput(inputCountry) }}
+          {{ govukSelect(selectCountry) }}
         {% endif %}
 
         {{ govukButton({

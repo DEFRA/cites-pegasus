@@ -190,23 +190,11 @@ module.exports = [{
 
                 const selectedAddress = submission[contactType].candidateAddressData.addressSearchData.results.find(x => x.Address.UPRN === request.payload.address).Address
 
-                // const selectedAddress = {
-                //     //SubBuildingName: "Room 1",
-                //     BuildingName: "The building",
-                //     BuildingNumber: "Building no 1",
-                //     //Street: "The street",
-                //     Locality: "locality",
-                //     DependentLocality: "dep locality",
-                //     Town: "town",
-                //     County: "county",
-                //     Postcode: "B74 4QJ",
-                //     Country: "ENGLAND",
-                //     UPRN: "100070591023"
-                // }
-
                 const addressLine1Components = [selectedAddress.SubBuildingName, selectedAddress.BuildingNumber, selectedAddress.BuildingName, selectedAddress.Street].filter(Boolean)
                 const localityComponents = [selectedAddress.DependentLocality, selectedAddress.Locality].filter(Boolean)
                 const otherAddressLineComponents = [localityComponents.join(", "), selectedAddress.Town, selectedAddress.County].filter(Boolean)
+
+                const selectedCountry = request.server.app.countries.find(country => country.code === 'UK')
 
                 const newSubmission = {
                     [contactType]: {
@@ -221,7 +209,8 @@ module.exports = [{
                                 addressLine3: otherAddressLineComponents[1] || null,
                                 addressLine4: otherAddressLineComponents[2] || null,
                                 postcode: selectedAddress.Postcode || null,
-                                country: selectedAddress.Country || null,
+                                country: selectedCountry.code || null,
+                                countryDesc: selectedCountry.name.toUpperCase() || null,
                                 uprn: selectedAddress.UPRN || null
                             }
                         }

@@ -36,23 +36,46 @@ function createModel(errors, data) {
     })
   }
 
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
+  const tradeTermCodes = [{
+    text: pageContent.tradeTermCodeSelectDefault,
+    value: '',
+    selected: false
+  }]
+
+  tradeTermCodes.push(...data.tradeTermCodes.map(tradeTermCode => {
+    return {
+      text: `${tradeTermCode.code} - ${tradeTermCode.name}`,
+      value: tradeTermCode.code,
+      selected: tradeTermCode.code === (data.tradeTermCode || '')
+    }
+  }))
+
+  // const tradeTermCodesList = tradeTermCodes.map(tradeTermCode => {
+  //   return {
+  //     value: tradeTermCode.code,
+  //     text: tradeTermCode.name,
+  //     selected: tradeTermCode.code === (data.tradeTermCode || '')
+  //   }
+  // })
+
+
+  var renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(selectTradeTermCode)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
-  const tradeTermCodeInput = nunjucks.renderString(renderString, {
-    input: {
+  const tradeTermCodeSelect = nunjucks.renderString(renderString, {
+    selectTradeTermCode: {
       id: "tradeTermCode",
       name: "tradeTermCode",
-      classes: "govuk-input govuk-input--width-2",
-      label: {
-        text: pageContent.inputLabelTradeCode
-      },
-      hint: {
-        text: pageContent.inputLabelTradeCodeHint
-      },
-      ...(data.tradeTermCode ? { value: data.tradeTermCode } : {}),
-      errorMessage: getFieldError(errorList, "#tradeTermCode")
+      classes: "govuk-!-width-2",
+      // label: {
+      //   text: pageContent.inputLabelTradeCode
+      // },
+      // hint: {
+      //   text: pageContent.inputLabelTradeCodeHint
+      // },
+      items: tradeTermCodes,
+      errorMessage: getFieldError(errorList, '#tradeTermCode')
     }
   })
 
@@ -67,24 +90,25 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     captionText: data.speciesName,
-
+    pageHeader: pageContent.pageHeader,
+    pageBody: pageContent.pageBody,
     inputIsTradeTermCode: {
       idPrefix: "isTradeTermCode",
       name: "isTradeTermCode",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
+      // fieldset: {
+      //   legend: {
+      //     text: pageContent.pageHeader,
+      //     isPageHeading: true,
+      //     classes: "govuk-fieldset__legend--l"
+      //   }
+      // },
       items: [
         {
           value: true,
           text: commonContent.radioOptionYes,
           checked: data.isTradeTermCode,
           conditional: {
-            html: tradeTermCodeInput
+            html: tradeTermCodeSelect
           }
         },
         {
@@ -113,23 +137,24 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      
+
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(`${invalidSubmissionPath}/`)
       }
-      
+
       const species = submission.applications[applicationIndex].species
-      
+
       const pageData = {
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,
         isTradeTermCode: species.isTradeTermCode,
         tradeTermCode: species.tradeTermCode,
-        createdDate: species.createdDate
+        createdDate: species.createdDate,
+        tradeTermCodes: request.server.app.tradeTermCodes
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -172,7 +197,8 @@ module.exports = [
             speciesName: species.speciesName,
             isTradeTermCode: isTradeTermCode,
             tradeTermCode: request.payload.tradeTermCode,
-            createdDate: species.createdDate
+            createdDate: species.createdDate,
+            tradeTermCodes: request.server.app.tradeTermCodes
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -187,8 +213,11 @@ module.exports = [
           species.tradeTermCode = ""
         }
 
+        const selectedTradeTermCode = request.server.app.tradeTermCodes.find(tradeTermCode => tradeTermCode.code === request.payload.tradeTermCode)
+
         species.isTradeTermCode = request.payload.isTradeTermCode
         species.tradeTermCode = request.payload.isTradeTermCode ? request.payload.tradeTermCode.toUpperCase() : ""
+        species.tradeTermCodeDesc = request.payload.isTradeTermCode ? selectedTradeTermCode.name : ""
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
@@ -201,7 +230,7 @@ module.exports = [
         if (exitChangeRouteUrl) {
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         return h.redirect(`${nextPath}/${applicationIndex}`)
       }
     }

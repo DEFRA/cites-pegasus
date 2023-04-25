@@ -123,9 +123,31 @@ function createModel(errors, data) {
     { name: "year", value: data.countryOfOriginPermitIssueDateYear }
   ]
 
+  const countries = [{
+    code: '',
+    name: commonContent.countrySelectDefault
+  }]
+  countries.push(...data.countries)
+
+  const exportOrReexportCountries = countries.map(country => {
+    return {
+      value: country.code,
+      text: country.name,
+      selected: country.code === (data.exportOrReexportCountry || '')
+    }
+  })
+
+  const countryOfOriginCountries = countries.map(country => {
+    return {
+      value: country.code,
+      text: country.name,
+      selected: country.code === (data.countryOfOrigin || '')
+    }
+  })
+
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -138,16 +160,15 @@ function createModel(errors, data) {
     headingCountryOfOrigin: pageContent.headingCountryOfOrigin,
     divider: pageContent.dividerText,
 
-    inputExportOrReexportCountry: {
+    selectExportOrReexportCountry: {
       label: {
         text: pageContent.inputLabelCountry
       },
       id: "exportOrReexportCountry",
       name: "exportOrReexportCountry",
       classes: "govuk-!-width-two-thirds",
-      ...(data.exportOrReexportCountry
-        ? { value: data.exportOrReexportCountry }
-        : {}),
+      items: exportOrReexportCountries,
+      //...(data.exportOrReexportCountry ? { value: data.exportOrReexportCountry } : {}),
       errorMessage: getFieldError(errorList, "#exportOrReexportCountry")
     },
     inputExportOrReexportPermitNumber: {
@@ -194,14 +215,15 @@ function createModel(errors, data) {
       ]
     },
 
-    inputCountryOfOrigin: {
+    selectCountryOfOrigin: {
       label: {
         text: pageContent.inputLabelCountry
       },
       id: "countryOfOrigin",
       name: "countryOfOrigin",
       classes: "govuk-!-width-two-thirds",
-      ...(data.countryOfOrigin ? { value: data.countryOfOrigin } : {}),
+      items: countryOfOriginCountries,
+      //...(data.countryOfOrigin ? { value: data.countryOfOrigin } : {}),
       errorMessage: getFieldError(errorList, "#countryOfOrigin")
     },
     inputCountryOfOriginPermitNumber: {
@@ -272,84 +294,90 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
 }
 
 function permitIssueDateValidator(value, helpers) {
-  const {day, month, year, customLabelPrefix} = value.hasOwnProperty("exportOrReexportPermitIssueDate-day")
+  const { day, month, year, customLabelPrefix } = value.hasOwnProperty("exportOrReexportPermitIssueDate-day")
     ? {
-        day: value["exportOrReexportPermitIssueDate-day"],
-        month: value["exportOrReexportPermitIssueDate-month"],
-        year: value["exportOrReexportPermitIssueDate-year"],
-        customLabelPrefix: "exportOrReexportPermitIssueDate"
-      } : {
-        day: value["countryOfOriginPermitIssueDate-day"],
-        month:  value["countryOfOriginPermitIssueDate-month"],
-        year:  value["countryOfOriginPermitIssueDate-year"],
-        customLabelPrefix: "countryOfOriginPermitIssueDate"
-}
- 
-    if (!day && !month && !year) {
-      return helpers.error("any.empty", { customLabel: customLabelPrefix })
+      day: value["exportOrReexportPermitIssueDate-day"],
+      month: value["exportOrReexportPermitIssueDate-month"],
+      year: value["exportOrReexportPermitIssueDate-year"],
+      customLabelPrefix: "exportOrReexportPermitIssueDate"
+    } : {
+      day: value["countryOfOriginPermitIssueDate-day"],
+      month: value["countryOfOriginPermitIssueDate-month"],
+      year: value["countryOfOriginPermitIssueDate-year"],
+      customLabelPrefix: "countryOfOriginPermitIssueDate"
     }
-    if (!day && !month) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-month` })
+
+  if (!day && !month && !year) {
+    return helpers.error("any.empty", { customLabel: customLabelPrefix })
+  }
+  if (!day && !month) {
+    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-month` })
+  }
+  if (!day && !year) {
+    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-year` })
+  }
+  if (!month && !year) {
+    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month-year` })
+  }
+  if (!day) {
+    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day` })
+  }
+  if (!month) {
+    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month` })
+  }
+  if (!year) {
+    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-year` })
+  }
+  if (
+    !isValidDate(day, month, year)) {
+    return helpers.error("any.invalid", { customLabel: customLabelPrefix })
+  } else {
+    const date = new Date(year, month - 1, day)
+    if (!isPastDate(date, true)) {
+      return helpers.error("any.future", { customLabel: customLabelPrefix })
     }
-    if (!day && !year) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-year` })
-    }
-    if (!month && !year) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month-year` })
-    }
-    if (!day) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day` })
-    }
-    if (!month) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month` })
-    }
-    if (!year) {
-      return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-year` })
-    }
-    if (
-      !isValidDate( day, month, year  ) ) {
-      return helpers.error("any.invalid", {  customLabel: customLabelPrefix  })
-    } else {
-      const date = new Date( year, month - 1, day )
-      if (!isPastDate(date, true)) {
-        return helpers.error("any.future", { customLabel: customLabelPrefix  })
-      }
-    }
+  }
   return value
 }
 
 const payloadSchema = Joi.object({
   isExportOrReexportNotApplicable: Joi.boolean().default(false),
- 
+
   exportOrReexportCountry: Joi.when("isExportOrReexportNotApplicable", {
     is: false,
-    then: Joi.string().max(150).required()}),
-  exportOrReexportPermitNumber: Joi.when( "isExportOrReexportNotApplicable", {
-     is: false,
-     then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()}),
-  exportOrReexportPermitIssueDate: Joi.when( "isExportOrReexportNotApplicable", {
-     is: false,
-     then: Joi.object({
-          "exportOrReexportPermitIssueDate-day": Joi.any().optional(),
-          "exportOrReexportPermitIssueDate-month": Joi.any().optional(),
-          "exportOrReexportPermitIssueDate-year": Joi.any().optional(),
-        }).custom(permitIssueDateValidator) }), 
+    then: Joi.string().max(150).required()
+  }),
+  exportOrReexportPermitNumber: Joi.when("isExportOrReexportNotApplicable", {
+    is: false,
+    then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()
+  }),
+  exportOrReexportPermitIssueDate: Joi.when("isExportOrReexportNotApplicable", {
+    is: false,
+    then: Joi.object({
+      "exportOrReexportPermitIssueDate-day": Joi.any().optional(),
+      "exportOrReexportPermitIssueDate-month": Joi.any().optional(),
+      "exportOrReexportPermitIssueDate-year": Joi.any().optional(),
+    }).custom(permitIssueDateValidator)
+  }),
 
   isCountryOfOriginNotApplicable: Joi.boolean().default(false),
   countryOfOrigin: Joi.when("isCountryOfOriginNotApplicable", {
-     is: false,
-     then: Joi.string().max(150).required()}),
-  countryOfOriginPermitNumber: Joi.when( "isCountryOfOriginNotApplicable", {
-      is: false,
-      then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required() }),
-  countryOfOriginPermitIssueDate: Joi.when( "isCountryOfOriginNotApplicable", {
-     is: false,
-     then: Joi.object({
-         "countryOfOriginPermitIssueDate-day": Joi.any().optional(),
-         "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
-         "countryOfOriginPermitIssueDate-year": Joi.any().optional()
-        }).custom(permitIssueDateValidator) }),
-   })
+    is: false,
+    then: Joi.string().max(150).required()
+  }),
+  countryOfOriginPermitNumber: Joi.when("isCountryOfOriginNotApplicable", {
+    is: false,
+    then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()
+  }),
+  countryOfOriginPermitIssueDate: Joi.when("isCountryOfOriginNotApplicable", {
+    is: false,
+    then: Joi.object({
+      "countryOfOriginPermitIssueDate-day": Joi.any().optional(),
+      "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
+      "countryOfOriginPermitIssueDate-year": Joi.any().optional()
+    }).custom(permitIssueDateValidator)
+  }),
+})
 
 module.exports = [
   {
@@ -391,7 +419,8 @@ module.exports = [
         countryOfOriginPermitIssueDateDay: permitDetails?.countryOfOriginPermitIssueDate.day,
         countryOfOriginPermitIssueDateMonth: permitDetails?.countryOfOriginPermitIssueDate.month,
         countryOfOriginPermitIssueDateYear: permitDetails?.countryOfOriginPermitIssueDate.year,
-        isCountryOfOriginNotApplicable: permitDetails?.isCountryOfOriginNotApplicable
+        isCountryOfOriginNotApplicable: permitDetails?.isCountryOfOriginNotApplicable,
+        countries: request.server.app.countries
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -404,7 +433,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required()
         }),
-         //Payload validation done in handler section
+        //Payload validation done in handler section
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
@@ -439,83 +468,89 @@ module.exports = [
           isCountryOfOriginNotApplicable: isCountryOfOriginNotApplicable,
           countryOfOriginPermitIssueDate: {
             "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
-          "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
-          "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
+            "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
+            "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
           },
         }
 
-          const result = payloadSchema.validate(requestPayload, { abortEarly: false })
+        const result = payloadSchema.validate(requestPayload, { abortEarly: false })
 
-          if (result.error) {
-            const { applicationIndex } = request.params
-            const submission = getSubmission(request)
-  
-            const pageData = {
-              backLinkOverride: checkChangeRouteExit(request, true),
-              applicationIndex: applicationIndex,
-              permitType: submission.permitType,
-              isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
-              exportOrReexportCountry: exportOrReexportCountry,
-              exportOrReexportPermitNumber: exportOrReexportPermitNumber,
-              exportOrReexportPermitIssueDateDay: exportOrReexportDay,
-              exportOrReexportPermitIssueDateMonth: exportOrReexportMonth,
-              exportOrReexportPermitIssueDateYear: exportOrReexportYear,
-              isExportOrReexportNotApplicable: isExportOrReexportNotApplicable,
-              countryOfOrigin: countryOfOrigin,
-              countryOfOriginPermitNumber: countryOfOriginPermitNumber,
-              countryOfOriginPermitIssueDateDay: countryOfOriginDay,
-              countryOfOriginPermitIssueDateMonth: countryOfOriginMonth,
-              countryOfOriginPermitIssueDateYear: countryOfOriginYear,
-              isCountryOfOriginNotApplicable: isCountryOfOriginNotApplicable
-            }
-              return h.view(pageId, createModel(result.error, pageData)).takeover()
+        if (result.error) {
+          const { applicationIndex } = request.params
+          const submission = getSubmission(request)
+
+          const pageData = {
+            backLinkOverride: checkChangeRouteExit(request, true),
+            applicationIndex: applicationIndex,
+            permitType: submission.permitType,
+            isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
+            exportOrReexportCountry: exportOrReexportCountry,
+            exportOrReexportPermitNumber: exportOrReexportPermitNumber,
+            exportOrReexportPermitIssueDateDay: exportOrReexportDay,
+            exportOrReexportPermitIssueDateMonth: exportOrReexportMonth,
+            exportOrReexportPermitIssueDateYear: exportOrReexportYear,
+            isExportOrReexportNotApplicable: isExportOrReexportNotApplicable,
+            countryOfOrigin: countryOfOrigin,
+            countryOfOriginPermitNumber: countryOfOriginPermitNumber,
+            countryOfOriginPermitIssueDateDay: countryOfOriginDay,
+            countryOfOriginPermitIssueDateMonth: countryOfOriginMonth,
+            countryOfOriginPermitIssueDateYear: countryOfOriginYear,
+            isCountryOfOriginNotApplicable: isCountryOfOriginNotApplicable,
+            countries: request.server.app.countries
           }
-
+          return h.view(pageId, createModel(result.error, pageData)).takeover()
+        }
+        const selectedExportOrReexportCountry = request.server.app.countries.find(country => country.code === exportOrReexportCountry)
         const exportOrReexportSection = isExportOrReexportNotApplicable
           ? {
-              exportOrReexportCountry: null,
-              exportOrReexportPermitNumber: null,
-              exportOrReexportPermitIssueDate: {
-                day: null,
-                month: null,
-                year: null
-              },
-              isExportOrReexportNotApplicable: true
-            }
+            exportOrReexportCountry: null,
+            exportOrReexportCountryDesc: null,
+            exportOrReexportPermitNumber: null,
+            exportOrReexportPermitIssueDate: {
+              day: null,
+              month: null,
+              year: null
+            },
+            isExportOrReexportNotApplicable: true
+          }
           : {
-              exportOrReexportCountry: exportOrReexportCountry,
-              exportOrReexportPermitNumber: exportOrReexportPermitNumber,
-              exportOrReexportPermitIssueDate: {
-                day: parseInt(exportOrReexportDay),
-                month: parseInt(exportOrReexportMonth),
-                year: parseInt(exportOrReexportYear)
-              },
-              isExportOrReexportNotApplicable: false
-            }
+            exportOrReexportCountry: selectedExportOrReexportCountry.code,
+            exportOrReexportCountryDesc: selectedExportOrReexportCountry.name,
+            exportOrReexportPermitNumber: exportOrReexportPermitNumber,
+            exportOrReexportPermitIssueDate: {
+              day: parseInt(exportOrReexportDay),
+              month: parseInt(exportOrReexportMonth),
+              year: parseInt(exportOrReexportYear)
+            },
+            isExportOrReexportNotApplicable: false
+          }
 
+        const selectedCountryOfOriginCountry = request.server.app.countries.find(country => country.code === countryOfOrigin)
         const countryOfOriginSection = isCountryOfOriginNotApplicable
           ? {
-              countryOfOrigin: null,
-              countryOfOriginPermitNumber: null,
-              countryOfOriginPermitIssueDate: {
-                day: null,
-                month: null,
-                year: null
-              },
-              isCountryOfOriginNotApplicable: true
-            }
+            countryOfOrigin: null,
+            countryOfOriginDesc: null,
+            countryOfOriginPermitNumber: null,
+            countryOfOriginPermitIssueDate: {
+              day: null,
+              month: null,
+              year: null
+            },
+            isCountryOfOriginNotApplicable: true
+          }
           : {
-              countryOfOrigin: countryOfOrigin,
-              countryOfOriginPermitNumber: countryOfOriginPermitNumber,
-              countryOfOriginPermitIssueDate: {
-                day: parseInt(countryOfOriginDay),
-                month: parseInt(countryOfOriginMonth),
-                year: parseInt(countryOfOriginYear)
-              },
-              isCountryOfOriginNotApplicable: false
-            }
+            countryOfOrigin: selectedCountryOfOriginCountry.code,
+            countryOfOriginDesc: selectedCountryOfOriginCountry.name,
+            countryOfOriginPermitNumber: countryOfOriginPermitNumber,
+            countryOfOriginPermitIssueDate: {
+              day: parseInt(countryOfOriginDay),
+              month: parseInt(countryOfOriginMonth),
+              year: parseInt(countryOfOriginYear)
+            },
+            isCountryOfOriginNotApplicable: false
+          }
 
-        const permitDetails = {...exportOrReexportSection, ...countryOfOriginSection}
+        const permitDetails = { ...exportOrReexportSection, ...countryOfOriginSection }
 
         submission.applications[applicationIndex].permitDetails = permitDetails
 
@@ -529,7 +564,7 @@ module.exports = [
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)
         }
-        
+
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           return h.redirect(exitChangeRouteUrl)

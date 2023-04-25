@@ -138,6 +138,32 @@ function mapSubmissionToPayload(submission) {
     payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
   }
 
+  // if (payload.submissionDetails) {
+  //   delete payload.submissionDetails
+  // }
+  
+  // delete payload.applications[0].species.tradeTermCodeDesc
+  
+  // delete payload.applicant.address.countryDesc
+
+  // if (payload.applicant.candidateAddressData?.selectedAddress) {
+  //   delete payload.applicant.candidateAddressData?.selectedAddress?.countryDesc
+  // }
+
+  // if (payload.agent?.address) {
+  //   delete payload.agent?.address?.countryDesc
+  // }
+
+  // if (payload.agent?.candidateAddressData?.selectedAddress) {
+  //   delete payload.agent?.candidateAddressData?.selectedAddress?.countryDesc
+  // }
+  
+  // delete payload.delivery.address.countryDesc
+  // if (payload.delivery.candidateAddressData?.selectedAddress?.countryDesc) {
+  //   delete payload.delivery.candidateAddressData?.selectedAddress?.countryDesc
+  // }
+
+
   return { Payload: payload }
 }
 
@@ -150,8 +176,6 @@ async function getSpecies(server, speciesName) {
     //const url = `${config.baseURL}cites_species(cites_name='${speciesName.trim()}')`
     //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
     const url = `${config.baseURL}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
-    //const url = `https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/defra_countries?$select=defra_name,defra_isocodealpha3`
-    //const url = 'https://defra-apha-cites01-cites01-dev.crm11.dynamics.com/api/data/v9.2/cites_derivativecodes?$select=cites_name,cites_description'
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const response = await Wreck.get(url, options)
 
@@ -171,19 +195,17 @@ async function getSpecies(server, speciesName) {
 }
 
 async function getCountries(server) {
-  console.log('Getting countries')
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha3`
+    const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha3&$orderby=defra_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const { res, payload } = await Wreck.get(url, options)
 
     if (payload?.value) {
-      console.log('Got countries')
       return payload.value.map(country => {
         return {
-          name: country.defra_name,
+          name: country.defra_name.toUpperCase(),
           code: country.defra_isocodealpha3
           //id: country.defra_countryid
         }
@@ -199,18 +221,19 @@ async function getTradeTermCodes(server) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description`
+    const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description&$orderby=cites_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const { res, payload } = await Wreck.get(url, options)
 
     if (payload?.value) {
 
-      console.log(payload.value[0])
+      //console.log(payload.value[0])
       return payload.value.map(tradeTermCode => {
-        return tradeTermCode.cites_name
-          //name: tradeTermCode.cites_description,
-          //code: tradeTermCode.cites_name
-          //id: tradeTermCode.cites_derivativecodeid        
+        return {
+          name: tradeTermCode.cites_description,
+          code: tradeTermCode.cites_name,
+          id: tradeTermCode.cites_derivativecodeid
+        }
       })
     }
   } catch (err) {

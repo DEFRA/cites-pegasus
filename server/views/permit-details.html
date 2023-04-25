@@ -6,6 +6,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -39,7 +40,7 @@
           }
         }) %}
         <p>
-          {{ govukInput(inputExportOrReexportCountry) }}
+          {{ govukSelect(selectExportOrReexportCountry) }}
           {{ govukInput(inputExportOrReexportPermitNumber) }}
           {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
           <p>{{divider}}</p>
@@ -54,7 +55,7 @@
           }
         }) %}
           <p>
-            {{ govukInput(inputCountryOfOrigin) }}
+            {{ govukSelect(selectCountryOfOrigin) }}
             {{ govukInput(inputCountryOfOriginPermitNumber) }}
             {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
             <p>{{divider}}</p>
