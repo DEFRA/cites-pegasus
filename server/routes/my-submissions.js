@@ -69,7 +69,9 @@ function createModel(errors, data) {
     return {referenceNumber, referenceNumberUrl, applicationDate, status}
   })
 
-  const textPagination = `${data.startIndex +1} to ${submissionsData.length} of ${data.totalSubmissions}`
+  const endIndex = data.totalSubmissions <= data.startIndex + pageSize ? data.totalSubmissions : data.startIndex + pageSize
+
+  const textPagination = `${data.startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
   let pagebodyNoApplicationsFound = null
   if (data.noApplicationMadeBefore && submissionsData.length === 0) {
@@ -185,7 +187,7 @@ function createModel(errors, data) {
       ],
     },
 
-    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, 1, pageSize, textPagination) : ""
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo ? data.pageNo : 1, pageSize, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }
@@ -199,7 +201,6 @@ function getApplicationDate(date) {
 
 function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
-  currentPage = currentPage ? currentPage : 1;
 
   const pagination = {
     id: "pagination",
@@ -233,21 +234,26 @@ module.exports = [
   //GET for my applications page
   {
     method: "GET",
-    path: `${currentPath}` ,
-    // options: {
-    //   validate: {
-    //     params: Joi.object({
-    //       pageIndex: Joi.number().required()
-    //     }),
-    //   }
-    // },
+    path: `${currentPath}/{pageNo?}` ,
+    options: {
+      validate: {
+        params: Joi.object({
+          pageNo: Joi.number().allow('')
+        }),
+      }
+    },
     
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
-      // const { pageIndex } = request.params
-      const contactId = 
-      "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const startIndex = 0
+      const pageNo = request.params.pageNo
+      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+      let startIndex =  null
+      if (pageNo) {
+        startIndex = (pageNo -1)* pageSize
+      } else {
+        startIndex = 0
+       
+      }
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
       const sessionData = getYarValue(request, 'filterData')
@@ -260,7 +266,7 @@ module.exports = [
       }
 
       const pageData = {
-        // pageIndex: pageIndex,
+        pageNo: pageNo,
         submissions: submissions,
         pageSize: pageSize,
         startIndex: startIndex,
