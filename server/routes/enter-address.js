@@ -240,7 +240,7 @@ module.exports = [{
                 return h.view(pageId, createModel(result.error, pageData)).takeover()
             }
 
-            const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'GBR'))
+            const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'UK'))
 
             const newSubmission = {
                 [contactType]: {

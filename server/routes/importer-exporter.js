@@ -225,7 +225,7 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
 
-        const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'GBR'))
+        const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'UK'))
 
 
         const importerExporterDetails = {

@@ -115,7 +115,7 @@ module.exports = [
         submission.submissionDetails = { submissionId, submissionRef, applicationIntegrationJobId }
 
         try {
-          mergeSubmission(request, { submisisonDetails: submission.submissionDetails }, `${pageId}`)
+          mergeSubmission(request, { submissionDetails: submission.submissionDetails }, `${pageId}`)
         } catch (err) {
           console.log(err)
           return h.redirect(`${invalidSubmissionPath}/`)

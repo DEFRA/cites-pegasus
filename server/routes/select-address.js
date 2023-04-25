@@ -194,7 +194,7 @@ module.exports = [{
                 const localityComponents = [selectedAddress.DependentLocality, selectedAddress.Locality].filter(Boolean)
                 const otherAddressLineComponents = [localityComponents.join(", "), selectedAddress.Town, selectedAddress.County].filter(Boolean)
 
-                const selectedCountry = request.server.app.countries.find(country => country.code === 'GBR')
+                const selectedCountry = request.server.app.countries.find(country => country.code === 'UK')
 
                 const newSubmission = {
                     [contactType]: {

@@ -138,6 +138,32 @@ function mapSubmissionToPayload(submission) {
     payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
   }
 
+  // if (payload.submissionDetails) {
+  //   delete payload.submissionDetails
+  // }
+  
+  // delete payload.applications[0].species.tradeTermCodeDesc
+  
+  // delete payload.applicant.address.countryDesc
+
+  // if (payload.applicant.candidateAddressData?.selectedAddress) {
+  //   delete payload.applicant.candidateAddressData?.selectedAddress?.countryDesc
+  // }
+
+  // if (payload.agent?.address) {
+  //   delete payload.agent?.address?.countryDesc
+  // }
+
+  // if (payload.agent?.candidateAddressData?.selectedAddress) {
+  //   delete payload.agent?.candidateAddressData?.selectedAddress?.countryDesc
+  // }
+  
+  // delete payload.delivery.address.countryDesc
+  // if (payload.delivery.candidateAddressData?.selectedAddress?.countryDesc) {
+  //   delete payload.delivery.candidateAddressData?.selectedAddress?.countryDesc
+  // }
+
+
   return { Payload: payload }
 }
 
@@ -195,13 +221,13 @@ async function getTradeTermCodes(server) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description`
+    const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description&$orderby=cites_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const { res, payload } = await Wreck.get(url, options)
 
     if (payload?.value) {
 
-      console.log(payload.value[0])
+      //console.log(payload.value[0])
       return payload.value.map(tradeTermCode => {
         return {
           name: tradeTermCode.cites_description,
