@@ -231,6 +231,13 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 
 
 module.exports = [
+  {
+    method: 'GET',
+    path: `${urlPrefix}/`,
+    handler: (request, h) => {
+      return h.redirect(currentPath)// view(pageId, createModel()); 
+    }
+  },
   //GET for my applications page
   {
     method: "GET",

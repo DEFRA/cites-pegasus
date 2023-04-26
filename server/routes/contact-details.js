@@ -192,9 +192,9 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             payload: Joi.object({
-                fullName: Joi.string().regex(NAME_REGEX).required(),
-                businessName: Joi.string().regex(BUSINESSNAME_REGEX).allow(""),
-                email: Joi.string().email().allow("")
+                fullName: Joi.string().max(150).regex(NAME_REGEX).required(),
+                businessName: Joi.string().max(150).regex(BUSINESSNAME_REGEX).allow(""),
+                email: Joi.string().max(150).email().allow("")
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);

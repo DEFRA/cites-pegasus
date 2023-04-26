@@ -18,6 +18,7 @@
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
     "radioOptionNo": "No",
+    "countrySelectDefault": "Select a country...",
     "errorMessages": {}
   },
   "applyCitesPermit": {
@@ -138,9 +139,12 @@
     },
     "errorMessages": {
       "error.fullName.string.empty": "Full name is required",
+      "error.fullName.string.max": "Full name must be 150 characters or less",
       "error.fullName.string.pattern.base": "Full name is invalid",
       "error.businessName.string.pattern.base": "Business name is invalid",
-      "error.email.string.email": "Email format is invalid"
+      "error.businessName.string.max": "Business name must be 150 characters or less",
+      "error.email.string.email": "Email format is invalid",
+      "error.email.string.max": "Email must be 150 characters or less"
     }
   },
   "postcode": {
@@ -588,8 +592,8 @@
   "tradeTermCode": {
     "defaultTitle": "Do you know the trade term code?",
     "pageHeader": "Do you know the trade term code?",
-    "inputLabelTradeCode": "Enter the trade term code",
-    "inputLabelTradeCodeHint": "For example, ‘LIV’ for live animals",
+    "pageBody": "If you are not sure, you can either <a target='_blank' href='https://trade.cites.org/cites_trade_guidelines/en-CITES_Trade_Database_Guide.pdf'>find the trade term code</a> (opens in a new tab) or select 'No'",
+    "tradeTermCodeSelectDefault": "Select a trade term code...",
     "errorMessages": {
       "error.isTradeTermCode.any.required": "Select yes if you know the trade term code",
       "error.tradeTermCode.string.empty": "Enter the trade term code",

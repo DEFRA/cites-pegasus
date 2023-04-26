@@ -70,6 +70,7 @@ function createModel(errors, data) {
         addressLine4: data.selectedAddress.addressLine4,
         postcode: data.selectedAddress.postcode,
         country: data.selectedAddress.country,
+        countryDesc: data.selectedAddress.countryDesc,
         showCountry: data.selectedAddress.country && data.contactType !== 'delivery',
         changeAddressLinkText: pageContent.changeAddressLinkText,
         changeAddressLink: `/postcode/${data.contactType}`,

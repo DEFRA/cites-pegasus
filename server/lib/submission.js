@@ -124,13 +124,9 @@ function getAppFlow(submission) {
                     appFlow.push('enter-address/agent')
                     if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
                         appFlow.push('select-address/agent')
-                    } else {
-                        return { appFlow, applicationStatuses }
                     }
                     if (submission.agent.candidateAddressData?.selectedAddress) {
                         appFlow.push('confirm-address/agent')
-                    } else {
-                        return { appFlow, applicationStatuses }
                     }
                 } else {
                     return { appFlow, applicationStatuses }

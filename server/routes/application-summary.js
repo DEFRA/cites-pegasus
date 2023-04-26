@@ -197,7 +197,8 @@ function createApplicationSummaryModel(errors, data) {
         addressLine3: data.applicant.address.addressLine3 ? data.applicant.address.addressLine3 : "",
         addressLine4: data.applicant.address.addressLine4 ? data.applicant.address.addressLine4 : "",
         postcode: data.applicant.address.postcode,
-        country: data.applicant.address.country
+        country: data.applicant.address.country,
+        countryDesc: data.applicant.address.countryDesc
       },
       hrefPathSuffixContactDetails: "/applicantContactDetails",
       hrefPathSuffixAddress: "/applicantAddress"
@@ -213,7 +214,8 @@ function createApplicationSummaryModel(errors, data) {
         addressLine3: data.agent.address.addressLine3 ? data.agent.address.addressLine3 : "",
         addressLine4: data.agent.address.addressLine4 ? data.agent.address.addressLine4 : "",
         postcode: data.agent.address.postcode,
-        country: data.agent.address.country
+        country: data.agent.address.country,
+        countryDesc: data.agent.address.countryDesc
       },
       hrefPathSuffixContactDetails: "/agentContactDetails",
       hrefPathSuffixAddress: "/agentAddress"
@@ -230,7 +232,8 @@ function createApplicationSummaryModel(errors, data) {
       addressLine3: data.applicant.address.addressLine3 ? data.applicant.address.addressLine3 : "",
       addressLine4: data.applicant.address.addressLine4 ? data.applicant.address.addressLine4 : "",
       postcode: data.applicant.address.postcode,
-      country: data.applicant.address.country
+      country: data.applicant.address.country,
+      countryDesc: data.applicant.address.countryDesc
     },
     hrefPathSuffixContactDetails: "/applicantContactDetails",
     hrefPathSuffixAddress: "/applicantAddress"
@@ -242,14 +245,16 @@ function createApplicationSummaryModel(errors, data) {
     addressLine3: data.delivery.address.addressLine3 ? data.delivery.address.addressLine3 : "",
     addressLine4: data.delivery.address.addressLine4 ? data.delivery.address.addressLine4 : "",
     postcode: data.delivery.address.postcode,
-    country: data.delivery.address.country
+    country: data.delivery.address.country,
+    countryDesc: data.delivery.address.countryDesc
   }
 
-  const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.country} ${deliveryAddressData.postcode}`
+  const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.countryDesc} ${deliveryAddressData.postcode}`
 
   const exportOrReexportPermitDetailData = {
     notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
     country: data.permitDetails?.exportOrReexportCountry,
+    countryDesc: data.permitDetails?.exportOrReexportCountryDesc,
     permitNumber: data.permitDetails?.exportOrReexportPermitNumber,
     permitIssueDate: {
       day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
@@ -261,6 +266,7 @@ function createApplicationSummaryModel(errors, data) {
   const countryOfOriginPermitDetailData = {
     notApplicable: data.permitDetails?.isCountryOfOriginNotApplicable,
     country: data.permitDetails?.countryOfOrigin,
+    countryDesc: data.permitDetails?.countryOfOriginDesc,
     permitNumber: data.permitDetails?.countryOfOriginPermitNumber,
     permitIssueDate: {
       day: data.permitDetails?.countryOfOriginPermitIssueDate.day,
@@ -273,6 +279,7 @@ function createApplicationSummaryModel(errors, data) {
     isImporterExporterDetails: true,
     fullName: data.importerExporterDetails?.name,
     country: data.permitType !== "import" ? data.importerExporterDetails?.country : "",
+    countryDesc: data.permitType !== "import" ? data.importerExporterDetails?.countryDesc : "",
     address: {
       addressLine1: data.importerExporterDetails?.addressLine1,
       addressLine2: data.importerExporterDetails?.addressLine2,
@@ -326,7 +333,7 @@ function createApplicationSummaryModel(errors, data) {
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type"))
   if (data.species.specimenType !== "animalLiving") {
-     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? data.species.tradeTermCode : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code"))
+     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode} ${data.species.tradeTermCodeDesc}` : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code"))
   }
   if (data.permitType === "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for"))
@@ -362,7 +369,7 @@ function createApplicationSummaryModel(errors, data) {
 
   const summaryListImporterExporterDetailsRows = []
   if (importerExporterDetailsData.country) {
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextCountry, importerExporterDetailsData.country, hrefPrefix + "/importerExporterDetails", "country"))
+    summaryListImporterExporterDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextCountry, importerExporterDetailsData.countryDesc, hrefPrefix + "/importerExporterDetails", "country"))
   }
   summaryListImporterExporterDetailsRows.push(createSummaryListRow(importerExporterDetailsData.country ? "govuk-summary-list__row--no-border" : "govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, importerExporterDetailsData.fullName, hrefPrefix + "/importerExporterDetails", "contact details"))
   summaryListImporterExporterDetailsRows.push(createSummaryListRow("", pageContent.rowTextAddress, importerExporterAddressValue, "", ""))
@@ -452,7 +459,7 @@ function getContactDetails(pageContent, contactDetailsData, hrefPrefix) {
   summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
   summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextBusinessName, contactDetailsData.businessName, "", ""))
   summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextEmailAddress, contactDetailsData.email, "", ""))
-  summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.country} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address"))
+  summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.countryDesc} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address"))
 
   return {
     id: "contactDetails",
@@ -463,7 +470,7 @@ function getContactDetails(pageContent, contactDetailsData, hrefPrefix) {
 
 function getPermitDetails(pageContent, permitDetailsData, hrefPrefix) {
   const summaryListPermitDetailsRows = []
-  summaryListPermitDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextCountry, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.country, hrefPrefix + "/permitDetails", "permit details"))
+  summaryListPermitDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextCountry, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.countryDesc, hrefPrefix + "/permitDetails", "permit details"))
   summaryListPermitDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPermitNumber, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : permitDetailsData.permitNumber, "", ""))
   summaryListPermitDetailsRows.push(createSummaryListRow("", pageContent.rowTextPermitIssueDate, permitDetailsData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(permitDetailsData.permitIssueDate), "", ""))
 
