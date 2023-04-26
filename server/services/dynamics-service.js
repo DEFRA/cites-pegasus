@@ -270,7 +270,28 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
     { submissionId: 'GH1218', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-09-27T22:59:59.000Z', permitType: 'article10' },
     { submissionId: 'IJ2328', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2022-06-25T22:59:59.000Z', permitType: 'import' },
     { submissionId: 'KL4548', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-05-01T22:59:59.000Z', permitType: 'reexport' },
-    { submissionId: 'MN5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' }
+    { submissionId: 'MN5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'AZ1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
+    { submissionId: 'CZ5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'EZ9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'GZ1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'IZ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'KZ4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
+    { submissionId: 'MZ5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'AZ1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
+    { submissionId: 'CZ5679', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'EZ9019', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-14T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'GZ1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'IZZ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'KLZ549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
+    { submissionId: 'MNZ5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'AB1Z238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
+    { submissionId: 'CDZ5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
+    { submissionId: 'EFZ9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'GHZ1218', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-09-27T22:59:59.000Z', permitType: 'article10' },
+    { submissionId: 'IJZ2328', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2022-06-25T22:59:59.000Z', permitType: 'import' },
+    { submissionId: 'KLZ4548', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-05-01T22:59:59.000Z', permitType: 'reexport' },
+    { submissionId: 'MNZ5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' }
   ]
 
 

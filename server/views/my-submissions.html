@@ -110,37 +110,12 @@
                 </div>
             </div>
             <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-grid-column-one-half">
                   <p></p>
                 </div>
-                <div class="govuk-grid-column-one-half">
-                  {{ govukPagination({
-                    previous: {
-                      href: "#"
-                    },
-                    next: {
-                      href: "#"
-                    },
-                    items: [
-                      {
-                        number: 1,
-                        href: "#"
-                      },
-                      {
-                        number: 2,
-                        current: true,
-                        href: "#"
-                      },
-                      {
-                        number: 3,
-                        href: "#"
-                      }
-                    ]
-                  }) }}
+                <div class="govuk-grid-column-one-half" style="display: flex; justify-content: flex-end">
+                  {{ govukPagination(inputPagination) }}
                 </div>
-                <div class="govuk-grid-column-one-quarter">
-                  <p class="govuk-!-text-align-right">{{textPagination}}</p>
-                </div> 
             </div>
       </form>
   </div>

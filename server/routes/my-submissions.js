@@ -1,7 +1,8 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getYarValue, setYarValue } = require('../lib/session')
+const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
 const { getSubmissions } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
@@ -13,7 +14,6 @@ const invalidSubmissionPath = urlPrefix
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['received','awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
 const pageSize = 15
-
 
 
 function createModel(errors, data) {
@@ -31,7 +31,7 @@ function createModel(errors, data) {
       type: "submit",
       classes: "govuk-button--start govuk-button--search",
       attributes: {
-        formAction: `${currentPath}/search`
+        formAction: `${currentPath}/filter`
       }
     }
   })
@@ -69,7 +69,9 @@ function createModel(errors, data) {
     return {referenceNumber, referenceNumberUrl, applicationDate, status}
   })
 
-  const textPagination = `${data.startIndex +1} to ${submissionsData.length} of ${data.totalSubmissions} applications`
+  const endIndex = data.totalSubmissions <= data.startIndex + pageSize ? data.totalSubmissions : data.startIndex + pageSize
+
+  const textPagination = `${data.startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
   let pagebodyNoApplicationsFound = null
   if (data.noApplicationMadeBefore && submissionsData.length === 0) {
@@ -78,7 +80,6 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   } 
 
-  
   const model = {
     backLink: currentPath,
     pageTitle: pageContent.defaultTitle,
@@ -98,6 +99,9 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: currentPath,
     formActionApplyFilters: `${currentPath}/filter`,
+    // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
+    // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
+    // textPagination: textPagination,
     
     inputSearch: {
       id: "searchTerm",
@@ -182,6 +186,8 @@ function createModel(errors, data) {
         }
       ],
     },
+
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo ? data.pageNo : 1, pageSize, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }
@@ -192,6 +198,37 @@ function getApplicationDate(date) {
   const formattedDate = dateObj.toLocaleDateString('en-GB', options);
   return formattedDate
 }
+
+function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
+  const totalPages = Math.ceil(totalSubmissions / pageSize);
+
+  const pagination = {
+    id: "pagination",
+    name: "pagination",
+    previous: {
+      href: currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
+      text: "Previous",
+    },
+    next: {
+      href: currentPage === totalPages ?  "#" : `${currentPath}/${currentPage + 1}`,
+      text: "Next",
+    },
+    items: [{
+      number: textPagination
+    }],
+  };
+
+  // if (currentPage === 1) {
+  //   pagination.previous.disabled = true;
+  // }
+
+  // if (currentPage === totalPages) {
+  //   pagination.next.disabled = true;
+  // }
+
+  return pagination;
+}
+
 
 module.exports = [
   {
@@ -204,22 +241,29 @@ module.exports = [
   //GET for my applications page
   {
     method: "GET",
-    path: `${currentPath}`,
-    // options: {
-    //   validate: {
-    //     params: Joi.object({
-    //       pageIndex: Joi.number().required()
-    //     }),
-    //   }
-    // },
+    path: `${currentPath}/{pageNo?}` ,
+    options: {
+      validate: {
+        params: Joi.object({
+          pageNo: Joi.number().allow('')
+        }),
+      }
+    },
     
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
-      // const { pageIndex } = request.params
+      const pageNo = request.params.pageNo
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const startIndex = 0
+      let startIndex =  null
+      if (pageNo) {
+        startIndex = (pageNo -1)* pageSize
+      } else {
+        startIndex = 0
+       
+      }
       const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
       const submissions = submissionsData.submissions
+      const sessionData = getYarValue(request, 'filterData')
 
       try {
         validateSubmission(submissions, pageId)
@@ -229,12 +273,15 @@ module.exports = [
       }
 
       const pageData = {
-        // pageIndex: pageIndex,
+        pageNo: pageNo,
         submissions: submissions,
         pageSize: pageSize,
         startIndex: startIndex,
         totalSubmissions: submissionsData.totalSubmissions,
-        noApplicationMadeBefore: submissions.length === 0
+        noApplicationMadeBefore: submissions.length === 0,
+        permitTypes: sessionData?.permitTypes,
+        statuses: sessionData?.statuses,
+        searchTerm: sessionData?.searchTerm,
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -250,20 +297,12 @@ module.exports = [
         }
       },
     },
-      handler: async (request, h) => {
-         // const contactId = request.auth.credentials.contactId
-        const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-        const startIndex = 0
-        const permitTypes = request.payload.permitTypes
-        const statuses= request.payload.statuses
-  
-        const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
-        const pageIndex = submissionsData.totalSubmissions
-
+      handler: async (request, h) => {      
+        createSubmission(request)
         return h.redirect(`${nextPathPermitType}`)
       }
   },
-   //POST for apply filter button
+   //POST for apply filter button and search button
    {
     method: "POST",
     path: `${currentPath}/filter`,
@@ -272,14 +311,15 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           searchTerm: Joi.string().allow(''),
+          searchButton: Joi.string().allow(''),
           permitTypes: Joi.alternatives().try(
             Joi.string(),
-            Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10'))
+            Joi.array().items(Joi.string().valid(...permitTypes))
           ),
           statuses: 
           Joi.alternatives().try(
             Joi.string(),
-            Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
+            Joi.array().items(Joi.string().valid(...statuses))
           ),
         }),
         failAction: (request, h, error) => {
@@ -292,8 +332,9 @@ module.exports = [
       const startIndex = 0
       const permitTypes = request.payload.permitTypes
       const statuses= request.payload.statuses
+      const searchTerm = request.payload.searchTerm.toUpperCase()
 
-      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
+      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
       const submissions = submissionsData.submissions
 
       const pageData = {
@@ -304,57 +345,27 @@ module.exports = [
         totalSubmissions: submissionsData.totalSubmissions,
         permitTypes: permitTypes,
         statuses: statuses,
+        searchTerm: searchTerm,
         noApplicationFound: submissions.length === 0
       }
+
+      const filterData = {
+        permitTypes: permitTypes,
+        statuses: statuses,
+        searchTerm: searchTerm
+      }
+
+      try {
+       const sessionData= setYarValue(request, 'filterdata', filterData)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(`${invalidSubmissionPath}/`)
+      }
+
       return h.view(pageId, createModel(null, pageData))
       }
     }
   },
-  //POST for Search button
-  {
-    method: "POST",
-    path: `${currentPath}/search`,
-    options: {
-      validate: {
-        options: { abortEarly: false },
-        payload: Joi.object({
-          searchTerm: Joi.string().allow(''),
-          searchButton: Joi.string().allow(''),
-          permitTypes: Joi.alternatives().try(
-            Joi.string(),
-            Joi.array().items(Joi.string().valid('import', 'export', 'reexport', 'article10'))
-          ),
-          statuses: 
-          Joi.alternatives().try(
-            Joi.string(),
-            Joi.array().items(Joi.string().valid('received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled'))
-          ),
-        }),
-        failAction: (request, h, error) => {
-          console.log(error)
-        }
-      },
-      handler: async (request, h) => {
-       // const contactId = request.auth.credentials.contactId
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const startIndex = 0
-      const searchTerm = request.payload.searchTerm.toUpperCase()
-      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
-      const submissions = submissionsData.submissions
-
-      const pageData = {
-        // pageIndex: pageIndex,
-        submissions: submissions,
-        pageSize: pageSize,
-        startIndex: startIndex,
-        totalSubmissions: submissionsData.totalSubmissions,
-        searchTerm: searchTerm,
-        noMatchingApplication: submissions.length === 0
-      }
-      return h.view(pageId, createModel(null, pageData))
-      }
-    }
-  },
-
+ 
 ]
 
