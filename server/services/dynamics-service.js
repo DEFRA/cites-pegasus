@@ -181,10 +181,10 @@ const dynamicsStatusMappings = {
 }
 
 const dynamicsPermitTypesMappings = {
-  'import': 0,
-  'export': 1,
-  'reexport': 2,
-  'article10': 3,
+  'import': 149900001,
+  'export': 149900000,
+  'reexport': 149900002,
+  'article10': 149900003,
 }
 
 const reverseMapper = (mapping, dynamicsValue) => Object.entries(mapping).find(x => x[1] == dynamicsValue)[0]
