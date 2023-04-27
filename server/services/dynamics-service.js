@@ -191,7 +191,7 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
   ]
 
   if (statuses && statuses.length > 0) {
-    const statusMappedList = getDynamicsStatues(statuses).join(",")
+    const statusMappedList = getDynamicsStatues(statuses).map(x => `'${x}'`).join(",")
     filterParts.push(`cites_cites_submission_incident_submission/any(o1:(Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])))`)
   }
 
