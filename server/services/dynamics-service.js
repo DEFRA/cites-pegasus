@@ -195,7 +195,7 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
   const filterParts = [
-    `cites_applicantagent eq '${contactId}'`,
+    `_cites_submissionagent_value eq '${contactId}'`,
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]
