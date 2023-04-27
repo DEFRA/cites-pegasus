@@ -109,7 +109,7 @@ function getApplicationIndex (submission, applicationStatuses) {
 
 function getAppFlow(submission) {
     let applicationStatuses = []
-    let appFlow = ['apply-cites-permit', 'permit-type', 'my-submissions']
+    let appFlow = ['apply-cites-permit', 'permit-type']
     if (submission) {
 
         if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
