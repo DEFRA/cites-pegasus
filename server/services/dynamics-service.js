@@ -247,6 +247,38 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
   }
 }
 
+async function getSubmission(server, contactId, submissionRef) {
+  const top = "$top=1"
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued"
+  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode)"
+  const filter = `$filter=cites_submissionreference eq '${submissionRef} and _cites_submissionagent_value eq '${contactId}'`
+  const url = `${config.baseURL}cites_submissions?${top}&${select}&${expand}&${filter}`
+
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const response = await Wreck.get(url, options)
+
+    const { res, payload } = response
+
+    if (payload) {
+      if (payload.value.length == 0) {
+        throw `Submission not found with reference '${submissionRef}' and contact '${contactId}'`
+      }
+
+      const submission = payload.value[0]
+
+      return JSON.parse(submission.cites_portaljsoncontent + submission.cites_portaljsoncontentcontinue)
+    }
+
+    return null
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+} 
+
 function getPortalSubmissionStatus(dynamicsStatus) {
   switch (dynamicsStatus) {
     case 1: // Not evaluated
