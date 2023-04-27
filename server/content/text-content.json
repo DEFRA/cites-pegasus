@@ -1261,7 +1261,22 @@
     "rowTextCancelled": "Cancelled",
     "pagebodyNoApplicationsFound": "No applications found.",
     "pagebodyZeroApplication": " You have not yet made an application using this service."
-    
-    
+  },
+  "mySubmission": {
+    "rowTextReferenceNumber": "Reference number",
+    "rowTextPermitType": "Permit type",
+    "rowTextApplicationDate": "Application date",
+    "rowTextStatus": "Status",
+    "rowTextImport": "Import",
+    "rowTextExport": "Export",
+    "rowTextReexport": "Re-export",
+    "rowTextArticle10": "Article 10",
+    "rowTextReceived": "Received",
+    "rowTextAwaitingPayment": "Awaiting Payment",
+    "rowTextAwaitingReply": "Awaiting Reply",
+    "rowTextInProcess": "In Process",
+    "rowTextIssued": "Issued",
+    "rowTextRefused": "Refused",
+    "rowTextCancelled": "Cancelled"
   }
 }

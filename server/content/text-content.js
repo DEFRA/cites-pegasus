@@ -956,7 +956,24 @@ const schema = Joi.object().keys({
     rowTextCancelled: Joi.string().required(),
     pagebodyNoApplicationsFound: Joi.string().required(),
     pagebodyZeroApplication: Joi.string().required(),
-  })
+  }).required(),
+  mySubmission: Joi.object({
+    rowTextReferenceNumber: Joi.string().required(),
+    rowTextPermitType: Joi.string().required(),
+    rowTextApplicationDate: Joi.string().required(),
+    rowTextStatus: Joi.string().required(),
+    rowTextImport: Joi.string().required(),
+    rowTextExport: Joi.string().required(),
+    rowTextReexport: Joi.string().required(),
+    rowTextArticle10: Joi.string().required(),
+    rowTextReceived: Joi.string().required(),
+    rowTextAwaitingPayment: Joi.string().required(),
+    rowTextAwaitingReply: Joi.string().required(),
+    rowTextInProcess: Joi.string().required(),
+    rowTextIssued: Joi.string().required(),
+    rowTextRefused: Joi.string().required(),
+    rowTextCancelled: Joi.string().required(),
+  }).required(),
 })
 
 // Validate config
