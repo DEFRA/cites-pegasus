@@ -180,8 +180,8 @@ const dynamicsPermitTypesMappings = {
 const reverseMapper = (mapping, dynamicsValue) => Object.entries(mapping).find(x => x[1] == dynamicsValue)[0]
 
 async function getSubmissions(server, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
-  const select = "$select=cites_submissionreference,cites_submissionmethod,statuscode"
-  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
+  const select = "$select=cites_submissionreference,cites_submissionmethod"
+  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
   const filterParts = [
@@ -232,7 +232,7 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
         submissions: payload.value.map(x => ({
           submissionId: x.cites_submissionreference,
           contactId: contactId,
-          status: getPortalStatus(x.cites_cites_submission_incident_submission[0].statuscode),
+          status: getPortalSubmissionStatus(x.cites_cites_submission_incident_submission[0].statuscode),
           dateSubmitted: x.createdon,
           permitType: reverseMapper(dynamicsPermitTypesMappings, x.cites_cites_submission_incident_submission[0].cites_permittype)
         })),
@@ -247,7 +247,7 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
   }
 }
 
-function getPortalStatus(dynamicsStatus) {
+function getPortalSubmissionStatus(dynamicsStatus) {
   switch (dynamicsStatus) {
     case 1: // Not evaluated
     case 149900007: // To be evaluated
