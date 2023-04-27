@@ -170,16 +170,6 @@ async function getSpecies(server, speciesName) {
 }
 
 //Stubs
-const dynamicsStatusMappings = {
-  'received': 0,
-  'awaitingPayment': 1,
-  'awaitingReply': 2,
-  'inProcess': 3,
-  'issued': 4,
-  'refused': 5,
-  'cancelled': 6,
-}
-
 const dynamicsPermitTypesMappings = {
   'import': 149900001,
   'export': 149900000,
@@ -201,8 +191,8 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
   ]
 
   if (statuses && statuses.length > 0) {
-    const statusMappedList = statuses.map(x => `'${dynamicsStatusMappings[x]}'`).join(",")
-    filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
+    const statusMappedList = getDynamicsStatues(statuses).join(",")
+    filterParts.push(`cites_cites_submission_incident_submission/any(o1:(Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])))`)
   }
 
   if (permitTypes && permitTypes.length > 0) {
@@ -242,9 +232,9 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
         submissions: payload.value.map(x => ({
           submissionId: x.cites_submissionreference,
           contactId: contactId,
-          status: reverseMapper(dynamicsStatusMappings, x.statuscode),
+          status: getPortalStatus(x.cites_cites_submission_incident_submission[0].statuscode),
           dateSubmitted: x.createdon,
-          permitType: reverseMapper(dynamicsPermitTypesMappings, cites_cites_submission_incident_submission[0].cites_permittype)
+          permitType: reverseMapper(dynamicsPermitTypesMappings, x.cites_cites_submission_incident_submission[0].cites_permittype)
         })),
         totalSubmissions: payload['@odata.count']
       };
@@ -254,6 +244,85 @@ async function getSubmissions(server, contactId, permitTypes, statuses, startInd
   } catch (err) {
     console.log(err)
     throw err
+  }
+}
+
+function getPortalStatus(dynamicsStatus) {
+  switch (dynamicsStatus) {
+    case 1: // Not evaluated
+    case 149900007: // To be evaluated
+      return 'received'
+
+    case 2: // Awaiting Payment
+      return 'awaitingPayment'
+
+    case 3: // Awaiting Reply
+      return 'awaitingReply'
+
+    case 149900000: // Referred to Kew Garden's
+    case 149900001: // Referred to JNCC
+    case 149900002: // Being Assessed
+    case 149900003: // Authorised
+    case 4: // Evaluated
+      return 'inProcess'
+
+    case 5: // Issued
+      return 'issued'
+
+    case 1000: // Refused
+      return 'refused'
+      
+    case 149900005: // Closed
+    case 149900006: // Ready to print
+      return 'closed'
+
+    case 6: //Cancelled by Applicant
+      return 'cancelled'
+      
+    default:
+      return ''
+  }
+}
+
+function getDynamicsStatues(portalStatuses) {
+  var statuses = [];
+
+  if (portalStatuses.includes('received')) {
+    statuses.push(1)
+    statuses.push(149900007)
+  }
+
+  if (portalStatuses.includes('awaitingPayment')) {
+    statuses.push(2)
+  }
+
+  if (portalStatuses.includes('awaitingReply')) {
+    statuses.push(3)
+  }
+
+  if (portalStatuses.includes('inProcess')) {
+    statuses.push(149900000)
+    statuses.push(149900001)
+    statuses.push(149900002)
+    statuses.push(149900003)
+    statuses.push(4)
+  }
+
+  if (portalStatuses.includes('issued')) {
+    statuses.push(5)
+  }
+
+  if (portalStatuses.includes('refused')) {
+    statuses.push(1000)
+  }
+
+  if (portalStatuses.includes('closed')) {
+    statuses.push(149900005)
+    statuses.push(149900006)
+  }
+
+  if (portalStatuses.includes('cancelled')) {
+    statuses.push(6)
   }
 }
 
