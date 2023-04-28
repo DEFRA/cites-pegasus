@@ -6,14 +6,23 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
 
 
 {% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButton,
-    href: backLink,
-	  attributes: {id: 'linkBack'}
-  }) }}
+{{ govukBreadcrumbs({
+  items: [
+    {
+      text: firstBreadcrumbsText,
+      href: firstBreadcrumbsUrl
+    },
+    {
+      text: secondBreadcrumbsText,
+      href: secondBreadcrumbsUrl
+    }
+  ]
+}) }}
 
 {% if errorList %}
     <div class="govuk-grid-row">

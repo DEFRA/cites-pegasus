@@ -1263,10 +1263,11 @@
     "pagebodyZeroApplication": " You have not yet made an application using this service."
   },
   "mySubmission": {
-    "rowTextReferenceNumber": "Reference number",
-    "rowTextPermitType": "Permit type",
-    "rowTextApplicationDate": "Application date",
-    "rowTextStatus": "Status",
+    "textBreadcrumbs": "Your applications",
+    "tableHeadReferenceNumber": "Reference number",
+    "tableHeadPermitType": "Permit type",
+    "tableHeadApplicationDate": "Application date",
+    "tableHeadStatus": "Status",
     "rowTextImport": "Import",
     "rowTextExport": "Export",
     "rowTextReexport": "Re-export",

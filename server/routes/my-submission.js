@@ -8,57 +8,103 @@ const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/my-submissions`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
-const nextPathViewApplication = `${urlPrefix}/application-summary/check`//TO DO
-const nextPathCopyApplication = `${urlPrefix}/application-summary/check`//TO DO
+const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted`//TO DO
 const invalidSubmissionPath = urlPrefix
+const pageSize = 10
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmission
 
-  const submissionsData = data.submissions
-  const submissionsTableData= submissionsData.map(submission => {
-    const referenceNumberUrl = `${nextPathViewApplication}/${submission.submissionIndex}`
-    
+  // let status = null
+  // switch (data.status) {
+  //   case "received":
+  //     status = pageContent.rowTextReceived
+  //     break
+  //   case "awaitingPayment":
+  //     status = pageContent.rowTextAwaitingPayment
+  //     break
+  //   case "awaitingReply":
+  //     status = pageContent.rowTextAwaitingReply
+  //     break
+  //   case "inProcess":
+  //     status = pageContent.rowTextInProcess
+  //     break
+  //   case "issued":
+  //     status = pageContent.rowTextIssued
+  //     break
+  //   case "refused":
+  //     status = pageContent.rowTextRefused
+  //     break
+  //   case "cancelled":
+  //     status = pageContent.rowTextCancelled
+  //     break
+  // }
+  // let permitType = null
+  // switch (data.permitType) {
+  //   case "import":
+  //     permitType = pageContent.rowTextImport
+  //     break
+  //   case "export":
+  //     permitType = pageContent.rowTextExport
+  //     break
+  //   case "reexport":
+  //     permitType = pageContent.rowTextReexport
+  //     break
+  //   case "article10":
+  //     permitType = pageContent.rowTextArticle10
+  //     break
+  //   case "issued":
+  //     permitType = pageContent.rowTextIssued
+  //     break
+  // }
 
-    return {referenceNumber: submission.referenceNumber,
-            speciesName: application.speciesName, 
-            referenceNumberUrl,
-            permitType: submission.permitType,
-            applicationDate: submission.applicationDate,
-            status: submission.status
-        }
-  })
+  // const applicationDate = getApplicationDate(data.dateSubmitted)
+  // const applicationsData = data.applications
+  // const applicationsTableData= applicationsData.map(application => {
+  //   const referenceNumberUrl = `${nextPathViewApplication}/${data.submissionId}/${application.applicationIndex}`
+  //   return {referenceNumber: `${data.submissionId}/${application.applicationIndex}`,
+  //           referenceNumberUrl,
+  //           speciesName: application.speciesName, 
+  //           permitType: permitType,
+  //           applicationDate: applicationDate,
+  //           status: status
+  //       }
+  // })
+
+  // const textPagination = `${data.startIndex + 1} to ${endIndex} of ${data.totalApplications}`
 
   const model = {
-    backLink: previousPath,
-    pageTitle: pageContent.defaultTitle,
-    captionText: pageContent.pageHeader,
+    firstBreadcrumbsText: pageContent.textBreadcrumbs,
+    firstBreadcrumbsUrl: previousPath,
+    secondBreadcrumbsText: pageContent.textBreadcrumbs,
+    secondBreadcrumbsUrl: previousPath,
+    pageTitle: data.submissionId,
+    captionText: data.submissionId,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadPermitType: pageContent.tableHeadPermitType,
     tableHeadApplicationDate: pageContent.tableHeadApplicationDate,
     tableHeadStatus: pageContent.tableHeadStatus,
-    submissionsData : submissionsTableData,
-    
-    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo ? data.pageNo : 1, pageSize, textPagination) : ""
+    // applicationsData : applicationsTableData,
 
+    // inputPagination: data.totalApplications > pageSize ? paginate(data.totalApplications, data.pageNo, textPagination) : ""
 
   }
   return { ...commonContent, ...model }
 }
 
-function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
-    const totalPages = Math.ceil(totalSubmissions / pageSize);
+function paginate(totalApplications, pageNo, textPagination) {
+    const totalPages = Math.ceil(totalApplications / pageSize);
   
     const pagination = {
       id: "pagination",
       name: "pagination",
       previous: {
-        href: currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
+        href: pageNo === 1 ? "#" : `${currentPath}/${pageNo - 1}`,
         text: "Previous",
       },
       next: {
-        href: currentPage === totalPages ?  "#" : `${currentPath}/${currentPage + 1}`,
+        href: pageNo === totalPages ?  "#" : `${currentPath}/${pageNo + 1}`,
         text: "Next",
       },
       items: [{
@@ -77,15 +123,24 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
     return pagination;
   }
 
+  function getApplicationDate(date) {
+    const dateObj = new Date(date);
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const formattedDate = dateObj.toLocaleDateString('en-GB', options);
+    return formattedDate
+  }
+  
+
 
 module.exports = [
-   //GET for my applications page
+   //GET for my submission page
    {
     method: "GET",
-    path: `${currentPath}/{pageNo?}` ,
+    path: `${currentPath}/{submissionId}/{pageNo?}` ,
     options: {
       validate: {
         params: Joi.object({
+          submissionId: Joi.string().required(),
           pageNo: Joi.number().allow('')
         }),
       }
@@ -93,56 +148,33 @@ module.exports = [
     
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
+      const submissionId = request.params.submissionId
       const pageNo = request.params.pageNo
       const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+     
+      const submission = await getSubmissions(request, contactId, submissionId)
+      const applications = submission?.applications
+     
       let startIndex =  null
       if (pageNo) {
         startIndex = (pageNo -1)* pageSize
       } else {
         startIndex = 0
-       
       }
-      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
-      const submissions = submissionsData.submissions
-      const sessionData = getYarValue(request, 'filterData')
+      const endIndex = startIndex + pageSize;
+      const slicedApplications = applications?.slice(startIndex, endIndex);
 
       const pageData = {
-        pageNo: pageNo,
-        submissions: submissions,
-        pageSize: pageSize,
-        startIndex: startIndex,
-        totalSubmissions: submissionsData.totalSubmissions,
-        noApplicationMadeBefore: submissions.length === 0,
-        permitTypes: sessionData?.permitTypes,
-        statuses: sessionData?.statuses,
-        searchTerm: sessionData?.searchTerm,
+        submissionId: submissionId,
+        pageNo: pageNo ? pageNo : 1,
+        // applications: slicedApplications,
+        // permitType: submission?.permitType,
+        // applicationDate: submission?.dateSubmitted,
+        // status: submission?.status,
+        // startIndex: startIndex,
+        // totalApplications: submission?.applications.length,
       }
       return h.view(pageId, createModel(null, pageData))
-    }
-  },
-  
-  //GET for Add another species link
-  {
-    method: "GET",
-    path: `${currentPath}/create-application`,
-    handler: async (request, h) => {
-      const submission = getSubmission(request)
-      let appStatuses = null
-      try {
-        appStatuses = validateSubmission(submission, `${pageId}/create-application`)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
-      }      
-      
-      const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
-      
-      if(inProgressAppStatus) {
-        return h.redirect(`${nextPathspeciesName}/${inProgressAppStatus.applicationIndex}`)
-      }
-
-      const applicationIndex = createApplication(request)
-      return h.redirect(`${nextPathSpeciesName}/${applicationIndex}`)
     }
   },
   
