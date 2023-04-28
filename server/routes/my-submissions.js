@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
-const { getSubmissions } = require("../services/dynamics-service")
+const { getSubmissions, getNewSubmissionsQueryUrl } = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
@@ -12,8 +12,8 @@ const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
 const permitTypes = ['import', 'export', 'reexport', 'article10']
-const statuses = ['received','awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
-const pageSize = 15
+const statuses = ['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
+const pageSize = 5
 
 
 function createModel(errors, data) {
@@ -39,48 +39,37 @@ function createModel(errors, data) {
 
   
   const submissionsData = data.submissions
-  const submissionsTableData= submissionsData.map(submission => {
+
+  const statusTextMap = {
+    received: pageContent.rowTextReceived,
+    awaitingPayment: pageContent.rowTextAwaitingPayment,
+    awaitingReply: pageContent.rowTextAwaitingReply,
+    inProcess: pageContent.rowTextInProcess,
+    issued: pageContent.rowTextIssued,
+    refused: pageContent.rowTextRefused,
+    cancelled: pageContent.rowTextCancelled,
+  };
+
+  const submissionsTableData = submissionsData.map(submission => {
     const referenceNumber = submission.submissionId
     const referenceNumberUrl = `${nextPathMySubmission}/${referenceNumber}`
     const applicationDate = getApplicationDate(submission.dateSubmitted)
-    let status = null
+    const status = statusTextMap[submission.status] || submission.status
 
-    switch (submission.status) {
-      case "received":
-        status = pageContent.rowTextReceived
-        break
-      case "awaitingPayment":
-        status = pageContent.rowTextAwaitingPayment
-        break
-      case "awaitingReply":
-        status = pageContent.rowTextAwaitingReply
-        break
-      case "inProcess":
-        status = pageContent.rowTextInProcess
-        break
-      case "issued":
-        status = pageContent.rowTextIssued
-        break
-      case "refused":
-        status = pageContent.rowTextRefused
-        break
-      case "cancelled":
-        status = pageContent.rowTextCancelled
-        break
-    }
-    return {referenceNumber, referenceNumberUrl, applicationDate, status}
+    return { referenceNumber, referenceNumberUrl, applicationDate, status }
   })
 
-  const endIndex = data.totalSubmissions <= data.startIndex + pageSize ? data.totalSubmissions : data.startIndex + pageSize
+  const startIndex = (data.pageNo - 1) * pageSize
+  const endIndex = data.totalSubmissions <= startIndex + pageSize ? data.totalSubmissions : startIndex + pageSize
 
-  const textPagination = `${data.startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
+  const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
   let pagebodyNoApplicationsFound = null
   if (data.noApplicationMadeBefore && submissionsData.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
-  } else if ((data.noApplicationFound  || data.noMatchingApplication) && submissionsData.length === 0) {
+  } else if ((data.noApplicationFound || data.noMatchingApplication) && submissionsData.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
-  } 
+  }
 
   const model = {
     backLink: currentPath,
@@ -97,14 +86,14 @@ function createModel(errors, data) {
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
     tableHeadStatus: pageContent.rowTextStatus,
-    textPagination: textPagination,
+    //textPagination: textPagination,
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: currentPath,
     formActionApplyFilters: `${currentPath}/filter`,
     // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
     // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
     // textPagination: textPagination,
-    
+
     inputSearch: {
       id: "searchTerm",
       name: "searchTerm",
@@ -114,7 +103,7 @@ function createModel(errors, data) {
         text: pageContent.inputLabelSearch
       },
       suffix: {
-        classes:"govuk-input__suffix--search",
+        classes: "govuk-input__suffix--search",
         html: searchButton
       },
       ...(data.searchTerm ? { value: data.searchTerm } : {}),
@@ -146,7 +135,7 @@ function createModel(errors, data) {
         }
       ],
     },
-   
+
     checkboxStatus: {
       idPrefix: "statuses",
       name: "statuses",
@@ -212,7 +201,7 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
       text: "Previous",
     },
     next: {
-      href: currentPage === totalPages ?  "#" : `${currentPath}/${currentPage + 1}`,
+      href: currentPage === totalPages ? "#" : `${currentPath}/${currentPage + 1}`,
       text: "Next",
     },
     items: [{
@@ -231,6 +220,31 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
   return pagination;
 }
 
+async function getSubmissionsData(request, pageNo, filterData) {
+  let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
+  
+  if (!queryUrls) {
+    const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
+    
+    const queryUrl = await getNewSubmissionsQueryUrl(request.auth.credentials.contactId, filterData?.permitTypes, filterData?.statuses, searchTerm)
+    queryUrls = [queryUrl]
+  }
+
+  if (pageNo > queryUrls.length || pageNo < 1) {
+    console.log("Invalid page number")
+    return h.redirect('/404')
+  }
+
+  const { submissions, nextQueryUrl, totalSubmissions } = await getSubmissions(request.server, queryUrls[pageNo - 1], pageSize)
+
+  if (nextQueryUrl && queryUrls.length === pageNo) {
+    queryUrls.push(nextQueryUrl)
+  }
+
+  setYarValue(request, 'mySubmissions-queryUrls', queryUrls)
+
+  return { submissions, totalSubmissions }
+}
 
 module.exports = [
   {
@@ -243,7 +257,7 @@ module.exports = [
   //GET for my applications page
   {
     method: "GET",
-    path: `${currentPath}/{pageNo?}` ,
+    path: `${currentPath}/{pageNo?}`,
     options: {
       validate: {
         params: Joi.object({
@@ -251,39 +265,30 @@ module.exports = [
         }),
       }
     },
-    
+
     handler: async (request, h) => {
       // const contactId = request.auth.credentials.contactId
       const pageNo = request.params.pageNo
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      let startIndex =  null
-      if (pageNo) {
-        startIndex = (pageNo -1)* pageSize
-      } else {
-        startIndex = 0
-       
-      }
-      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize)
-      const submissions = submissionsData.submissions
-      const sessionData = getYarValue(request, 'filterData')
 
-      try {
-        validateSubmission(submissions, pageId)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+      if (!pageNo) {
+        setYarValue(request, 'mySubmissions-queryUrls', null)
+        setYarValue(request, 'mySubmissions-filterData', null)
+        return h.redirect(`${currentPath}/1`)
       }
+      
+      const filterData = getYarValue(request, 'mySubmissions-filterData')
+
+      const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
 
       const pageData = {
         pageNo: pageNo,
         submissions: submissions,
         pageSize: pageSize,
-        startIndex: startIndex,
-        totalSubmissions: submissionsData.totalSubmissions,
+        totalSubmissions: totalSubmissions,
         noApplicationMadeBefore: submissions.length === 0,
-        permitTypes: sessionData?.permitTypes,
-        statuses: sessionData?.statuses,
-        searchTerm: sessionData?.searchTerm,
+        permitTypes: filterData?.permitTypes,
+        statuses: filterData?.statuses,
+        searchTerm: filterData?.searchTerm,
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -299,13 +304,13 @@ module.exports = [
         }
       },
     },
-      handler: async (request, h) => {      
-        createSubmission(request)
-        return h.redirect(`${nextPathPermitType}`)
-      }
+    handler: async (request, h) => {
+      createSubmission(request)
+      return h.redirect(`${nextPathPermitType}`)
+    }
   },
-   //POST for apply filter button and search button
-   {
+  //POST for apply filter button and search button
+  {
     method: "POST",
     path: `${currentPath}/filter`,
     options: {
@@ -318,56 +323,67 @@ module.exports = [
             Joi.string(),
             Joi.array().items(Joi.string().valid(...permitTypes))
           ),
-          statuses: 
-          Joi.alternatives().try(
-            Joi.string(),
-            Joi.array().items(Joi.string().valid(...statuses))
-          ),
+          statuses:
+            Joi.alternatives().try(
+              Joi.string(),
+              Joi.array().items(Joi.string().valid(...statuses))
+            ),
         }),
         failAction: (request, h, error) => {
           console.log(error)
         }
       },
       handler: async (request, h) => {
-       // const contactId = request.auth.credentials.contactId
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-      const startIndex = 0
-      const permitTypes = request.payload.permitTypes
-      const statuses= request.payload.statuses
-      const searchTerm = request.payload.searchTerm.toUpperCase()
+        
+        const pageNo = 1
 
-      const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
-      const submissions = submissionsData.submissions
+        let permitTypes = null
 
-      const pageData = {
-        // pageIndex: pageIndex,
-        submissions: submissions,
-        pageSize: pageSize,
-        startIndex: startIndex,
-        totalSubmissions: submissionsData.totalSubmissions,
-        permitTypes: permitTypes,
-        statuses: statuses,
-        searchTerm: searchTerm,
-        noApplicationFound: submissions.length === 0
-      }
+        if(request.payload.permitTypes) {
+          if (Array.isArray(request.payload.permitTypes)) {
+            permitTypes = request.payload.permitTypes
+          } else {
+            permitTypes = [request.payload.permitTypes]
+          }
+        }
 
-      const filterData = {
-        permitTypes: permitTypes,
-        statuses: statuses,
-        searchTerm: searchTerm
-      }
+        const filterData = {
+          permitTypes: permitTypes,
+          statuses: request.payload.statuses,
+          searchTerm: request.payload.searchTerm
+        }
 
-      try {
-       const sessionData= setYarValue(request, 'filterdata', filterData)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
-      }
+        try {
+          setYarValue(request, 'mySubmissions-queryUrls', null)
+          setYarValue(request, 'mySubmissions-filterData', filterData)
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidSubmissionPath}/`)
+        }
 
-      return h.view(pageId, createModel(null, pageData))
+        const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
+
+        // const contactId = request.auth.credentials.contactId
+        //const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
+
+        //const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
+        //const submissions = submissionsData.submissions
+
+        const pageData = {
+          pageNo: pageNo,
+          submissions: submissions,
+          pageSize: pageSize,
+          totalSubmissions: totalSubmissions,
+          permitTypes: filterData.permitTypes,
+          statuses: filterData.statuses,
+          searchTerm: filterData.searchTerm,
+          noApplicationFound: submissions.length === 0
+        }
+
+        return h.view(pageId, createModel(null, pageData))
       }
     }
   },
- 
+
 ]
 
