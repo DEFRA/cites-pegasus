@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
@@ -8,70 +8,63 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
-
 {% block beforeContent %}
-<div class="govuk-grid-row">
-    {{ govukBackLink({
-        text: pageHeader,
-        href: backLink,
-          attributes: {id: 'linkBack'}
-      }) }}
-</div>
- 
+  {# <div class="govuk-grid-row"> #}
+  {{ govukBreadcrumbs(breadcrumbs) }}
+  {# </div> #}
 
   {% if errorList %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {{govukErrorSummary ({
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
       "titleText": errorSummaryTitle,
       "errorList": errorList
       }) }}
+      </div>
     </div>
-  </div>
-{% endif %}
-
-
+  {% endif %}
 
 {% endblock %}
 {% block content %}
-  <div class="govuk-grid-row">
-        <form method="POST" autocomplete="off" novalidate="novalidate">
-            <div class="govuk-grid-row govuk-!-margin-bottom-3">
-              <div class="govuk-grid-column-three-quarters">
-                <h1 class="govuk-heading-l">
-                    {{pageHeader}}
-                </h1>
-             </div>
-            </div>
-            <div class="govuk-grid-row" style="display: flex; align-content: center">
-              <div class="govuk-grid-column-one-half">
-                  {{ govukInput(inputSearch) }}
-              </div>
-              <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7"><p class="govuk-body">
-                  <a href="{{clearSearchUrl}}">{{clearSearchLinkText}}</a>
-                </p>   
-              </div>
-              <div class="govuk-grid-column-one-quarter govuk-!-padding-top-5 landingpage-row-wrapper">
-                  {{ govukButton({
+
+  <form method="POST" autocomplete="off" novalidate="novalidate">
+    <div class="govuk-grid-row govuk-!-margin-bottom-3">
+      <div class="govuk-grid-column-three-quarters">
+        <h1 class="govuk-heading-l">
+          {{pageHeader}}
+        </h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row" style="display: flex; align-content: center">
+      <div class="govuk-grid-column-one-half">
+        {{ govukInput(inputSearch) }}
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7">
+        <p class="govuk-body">
+          <a href="{{clearSearchUrl}}">{{clearSearchLinkText}}</a>
+        </p>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-top-5 landingpage-row-wrapper">
+        {{ govukButton({
                       text: buttonStartNewApplication,
                       type: "submit",
                       attributes: {
                         formAction: formActionStartNewApplication
                       }
                     }) }}
-              </div>
-            </div>
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-quarter">
-                  <h2 class="govuk-heading-m">
-                    {{headerFilters}}
-                  </h2>
-                  <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyPermitType}}</p>
-                  {{ govukCheckboxes(checkboxPermitType) }}
-                  <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyStatus}}</p>
-                  {{ govukCheckboxes(checkboxStatus) }}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <h2 class="govuk-heading-m">
+          {{headerFilters}}
+        </h2>
+        <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyPermitType}}</p>
+        {{ govukCheckboxes(checkboxPermitType) }}
+        <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyStatus}}</p>
+        {{ govukCheckboxes(checkboxStatus) }}
 
-                  {{ govukButton({
+        {{ govukButton({
                     text: buttonApplyFilters,
                     classes: "govuk-button--secondary",
                     type: "submit",
@@ -79,44 +72,38 @@
                       formAction: formActionApplyFilters
                     }
                   }) }}
-                </div>
-                <div class="govuk-grid-column-three-quarters">
-                  <table class="govuk-table">
-                    <thead class="govuk-table__head">
-                      <tr class="govuk-table__row">
-                        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">{{tableHeadReferenceNumber}}</th>
-                        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter" style="text-align:right">{{tableHeadApplicationDate}}</th>
-                        <th scope="col" class="govuk-table__header govuk-!-width-one-third" style="text-align:right">{{tableHeadStatus}}</th>
-                      </tr>
-                    </thead>
-                    
-                    <tbody class="govuk-table__body">
-                      {% if submissionsData !==0 %}
-                      {% for submission in submissionsData %}
-                      <tr class="govuk-table__row">
-                        <td class="govuk-table__cell">
-                          <a href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
-                        </td>
-                        <td class="govuk-table__cell" style="text-align:right">{{submission.applicationDate}}</td>
-                        <td class="govuk-table__cell" style="text-align:right">{{submission.status}}</td>
-                      </tr> 
-                      {% endfor %}   
-                      {% endif %}      
-                    </tbody>
-                  </table>
-                  {% if pagebodyNoApplicationsFound %}
-                     <p class="govuk-body">{{pagebodyNoApplicationsFound}}</p>
-                  {% endif %}
-                </div>
-            </div>
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-half">
-                  <p></p>
-                </div>
-                <div class="govuk-grid-column-one-half landingpage-row-wrapper">
-                  {{ govukPagination(inputPagination) }}
-                </div>
-            </div>
-      </form>
-  </div>
+      </div>
+      <div class="govuk-grid-column-three-quarters">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">{{tableHeadReferenceNumber}}</th>
+              <th scope="col" class="govuk-table__header govuk-!-width-one-quarter" style="text-align:right">{{tableHeadApplicationDate}}</th>
+              <th scope="col" class="govuk-table__header govuk-!-width-one-third" style="text-align:right">{{tableHeadStatus}}</th>
+            </tr>
+          </thead>
+
+          <tbody class="govuk-table__body">
+            {% if submissionsData !== 0 %}
+              {% for submission in submissionsData %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">
+                    <a href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
+                  </td>
+                  <td class="govuk-table__cell" style="text-align:right">{{submission.applicationDate}}</td>
+                  <td class="govuk-table__cell" style="text-align:right">{{submission.status}}</td>
+                </tr>
+              {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+        {% if pagebodyNoApplicationsFound %}
+          <p class="govuk-body">{{pagebodyNoApplicationsFound}}</p>
+        {% endif %}
+        <div class="landingpage-row-wrapper">
+          {{ govukPagination(inputPagination) }}
+        </div>
+      </div>
+    </div>
+  </form>
 {% endblock %}
