@@ -976,6 +976,8 @@
     "pageHeaderCheck": "Check and confirm application details",
     "defaultTitleCopy": "Copy as new application",
     "pageHeaderCopy": "Copy as new application",
+    "defaultTitleView": "Application",
+    "pageHeaderView": "Application",
     "headerPermit": "About the permit",
     "rowTextPermitType": "Permit type",
     "headerYourContactDetails": "Your contact details",
