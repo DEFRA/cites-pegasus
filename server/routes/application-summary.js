@@ -17,6 +17,28 @@ function createApplicationSummaryModel(errors, data) {
   const pageContent = textContent.applicationSummary
   const hrefPrefix = "../../application-summary/change/" + data.applicationIndex
 
+  let pageTitle = null
+  let pageHeader = null
+  let buttonText = null
+
+  switch (data.summaryType) {
+    case "check":
+      pageTitle = pageContent.defaultTitleCheck
+      pageHeader = pageContent.pageHeaderCheck
+      buttonText = commonContent.confirmAndContinueButton
+      break
+    case "copy":
+      pageTitle = pageContent.defaultTitleCopy
+      pageHeader = pageContent.pageHeaderCopy
+      buttonText = commonContent.confirmAndContinueButton
+      break
+    case "view":
+      pageTitle = pageContent.defaultTitleView
+      pageHeader = pageContent.pageHeaderView
+      buttonText = commonContent.returnYourApplicationsButton
+      break
+  }
+
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
   let headingPermitDetails = null
@@ -401,10 +423,10 @@ function createApplicationSummaryModel(errors, data) {
 
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
-    pageHeader: pageContent.pageHeader,
-    confirmYourApplicationButton: pageContent.confirmYourApplicationButton,
+    pageHeader: pageHeader,
+    pageTitle: pageTitle,
+    buttonText: buttonText,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
-    pageTitle: pageContent.defaultTitle,
     headerPermit: pageContent.headerPermit,
     headerYourContactDetails: pageContent.headerYourContactDetails,
     headerApplicantContactDetails: data.isAgent ? headerApplicantContactDetails : "",
