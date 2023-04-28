@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
-const { getSubmissions, getNewSubmissionsQueryUrl } = require("../services/dynamics-service")
+const dynamics = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
@@ -32,7 +32,7 @@ function createModel(errors, data) {
       classes: "govuk-button--search",
       html: '<svg class="gem-c-search__icon" width="20" height="20" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="12.0161" cy="11.0161" r="8.51613" stroke="currentColor" stroke-width="3"></circle><line x1="17.8668" y1="17.3587" x2="26.4475" y2="25.9393" stroke="currentColor" stroke-width="3"></line></svg>',
       attributes: {
-        formAction: `${currentPath}/filter`
+        formAction: `${currentPath}`
       } 
     }
   })
@@ -52,7 +52,7 @@ function createModel(errors, data) {
 
   const submissionsTableData = submissionsData.map(submission => {
     const referenceNumber = submission.submissionId
-    const referenceNumberUrl = `${nextPathMySubmission}/${referenceNumber}`
+    const referenceNumberUrl = `${currentPath}/select/${referenceNumber}`
     const applicationDate = getApplicationDate(submission.dateSubmitted)
     const status = statusTextMap[submission.status] || submission.status
 
@@ -88,8 +88,8 @@ function createModel(errors, data) {
     tableHeadStatus: pageContent.rowTextStatus,
     //textPagination: textPagination,
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
-    formActionStartNewApplication: currentPath,
-    formActionApplyFilters: `${currentPath}/filter`,
+    formActionStartNewApplication: `${currentPath}/new-application`,
+    formActionApplyFilters: `${currentPath}`,
     // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
     // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
     // textPagination: textPagination,
@@ -174,6 +174,11 @@ function createModel(errors, data) {
           value: "cancelled",
           text: pageContent.checkboxLabelCancelled,
           checked: isChecked(data.statuses, "cancelled")
+        },
+        {
+          value: "closed",
+          text: pageContent.checkboxLabelClosed,
+          checked: isChecked(data.statuses, "closed")
         }
       ],
     },
@@ -193,29 +198,27 @@ function getApplicationDate(date) {
 function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
 
+  const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
+  const nextAttr = currentPage === totalPages ? { 'data-disabled': '' } : null
+
+
   const pagination = {
     id: "pagination",
     name: "pagination",
     previous: {
       href: currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
-      text: "Previous",
+      text: "Previous", 
+      attributes: prevAttr     
     },
     next: {
       href: currentPage === totalPages ? "#" : `${currentPath}/${currentPage + 1}`,
       text: "Next",
+      attributes: nextAttr
     },
     items: [{
       number: textPagination
     }],
   };
-
-  // if (currentPage === 1) {
-  //   pagination.previous.disabled = true;
-  // }
-
-  // if (currentPage === totalPages) {
-  //   pagination.next.disabled = true;
-  // }
 
   return pagination;
 }
@@ -226,7 +229,7 @@ async function getSubmissionsData(request, pageNo, filterData) {
   if (!queryUrls) {
     const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
     
-    const queryUrl = await getNewSubmissionsQueryUrl(request.auth.credentials.contactId, filterData?.permitTypes, filterData?.statuses, searchTerm)
+    const queryUrl = await dynamics.getNewSubmissionsQueryUrl(request.auth.credentials.contactId, filterData?.permitTypes, filterData?.statuses, searchTerm)
     queryUrls = [queryUrl]
   }
 
@@ -235,7 +238,7 @@ async function getSubmissionsData(request, pageNo, filterData) {
     return h.redirect('/404')
   }
 
-  const { submissions, nextQueryUrl, totalSubmissions } = await getSubmissions(request.server, queryUrls[pageNo - 1], pageSize)
+  const { submissions, nextQueryUrl, totalSubmissions } = await dynamics.getSubmissions(request.server, queryUrls[pageNo - 1], pageSize)
 
   if (nextQueryUrl && queryUrls.length === pageNo) {
     queryUrls.push(nextQueryUrl)
@@ -296,7 +299,7 @@ module.exports = [
   //POST for start new application button
   {
     method: "POST",
-    path: currentPath,
+    path: `${currentPath}/new-application`,
     options: {
       validate: {
         failAction: (request, h, error) => {
@@ -312,7 +315,7 @@ module.exports = [
   //POST for apply filter button and search button
   {
     method: "POST",
-    path: `${currentPath}/filter`,
+    path: currentPath,
     options: {
       validate: {
         options: { abortEarly: false },
@@ -358,16 +361,10 @@ module.exports = [
           setYarValue(request, 'mySubmissions-filterData', filterData)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
-
-        // const contactId = request.auth.credentials.contactId
-        //const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-
-        //const submissionsData = await getSubmissions(request, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm)
-        //const submissions = submissionsData.submissions
 
         const pageData = {
           pageNo: pageNo,
@@ -384,6 +381,28 @@ module.exports = [
       }
     }
   },
+  {
+    method: "GET",
+    path: `${currentPath}/select/{submissionRef}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          submissionRef: Joi.string().allow('')
+        }),
+      }
+    },
 
+    handler: async (request, h) => {
+      const submissionRef = request.params.submissionRef
+
+      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
+
+      //submission.status = 'submitted'
+
+      setYarValue(request, 'submission', submission)
+
+      return h.redirect(nextPathMySubmission)
+    }
+  },
 ]
 

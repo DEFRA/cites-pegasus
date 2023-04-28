@@ -138,32 +138,6 @@ function mapSubmissionToPayload(submission) {
     payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
   }
 
-  // if (payload.submissionDetails) {
-  //   delete payload.submissionDetails
-  // }
-
-  // delete payload.applications[0].species.tradeTermCodeDesc
-
-  // delete payload.applicant.address.countryDesc
-
-  // if (payload.applicant.candidateAddressData?.selectedAddress) {
-  //   delete payload.applicant.candidateAddressData?.selectedAddress?.countryDesc
-  // }
-
-  // if (payload.agent?.address) {
-  //   delete payload.agent?.address?.countryDesc
-  // }
-
-  // if (payload.agent?.candidateAddressData?.selectedAddress) {
-  //   delete payload.agent?.candidateAddressData?.selectedAddress?.countryDesc
-  // }
-
-  // delete payload.delivery.address.countryDesc
-  // if (payload.delivery.candidateAddressData?.selectedAddress?.countryDesc) {
-  //   delete payload.delivery.candidateAddressData?.selectedAddress?.countryDesc
-  // }
-
-
   return { Payload: payload }
 }
 
@@ -177,9 +151,10 @@ async function getSpecies(server, speciesName) {
     //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
     const url = `${config.baseURL}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    console.log(url)
     const response = await Wreck.get(url, options)
 
-    const { res, payload } = response
+    const { payload } = response
 
     if (payload) {
       //const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
@@ -205,7 +180,7 @@ async function getCountries(server) {
   try {
     const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha2,defra_isocodealpha3&$orderby=defra_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
-    const { res, payload } = await Wreck.get(url, options)
+    const { payload } = await Wreck.get(url, options)
 
     if (payload?.value) {
       return payload.value.map(country => {
@@ -228,7 +203,7 @@ async function getTradeTermCodes(server) {
   try {
     const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description&$orderby=cites_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
-    const { res, payload } = await Wreck.get(url, options)
+    const { payload } = await Wreck.get(url, options)
 
     if (payload?.value) {
 
@@ -357,7 +332,7 @@ async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searc
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
   const filterParts = [
-    //`_cites_submissionagent_value eq '${contactId}'`,
+    //`_cites_submissionagent_value eq '${contactId}'`,//TODO Include the contactId filter once the contacts are synced with the back end
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]
@@ -378,7 +353,7 @@ async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searc
     const searchTermParts = [
       `cites_submissionreference eq '${searchTerm}'`,
       `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${searchTerm}'))`,
-      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_certificatenumber eq '${searchTerm}'))`,
+      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_name eq '${searchTerm}'))`,
       `cites_cites_submission_incident_submission/any(o4:(o4/cites_deliveryaddresspostcode eq '${searchTerm}'))`,
       `cites_cites_submission_incident_submission/any(o5:(o5/cites_partyaddresspostcode eq '${searchTerm}'))`,
       `cites_applicantfullname eq '${searchTerm}'`,
@@ -401,7 +376,7 @@ async function getSubmissions(server, query, pageSize) {
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}`, 'Prefer': `odata.maxpagesize=${pageSize}` } }
     const response = await Wreck.get(query, options)
 
-    const { res, payload } = response
+    const { payload } = response
     
     if (payload) {
       return {
@@ -428,7 +403,74 @@ async function getSubmissions(server, query, pageSize) {
   }
 }
 
+async function getSubmission(server, contactId, submissionRef) {
+  const top = "$top=1"
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued"
+  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode)"
+  const filter = `$filter=cites_submissionreference eq '${submissionRef}'`// and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
+  const url = `${config.baseURL}cites_submissions?${top}&${select}&${expand}&${filter}`
+console.log(url)
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const response = await Wreck.get(url, options)
+
+    const { res, payload } = response
+
+    if (payload) {
+      if (payload.value.length == 0) {
+        throw `Submission not found with reference '${submissionRef}' and contact '${contactId}'`
+      }
+
+      const submission = payload.value[0]
+
+      return JSON.parse(submission.cites_portaljsoncontent + submission.cites_portaljsoncontentcontinued)
+    }
+
+    return null
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+} 
+
 //Stubs
+
+// async function getSubmission(request, submissionRef) {
+//   const accessToken = await getAccessToken(server)
+
+//   try {
+//     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+//     const url = 'https://dev.azure.com/defragovuk/Defra-APHA-CITES/_git/defra-apha-cites-portal?path=/server/services/dynamics-service.js&version=GBtda/get-submissions-api&line=250&lineEnd=280&lineStartColumn=1&lineEndColumn=2&lineStyle=plain&_a=contents'
+//     const response = await Wreck.get(url, options)
+
+//     const { payload } = response
+    
+//     if (payload) {
+//       return {
+//         submissions: payload.value.map(x => {
+          
+//           return {
+//             submissionId: x.cites_submissionreference,
+//             status: getPortalStatus(x.statuscode),
+//             //status: reverseMapper(dynamicsStatusMappings, x.statuscode),
+//             dateSubmitted: x.createdon,
+//             permitType: reverseMapper(dynamicsPermitTypesMappings, x.cites_cites_submission_incident_submission[0].cites_permittype),
+//             permitType: 'import'//TODO FIX THIS
+//           }
+//         }),
+//         nextQueryUrl: payload["@odata.nextLink"],
+//         totalSubmissions: payload['@odata.count']
+//       };
+//     }
+
+//     return null
+//   } catch (err) {
+//     console.log(err)
+//     throw err
+//   }
+// }
 // async function getSubmissions(server, contactId, permitTypes, statuses, startIndex, pageSize, searchTerm) {
 //   const submissions = [
 //     { submissionId: 'AB1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
@@ -502,4 +544,4 @@ async function getSubmissions(server, query, pageSize) {
 
 // }
 
-module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes }
+module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission }
