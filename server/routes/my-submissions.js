@@ -13,7 +13,7 @@ const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = urlPrefix
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
-const pageSize = 5
+const pageSize = 15
 
 
 function createModel(errors, data) {
@@ -33,11 +33,11 @@ function createModel(errors, data) {
       html: '<svg class="gem-c-search__icon" width="20" height="20" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="12.0161" cy="11.0161" r="8.51613" stroke="currentColor" stroke-width="3"></circle><line x1="17.8668" y1="17.3587" x2="26.4475" y2="25.9393" stroke="currentColor" stroke-width="3"></line></svg>',
       attributes: {
         formAction: `${currentPath}`
-      } 
+      }
     }
   })
 
-  
+
   const submissionsData = data.submissions
 
   const statusTextMap = {
@@ -71,8 +71,17 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
 
+  const breadcrumbs = {
+    items: [
+      {
+        text: pageContent.pageHeader,
+        href: "#"
+      }
+    ]
+  }
+
   const model = {
-    backLink: currentPath,
+    breadcrumbs: breadcrumbs,
     pageTitle: pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
     clearSearchLinkText: pageContent.linkTextClearSearch,
@@ -207,8 +216,8 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
     name: "pagination",
     previous: {
       href: currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
-      text: "Previous", 
-      attributes: prevAttr     
+      text: "Previous",
+      attributes: prevAttr
     },
     next: {
       href: currentPage === totalPages ? "#" : `${currentPath}/${currentPage + 1}`,
@@ -225,10 +234,10 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 
 async function getSubmissionsData(request, pageNo, filterData) {
   let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
-  
+
   if (!queryUrls) {
     const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
-    
+
     const queryUrl = await dynamics.getNewSubmissionsQueryUrl(request.auth.credentials.contactId, filterData?.permitTypes, filterData?.statuses, searchTerm)
     queryUrls = [queryUrl]
   }
@@ -278,7 +287,7 @@ module.exports = [
         setYarValue(request, 'mySubmissions-filterData', null)
         return h.redirect(`${currentPath}/1`)
       }
-      
+
       const filterData = getYarValue(request, 'mySubmissions-filterData')
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
@@ -337,12 +346,12 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        
+
         const pageNo = 1
 
         let permitTypes = null
 
-        if(request.payload.permitTypes) {
+        if (request.payload.permitTypes) {
           if (Array.isArray(request.payload.permitTypes)) {
             permitTypes = request.payload.permitTypes
           } else {
