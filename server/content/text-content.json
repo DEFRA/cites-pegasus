@@ -1247,6 +1247,7 @@
     "checkboxLabelIssued": "Issued",
     "checkboxLabelRefused": "Refused",
     "checkboxLabelCancelled": "Cancelled",
+    "checkboxLabelClosed": "Closed",
     "buttonApplyFilters": "Apply filters",
     "linkTextClearFilters": "Clear filters",
     "rowTextReferenceNumber": "Reference number",

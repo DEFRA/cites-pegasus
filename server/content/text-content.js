@@ -942,6 +942,7 @@ const schema = Joi.object().keys({
     checkboxLabelIssued: Joi.string().required(),
     checkboxLabelRefused: Joi.string().required(),
     checkboxLabelCancelled: Joi.string().required(),
+    checkboxLabelClosed: Joi.string().required(),
     buttonApplyFilters: Joi.string().required(),
     linkTextClearFilters: Joi.string().required(),
     rowTextReferenceNumber: Joi.string().required(),

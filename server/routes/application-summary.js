@@ -61,6 +61,9 @@ function createApplicationSummaryModel(errors, data) {
     case "M":
       purposeCodeValueText = pageContent.rowTextPurposeCodeM
       break
+    case "N":
+      purposeCodeValueText = pageContent.rowTextPurposeCodeN
+      break
     case "P":
       purposeCodeValueText = pageContent.rowTextPurposeCodeP
       break
@@ -106,6 +109,9 @@ function createApplicationSummaryModel(errors, data) {
       break
     case "Y":
       sourceCodeValueText = pageContent.rowTextSourceCodeY
+      break
+    case "A":
+      sourceCodeValueText = pageContent.rowTextSourceCodeA
       break
     case "U":
       sourceCodeValueText = data.species.enterAReason
