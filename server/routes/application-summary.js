@@ -464,9 +464,9 @@ function createSummaryListRow(classes, key, value, href, hiddenText, summaryType
     },
     actions: {
       items: [
-        {
+        summaryType !== 'view' && {
           href: href,
-          text: href && summaryType !== 'view' ? "Change" : "",
+          text: href ? "Change" : "",
           visuallyHiddenText: hiddenText
         }
       ]
