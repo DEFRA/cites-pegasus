@@ -406,11 +406,12 @@ module.exports = [
 
       const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
 
-      //submission.status = 'submitted'
+      submission.status = 'received'
+      submission.dateSubmitted= '2023-04-02T14:02:40.000Z'
 
       setYarValue(request, 'submission', submission)
 
-      return h.redirect(nextPathMySubmission)
+      return h.redirect(`${nextPathMySubmission}/${submissionRef}`)
     }
   },
 ]

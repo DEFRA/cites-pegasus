@@ -88,7 +88,7 @@
               {% for submission in submissionsData %}
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell">
-                    <a href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
+                    <a class="referencenumber-link"href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
                   </td>
                   <td class="govuk-table__cell" style="text-align:right">{{submission.applicationDate}}</td>
                   <td class="govuk-table__cell" style="text-align:right">{{submission.status}}</td>

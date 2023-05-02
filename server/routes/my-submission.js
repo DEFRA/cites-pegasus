@@ -16,112 +16,97 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmission
 
-  // let status = null
-  // switch (data.status) {
-  //   case "received":
-  //     status = pageContent.rowTextReceived
-  //     break
-  //   case "awaitingPayment":
-  //     status = pageContent.rowTextAwaitingPayment
-  //     break
-  //   case "awaitingReply":
-  //     status = pageContent.rowTextAwaitingReply
-  //     break
-  //   case "inProcess":
-  //     status = pageContent.rowTextInProcess
-  //     break
-  //   case "issued":
-  //     status = pageContent.rowTextIssued
-  //     break
-  //   case "refused":
-  //     status = pageContent.rowTextRefused
-  //     break
-  //   case "cancelled":
-  //     status = pageContent.rowTextCancelled
-  //     break
-  // }
-  // let permitType = null
-  // switch (data.permitType) {
-  //   case "import":
-  //     permitType = pageContent.rowTextImport
-  //     break
-  //   case "export":
-  //     permitType = pageContent.rowTextExport
-  //     break
-  //   case "reexport":
-  //     permitType = pageContent.rowTextReexport
-  //     break
-  //   case "article10":
-  //     permitType = pageContent.rowTextArticle10
-  //     break
-  //   case "issued":
-  //     permitType = pageContent.rowTextIssued
-  //     break
-  // }
+  const statusTextMap = {
+    received: pageContent.rowTextReceived,
+    awaitingPayment: pageContent.rowTextAwaitingPayment,
+    awaitingReply: pageContent.rowTextAwaitingReply,
+    inProcess: pageContent.rowTextInProcess,
+    issued: pageContent.rowTextIssued,
+    refused: pageContent.rowTextRefused,
+    cancelled: pageContent.rowTextCancelled,
+  };
 
-  // const applicationDate = getApplicationDate(data.dateSubmitted)
-  // const applicationsData = data.applications
-  // const applicationsTableData= applicationsData.map(application => {
-  //   const referenceNumberUrl = `${nextPathViewApplication}/${data.submissionId}/${application.applicationIndex}`
-  //   return {referenceNumber: `${data.submissionId}/${application.applicationIndex}`,
-  //           referenceNumberUrl,
-  //           speciesName: application.speciesName, 
-  //           permitType: permitType,
-  //           applicationDate: applicationDate,
-  //           status: status
-  //       }
-  // })
+  const permitTypeTextMap = {
+    import: pageContent.rowTextImport,
+    export: pageContent.rowTextExport,
+    reexport: pageContent.rowTextReexport,
+    article10: pageContent.rowTextArticle10,
+  };
 
-  // const textPagination = `${data.startIndex + 1} to ${endIndex} of ${data.totalApplications}`
+  const status = statusTextMap[data.status] || data.status
+  const permitType = permitTypeTextMap[data.permitType] || data.permitType
+
+  const submissionDate = getApplicationDate(data.submissionDate)
+  const applicationsData = data.applications
+  const applicationsTableData= applicationsData.map(application => {
+    const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0');
+    const referenceNumber = `${data.submissionId}/${applicationIndex}`
+    const referenceNumberUrl = `${nextPathViewApplication}/${data.submissionId}/${application.applicationIndex}`
+    const speciesName= application.species.speciesName
+   
+    return { referenceNumber, referenceNumberUrl, speciesName, permitType, submissionDate, status }
+  })
+
+  const startIndex = (data.pageNo - 1) * pageSize
+  const endIndex = data.totalApplications <= startIndex + pageSize ? data.totalApplications : startIndex + pageSize
+
+  const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalApplications}`
+
+  const breadcrumbs = {
+    items: [
+      {
+        text: pageContent.textBreadcrumbs,
+        href: previousPath,
+      },
+      {
+        text: data.submissionId,
+        href: "#"
+      }
+    ]
+  }
 
   const model = {
-    firstBreadcrumbsText: pageContent.textBreadcrumbs,
-    firstBreadcrumbsUrl: previousPath,
-    secondBreadcrumbsText: pageContent.textBreadcrumbs,
-    secondBreadcrumbsUrl: previousPath,
+    breadcrumbs: breadcrumbs,
     pageTitle: data.submissionId,
     captionText: data.submissionId,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadPermitType: pageContent.tableHeadPermitType,
     tableHeadApplicationDate: pageContent.tableHeadApplicationDate,
     tableHeadStatus: pageContent.tableHeadStatus,
-    // applicationsData : applicationsTableData,
+    applicationsData : applicationsTableData,
 
-    // inputPagination: data.totalApplications > pageSize ? paginate(data.totalApplications, data.pageNo, textPagination) : ""
-
+    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionId, data.totalApplications, data.pageNo, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }
 
-function paginate(totalApplications, pageNo, textPagination) {
-    const totalPages = Math.ceil(totalApplications / pageSize);
-  
-    const pagination = {
-      id: "pagination",
-      name: "pagination",
-      previous: {
-        href: pageNo === 1 ? "#" : `${currentPath}/${pageNo - 1}`,
-        text: "Previous",
-      },
-      next: {
-        href: pageNo === totalPages ?  "#" : `${currentPath}/${pageNo + 1}`,
-        text: "Next",
-      },
-      items: [{
-        number: textPagination
-      }],
-    };
-  
-    // if (currentPage === 1) {
-    //   pagination.previous.disabled = true;
-    // }
-  
-    // if (currentPage === totalPages) {
-    //   pagination.next.disabled = true;
-    // }
-  
-    return pagination;
-  }
+
+function paginate(submissionId, totalSubmissions, currentPage, textPagination) {
+  const totalPages = Math.ceil(totalSubmissions / pageSize);
+
+  const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
+  const nextAttr = currentPage === totalPages ? { 'data-disabled': '' } : null
+
+  const pagination = {
+    id: "pagination",
+    name: "pagination",
+    previous: {
+      href: currentPage === 1 ? "#" : `${currentPath}/${submissionId}/${currentPage - 1}`,
+      text: "Previous",
+      attributes: prevAttr
+    },
+    next: {
+      href: currentPage === totalPages ? "#" : `${currentPath}/${submissionId}/${currentPage + 1}`,
+      text: "Next",
+      attributes: nextAttr
+    },
+    items: [{
+      number: textPagination
+    }],
+  };
+
+  return pagination;
+}
 
   function getApplicationDate(date) {
     const dateObj = new Date(date);
@@ -130,8 +115,6 @@ function paginate(totalApplications, pageNo, textPagination) {
     return formattedDate
   }
   
-
-
 module.exports = [
    //GET for my submission page
    {
@@ -147,12 +130,9 @@ module.exports = [
     },
     
     handler: async (request, h) => {
-      // const contactId = request.auth.credentials.contactId
       const submissionId = request.params.submissionId
       const pageNo = request.params.pageNo
-      const contactId = "9165f3c0-dcc3-ed11-83ff-000d3aa9f90e"
-     
-      const submission = await getSubmissions(request, contactId, submissionId)
+      const submission = getSubmission(request)
       const applications = submission?.applications
      
       let startIndex =  null
@@ -167,42 +147,16 @@ module.exports = [
       const pageData = {
         submissionId: submissionId,
         pageNo: pageNo ? pageNo : 1,
-        // applications: slicedApplications,
-        // permitType: submission?.permitType,
-        // applicationDate: submission?.dateSubmitted,
-        // status: submission?.status,
-        // startIndex: startIndex,
-        // totalApplications: submission?.applications.length,
+        applications: slicedApplications,
+        permitType: submission?.permitType,
+        submissionDate: submission?.dateSubmitted,
+        status: submission?.status,
+        startIndex: startIndex,
+        endIndex: endIndex,
+        totalApplications: submission?.applications.length,
       }
       return h.view(pageId, createModel(null, pageData))
     }
-  },
-  
- //POST for my submission page
-  {
-    method: "POST",
-    path: `${currentPath}`,
-    options: {
-      validate: {
-        failAction: (request, h, err) => {
-          const submission = getSubmission(request)
-          const appStatuses = validateSubmission(submission, null)
-          const completeApplications = getCompleteApplications(submission, appStatuses)
-
-          const pageData = {
-            permitType: submission.permitType,
-            applications : completeApplications
-          }
-          return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
-        }
-      },
-      handler: async (request, h) => {
-        return h.redirect(nextPathUploadSupportingDocuments)
-      }
-    }
-  },
- 
-  
-  
+  }
 ]
 

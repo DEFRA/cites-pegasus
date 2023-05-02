@@ -425,7 +425,9 @@ console.log(url)
 
       const submission = payload.value[0]
 
-      return JSON.parse(submission.cites_portaljsoncontent + submission.cites_portaljsoncontentcontinued)
+      return JSON.parse(submission.cites_portaljsoncontent)
+
+      // return JSON.parse(submission.cites_portaljsoncontent + submission.cites_portaljsoncontentcontinued)
     }
 
     return null

@@ -11,31 +11,22 @@
 
 
 {% block beforeContent %}
-{{ govukBreadcrumbs({
-  items: [
-    {
-      text: firstBreadcrumbsText,
-      href: firstBreadcrumbsUrl
-    },
-    {
-      text: secondBreadcrumbsText,
-      href: secondBreadcrumbsUrl
-    }
-  ]
-}) }}
+{# <div class="govuk-grid-row"> #}
+  {{ govukBreadcrumbs(breadcrumbs) }}
+  {# </div> #}
 
-{% if errorList %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {{govukErrorSummary ({
-         "titleText": errorSummaryTitle,
-         "errorList": errorList
-      }) }}
+  {% if errorList %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          {{govukErrorSummary ({
+           "titleText": errorSummaryTitle,
+           "errorList": errorList
+        }) }}
+        </div>
       </div>
-    </div>
-  {% endif %}
-  {% endblock %}
+    {% endif %}
 
+{% endblock %}
 {% block content %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -52,16 +43,16 @@
                       </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                      {% for submission in submissionsData %}
+                      {% for application in applicationsData %}
                       <tr class="govuk-table__row">
                         <td class="govuk-table__cell">
-                          <a href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
+                          <a class="referencenumber-link" href="{{application.referenceNumberUrl}}">{{application.referenceNumber}}</a>
                           <br>
-                          {{submission.speciesName}}
+                          {{application.speciesName}}
                         </td>
-                        <td class="govuk-table__cell">{{submission.permitType}}</td>
-                        <td class="govuk-table__cell">{{submission.applicationDate}}</td>
-                        <td class="govuk-table__cell">{{submission.status}}</td>
+                        <td class="govuk-table__cell">{{application.permitType}}</td>
+                        <td class="govuk-table__cell" style="text-align:right" >{{application.submissionDate}}</td>
+                        <td class="govuk-table__cell" style="text-align:right" >{{application.status}}</td>
                       </tr> 
                       {% endfor %}         
                     </tbody>
