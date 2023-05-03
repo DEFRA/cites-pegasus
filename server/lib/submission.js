@@ -291,6 +291,7 @@ function getAppFlow(submission) {
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
                             appFlow.push(`application-summary/view/${applicationIndex}`)
                             appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
+                            appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
                             completeApplications++
                             applicationStatuses[applicationIndex].status = 'complete'
                         } else {

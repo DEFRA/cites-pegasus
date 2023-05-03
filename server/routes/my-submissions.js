@@ -404,7 +404,8 @@ module.exports = [
     handler: async (request, h) => {
       const submissionRef = request.params.submissionRef
       const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
-
+      submission.submissionId = submissionRef
+     
       setYarValue(request, 'submission', submission)
 
       return h.redirect(`${nextPathMySubmission}/${submissionRef}`)

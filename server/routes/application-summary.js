@@ -7,11 +7,12 @@ const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathComments = `${urlPrefix}/comments`
+const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
-const nextPathCopyAsNewApplication = `${urlPrefix}/copy-as-new`
+const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const invalidSubmissionPath = urlPrefix
-const summaryTypes = ['check', 'view', 'copy', 'view-submitted']
+const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
 
 
 function createApplicationSummaryModel(errors, data) {
@@ -434,11 +435,11 @@ function createApplicationSummaryModel(errors, data) {
     items: [
       {
         text: pageContent.textBreadcrumbs,
-        href: previousPathMySubmission,
+        href: previousPathMySubmissions,
       },
       {
         text: data.submissionId,
-        href: "#"
+        href: `${previousPathMySubmission}/${data.submissionId}`,
       },
       {
         text: `${data.submissionId}/${formattedApplicationIndex}`,
