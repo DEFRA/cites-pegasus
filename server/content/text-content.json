@@ -1272,17 +1272,6 @@
   "mySubmission": {
     "textBreadcrumbs": "Your applications",
     "tableHeadReferenceNumber": "Reference number",
-    "tableHeadScientificName": " Scientific name",
-    "rowTextImport": "Import",
-    "rowTextExport": "Export",
-    "rowTextReexport": "Re-export",
-    "rowTextArticle10": "Article 10",
-    "rowTextReceived": "Received",
-    "rowTextAwaitingPayment": "Awaiting Payment",
-    "rowTextAwaitingReply": "Awaiting Reply",
-    "rowTextInProcess": "In Process",
-    "rowTextIssued": "Issued",
-    "rowTextRefused": "Refused",
-    "rowTextCancelled": "Cancelled"
+    "tableHeadScientificName": " Scientific name"
   }
 }
