@@ -1272,9 +1272,7 @@
   "mySubmission": {
     "textBreadcrumbs": "Your applications",
     "tableHeadReferenceNumber": "Reference number",
-    "tableHeadPermitType": "Permit type",
-    "tableHeadApplicationDate": "Application date",
-    "tableHeadStatus": "Status",
+    "tableHeadScientificName": " Scientific name",
     "rowTextImport": "Import",
     "rowTextExport": "Export",
     "rowTextReexport": "Re-export",

@@ -7,7 +7,6 @@ const textContent = require('../content/text-content')
 const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/my-submissions`
-const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted`//TO DO
 const invalidSubmissionPath = urlPrefix
 const pageSize = 10
@@ -16,27 +15,6 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmission
 
-  const statusTextMap = {
-    received: pageContent.rowTextReceived,
-    awaitingPayment: pageContent.rowTextAwaitingPayment,
-    awaitingReply: pageContent.rowTextAwaitingReply,
-    inProcess: pageContent.rowTextInProcess,
-    issued: pageContent.rowTextIssued,
-    refused: pageContent.rowTextRefused,
-    cancelled: pageContent.rowTextCancelled,
-  };
-
-  const permitTypeTextMap = {
-    import: pageContent.rowTextImport,
-    export: pageContent.rowTextExport,
-    reexport: pageContent.rowTextReexport,
-    article10: pageContent.rowTextArticle10,
-  };
-
-  const status = statusTextMap[data.status] || data.status
-  const permitType = permitTypeTextMap[data.permitType] || data.permitType
-
-  const submissionDate = getApplicationDate(data.submissionDate)
   const applicationsData = data.applications
   const applicationsTableData= applicationsData.map(application => {
     const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0');
@@ -44,7 +22,7 @@ function createModel(errors, data) {
     const referenceNumberUrl = `${nextPathViewApplication}/${data.submissionId}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    
-    return { referenceNumber, referenceNumberUrl, speciesName, permitType, submissionDate, status }
+    return { referenceNumber, referenceNumberUrl, speciesName}
   })
 
   const startIndex = (data.pageNo - 1) * pageSize
@@ -70,9 +48,7 @@ function createModel(errors, data) {
     pageTitle: data.submissionId,
     captionText: data.submissionId,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
-    tableHeadPermitType: pageContent.tableHeadPermitType,
-    tableHeadApplicationDate: pageContent.tableHeadApplicationDate,
-    tableHeadStatus: pageContent.tableHeadStatus,
+    tableHeadScientificName: pageContent. tableHeadScientificName,
     applicationsData : applicationsTableData,
 
     inputPagination: data.totalApplications > pageSize ? paginate(data.submissionId, data.totalApplications, data.pageNo, textPagination) : ""
@@ -107,13 +83,6 @@ function paginate(submissionId, totalSubmissions, currentPage, textPagination) {
 
   return pagination;
 }
-
-  function getApplicationDate(date) {
-    const dateObj = new Date(date);
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
-    const formattedDate = dateObj.toLocaleDateString('en-GB', options);
-    return formattedDate
-  }
   
 module.exports = [
    //GET for my submission page
@@ -148,9 +117,6 @@ module.exports = [
         submissionId: submissionId,
         pageNo: pageNo ? pageNo : 1,
         applications: slicedApplications,
-        permitType: submission?.permitType,
-        submissionDate: submission?.dateSubmitted,
-        status: submission?.status,
         startIndex: startIndex,
         endIndex: endIndex,
         totalApplications: submission?.applications.length,

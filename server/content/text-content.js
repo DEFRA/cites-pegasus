@@ -967,9 +967,7 @@ const schema = Joi.object().keys({
   mySubmission: Joi.object({
     textBreadcrumbs: Joi.string().required(),
     tableHeadReferenceNumber: Joi.string().required(),
-    tableHeadPermitType: Joi.string().required(),
-    tableHeadApplicationDate: Joi.string().required(),
-    tableHeadStatus: Joi.string().required(),
+    tableHeadScientificName: Joi.string().required(),
     rowTextImport: Joi.string().required(),
     rowTextExport: Joi.string().required(),
     rowTextReexport: Joi.string().required(),
