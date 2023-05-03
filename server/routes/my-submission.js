@@ -7,7 +7,6 @@ const textContent = require('../content/text-content')
 const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/my-submissions`
-const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted`//TO DO
 const invalidSubmissionPath = urlPrefix
 const pageSize = 10
@@ -41,7 +40,7 @@ function createModel(errors, data) {
   const applicationsTableData= applicationsData.map(application => {
     const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0');
     const referenceNumber = `${data.submissionId}/${applicationIndex}`
-    const referenceNumberUrl = `${nextPathViewApplication}/${data.submissionId}/${application.applicationIndex}`
+    const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    
     return { referenceNumber, referenceNumberUrl, speciesName, permitType, submissionDate, status }

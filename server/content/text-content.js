@@ -214,6 +214,7 @@ const schema = Joi.object().keys({
     agreeAndSubmitButton: Joi.string().required(),
     confirmAndContinueButton: Joi.string().required(),
     returnYourApplicationsButton: Joi.string().required(),
+    copyAsNewApplicationButton: Joi.string().required(),
     errorSummaryTitlePrefix: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
@@ -790,6 +791,7 @@ const schema = Joi.object().keys({
     pageHeaderCopy: Joi.string().required(),
     defaultTitleView: Joi.string().required(),
     pageHeaderView: Joi.string().required(),
+    textBreadcrumbs: Joi.string().required(),
     headerPermit: Joi.string().required(),
     rowTextPermitType: Joi.string().required(),
     headerYourContactDetails: Joi.string().required(),
@@ -872,6 +874,7 @@ const schema = Joi.object().keys({
     rowTextSexFemale: Joi.string().required(),
     rowTextNotKnown: Joi.string().required(),
     rowTextShowHide: Joi.string().required(),
+    returnToYourApplicationsLinkText: Joi.string().required(),
     areYouSure: Joi.object({
       permitType: areYouSureSchema,
       scientificName: areYouSureSchema,

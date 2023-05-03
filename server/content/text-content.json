@@ -16,6 +16,7 @@
     "agreeAndSubmitButton": "Agree and submit",
     "confirmAndContinueButton": "Confirm and continue",
     "returnYourApplicationsButton": "Return to your applications",
+    "copyAsNewApplicationButton": "Copy as new application",
     "errorSummaryTitlePrefix": "Error: ",
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
@@ -978,6 +979,7 @@
     "pageHeaderCopy": "Copy as new application",
     "defaultTitleView": "Application",
     "pageHeaderView": "Application",
+    "textBreadcrumbs": "Your applications",
     "headerPermit": "About the permit",
     "rowTextPermitType": "Permit type",
     "headerYourContactDetails": "Your contact details",
@@ -1060,6 +1062,7 @@
     "rowTextSexFemale": "Female",
     "rowTextNotKnown": "Not known",
     "rowTextShowHide": "Show/Hide",
+    "returnToYourApplicationsLinkText": "Return to your applications",
     "areYouSure": {
       "permitType": {
         "defaultTitle": "Are you sure that you want to change the permit type?",

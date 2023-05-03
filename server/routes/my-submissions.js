@@ -406,6 +406,7 @@ module.exports = [
 
       const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
 
+      submission.submissionId = submissionRef
       submission.status = 'received'
       submission.dateSubmitted= '2023-04-02T14:02:40.000Z'
 
