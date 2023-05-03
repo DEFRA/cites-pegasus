@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "application-summary"
@@ -9,7 +9,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathComments = `${urlPrefix}/comments`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
-const nextPathCopyAsNew = `${urlPrefix}/copy-as-new`
+const nextPathCopyAsNewApplication = `${urlPrefix}/copy-as-new`
 const invalidSubmissionPath = urlPrefix
 const summaryTypes = ['check', 'view', 'copy', 'view-submitted']
 
@@ -790,10 +790,16 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const summaryType = request/params.summaryType
-
+        const { summaryType, applicationIndex } = request.params
+       
         if(summaryType === 'view-submitted'){
-          return h.redirect(nextPathCopyAsNew)
+          try {
+            cloneSubmission(request, applicationIndex)
+          } catch (err) {
+            console.log(err)
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+          return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
           return h.redirect(nextPathYourSubmission)
         }

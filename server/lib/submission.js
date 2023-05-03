@@ -55,7 +55,14 @@ function validateSubmission(submission, path) {
     return applicationStatuses
 }
 
-function createApplication(request) {
+function cloneSubmission(request, applicationIndex) {
+    const submission = getSubmission(request)
+    const newApplication = submission.applications[applicationIndex]
+    submission.applications = [newApplication]
+    setYarValue(request, 'submission', submission)
+}
+
+function createApplication(request, ) {
     const submission = getSubmission(request)
     const applications = submission.applications
     const newApplication = { applicationIndex: applications.length }
@@ -315,6 +322,7 @@ module.exports = {
     getSubmission,
     clearSubmission,
     validateSubmission,
+    cloneSubmission,
     createApplication,
     cloneApplication,
     deleteApplication,
