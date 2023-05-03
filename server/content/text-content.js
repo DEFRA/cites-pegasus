@@ -970,20 +970,7 @@ const schema = Joi.object().keys({
   mySubmission: Joi.object({
     textBreadcrumbs: Joi.string().required(),
     tableHeadReferenceNumber: Joi.string().required(),
-    tableHeadPermitType: Joi.string().required(),
-    tableHeadApplicationDate: Joi.string().required(),
-    tableHeadStatus: Joi.string().required(),
-    rowTextImport: Joi.string().required(),
-    rowTextExport: Joi.string().required(),
-    rowTextReexport: Joi.string().required(),
-    rowTextArticle10: Joi.string().required(),
-    rowTextReceived: Joi.string().required(),
-    rowTextAwaitingPayment: Joi.string().required(),
-    rowTextAwaitingReply: Joi.string().required(),
-    rowTextInProcess: Joi.string().required(),
-    rowTextIssued: Joi.string().required(),
-    rowTextRefused: Joi.string().required(),
-    rowTextCancelled: Joi.string().required(),
+    tableHeadScientificName: Joi.string().required(),
   }).required(),
 })
 
