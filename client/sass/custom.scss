@@ -193,3 +193,10 @@ a[data-disabled] {
 div:has(a[data-disabled]:hover) {
     background-color: white !important;
 }
+
+.fee-panel {
+    background-color: #f3f2f1;
+    border-style: solid;
+    border-color: #b1b4b6;
+    border-width: 10px;
+}

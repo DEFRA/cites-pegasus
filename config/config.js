@@ -30,7 +30,10 @@ const schema = Joi.object().keys({
     authorityUrl: Joi.string().required(),
     serverUrl: Joi.string().required(),
     baseURL: Joi.string().required()
-  })
+  }),
+  govpayCreatePaymentURL: Joi.string().required(),
+  govpayCallbackURL: Joi.string().required()
+
 })
 
 // Build config
@@ -58,7 +61,9 @@ const config = {
     authorityUrl: process.env.AUTHORITY_URL,
     serverUrl: process.env.SERVER_URL,
     baseURL: process.env.BASE_URL
-  }
+  },
+  govpayCreatePaymentURL: process.env.GOVPAY_CREATE_PAYMENT_URL,
+  govpayCallbackURL: process.env.GOVPAY_CALLBACK_URL
 }
 
 // Validate config

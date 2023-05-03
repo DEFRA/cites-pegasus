@@ -37,7 +37,9 @@ const routes = [].concat(
   require('../routes/public'),
   require('../routes/test'),
   require('../routes/oidc'),
-  require('../routes/profile')
+  require('../routes/govpay'),
+  require('../routes/profile'),
+  require('../routes/pay-application')
 )
 
 module.exports = {

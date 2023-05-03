@@ -302,6 +302,9 @@ function getAppFlow(submission) {
                 } 
             }
         }
+        if (submission.submissionDetails) {
+            appFlow.push('pay-application')        
+        }
     }
     return { appFlow, applicationStatuses }
 }

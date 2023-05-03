@@ -957,6 +957,19 @@ const schema = Joi.object().keys({
     rowTextCancelled: Joi.string().required(),
     pagebodyNoApplicationsFound: Joi.string().required(),
     pagebodyZeroApplication: Joi.string().required(),
+  }).required(),
+  payApplication: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    pageHeader2: Joi.string().required(),
+    radioOptionYes: Joi.string().required(),
+    radioOptionNo: Joi.string().required(),
+    headingPaymentAmount: Joi.string().required(),
+    paymentDescription: Joi.string().required(),
+    errorMessages: Joi.object({
+      'error.payNow.any.required': Joi.string().required(),
+    }).required()
   })
 })
 
