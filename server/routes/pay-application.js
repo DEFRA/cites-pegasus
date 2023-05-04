@@ -129,6 +129,16 @@ module.exports = [{
         }
 
         const response = await createPayment(feeAmount, submission.submissionDetails.submissionRef, email, name, textContent.payApplication.paymentDescription)
+
+        submission.paymentDetails = { paymentId: response.paymentId }
+
+        try {
+          mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)          
+        } catch (err) {
+          console.log(err)
+          return h.redirect(`${invalidSubmissionPath}/`)
+        }
+
         return h.redirect(response.nextUrl)
       }
 

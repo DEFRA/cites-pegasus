@@ -14,7 +14,7 @@ const schema = Joi.object().keys({
   cidmCallbackUrl: Joi.string().required(),
   cidmApiDiscoveryUrl: Joi.string().required(),
   cidmAccountManagementUrl: Joi.string().required(),
-  postLogoutRedirectUrl: Joi.string().required(),
+  postLogoutRedirectUrl: Joi.string().allow("", null),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
   cookieOptions: Joi.object({
@@ -31,7 +31,7 @@ const schema = Joi.object().keys({
     serverUrl: Joi.string().required(),
     baseURL: Joi.string().required()
   }),
-  govpayCreatePaymentURL: Joi.string().required(),
+  govpayPaymentsURL: Joi.string().required(),
   govpayCallbackURL: Joi.string().required()
 
 })
@@ -62,7 +62,7 @@ const config = {
     serverUrl: process.env.SERVER_URL,
     baseURL: process.env.BASE_URL
   },
-  govpayCreatePaymentURL: process.env.GOVPAY_CREATE_PAYMENT_URL,
+  govpayPaymentsURL: process.env.GOVPAY_PAYMENTS_URL,
   govpayCallbackURL: process.env.GOVPAY_CALLBACK_URL
 }
 
