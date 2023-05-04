@@ -14,6 +14,9 @@
     "copyButton": "Copy",
     "removeButton": "Remove",
     "agreeAndSubmitButton": "Agree and submit",
+    "confirmAndContinueButton": "Confirm and continue",
+    "returnYourApplicationsButton": "Return to your applications",
+    "copyAsNewApplicationButton": "Copy as new application",
     "errorSummaryTitlePrefix": "Error: ",
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
@@ -970,11 +973,15 @@
     }
   },
   "applicationSummary": {
-    "defaultTitle": "Check and confirm application details",
-    "pageHeader": "Check and confirm application details",
+    "defaultTitleCheck": "Check and confirm application details",
+    "pageHeaderCheck": "Check and confirm application details",
+    "defaultTitleCopy": "Copy as new application",
+    "pageHeaderCopy": "Copy as new application",
+    "defaultTitleView": "Application",
+    "pageHeaderView": "Application",
+    "textBreadcrumbs": "Your applications",
     "headerPermit": "About the permit",
     "rowTextPermitType": "Permit type",
-    "confirmYourApplicationButton": "Confirm your application",
     "headerYourContactDetails": "Your contact details",
     "headerApplicantContactDetails": "Applicant's contact details",
     "headerImporterContactDetails": "Importer’s contact details",
@@ -1054,6 +1061,8 @@
     "rowTextSexMale": "Male",
     "rowTextSexFemale": "Female",
     "rowTextNotKnown": "Not known",
+    "rowTextShowHide": "Show/Hide",
+    "returnToYourApplicationsLinkText": "Return to your applications",
     "areYouSure": {
       "permitType": {
         "defaultTitle": "Are you sure that you want to change the permit type?",
@@ -1262,6 +1271,11 @@
     "rowTextCancelled": "Cancelled",
     "pagebodyNoApplicationsFound": "No applications found.",
     "pagebodyZeroApplication": " You have not yet made an application using this service."
+  },
+  "mySubmission": {
+    "textBreadcrumbs": "Your applications",
+    "tableHeadReferenceNumber": "Reference number",
+    "tableHeadScientificName": " Scientific name"
   },
   "payApplication": {
     "defaultTitle": "Pay for your CITES application",

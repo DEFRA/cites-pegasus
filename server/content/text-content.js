@@ -212,6 +212,9 @@ const schema = Joi.object().keys({
     copyButton: Joi.string().required(),
     removeButton: Joi.string().required(),
     agreeAndSubmitButton: Joi.string().required(),
+    confirmAndContinueButton: Joi.string().required(),
+    returnYourApplicationsButton: Joi.string().required(),
+    copyAsNewApplicationButton: Joi.string().required(),
     errorSummaryTitlePrefix: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
@@ -782,11 +785,15 @@ const schema = Joi.object().keys({
     }).required()
   }).required(),
   applicationSummary: Joi.object({
-    defaultTitle: Joi.string().required(),
-    pageHeader: Joi.string().required(),
+    defaultTitleCheck: Joi.string().required(),
+    pageHeaderCheck: Joi.string().required(),
+    defaultTitleCopy: Joi.string().required(),
+    pageHeaderCopy: Joi.string().required(),
+    defaultTitleView: Joi.string().required(),
+    pageHeaderView: Joi.string().required(),
+    textBreadcrumbs: Joi.string().required(),
     headerPermit: Joi.string().required(),
     rowTextPermitType: Joi.string().required(),
-    confirmYourApplicationButton: Joi.string().required(),
     headerYourContactDetails: Joi.string().required(),
     headerApplicantContactDetails: Joi.string().required(),
     headerExportOrReexporterContactDetails: Joi.string().required(),
@@ -866,6 +873,8 @@ const schema = Joi.object().keys({
     rowTextSexMale: Joi.string().required(),
     rowTextSexFemale: Joi.string().required(),
     rowTextNotKnown: Joi.string().required(),
+    rowTextShowHide: Joi.string().required(),
+    returnToYourApplicationsLinkText: Joi.string().required(),
     areYouSure: Joi.object({
       permitType: areYouSureSchema,
       scientificName: areYouSureSchema,
@@ -970,7 +979,12 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       'error.payNow.any.required': Joi.string().required(),
     }).required()
-  })
+  }).required(),
+  mySubmission: Joi.object({
+    textBreadcrumbs: Joi.string().required(),
+    tableHeadReferenceNumber: Joi.string().required(),
+    tableHeadScientificName: Joi.string().required(),
+  }).required(),
 })
 
 // Validate config
