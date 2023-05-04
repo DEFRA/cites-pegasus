@@ -117,7 +117,7 @@ module.exports = [
       const cidmAuth = getYarValue(request, 'CIDMAuth')
       const endSessionParams = {
         id_token_hint: cidmAuth?.idToken || null,
-        post_logout_redirect_uri: postLogoutRedirectUrl,
+        post_logout_redirect_uri: postLogoutRedirectUrl        
       }
 
       const logoutUri = oidcClient.endSessionUrl(endSessionParams)

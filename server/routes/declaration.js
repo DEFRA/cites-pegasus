@@ -7,7 +7,7 @@ const textContent = require("../content/text-content")
 const pageId = "declaration"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/upload-supporting-documents`
-const nextPath = `${urlPrefix}/application-complete` //TO DO
+const nextPath = `${urlPrefix}/pay-application`
 const invalidSubmissionPath = urlPrefix
 
 function createModel(errors, data) {
@@ -122,9 +122,7 @@ module.exports = [
           return h.redirect(`${invalidSubmissionPath}/`)
         }
 
-        //return h.redirect(nextPath)
-
-        return h.response(JSON.stringify(response))
+        return h.redirect(nextPath)
       }
     }
   }
