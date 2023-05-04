@@ -18,7 +18,7 @@ function createModel(errors, data) {
   const applicationsData = data.applications
   const applicationsTableData= applicationsData.map(application => {
     const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0');
-    const referenceNumber = `${data.submissionId}/${applicationIndex}`
+    const referenceNumber = `${data.submissionRef}/${applicationIndex}`
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    
@@ -37,7 +37,7 @@ function createModel(errors, data) {
         href: previousPath,
       },
       {
-        text: data.submissionId,
+        text: data.submissionRef,
         href: "#"
       }
     ]
@@ -45,19 +45,19 @@ function createModel(errors, data) {
 
   const model = {
     breadcrumbs: breadcrumbs,
-    pageTitle: data.submissionId,
-    captionText: data.submissionId,
+    pageTitle: data.submissionRef,
+    captionText: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadScientificName: pageContent. tableHeadScientificName,
     applicationsData : applicationsTableData,
 
-    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionId, data.totalApplications, data.pageNo, textPagination) : ""
+    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionRef, data.totalApplications, data.pageNo, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }
 
 
-function paginate(submissionId, totalSubmissions, currentPage, textPagination) {
+function paginate(submissionRef, totalSubmissions, currentPage, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
 
   const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
@@ -67,12 +67,12 @@ function paginate(submissionId, totalSubmissions, currentPage, textPagination) {
     id: "pagination",
     name: "pagination",
     previous: {
-      href: currentPage === 1 ? "#" : `${currentPath}/${submissionId}/${currentPage - 1}`,
+      href: currentPage === 1 ? "#" : `${currentPath}/${submissionRef}/${currentPage - 1}`,
       text: "Previous",
       attributes: prevAttr
     },
     next: {
-      href: currentPage === totalPages ? "#" : `${currentPath}/${submissionId}/${currentPage + 1}`,
+      href: currentPage === totalPages ? "#" : `${currentPath}/${submissionRef}/${currentPage + 1}`,
       text: "Next",
       attributes: nextAttr
     },
@@ -88,18 +88,18 @@ module.exports = [
    //GET for my submission page
    {
     method: "GET",
-    path: `${currentPath}/{submissionId}/{pageNo?}` ,
+    path: `${currentPath}/{submissionRef}/{pageNo?}` ,
     options: {
       validate: {
         params: Joi.object({
-          submissionId: Joi.string().required(),
+          submissionRef: Joi.string().required(),
           pageNo: Joi.number().allow('')
         }),
       }
     },
     
     handler: async (request, h) => {
-      const submissionId = request.params.submissionId
+      const submissionRef = request.params.submissionRef
       const pageNo = request.params.pageNo
       const submission = getSubmission(request)
       const applications = submission?.applications
@@ -114,7 +114,7 @@ module.exports = [
       const slicedApplications = applications?.slice(startIndex, endIndex);
 
       const pageData = {
-        submissionId: submissionId,
+        submissionRef: submissionRef,
         pageNo: pageNo ? pageNo : 1,
         applications: slicedApplications,
         startIndex: startIndex,

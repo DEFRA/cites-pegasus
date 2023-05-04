@@ -51,7 +51,7 @@ function createModel(errors, data) {
   };
 
   const submissionsTableData = submissionsData.map(submission => {
-    const referenceNumber = submission.submissionId
+    const referenceNumber = submission.submissionRef
     const referenceNumberUrl = `${currentPath}/select/${referenceNumber}`
     const applicationDate = getApplicationDate(submission.dateSubmitted)
     const status = statusTextMap[submission.status] || submission.status
@@ -404,7 +404,7 @@ module.exports = [
     handler: async (request, h) => {
       const submissionRef = request.params.submissionRef
       const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
-      submission.submissionId = submissionRef
+      submission.submissionRef = submissionRef
      
       setYarValue(request, 'submission', submission)
 

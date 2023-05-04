@@ -383,7 +383,7 @@ async function getSubmissions(server, query, pageSize) {
         submissions: payload.value.map(x => {
           
           return {
-            submissionId: x.cites_submissionreference,
+            submissionRef: x.cites_submissionreference,
             status: getPortalStatus(x.statuscode),
             //status: reverseMapper(dynamicsStatusMappings, x.statuscode),
             dateSubmitted: x.createdon,
