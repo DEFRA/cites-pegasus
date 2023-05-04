@@ -1,8 +1,8 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, createApplication } = require('../lib/submission')
-const { getSubmissions } = require("../services/dynamics-service")
+const { setYarValue } = require('../lib/session')
+const dynamics = require("../services/dynamics-service")
 const textContent = require('../content/text-content')
 const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -18,7 +18,7 @@ function createModel(errors, data) {
   const applicationsData = data.applications
   const applicationsTableData= applicationsData.map(application => {
     const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0');
-    const referenceNumber = `${data.submissionId}/${applicationIndex}`
+    const referenceNumber = `${data.submissionRef}/${applicationIndex}`
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    
@@ -37,7 +37,7 @@ function createModel(errors, data) {
         href: previousPath,
       },
       {
-        text: data.submissionId,
+        text: data.submissionRef,
         href: "#"
       }
     ]
@@ -45,19 +45,19 @@ function createModel(errors, data) {
 
   const model = {
     breadcrumbs: breadcrumbs,
-    pageTitle: data.submissionId,
-    captionText: data.submissionId,
+    pageTitle: data.submissionRef,
+    captionText: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadScientificName: pageContent. tableHeadScientificName,
     applicationsData : applicationsTableData,
 
-    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionId, data.totalApplications, data.pageNo, textPagination) : ""
+    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionRef, data.totalApplications, data.pageNo, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }
 
 
-function paginate(submissionId, totalSubmissions, currentPage, textPagination) {
+function paginate(submissionRef, totalSubmissions, currentPage, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
 
   const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
@@ -67,12 +67,12 @@ function paginate(submissionId, totalSubmissions, currentPage, textPagination) {
     id: "pagination",
     name: "pagination",
     previous: {
-      href: currentPage === 1 ? "#" : `${currentPath}/${submissionId}/${currentPage - 1}`,
+      href: currentPage === 1 ? "#" : `${currentPath}/${submissionRef}/${currentPage - 1}`,
       text: "Previous",
       attributes: prevAttr
     },
     next: {
-      href: currentPage === totalPages ? "#" : `${currentPath}/${submissionId}/${currentPage + 1}`,
+      href: currentPage === totalPages ? "#" : `${currentPath}/${submissionRef}/${currentPage + 1}`,
       text: "Next",
       attributes: nextAttr
     },
@@ -88,21 +88,21 @@ module.exports = [
    //GET for my submission page
    {
     method: "GET",
-    path: `${currentPath}/{submissionId}/{pageNo?}` ,
+    path: `${currentPath}/{submissionRef}/{pageNo?}` ,
     options: {
       validate: {
         params: Joi.object({
-          submissionId: Joi.string().required(),
+          submissionRef: Joi.string().required(),
           pageNo: Joi.number().allow('')
         }),
       }
     },
     
     handler: async (request, h) => {
-      const submissionId = request.params.submissionId
+      const submissionRef = request.params.submissionRef
       const pageNo = request.params.pageNo
-      const submission = getSubmission(request)
-      const applications = submission?.applications
+      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
+      const applications = submission.applications
      
       let startIndex =  null
       if (pageNo) {
@@ -111,16 +111,20 @@ module.exports = [
         startIndex = 0
       }
       const endIndex = startIndex + pageSize;
-      const slicedApplications = applications?.slice(startIndex, endIndex);
+      const slicedApplications = applications.slice(startIndex, endIndex);
 
       const pageData = {
-        submissionId: submissionId,
+        submissionRef: submissionRef,
         pageNo: pageNo ? pageNo : 1,
         applications: slicedApplications,
         startIndex: startIndex,
         endIndex: endIndex,
-        totalApplications: submission?.applications.length,
+        totalApplications: submission.applications.length,
       }
+
+      submission.submissionRef = submissionRef
+      setYarValue(request, 'submission', submission)
+      
       return h.view(pageId, createModel(null, pageData))
     }
   }

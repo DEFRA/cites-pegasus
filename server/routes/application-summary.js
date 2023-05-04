@@ -33,6 +33,7 @@ function createApplicationSummaryModel(errors, data) {
       buttonText = commonContent.confirmAndContinueButton
       break
     case "copy":
+    case "copy-as-new":
       pageTitle = pageContent.defaultTitleCopy
       pageHeader = pageContent.pageHeaderCopy
       buttonText = commonContent.confirmAndContinueButton
@@ -43,8 +44,8 @@ function createApplicationSummaryModel(errors, data) {
       buttonText = commonContent.returnYourApplicationsButton
       break
     case "view-submitted":
-      pageTitle = `${data.submissionId}/${formattedApplicationIndex}`
-      pageHeader = `${data.submissionId}/${formattedApplicationIndex}`
+      pageTitle = `${data.submissionRef}/${formattedApplicationIndex}`
+      pageHeader = `${data.submissionRef}/${formattedApplicationIndex}`
       buttonText = commonContent.copyAsNewApplicationButton
       break
   }
@@ -438,19 +439,25 @@ function createApplicationSummaryModel(errors, data) {
         href: previousPathMySubmissions,
       },
       {
-        text: data.submissionId,
-        href: `${previousPathMySubmission}/${data.submissionId}`,
+        text: data.submissionRef,
+        href: `${previousPathMySubmission}/${data.submissionRef}`,
       },
       {
-        text: `${data.submissionId}/${formattedApplicationIndex}`,
+        text: `${data.submissionRef}/${formattedApplicationIndex}`,
+        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${data.applicationIndex}`: "#"
+      },
+      summaryType === 'copy-as-new' && {
+        text: pageContent.pageHeaderCopy,
         href: "#"
       }
     ]
   }
 
+  const backLink =  summaryType === 'check' ? `${previousPathComments}/${data.applicationIndex}` : nextPathYourSubmission
+
   const model = {
-    backLink: summaryType !== 'view-submitted' ? `${previousPathComments}/${data.applicationIndex}` : "",
-    breadcrumbs: summaryType === 'view-submitted' ? breadcrumbs : "",
+    backLink: summaryType !== 'view-submitted' && summaryType !== 'copy-as-new'? backLink : "",
+    breadcrumbs: summaryType === 'view-submitted' || summaryType === 'copy-as-new' ? breadcrumbs : "",
     pageHeader: pageHeader,
     pageTitle: pageTitle,
     buttonText: buttonText,
@@ -674,7 +681,7 @@ module.exports = [
       try {
         validateSubmission(
           submission,
-          `${pageId}/${request.params.summaryType}/${request.params.applicationIndex}`
+          `${pageId}/${summaryType}/${applicationIndex}`
         )
       } catch (err) {
         console.log(err)
@@ -686,7 +693,7 @@ module.exports = [
       const pageData = {
         summaryType: summaryType,
         applicationIndex: applicationIndex,
-        submissionId: submission.submissionId,
+        submissionRef: submission.submissionRef,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
@@ -792,14 +799,17 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-       
-        if(summaryType === 'view-submitted'){
+
+        if(summaryType === 'copy-as-new'){
           try {
             cloneSubmission(request, applicationIndex)
           } catch (err) {
             console.log(err)
             return h.redirect(invalidSubmissionPath)
           }
+        }
+       
+        if(summaryType === 'view-submitted'){
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
           return h.redirect(nextPathYourSubmission)
