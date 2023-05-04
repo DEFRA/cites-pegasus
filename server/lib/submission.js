@@ -59,10 +59,10 @@ function cloneSubmission(request, applicationIndex) {
     const submission = getSubmission(request)
     const newApplication = submission.applications[applicationIndex]
     
-    if(submission.submissionRef) {
+    if(submission.hasOwnProperty('submissionRef')) {
         delete submission.submissionRef
     }
-    if(submission.paymentDetails) {
+    if(submission.hasOwnProperty('paymentDetails')) {
         delete submission.paymentDetails  
     }
     
