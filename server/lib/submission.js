@@ -58,6 +58,14 @@ function validateSubmission(submission, path) {
 function cloneSubmission(request, applicationIndex) {
     const submission = getSubmission(request)
     const newApplication = submission.applications[applicationIndex]
+    
+    if(submission.submissionRef) {
+        delete submission.submissionRef
+    }
+    if(submission.paymentDetails) {
+        delete submission.paymentDetails  
+    }
+    
     newApplication.applicationIndex = 0
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)

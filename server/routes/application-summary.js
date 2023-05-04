@@ -444,7 +444,7 @@ function createApplicationSummaryModel(errors, data) {
       },
       {
         text: `${data.submissionRef}/${formattedApplicationIndex}`,
-        href: summaryType === 'copy-as-new' ? `${previousPathMySubmission}/${data.submissionRef}/${data.applicationIndex}`: "#"
+        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${data.applicationIndex}`: "#"
       },
       summaryType === 'copy-as-new' && {
         text: pageContent.pageHeaderCopy,
@@ -681,7 +681,7 @@ module.exports = [
       try {
         validateSubmission(
           submission,
-          `${pageId}/${request.params.summaryType}/${request.params.applicationIndex}`
+          `${pageId}/${summaryType}/${applicationIndex}`
         )
       } catch (err) {
         console.log(err)
@@ -799,14 +799,17 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-       
-        if(summaryType === 'view-submitted'){
+
+        if(summaryType === 'copy-as-new'){
           try {
             cloneSubmission(request, applicationIndex)
           } catch (err) {
             console.log(err)
             return h.redirect(`${invalidSubmissionPath}/`)
           }
+        }
+       
+        if(summaryType === 'view-submitted'){
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
           return h.redirect(nextPathYourSubmission)

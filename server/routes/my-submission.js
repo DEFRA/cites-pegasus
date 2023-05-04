@@ -1,8 +1,8 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, createApplication } = require('../lib/submission')
-const { getSubmissions } = require("../services/dynamics-service")
+const { setYarValue } = require('../lib/session')
+const dynamics = require("../services/dynamics-service")
 const textContent = require('../content/text-content')
 const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -101,8 +101,8 @@ module.exports = [
     handler: async (request, h) => {
       const submissionRef = request.params.submissionRef
       const pageNo = request.params.pageNo
-      const submission = getSubmission(request)
-      const applications = submission?.applications
+      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
+      const applications = submission.applications
      
       let startIndex =  null
       if (pageNo) {
@@ -111,7 +111,7 @@ module.exports = [
         startIndex = 0
       }
       const endIndex = startIndex + pageSize;
-      const slicedApplications = applications?.slice(startIndex, endIndex);
+      const slicedApplications = applications.slice(startIndex, endIndex);
 
       const pageData = {
         submissionRef: submissionRef,
@@ -119,8 +119,12 @@ module.exports = [
         applications: slicedApplications,
         startIndex: startIndex,
         endIndex: endIndex,
-        totalApplications: submission?.applications.length,
+        totalApplications: submission.applications.length,
       }
+
+      submission.submissionRef = submissionRef
+      setYarValue(request, 'submission', submission)
+      
       return h.view(pageId, createModel(null, pageData))
     }
   }
