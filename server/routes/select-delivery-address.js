@@ -8,7 +8,7 @@ const pageId = 'select-delivery-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/confirm-address/applicant`
 const deliveryAddressOptions = ['applicant', 'agent', 'different']
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -92,7 +92,7 @@ module.exports = [{
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
         }
 
         const pageData = {

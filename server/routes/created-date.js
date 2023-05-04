@@ -10,7 +10,7 @@ const pageId = "created-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/quantity`
 const nextPath = `${urlPrefix}/trade-term-code`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -223,7 +223,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
       
       const species = submission.applications[applicationIndex].species
@@ -295,7 +295,7 @@ module.exports = [
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
         
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)

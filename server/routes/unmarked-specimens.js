@@ -8,7 +8,7 @@ const pageId = 'unmarked-specimens'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
 const nextPath = `${urlPrefix}/describe-specimen`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
 
@@ -99,7 +99,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const species = submission.applications[applicationIndex].species
@@ -146,7 +146,7 @@ module.exports = [
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
         
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)

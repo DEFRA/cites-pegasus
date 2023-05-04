@@ -10,7 +10,7 @@ const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['agent', 'applicant']
 const nextPath = `${urlPrefix}/postcode`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 
 function createModel(errors, data) {
@@ -137,7 +137,7 @@ module.exports = [{
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
         }
 
         let email, fullName, businessName
@@ -224,7 +224,7 @@ module.exports = [{
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidSubmissionPath}/`)
+                return h.redirect(invalidSubmissionPath)
             }
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)

@@ -12,7 +12,7 @@ const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathComments = `${urlPrefix}/comments`
 const lodash = require('lodash')
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
 
@@ -165,7 +165,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const importerExporter = submission.applications[applicationIndex].importerExporterDetails
@@ -246,7 +246,7 @@ module.exports = [
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
