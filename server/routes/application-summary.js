@@ -1,15 +1,18 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/comments`
-const nextPath = `${urlPrefix}/your-submission`
+const previousPathComments = `${urlPrefix}/comments`
+const previousPathMySubmissions = `${urlPrefix}/my-submissions`
+const previousPathMySubmission = `${urlPrefix}/my-submission`
+const nextPathYourSubmission = `${urlPrefix}/your-submission`
+const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const invalidSubmissionPath = urlPrefix
-const summaryTypes = ['check', 'view', 'copy']
+const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
 
 
 function createApplicationSummaryModel(errors, data) {
@@ -17,6 +20,7 @@ function createApplicationSummaryModel(errors, data) {
   const pageContent = textContent.applicationSummary
   const hrefPrefix = "../../application-summary/change/" + data.applicationIndex
   const summaryType = data.summaryType
+  const formattedApplicationIndex = (data.applicationIndex + 1).toString().padStart(3, '0');
 
   let pageTitle = null
   let pageHeader = null
@@ -37,6 +41,11 @@ function createApplicationSummaryModel(errors, data) {
       pageTitle = pageContent.defaultTitleView
       pageHeader = pageContent.pageHeaderView
       buttonText = commonContent.returnYourApplicationsButton
+      break
+    case "view-submitted":
+      pageTitle = `${data.submissionId}/${formattedApplicationIndex}`
+      pageHeader = `${data.submissionId}/${formattedApplicationIndex}`
+      buttonText = commonContent.copyAsNewApplicationButton
       break
   }
 
@@ -422,8 +431,26 @@ function createApplicationSummaryModel(errors, data) {
   const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix, summaryType)
   const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix, summaryType)
 
+  const breadcrumbs = {
+    items: [
+      {
+        text: pageContent.textBreadcrumbs,
+        href: previousPathMySubmissions,
+      },
+      {
+        text: data.submissionId,
+        href: `${previousPathMySubmission}/${data.submissionId}`,
+      },
+      {
+        text: `${data.submissionId}/${formattedApplicationIndex}`,
+        href: "#"
+      }
+    ]
+  }
+
   const model = {
-    backLink: `${previousPath}/${data.applicationIndex}`,
+    backLink: summaryType !== 'view-submitted' ? `${previousPathComments}/${data.applicationIndex}` : "",
+    breadcrumbs: summaryType === 'view-submitted' ? breadcrumbs : "",
     pageHeader: pageHeader,
     pageTitle: pageTitle,
     buttonText: buttonText,
@@ -437,6 +464,8 @@ function createApplicationSummaryModel(errors, data) {
     headingPermitDetails: data.permitDetails && headingPermitDetails,
     headerCountryOfOriginPermitDetails: data.permitDetails && pageContent.headerCountryOfOriginPermitDetails,
     headerRemarks: pageContent.headerRemarks,
+    returnToYourApplicationsLinkText: summaryType === 'view-submitted' ? pageContent.returnToYourApplicationsLinkText : "",
+    returnToYourApplicationsLinkUrl: summaryType === 'view-submitted' ? `${urlPrefix}/my-submissions` : "",
 
     summaryListAboutThePermit: summaryListAboutThePermit,
     summaryListYourContactDetails: summaryListYourContactDetails,
@@ -464,7 +493,7 @@ function createSummaryListRow(classes, key, value, href, hiddenText, summaryType
     },
     actions: {
       items: [
-        summaryType !== 'view' && {
+        summaryType !== 'view' &&  summaryType !== 'view-submitted' && {
           href: href,
           text: href ? "Change" : "",
           visuallyHiddenText: hiddenText
@@ -631,7 +660,7 @@ module.exports = [
       validate: {
         params: Joi.object({
           summaryType: Joi.string().valid(...summaryTypes),
-          applicationIndex: Joi.number().required()
+          applicationIndex: Joi.number().required(),
         }),
         failAction: (request, h, error) => {
           console.log(error)
@@ -657,6 +686,7 @@ module.exports = [
       const pageData = {
         summaryType: summaryType,
         applicationIndex: applicationIndex,
+        submissionId: submission.submissionId,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
@@ -761,7 +791,20 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        return h.redirect(nextPath)
+        const { summaryType, applicationIndex } = request.params
+       
+        if(summaryType === 'view-submitted'){
+          try {
+            cloneSubmission(request, applicationIndex)
+          } catch (err) {
+            console.log(err)
+            return h.redirect(`${invalidSubmissionPath}/`)
+          }
+          return h.redirect(`${nextPathCopyAsNewApplication}/0`)
+        } else {
+          return h.redirect(nextPathYourSubmission)
+        }
+        
       }
     }
   },

@@ -55,7 +55,15 @@ function validateSubmission(submission, path) {
     return applicationStatuses
 }
 
-function createApplication(request) {
+function cloneSubmission(request, applicationIndex) {
+    const submission = getSubmission(request)
+    const newApplication = submission.applications[applicationIndex]
+    newApplication.applicationIndex = 0
+    submission.applications = [newApplication]
+    setYarValue(request, 'submission', submission)
+}
+
+function createApplication(request, ) {
     const submission = getSubmission(request)
     const applications = submission.applications
     const newApplication = { applicationIndex: applications.length }
@@ -283,6 +291,8 @@ function getAppFlow(submission) {
                             appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
                             appFlow.push(`application-summary/copy/${applicationIndex}`)
                             appFlow.push(`application-summary/view/${applicationIndex}`)
+                            appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
+                            appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
                             completeApplications++
                             applicationStatuses[applicationIndex].status = 'complete'
                         } else {
@@ -314,6 +324,7 @@ module.exports = {
     getSubmission,
     clearSubmission,
     validateSubmission,
+    cloneSubmission,
     createApplication,
     cloneApplication,
     deleteApplication,
