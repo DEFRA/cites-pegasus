@@ -9,7 +9,12 @@ function getSubmission(request) {
 }
 
 function createSubmission(request) {
-    const submission = { contactId: request.auth.credentials.contactId, applications: [{ applicationIndex: 0 }] }
+    const cidmAuth = getYarValue(request, 'CIDMAuth')
+    const submission = { 
+        contactId: request.auth.credentials.contactId, 
+        organisationId: cidmAuth.user.organisationId || null,
+        applications: [{ applicationIndex: 0 }] 
+    }
     setYarValue(request, 'submission', submission)
     return submission
 }
