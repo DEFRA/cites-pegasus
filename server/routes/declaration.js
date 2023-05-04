@@ -8,7 +8,7 @@ const pageId = "declaration"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/upload-supporting-documents`
 const nextPath = `${urlPrefix}/pay-application`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -73,7 +73,7 @@ module.exports = [
         validateSubmission(submission, pageId)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
         isAgent: submission?.isAgent,
@@ -111,15 +111,13 @@ module.exports = [
           throw err
         }
 
-        const { submissionId, submissionRef, applicationIntegrationJobId } = response
-
-        submission.submissionDetails = { submissionId, submissionRef, applicationIntegrationJobId }
+        submission.submissionRef = response.submissionRef
 
         try {
-          mergeSubmission(request, { submissionDetails: submission.submissionDetails }, `${pageId}`)
+          mergeSubmission(request, submission, `${pageId}`)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         return h.redirect(nextPath)

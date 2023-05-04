@@ -12,7 +12,7 @@ const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
 const nextPathSpeciesName = `${urlPrefix}/species-name`
 const areYouSurePath= `are-you-sure`
 const lodash = require('lodash')
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
@@ -170,7 +170,7 @@ module.exports = [
         appStatuses = validateSubmission(submission, pageId)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const completeApplications = getCompletedApplications(submission, appStatuses)
@@ -192,7 +192,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${areYouSurePath}/permit-type`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
         changeType: 'permit-type',
@@ -212,7 +212,7 @@ module.exports = [
         appStatuses = validateSubmission(submission, `${pageId}/create-application`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }      
       
       const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
@@ -248,7 +248,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${areYouSurePath}/remove`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
         applicationIndex: applicationIndex,
@@ -304,7 +304,7 @@ module.exports = [
         newApplicationIndex = cloneApplication(request, applicationIndex)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
       return h.redirect(`${nextPathCopyApplication}/${newApplicationIndex}`)
     }
@@ -396,7 +396,7 @@ module.exports = [
             deleteApplication(request, applicationIndex)
           } catch (err) {
             console.log(err)
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
           }
           if (applications.length === 1 ) {
             return h.redirect(`${nextPathSpeciesName}/0`)

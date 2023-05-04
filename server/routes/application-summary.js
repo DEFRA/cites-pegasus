@@ -11,7 +11,7 @@ const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
 
 
@@ -678,7 +678,7 @@ module.exports = [
         )
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       clearChangeRoute(request)
@@ -747,7 +747,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/are-you-sure/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const pageData = {
@@ -798,7 +798,7 @@ module.exports = [
             cloneSubmission(request, applicationIndex)
           } catch (err) {
             console.log(err)
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
           }
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {

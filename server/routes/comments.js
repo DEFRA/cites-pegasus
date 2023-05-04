@@ -10,7 +10,7 @@ const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPath = `${urlPrefix}/application-summary/check`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 
 function createModel(errors, data) {
@@ -96,7 +96,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const pageData = {
@@ -149,7 +149,7 @@ module.exports = [
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)

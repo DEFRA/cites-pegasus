@@ -11,7 +11,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const assetPath = `${urlPrefix}/assets`
 const previousPath = `${urlPrefix}/your-submission`
 const nextPath = `${urlPrefix}/declaration`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 const Boom = require('@hapi/boom');
 const maxFileSizeBytes = 10485760
 let blobServiceClient = null
@@ -169,7 +169,7 @@ module.exports = [
             setSubmission(request, submission)
           } catch (err) {
             console.error(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
           }
         }
 
@@ -179,7 +179,7 @@ module.exports = [
       //   validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       // } catch (err) {
       //   console.log(err)
-      //   return h.redirect(`${invalidSubmissionPath}/`)
+      //   return h.redirect(invalidSubmissionPath)
       // }
 
       const pageData = { 
@@ -292,7 +292,7 @@ module.exports = [
               mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
             } catch (err) {
               console.error(err);
-              return h.redirect(`${invalidSubmissionPath}/`)
+              return h.redirect(invalidSubmissionPath)
             }
           }
 
@@ -302,7 +302,7 @@ module.exports = [
             mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
           } catch (err) {
             console.error(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
           }
         }
         catch (err) {
@@ -360,7 +360,7 @@ module.exports = [
             setSubmission(request, submission, `${pageId}`)
           } catch (err) {
             console.error(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
           }
         }
         catch (err) {

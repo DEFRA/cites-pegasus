@@ -11,7 +11,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathQuantity = `${urlPrefix}/quantity`
 const previousPathCreatedDate = `${urlPrefix}/created-date`
 const nextPath = `${urlPrefix}/unique-identification-mark`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -142,7 +142,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const species = submission.applications[applicationIndex].species
@@ -223,7 +223,7 @@ module.exports = [
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)

@@ -9,7 +9,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/postcode`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -179,7 +179,7 @@ module.exports = [{
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
         }
 
         const pageData = {
@@ -268,7 +268,7 @@ module.exports = [{
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidSubmissionPath}/`)
+                return h.redirect(invalidSubmissionPath)
             }
 
             return h.redirect(`${nextPath}/${contactType}`)

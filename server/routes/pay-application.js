@@ -8,7 +8,7 @@ const pageId = 'pay-application'
 const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
 const nextPath = `${urlPrefix}/application-complete/`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 const feeAmount = 24.99
 
@@ -94,7 +94,7 @@ module.exports = [{
     // }
     // catch (err) {
     //   console.log(err);
-    //   return h.redirect(`${invalidSubmissionPath}/`)
+    //   return h.redirect(invalidSubmissionPath)
     // }
 
     return h.view(pageId, createModel(null, feeAmount));
@@ -136,7 +136,7 @@ module.exports = [{
           mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)          
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         return h.redirect(response.nextUrl)
@@ -147,7 +147,7 @@ module.exports = [{
       // }
       // catch (err) {
       //   console.log(err);
-      //   return h.redirect(`${invalidSubmissionPath}/`)
+      //   return h.redirect(invalidSubmissionPath)
       // }
 
       return h.redirect(nextPath);

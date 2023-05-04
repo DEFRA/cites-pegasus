@@ -9,7 +9,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/`
 const nextPath = `${urlPrefix}/applying-on-behalf`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common;
@@ -146,7 +146,7 @@ module.exports = [{
         setSubmission(request, submission, pageId)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       if (isChange) {

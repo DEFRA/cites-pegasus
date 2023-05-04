@@ -63,7 +63,7 @@ function cloneSubmission(request, applicationIndex) {
     setYarValue(request, 'submission', submission)
 }
 
-function createApplication(request, ) {
+function createApplication(request) {
     const submission = getSubmission(request)
     const applications = submission.applications
     const newApplication = { applicationIndex: applications.length }
@@ -100,12 +100,12 @@ function getCompletedApplications(submission, appStatuses) {
     });
 }
 
-function getApplicationIndex (submission, applicationStatuses) {
+function getApplicationIndex(submission, applicationStatuses) {
     //This function should be used as a last resort to get the applicationIndex when the applicationIndex is not available in the URL
     let applicationIndex = 0
 
     //Get the applicationStatus with the highest applicationIndex that is in-progress
-    const appInProgressIndex = applicationStatuses.sort((a,b) => b.applicationIndex - a.applicationIndex).find(item => item.status === 'in-progress')
+    const appInProgressIndex = applicationStatuses.sort((a, b) => b.applicationIndex - a.applicationIndex).find(item => item.status === 'in-progress')
 
     if (appInProgressIndex) {
         applicationIndex = appInProgressIndex.applicationIndex
@@ -117,204 +117,212 @@ function getApplicationIndex (submission, applicationStatuses) {
 
 function getAppFlow(submission) {
     let applicationStatuses = []
-    let appFlow = ['apply-cites-permit', 'permit-type']
+    let appFlow = []
     if (submission) {
+        if (submission.submissionRef) {
+            appFlow.push('pay-application')//TODO May need some extra logic around payment status here
+            appFlow.push('application-complete')
+            if (submission.applications?.length > 0) {
+                submission.applications.forEach((application, applicationIndex) => {
+                    appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
+                    appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
+                })
+            }
+        } else {
+            appFlow.push('permit-type')
+            if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
 
-        if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
+            if (submission.permitType && submission.permitType !== 'other') {
+                appFlow.push('applying-on-behalf')
 
-        if (submission.permitType && submission.permitType !== 'other') {
-            appFlow.push('applying-on-behalf')
-
-            if (submission.isAgent === true) {
-                appFlow.push('contact-details/agent')
-                if (submission.agent?.fullName) {
-                    appFlow.push('postcode/agent')
-                    appFlow.push('enter-address/agent')
-                    if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
-                        appFlow.push('select-address/agent')
+                if (submission.isAgent === true) {
+                    appFlow.push('contact-details/agent')
+                    if (submission.agent?.fullName) {
+                        appFlow.push('postcode/agent')
+                        appFlow.push('enter-address/agent')
+                        if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
+                            appFlow.push('select-address/agent')
+                        }
+                        if (submission.agent.candidateAddressData?.selectedAddress) {
+                            appFlow.push('confirm-address/agent')
+                        }
+                    } else {
+                        return { appFlow, applicationStatuses }
                     }
-                    if (submission.agent.candidateAddressData?.selectedAddress) {
-                        appFlow.push('confirm-address/agent')
+                }
+
+                if (submission.isAgent === false || (submission.isAgent === true && submission.agent?.address)) {
+                    appFlow.push('contact-details/applicant')
+                    if (submission.applicant?.fullName) {
+                        appFlow.push('postcode/applicant')
+                        appFlow.push('enter-address/applicant')
+                        if (submission.applicant?.candidateAddressData?.addressSearchData?.postcode) {
+                            appFlow.push('select-address/applicant')
+                        }
+                        if (submission.applicant?.candidateAddressData?.selectedAddress) {
+                            appFlow.push('confirm-address/applicant')
+                        }
                     }
                 } else {
                     return { appFlow, applicationStatuses }
                 }
-            }
 
-            if (submission.isAgent === false || (submission.isAgent === true && submission.agent?.address)) {
-                appFlow.push('contact-details/applicant')
-                if (submission.applicant?.fullName) {
-                    appFlow.push('postcode/applicant')
-                    appFlow.push('enter-address/applicant')
-                    if (submission.applicant?.candidateAddressData?.addressSearchData?.postcode) {
-                        appFlow.push('select-address/applicant')
+                if (submission.applicant?.address) {
+                    appFlow.push('select-delivery-address')
+                    appFlow.push('postcode/delivery')
+                    appFlow.push('enter-address/delivery')
+                    if (submission.delivery?.candidateAddressData?.addressSearchData?.postcode) {
+                        appFlow.push('select-address/delivery')
                     }
-                    if (submission.applicant?.candidateAddressData?.selectedAddress) {
-                        appFlow.push('confirm-address/applicant')
+                    if (submission.delivery?.candidateAddressData?.selectedAddress) {
+                        appFlow.push('confirm-address/delivery')
                     }
+                } else {
+                    return { appFlow, applicationStatuses }
                 }
-            } else {
-                return { appFlow, applicationStatuses }
-            }
 
-            if (submission.applicant?.address) {
-                appFlow.push('select-delivery-address')
-                appFlow.push('postcode/delivery')
-                appFlow.push('enter-address/delivery')
-                if (submission.delivery?.candidateAddressData?.addressSearchData?.postcode) {
-                    appFlow.push('select-address/delivery')
+                if (submission.delivery?.address) {
+                    appFlow.push('species-name/0')
+                } else {
+                    return { appFlow, applicationStatuses }
                 }
-                if (submission.delivery?.candidateAddressData?.selectedAddress) {
-                    appFlow.push('confirm-address/delivery')
-                }
-            } else {
-                return { appFlow, applicationStatuses }
-            }
-
-            if (submission.delivery?.address) {
-                appFlow.push('species-name/0')
-            } else {
-                return { appFlow, applicationStatuses }
-            }
-            let completeApplications = 0
-            if (submission.applications?.length > 0) {
-                submission.applications.forEach((application, applicationIndex) => {
-                    applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
-                    if (applicationIndex > 0) {
-                        appFlow.push(`species-name/${applicationIndex}`)
-                    }
-
-                    if (application.species?.speciesName) {
-                        appFlow.push(`source-code/${applicationIndex}`)
-                    } else {
-                        return { appFlow, applicationStatuses }
-                    }
-
-                    const species = application.species
-                    if (species.sourceCode) {
-                        if (submission.permitType === "article10") {
-                            appFlow.push(`use-certificate-for/${applicationIndex}`)
-                        } else {
-                            appFlow.push(`purpose-code/${applicationIndex}`)
-                        }
-                    } else {
-                        return { appFlow, applicationStatuses }
-                    }
-
-                    if (species.purposeCode || species.useCertificateFor) {
-                        appFlow.push(`specimen-type/${applicationIndex}`)
-                    } else {
-                        return { appFlow, applicationStatuses }
-                    }
-
-                    if (species.specimenType) {
-                        if (species.specimenType === 'animalLiving') {//Living animal flow
-                            appFlow.push(`unique-identification-mark/${applicationIndex}`)
-
-                            if (species.uniqueIdentificationMarkType) {
-                                if (species.uniqueIdentificationMarkType === 'unmarked') {
-                                    appFlow.push(`unmarked-specimens/${applicationIndex}`)
-                                    if (species.numberOfUnmarkedSpecimens) {
-                                        appFlow.push(`describe-specimen/${applicationIndex}`)
-                                    } else {
-                                        return { appFlow, applicationStatuses }
-                                    }
-                                } else {
-                                    appFlow.push(`describe-living-animal/${applicationIndex}`)
-                                }
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-
-
-                        } else {//Not living animal flow
-                            appFlow.push(`quantity/${applicationIndex}`)
-
-                            if (species.quantity) {
-                                if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
-                                    appFlow.push(`created-date/${applicationIndex}`)
-                                    if (species.createdDate) {
-                                        appFlow.push(`trade-term-code/${applicationIndex}`)
-                                    } else {
-                                        return { appFlow, applicationStatuses }
-                                    }
-                                } else {
-                                    appFlow.push(`trade-term-code/${applicationIndex}`)
-                                }
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-
-
-                            if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
-                                appFlow.push(`unique-identification-mark/${applicationIndex}`)
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-
-                            if (species.uniqueIdentificationMarkType) {
-                                appFlow.push(`describe-specimen/${applicationIndex}`)
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-                        }
-                    } else {
-                        return { appFlow, applicationStatuses }
-                    }
-
-                    if (species.specimenDescriptionGeneric || species.sex) {
-                        if (submission.permitType === 'article10') { //Article 10 flow
-                            appFlow.push(`acquired-date/${applicationIndex}`)
-
-                            if (species.acquiredDate) {
-                                appFlow.push(`already-have-a10/${applicationIndex}`)
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-                            if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
-                                appFlow.push(`ever-imported-exported/${applicationIndex}`)
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-
-                        } else { //Not article 10 flow
-                            appFlow.push(`importer-exporter/${applicationIndex}`)
+                let completeApplications = 0
+                if (submission.applications?.length > 0) {
+                    submission.applications.forEach((application, applicationIndex) => {
+                        applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
+                        if (applicationIndex > 0) {
+                            appFlow.push(`species-name/${applicationIndex}`)
                         }
 
-                        if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
-                            appFlow.push(`permit-details/${applicationIndex}`)
-                        }
-
-                        if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
-                            appFlow.push(`comments/${applicationIndex}`)
-                            appFlow.push(`application-summary/check/${applicationIndex}`)
-                            appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
-                            appFlow.push(`application-summary/copy/${applicationIndex}`)
-                            appFlow.push(`application-summary/view/${applicationIndex}`)
-                            appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
-                            appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
-                            completeApplications++
-                            applicationStatuses[applicationIndex].status = 'complete'
+                        if (application.species?.speciesName) {
+                            appFlow.push(`source-code/${applicationIndex}`)
                         } else {
                             return { appFlow, applicationStatuses }
                         }
-                    } else {
-                        return { appFlow, applicationStatuses }
-                    }
-                })
 
-                if (completeApplications > 0) {
-                    appFlow.push(`your-submission`)
-                    appFlow.push(`your-submission/are-you-sure/permit-type`)
-                    appFlow.push(`your-submission/are-you-sure/remove`)
-                    appFlow.push(`your-submission/create-application`)
-                    appFlow.push('upload-supporting-documents')
-                    appFlow.push('declaration')
-                } 
+                        const species = application.species
+                        if (species.sourceCode) {
+                            if (submission.permitType === "article10") {
+                                appFlow.push(`use-certificate-for/${applicationIndex}`)
+                            } else {
+                                appFlow.push(`purpose-code/${applicationIndex}`)
+                            }
+                        } else {
+                            return { appFlow, applicationStatuses }
+                        }
+
+                        if (species.purposeCode || species.useCertificateFor) {
+                            appFlow.push(`specimen-type/${applicationIndex}`)
+                        } else {
+                            return { appFlow, applicationStatuses }
+                        }
+
+                        if (species.specimenType) {
+                            if (species.specimenType === 'animalLiving') {//Living animal flow
+                                appFlow.push(`unique-identification-mark/${applicationIndex}`)
+
+                                if (species.uniqueIdentificationMarkType) {
+                                    if (species.uniqueIdentificationMarkType === 'unmarked') {
+                                        appFlow.push(`unmarked-specimens/${applicationIndex}`)
+                                        if (species.numberOfUnmarkedSpecimens) {
+                                            appFlow.push(`describe-specimen/${applicationIndex}`)
+                                        } else {
+                                            return { appFlow, applicationStatuses }
+                                        }
+                                    } else {
+                                        appFlow.push(`describe-living-animal/${applicationIndex}`)
+                                    }
+                                } else {
+                                    return { appFlow, applicationStatuses }
+                                }
+
+
+                            } else {//Not living animal flow
+                                appFlow.push(`quantity/${applicationIndex}`)
+
+                                if (species.quantity) {
+                                    if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+                                        appFlow.push(`created-date/${applicationIndex}`)
+                                        if (species.createdDate) {
+                                            appFlow.push(`trade-term-code/${applicationIndex}`)
+                                        } else {
+                                            return { appFlow, applicationStatuses }
+                                        }
+                                    } else {
+                                        appFlow.push(`trade-term-code/${applicationIndex}`)
+                                    }
+                                } else {
+                                    return { appFlow, applicationStatuses }
+                                }
+
+
+                                if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
+                                    appFlow.push(`unique-identification-mark/${applicationIndex}`)
+                                } else {
+                                    return { appFlow, applicationStatuses }
+                                }
+
+                                if (species.uniqueIdentificationMarkType) {
+                                    appFlow.push(`describe-specimen/${applicationIndex}`)
+                                } else {
+                                    return { appFlow, applicationStatuses }
+                                }
+                            }
+                        } else {
+                            return { appFlow, applicationStatuses }
+                        }
+
+                        if (species.specimenDescriptionGeneric || species.sex) {
+                            if (submission.permitType === 'article10') { //Article 10 flow
+                                appFlow.push(`acquired-date/${applicationIndex}`)
+
+                                if (species.acquiredDate) {
+                                    appFlow.push(`already-have-a10/${applicationIndex}`)
+                                } else {
+                                    return { appFlow, applicationStatuses }
+                                }
+                                if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
+                                    appFlow.push(`ever-imported-exported/${applicationIndex}`)
+                                } else {
+                                    return { appFlow, applicationStatuses }
+                                }
+
+                            } else { //Not article 10 flow
+                                appFlow.push(`importer-exporter/${applicationIndex}`)
+                            }
+
+                            if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
+                                appFlow.push(`permit-details/${applicationIndex}`)
+                            }
+
+                            if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
+                                appFlow.push(`comments/${applicationIndex}`)
+                                appFlow.push(`application-summary/check/${applicationIndex}`)
+                                appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
+                                appFlow.push(`application-summary/copy/${applicationIndex}`)
+                                appFlow.push(`application-summary/view/${applicationIndex}`)
+                                completeApplications++
+                                applicationStatuses[applicationIndex].status = 'complete'
+                            } else {
+                                return { appFlow, applicationStatuses }
+                            }
+                        } else {
+                            return { appFlow, applicationStatuses }
+                        }
+                    })
+
+                    if (completeApplications > 0) {
+                        appFlow.push(`your-submission`)
+                        appFlow.push(`your-submission/are-you-sure/permit-type`)
+                        appFlow.push(`your-submission/are-you-sure/remove`)
+                        appFlow.push(`your-submission/create-application`)
+                        appFlow.push('upload-supporting-documents')
+                        appFlow.push('declaration')
+                    }
+                }
             }
-        }
-        if (submission.submissionDetails) {
-            appFlow.push('pay-application')        
+
+
         }
     }
     return { appFlow, applicationStatuses }

@@ -14,7 +14,7 @@ const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
 
@@ -151,7 +151,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const species = submission.applications[applicationIndex].species
@@ -234,7 +234,7 @@ module.exports = [
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         if (!isMinorChange) {

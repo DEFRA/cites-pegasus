@@ -222,14 +222,6 @@ const schema = Joi.object().keys({
     countrySelectDefault: Joi.string().required(),
     errorMessages: Joi.object()
   }).required(),
-  applyCitesPermit: Joi.object({
-    pageTitle: Joi.string().required(),
-    pageHeader: Joi.string().required(),
-    pageBody1: Joi.string().required(),
-    pageBody2: Joi.string().required(),
-    bullet1: Joi.string().required(),
-    bullet2: Joi.string().required()
-  }).required(),
   permitType: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

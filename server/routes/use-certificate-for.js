@@ -8,7 +8,7 @@ const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPath = `${urlPrefix}/specimen-type`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -114,7 +114,7 @@ module.exports = [
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
 
       const pageData = {
@@ -163,7 +163,7 @@ module.exports = [
           )
         } catch (err) {
           console.log(err)
-          return h.redirect(`${invalidSubmissionPath}/`)
+          return h.redirect(invalidSubmissionPath)
         }
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
