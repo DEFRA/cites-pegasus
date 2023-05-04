@@ -11,7 +11,7 @@ const previousPathContactDetails = `${urlPrefix}/contact-details`
 const previousPathSelectDeliveryAddress = `${urlPrefix}/select-delivery-address`
 const contactTypes = ['agent', 'applicant', 'delivery']
 const nextPath = `${urlPrefix}/select-address`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -125,7 +125,7 @@ module.exports = [{
         }
         catch (err) {
             console.log(err);
-            return h.redirect(`${invalidSubmissionPath}/`)
+            return h.redirect(invalidSubmissionPath)
         }
 
         const pageData = { 
@@ -183,7 +183,7 @@ module.exports = [{
             }
             catch (err) {
                 console.log(err);
-                return h.redirect(`${invalidSubmissionPath}/`)
+                return h.redirect(invalidSubmissionPath)
             }
 
             return h.redirect(`${nextPath}/${contactType}`)

@@ -8,7 +8,7 @@ const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/`
-const invalidSubmissionPath = urlPrefix
+const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, isAgent) {
   const commonContent = textContent.common;
@@ -88,7 +88,7 @@ module.exports = [{
     }
     catch (err) {
       console.log(err);
-      return h.redirect(`${invalidSubmissionPath}/`)
+      return h.redirect(invalidSubmissionPath)
     }
 
     return h.view(pageId, createModel(null, submission?.isAgent));
@@ -117,7 +117,7 @@ module.exports = [{
       }
       catch (err){
         console.log(err);
-        return h.redirect(`${invalidSubmissionPath}/`)
+        return h.redirect(invalidSubmissionPath)
       }
       
       const pathSuffix = isAgent ? 'agent' : 'applicant'
