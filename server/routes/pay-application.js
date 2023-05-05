@@ -7,10 +7,8 @@ const textContent = require('../content/text-content')
 const pageId = 'pay-application'
 const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
-const nextPath = `${urlPrefix}/application-complete/`
+const nextPath = `${urlPrefix}/application-complete`
 const invalidSubmissionPath = `${urlPrefix}/`
-
-const feeAmount = 24.99
 
 function createModel(errors, data) {
   const commonContent = textContent.common;
@@ -83,19 +81,27 @@ module.exports = [{
   path: currentPath,
   handler: async (request, h) => {
     const submission = getSubmission(request) || null
+    //TODO CHECK APPLICATION STATUS
 
-    //TODO CHECK APPLICATION STATUS AND GET FEE AMOUNT
+    if (!submission.paymentDetails) {
+      //TODO Get payment type and fee amount from api
+      const feeAmount = 24.99
+      const costingType = 'simple'
+      submission.paymentDetails = { feeAmount, costingType }
+
+      try {
+        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
+      } catch (err) {
+        console.log(err)
+        return h.redirect(invalidSubmissionPath)
+      }
+    }
 
 
+    if (submission.paymentDetails.costingType === 'complex') {
+      return h.redirect(nextPath);
+    }
 
-    //TODO UNCOMMENT THIS BIT
-    // try {
-    //   validateSubmission(submission, pageId)      
-    // }
-    // catch (err) {
-    //   console.log(err);
-    //   return h.redirect(invalidSubmissionPath)
-    // }
 
     return h.view(pageId, createModel(null, feeAmount));
   }
@@ -128,12 +134,12 @@ module.exports = [{
           email = submission.applicant.email
         }
 
-        const response = await createPayment(feeAmount, submission.submissionDetails.submissionRef, email, name, textContent.payApplication.paymentDescription)
+        const response = await createPayment(submission.paymentDetails.feeAmount, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
 
         submission.paymentDetails = { paymentId: response.paymentId }
 
         try {
-          mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)          
+          mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
         } catch (err) {
           console.log(err)
           return h.redirect(invalidSubmissionPath)

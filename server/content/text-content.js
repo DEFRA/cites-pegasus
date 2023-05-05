@@ -977,6 +977,26 @@ const schema = Joi.object().keys({
     tableHeadReferenceNumber: Joi.string().required(),
     tableHeadScientificName: Joi.string().required(),
   }).required(),
+  applicationComplete: Joi.object({
+    defaultTitle: Joi.string().required(),
+    panelHeading: Joi.string().required(),
+    panelText: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    simplePayment: Joi.object({
+      pageBody1: Joi.string().required(),
+      pageBody1b: Joi.string().allow(''),
+      pageBody2: Joi.string().required(),
+      pageBody3: Joi.string().required(),
+      pageBody4: Joi.string().required()
+    }).required(),
+    complexPayment: Joi.object({
+      pageBody1: Joi.string().required(),
+      pageBody1b: Joi.string().allow(''),
+      pageBody2: Joi.string().required(),
+      pageBody3: Joi.string().required(),
+      pageBody4: Joi.string().required()
+    }).required()
+  }).required()
 })
 
 // Validate config
