@@ -134,6 +134,7 @@ function getAppFlow(submission) {
                 submission.applications.forEach((application, applicationIndex) => {
                     appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
                     appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
+                    appFlow.push(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`)
                 })
             }
         } else {
@@ -306,7 +307,8 @@ function getAppFlow(submission) {
                             if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
                                 appFlow.push(`comments/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
-                                appFlow.push(`application-summary/are-you-sure/${applicationIndex}`)
+                                appFlow.push(`application-summary/are-you-sure/check/${applicationIndex}`)
+                                appFlow.push(`application-summary/are-you-sure/copy/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)
                                 appFlow.push(`application-summary/view/${applicationIndex}`)
                                 completeApplications++

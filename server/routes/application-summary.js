@@ -18,8 +18,9 @@ const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
 function createApplicationSummaryModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationSummary
-  const hrefPrefix = "../../application-summary/change/" + data.applicationIndex
   const summaryType = data.summaryType
+  const hrefPrefix = `../../application-summary/change/${summaryType}/${data.applicationIndex}`
+  
   const formattedApplicationIndex = (data.applicationIndex + 1).toString().padStart(3, '0');
 
   let pageTitle = null
@@ -626,8 +627,8 @@ function createAreYouSureModel(errors, data) {
 
   const model = {
     // backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
-    backLink: `${currentPath}/check/${data.applicationIndex}`,
-    formActionPage: `${currentPath}/are-you-sure/${data.applicationIndex}`,
+    backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -710,10 +711,11 @@ module.exports = [
   //GET for change links
   {
     method: "GET",
-    path: `${currentPath}/change/{applicationIndex}/{changeType}`,
+    path: `${currentPath}/change/{summaryType}/{applicationIndex}/{changeType}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required(),
           changeType: Joi.string().valid(...changeTypes),
         }),
@@ -723,12 +725,12 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const { applicationIndex, changeType } = request.params
+      const { applicationIndex, changeType, summaryType } = request.params
 
       const changeRouteData = setChangeRoute(request, changeType, applicationIndex)
 
       if (changeRouteData.showConfirmationPage) {
-        return h.redirect(`${currentPath}/are-you-sure/${applicationIndex}`)
+        return h.redirect(`${currentPath}/are-you-sure/${summaryType}/${applicationIndex}`)
       } else {
         return h.redirect(changeRouteData.startUrl)
       }
@@ -737,27 +739,29 @@ module.exports = [
   //GET for Are You Sure page
   {
     method: "GET",
-    path: `${currentPath}/are-you-sure/{applicationIndex}`,
+    path: `${currentPath}/are-you-sure/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const { applicationIndex } = request.params
+      const { applicationIndex, summaryType } = request.params
       const submission = getSubmission(request)
       const changeRouteData = getChangeRouteData(request)
 
       try {
-        validateSubmission(submission, `${pageId}/are-you-sure/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/are-you-sure/${summaryType}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(invalidSubmissionPath)
       }
 
       const pageData = {
+        summaryType: summaryType,
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
@@ -821,10 +825,11 @@ module.exports = [
   //POST for Are You Sure Page
   {
     method: "POST",
-    path: `${currentPath}/are-you-sure/{applicationIndex}`,
+    path: `${currentPath}/are-you-sure/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
@@ -833,7 +838,7 @@ module.exports = [
         }),
 
         failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
+          const { applicationIndex, summaryType } = request.params
           const submission = getSubmission(request)
           const changeRouteData = getChangeRouteData(request)
 
@@ -848,6 +853,7 @@ module.exports = [
           }
 
           const pageData = {
+            summaryType:summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
@@ -859,13 +865,13 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { applicationIndex } = request.params
+        const { applicationIndex, summaryType } = request.params
         const changeRouteData = getChangeRouteData(request)
 
         if (request.payload.areYouSure) {
           return h.redirect(changeRouteData.startUrl)
         } else {
-          return h.redirect(`${currentPath}/check/${applicationIndex}`)
+          return h.redirect(`${currentPath}/${summaryType}/${applicationIndex}`)
         }
       }
     }
