@@ -58,7 +58,8 @@ function validateSubmission(submission, path) {
 function cloneSubmission(request, applicationIndex) {
     const submission = getSubmission(request)
     const newApplication = submission.applications[applicationIndex]
-    
+    const cloneSource = {submissionRef: submission.submissionRef, applicationIndex}
+
     if(submission.hasOwnProperty('submissionRef')) {
         delete submission.submissionRef
     }
@@ -69,6 +70,7 @@ function cloneSubmission(request, applicationIndex) {
     newApplication.applicationIndex = 0
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
+    setYarValue(request, 'cloneSource', cloneSource)
 }
 
 function createApplication(request) {
@@ -133,8 +135,6 @@ function getAppFlow(submission) {
             if (submission.applications?.length > 0) {
                 submission.applications.forEach((application, applicationIndex) => {
                     appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
-                    appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
-                    appFlow.push(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`)
                 })
             }
         } else {
@@ -307,10 +307,12 @@ function getAppFlow(submission) {
                             if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
                                 appFlow.push(`comments/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
-                                appFlow.push(`application-summary/are-you-sure/check/${applicationIndex}`)
-                                appFlow.push(`application-summary/are-you-sure/copy/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)
                                 appFlow.push(`application-summary/view/${applicationIndex}`)
+                                appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
+                                appFlow.push(`application-summary/are-you-sure/check/${applicationIndex}`)
+                                appFlow.push(`application-summary/are-you-sure/copy/${applicationIndex}`)
+                                appFlow.push(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`)
                                 completeApplications++
                                 applicationStatuses[applicationIndex].status = 'complete'
                             } else {
