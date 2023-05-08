@@ -112,6 +112,11 @@ module.exports = [
         }
 
         submission.submissionRef = response.submissionRef
+        const costingValue = response.costingValue ? response.costingValue : null
+        submission.paymentDetails = { 
+          costingType: response.costingType,
+          costingValue: costingValue
+        }
 
         try {
           mergeSubmission(request, submission, `${pageId}`)

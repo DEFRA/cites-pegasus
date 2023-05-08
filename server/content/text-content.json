@@ -1279,7 +1279,23 @@
     "radioOptionNo": "No, pay later",
     "paymentDescription": "Pay for your CITES application",
     "errorMessages": {
-      "error.payNow.any.required": "Select yes if you want to pay for your application now"      
+      "error.payNow.any.required": "Select yes if you want to pay for your application now"
+    }
+  },
+  "applicationComplete": {
+    "defaultTitle": "Application complete",
+    "panelHeading": "Application complete",
+    "panelText": "Reference number",
+    "pageHeader": "What happens next",
+    "paid": {
+      "pageBody1": "We have received your application fee and have sent you a confirmation email.",
+      "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",
+      "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
+    },
+    "notPaid": {
+      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",      
+      "pageBody2": "They will contact you to confirm the amount you need to pay.",
+      "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     }
   }
 }

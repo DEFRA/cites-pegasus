@@ -52,7 +52,7 @@ module.exports = [
     handler: async (request, h) => {
       const { submissionRef } = request.params
       const submission = getSubmission(request)
-      if (submission.submissionDetails.submissionRef !== submissionRef) {
+      if (submission.submissionRef !== submissionRef) {
         throw new Error('Invalid submission reference')
       }
 
@@ -60,11 +60,19 @@ module.exports = [
 
       const paymentStatus = await getFinishedPaymentStatus(paymentId, 60000, 2000)
 
+      submission.paymentDetails = { paymentStatus }
+
+      try {
+        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)          
+      } catch (err) {
+        console.log(err)
+        return h.redirect(invalidSubmissionPath)
+      }
       //TODO Update the backend with the payment outcome
 
 
       if (paymentStatus.status !== 'success') {
-        return h.redirect(nextPathFailed)
+        return h. redirect(nextPathFailed)
       }
       if (paymentStatus.finished === false) {
         return h.redirect(nextPathFailed)
