@@ -28,7 +28,7 @@ const schema = Joi.object().keys({
   dynamicsAPI: Joi.object({
     knownAuthority: Joi.string().required(),
     authorityUrl: Joi.string().required(),
-    serverUrl: Joi.string().required(),
+    apiPath: Joi.string().required(),
     baseURL: Joi.string().required()
   }),
   govpayPaymentsURL: Joi.string().required(),
@@ -59,8 +59,8 @@ const config = {
   dynamicsAPI: {
     knownAuthority: process.env.KNOWN_AUTHORITY,
     authorityUrl: process.env.AUTHORITY_URL,
-    serverUrl: process.env.SERVER_URL,
-    baseURL: process.env.BASE_URL
+    apiPath: process.env.DYNAMICS_API_PATH,
+    baseURL: process.env.DYNAMICS_BASE_URL
   },
   govpayPaymentsURL: process.env.GOVPAY_PAYMENTS_URL,
   govpayCallbackURL: process.env.GOVPAY_CALLBACK_URL

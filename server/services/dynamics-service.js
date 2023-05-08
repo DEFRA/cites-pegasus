@@ -6,6 +6,7 @@ const config = require('../../config/config').dynamicsAPI
 const { readSecret } = require('../lib/key-vault')
 const lodash = require('lodash');
 //const tradeTermCode = require('../routes/trade-term-code');
+const apiUrl = config.baseURL + config.apiPath
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -22,7 +23,7 @@ async function getClientCredentialsToken() {
 
   const cca = new MSAL.ConfidentialClientApplication(msalConfig);
   return cca.acquireTokenByClientCredential({
-    scopes: [`${config.serverUrl}/.default`],
+    scopes: [`${config.baseURL}/.default`],
   })
 }
 
@@ -53,7 +54,7 @@ async function whoAmI(server) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const { res, payload } = await Wreck.get(config.baseURL + 'WhoAmI', { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
+    const { res, payload } = await Wreck.get(apiUrl + 'WhoAmI', { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } })
 
     console.log(res.statusCode)
     console.log(payload)
@@ -69,7 +70,7 @@ async function postSubmission(server, submission) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}cites_CreateSubmissionForPortal`
+    const url = `${apiUrl}cites_CreateSubmissionForPortal`
 
     const requestPayload = mapSubmissionToPayload(submission)
 
@@ -146,10 +147,7 @@ async function getSpecies(server, speciesName) {
   const accessToken = await getAccessToken(server)
 
   try {
-    //const url = `${config.baseURL}cites_species(cites_scientificname='${speciesName.trim()}')`
-    //const url = `${config.baseURL}cites_species(cites_name='${speciesName.trim()}')`
-    //const url = `${config.baseURL}cites_specieses?$filter=cites_name%20eq%20%27Antilocapra%20americana%27`
-    const url = `${config.baseURL}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
+    const url = `${apiUrl}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     console.log(url)
     const response = await Wreck.get(url, options)
@@ -178,7 +176,7 @@ async function getCountries(server) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}defra_countries?$select=defra_name,defra_isocodealpha2,defra_isocodealpha3&$orderby=defra_name asc`
+    const url = `${apiUrl}defra_countries?$select=defra_name,defra_isocodealpha2,defra_isocodealpha3&$orderby=defra_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const { payload } = await Wreck.get(url, options)
 
@@ -201,7 +199,7 @@ async function getTradeTermCodes(server) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${config.baseURL}cites_derivativecodes?$select=cites_name,cites_description&$orderby=cites_name asc`
+    const url = `${apiUrl}cites_derivativecodes?$select=cites_name,cites_description&$orderby=cites_name asc`
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     const { payload } = await Wreck.get(url, options)
 
@@ -363,8 +361,8 @@ async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searc
 
   var filter = `$filter=${filterParts.join(" and ")}`
 
-  //var url = `${config.baseURL}cites_submissions?${encodeURIComponent(select)}&${encodeURIComponent(expand)}&${encodeURIComponent(orderby)}&${encodeURIComponent(count)}&${encodeURIComponent(filter)}`
-  return `${config.baseURL}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
+  //var url = `${apiUrl}cites_submissions?${encodeURIComponent(select)}&${encodeURIComponent(expand)}&${encodeURIComponent(orderby)}&${encodeURIComponent(count)}&${encodeURIComponent(filter)}`
+  return `${apiUrl}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
 }
 
 async function getSubmissions(server, query, pageSize) {
@@ -408,7 +406,7 @@ async function getSubmission(server, contactId, submissionRef) {
   const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode)"
   const filter = `$filter=cites_submissionreference eq '${submissionRef}'`// and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
-  const url = `${config.baseURL}cites_submissions?${top}&${select}&${expand}&${filter}`
+  const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
 console.log(url)
   const accessToken = await getAccessToken(server)
 
