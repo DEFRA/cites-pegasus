@@ -162,7 +162,7 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
         const matchesStartUrl = request.path.endsWith(changeData.startUrl)
 
         if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesStartUrl) || (isBack && !changeData.dataRemoved && matchesStartUrl)) {
-            return returnUrl
+            return changeData.returnUrl
             //return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
         }
     }
