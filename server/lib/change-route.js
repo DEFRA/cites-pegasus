@@ -28,7 +28,7 @@ const changeTypes = [
 
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
-function setChangeRoute(request, changeType, applicationIndex) {
+function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
     let startUrl = ""
     const endUrls = []
     let confirm = false
@@ -36,7 +36,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
     switch (changeType) {
         case "permitType"://Change flow
             startUrl = `${urlPrefix}/permit-type`
-            endUrls.push(applicationSummaryCheckUrl)//You must go all the way through the flow                        
+            endUrls.push(`${urlPrefix}/comments`)//You must go all the way through the flow                        
             confirm = true
             break
         case "agentContactDetails"://DONE
@@ -142,7 +142,7 @@ function setChangeRoute(request, changeType, applicationIndex) {
         endUrls.push(startUrl)
     }
 
-    const changeRouteData = { changeType: changeType, showConfirmationPage: confirm, startUrl: startUrl, endUrls: endUrls, applicationIndex: applicationIndex }
+    const changeRouteData = { changeType, showConfirmationPage: confirm, startUrl, endUrls, applicationIndex, returnUrl }
 
     setYarValue(request, "changeRouteData", changeRouteData)
 
@@ -162,7 +162,8 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
         const matchesStartUrl = request.path.endsWith(changeData.startUrl)
 
         if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesStartUrl) || (isBack && !changeData.dataRemoved && matchesStartUrl)) {
-            return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
+            return returnUrl
+            //return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
         }
     }
     return null
