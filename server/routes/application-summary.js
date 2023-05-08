@@ -19,7 +19,7 @@ function createApplicationSummaryModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationSummary
   const summaryType = data.summaryType
-  const hrefPrefix = `../../application-summary/${summaryYype}/change/${data.applicationIndex}`
+  const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
   const formattedApplicationIndex = (data.applicationIndex + 1).toString().padStart(3, '0');
 
   let pageTitle = null
@@ -710,10 +710,11 @@ module.exports = [
   //GET for change links
   {
     method: "GET",
-    path: `${currentPath}/change/{summaryType}/{applicationIndex}/{changeType}`,
+    path: `${currentPath}/{summaryType}/change/{applicationIndex}/{changeType}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().required(),
           applicationIndex: Joi.number().required(),
           changeType: Joi.string().valid(...changeTypes),
         }),
@@ -723,7 +724,7 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      const { applicationIndex, changeType } = request.params
+      const { applicationIndex, changeType, summaryType } = request.params
 
       const returnUrl = `${currentPath}/${summaryType}/${applicationIndex}`
       const changeRouteData = setChangeRoute(request, changeType, applicationIndex, returnUrl)

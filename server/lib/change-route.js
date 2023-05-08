@@ -36,7 +36,7 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
     switch (changeType) {
         case "permitType"://Change flow
             startUrl = `${urlPrefix}/permit-type`
-            endUrls.push(applicationSummaryCheckUrl)//You must go all the way through the flow                        
+            endUrls.push(`${urlPrefix}/comments`)//You must go all the way through the flow                        
             confirm = true
             break
         case "agentContactDetails"://DONE
