@@ -11,26 +11,23 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationComplete
-  const costingTypeContent = data.costingType === 'simple' ? pageContent.simplePayment : pageContent.complexPayment
-  const feeAmount = data.costingType === 'simple' ? data.feeAmount : ''
+  const costingTypeContent = data.paid ? pageContent.paid : pageContent.notPaid
+
+  const panelContent = {
+    titleText: pageContent.panelHeading,
+    html: `${pageContent.panelText}<br><strong>${data.submissionRef}</strong>`
+  }
+
   const model = {
-    //backLink: previousPath,
-    submissionRef: data.submissionRef,
     formActionPage: currentPath,
     defaultTitle: pageContent.defaultTitle,
     pageBody: pageContent.pageBody,
     pageTitle: pageContent.defaultTitle,
-
-    panelHeading: pageContent.panelHeading + ' - ' + data.costingType.toUpperCase(),//TODO REMOVE PAYMENT TYPE
-    feeAmount,
-    email: data.email,
-    panelText: pageContent.panelText,
+    panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
     pageBody1: costingTypeContent.pageBody1,
-    pageBody1b:  costingTypeContent.pageBody1b,
     pageBody2: costingTypeContent.pageBody2,
-    pageBody3: costingTypeContent.pageBody3,
-    pageBody4: costingTypeContent.pageBody4
+    pageBody3: costingTypeContent.pageBody3
   }
 
   return { ...commonContent, ...model }
@@ -48,18 +45,12 @@ module.exports = [{
 
     console.log(submission.paymentDetails)
 
-    let email = ''
-    if(submission.paymentDetails.paymentStatus?.email){
-      email = submission.paymentDetails.paymentStatus.email    
-    } else {
-      email = submission.isAgent ? submission.agent.email : submission.applicant.email      
-    }
-
     const pageData = {
       submissionRef: submission.submissionRef, 
       costingType: submission.paymentDetails.costingType,
-      email,
-      feeAmount: submission.paymentDetails.feeAmount
+      //email,
+      costingValue: submission.paymentDetails.costingValue,
+      paid: submission.paymentDetails.paymentStatus?.status === 'success'
     }
 
     return h.view(pageId, createModel(null, pageData));
@@ -69,7 +60,7 @@ module.exports = [{
   method: 'POST',
   path: currentPath,
   handler: async (request, h) => {
-    return h.redirect(response.nextUrl)
+    return h.redirect(nextPath)
   },
 }
 ]

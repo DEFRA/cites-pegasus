@@ -112,10 +112,10 @@ module.exports = [
         }
 
         submission.submissionRef = response.submissionRef
-        const feeAmount = response.feeAmount ? response.feeAmount : null
+        const costingValue = response.costingValue ? response.costingValue : null
         submission.paymentDetails = { 
           costingType: response.costingType,
-          feeAmount: feeAmount
+          costingValue: costingValue
         }
 
         try {

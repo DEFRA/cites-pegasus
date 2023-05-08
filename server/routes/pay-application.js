@@ -40,7 +40,7 @@ function createModel(errors, data) {
     pageHeader2: pageContent.pageHeader2,
     pageBody: pageContent.pageBody,
     headingPaymentAmount: pageContent.headingPaymentAmount,
-    feeAmount: `£${data}`,
+    costingValue: `£${data}`,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     inputPayNow: {
       id: "payNow",
@@ -82,12 +82,15 @@ module.exports = [{
   handler: async (request, h) => {
     const submission = getSubmission(request) || null
     //TODO CHECK APPLICATION STATUS
+    let costingValue = null
 
-    if (!submission.paymentDetails) {
+    if (submission.paymentDetails) {
+      costingValue = submission.paymentDetails.costingValue
+    } else {
       //TODO Get payment type and fee amount from api
-      const feeAmount = 24.99
+      costingValue = 24.99
       const costingType = 'simple'
-      submission.paymentDetails = { feeAmount, costingType }
+      submission.paymentDetails = { costingValue, costingType }
 
       try {
         mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
@@ -103,7 +106,7 @@ module.exports = [{
     }
 
 
-    return h.view(pageId, createModel(null, feeAmount));
+    return h.view(pageId, createModel(null, costingValue));
   }
 },
 {
@@ -134,7 +137,7 @@ module.exports = [{
           email = submission.applicant.email
         }
 
-        const response = await createPayment(submission.paymentDetails.feeAmount, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
+        const response = await createPayment(submission.paymentDetails.costingValue, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
 
         submission.paymentDetails = { paymentId: response.paymentId }
 

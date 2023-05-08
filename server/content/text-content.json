@@ -1284,22 +1284,18 @@
   },
   "applicationComplete": {
     "defaultTitle": "Application complete",
-    "panelHeading": "Pay for your CITES application",
-    "panelText": "Your reference number",
+    "panelHeading": "Application complete",
+    "panelText": "Reference number",
     "pageHeader": "What happens next",
-    "simplePayment": {
-      "pageBody1": "We have received your £",
-      "pageBody1b": " application fee and have sent a confirmation email to ",
-      "pageBody2": "We have sent your application to the APHA team for endangered plant and animal species (CITES).",
-      "pageBody3": "APHA aims to process your application within 30 days. They will contact you either to confirm your application, or to ask for more information.",
-      "pageBody4": "You can view the status of your application in your <a href='/'>CITES account</a>."
+    "paid": {
+      "pageBody1": "We have received your application fee and have sent you a confirmation email.",
+      "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",
+      "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     },
-    "complexPayment": {
-      "pageBody1": "We have sent a confirmation email to ",
-      "pageBody1b": "",
-      "pageBody2": "We have sent your application to the APHA team for endangered plant and animal species (CITES).",
-      "pageBody3": "They will check your application and send you an email to confirm the amount that you need to pay.",
-      "pageBody4": "You can view the status of your application in your <a href='/'>CITES account</a>."
+    "notPaid": {
+      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",      
+      "pageBody2": "They will contact you to confirm the amount you need to pay.",
+      "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     }
   }
 }

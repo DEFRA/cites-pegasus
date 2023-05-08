@@ -9,32 +9,28 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel(panelContent) }}
+{#       
       <div id="panel" class="govuk-panel">
         <h2 class="govuk-heading-m">{{panelHeading}}</h2>
         <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{panelText}}</p>
         <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{submissionRef}}</p>
-      </div>
-      <p>{{pageBody1}}{{feeAmount}}{{pageBody1b}}{{email}}.</p>
+      </div> #}
+
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
 
-        {% call govukFieldset({
-          legend: {
-            text: pageHeader,
-            classes: "govuk-fieldset__legend--l",
-            isPageHeading: true
-          }
-        }) %}
+        <h2 class="govuk-heading-m">{{pageHeader}}</h2>
 
+        <p>{{pageBody1 | safe}}</p>
         <p>{{pageBody2 | safe}}</p>
         <p>{{pageBody3 | safe}}</p>
-        <p>{{pageBody4 | safe}}</p>
 
         {{ govukButton({
                     text: finishButton,
                     type: "submit"
                 }) }}
-        {% endcall %}
+        
       </form>
-    </div>    
+    </div>
   </div>
 {% endblock %}
