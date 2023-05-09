@@ -1,8 +1,10 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
+const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -19,8 +21,9 @@ function createApplicationSummaryModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationSummary
   const summaryType = data.summaryType
+  const formattedApplicationIndex = data.clonedApplicationIndex ? (data.clonedApplicationIndex + 1).toString().padStart(3, '0') : (data.applicationIndex + 1).toString().padStart(3, '0')
   const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
-  const formattedApplicationIndex = (data.applicationIndex + 1).toString().padStart(3, '0');
+  
 
   let pageTitle = null
   let pageHeader = null
@@ -431,7 +434,8 @@ function createApplicationSummaryModel(errors, data) {
   const summaryListApplicantContactDetails = data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix, summaryType)
   const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix, summaryType)
   const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix, summaryType)
-
+ 
+  const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex  : data.applicationIndex
   const breadcrumbs = {
     items: [
       {
@@ -444,7 +448,7 @@ function createApplicationSummaryModel(errors, data) {
       },
       {
         text: `${data.submissionRef}/${formattedApplicationIndex}`,
-        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${data.applicationIndex}`: "#"
+        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${breadcrumbsUrlApplicationIndex}`: "#"
       },
       summaryType === 'copy-as-new' && {
         text: pageContent.pageHeaderCopy,
@@ -625,9 +629,8 @@ function createAreYouSureModel(errors, data) {
   }
 
   const model = {
-    // backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
-    backLink: `${currentPath}/check/${data.applicationIndex}`,
-    formActionPage: `${currentPath}/are-you-sure/${data.applicationIndex}`,
+    backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -676,13 +679,29 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { summaryType, applicationIndex } = request.params
-      const submission = getSubmission(request)
+      let submission = getSubmission(request)
+
+      // let submission
+
+      let clonedSubmissionRef
+      let clonedApplicationIndex
+      if (summaryType === 'copy-as-new' || (!submission.submissionRef && summaryType === 'view-submitted')) {
+        const cloneSource = getYarValue(request, 'cloneSource')
+        clonedSubmissionRef = cloneSource.submissionRef
+        clonedApplicationIndex = cloneSource.applicationIndex
+      }
+
+      if (clonedSubmissionRef && summaryType === 'view-submitted'){
+        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
+        submission.submissionRef = clonedSubmissionRef
+        setYarValue(request, 'submission', submission)
+      } else {
+        submission = getSubmission(request)
+      }
+      
 
       try {
-        validateSubmission(
-          submission,
-          `${pageId}/${summaryType}/${applicationIndex}`
-        )
+        validateSubmission(submission,`${pageId}/${summaryType}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(invalidSubmissionPath)
@@ -693,7 +712,8 @@ module.exports = [
       const pageData = {
         summaryType: summaryType,
         applicationIndex: applicationIndex,
-        submissionRef: submission.submissionRef,
+        clonedApplicationIndex:clonedApplicationIndex,
+        submissionRef: submission.submissionRef || clonedSubmissionRef,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
@@ -714,7 +734,7 @@ module.exports = [
     options: {
       validate: {
         params: Joi.object({
-          summaryType: Joi.string().required(),
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required(),
           changeType: Joi.string().valid(...changeTypes),
         }),
@@ -730,7 +750,7 @@ module.exports = [
       const changeRouteData = setChangeRoute(request, changeType, applicationIndex, returnUrl)
 
       if (changeRouteData.showConfirmationPage) {
-        return h.redirect(`${currentPath}/are-you-sure/${applicationIndex}`)
+        return h.redirect(`${currentPath}/are-you-sure/${summaryType}/${applicationIndex}`)
       } else {
         return h.redirect(changeRouteData.startUrl)
       }
@@ -739,27 +759,29 @@ module.exports = [
   //GET for Are You Sure page
   {
     method: "GET",
-    path: `${currentPath}/are-you-sure/{applicationIndex}`,
+    path: `${currentPath}/are-you-sure/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required()
         })
       }
     },
     handler: async (request, h) => {
-      const { applicationIndex } = request.params
+      const { applicationIndex, summaryType } = request.params
       const submission = getSubmission(request)
       const changeRouteData = getChangeRouteData(request)
 
       try {
-        validateSubmission(submission, `${pageId}/are-you-sure/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/are-you-sure/${summaryType}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(invalidSubmissionPath)
       }
 
       const pageData = {
+        summaryType: summaryType,
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
@@ -801,17 +823,14 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-
-        if(summaryType === 'copy-as-new'){
-          try {
-            cloneSubmission(request, applicationIndex)
-          } catch (err) {
-            console.log(err)
-            return h.redirect(invalidSubmissionPath)
-          }
-        }
        
-        if(summaryType === 'view-submitted'){
+        if (summaryType === 'view-submitted'){
+            try {
+              cloneSubmission(request, applicationIndex)
+            } catch (err) {
+              console.log(err)
+              return h.redirect(invalidSubmissionPath)
+            }
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
           return h.redirect(nextPathYourSubmission)
@@ -823,10 +842,11 @@ module.exports = [
   //POST for Are You Sure Page
   {
     method: "POST",
-    path: `${currentPath}/are-you-sure/{applicationIndex}`,
+    path: `${currentPath}/are-you-sure/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
+          summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required()
         }),
         options: { abortEarly: false },
@@ -835,7 +855,7 @@ module.exports = [
         }),
 
         failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
+          const { applicationIndex, summaryType } = request.params
           const submission = getSubmission(request)
           const changeRouteData = getChangeRouteData(request)
 
@@ -850,6 +870,7 @@ module.exports = [
           }
 
           const pageData = {
+            summaryType:summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
@@ -861,13 +882,13 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { applicationIndex } = request.params
+        const { applicationIndex, summaryType } = request.params
         const changeRouteData = getChangeRouteData(request)
 
         if (request.payload.areYouSure) {
           return h.redirect(changeRouteData.startUrl)
         } else {
-          return h.redirect(`${currentPath}/check/${applicationIndex}`)
+          return h.redirect(`${currentPath}/${summaryType}/${applicationIndex}`)
         }
       }
     }
