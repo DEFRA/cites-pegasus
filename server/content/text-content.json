@@ -1297,5 +1297,12 @@
       "pageBody2": "They will contact you to confirm the amount you need to pay.",
       "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     }
+  },
+  "paymentProblem": {
+    "defaultTitle": "Sorry, there was a problem with the payment ",
+    "pageHeader": "Sorry, there was a problem with the payment ",
+    "pageBody": "You can try again. No money has been taken from your account.",
+    "goBackAndTryAgainLinkText": "Go back to try the payment again",
+    "submitApplicationLinkText": "Submit application and pay later"
   }
 }

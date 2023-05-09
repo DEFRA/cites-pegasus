@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">
+        {{pageHeader}}
+      </h1>
+
+      <p class="govuk-body">{{pageBody}}</p>
+
+      
+      <p class="govuk-body">
+        <a href="{{goBackAndTryPaymentAgainUrl}}">{{goBackAndTryAgainLinkText}}</a>
+      </p>
+      <p class="govuk-body">
+        <a href="{{submitApplicationAndPayLaterUrl}}">{{submitApplicationLinkText}}</a>
+      </p>
+
+    </div>
+  </div>
+{% endblock %}
