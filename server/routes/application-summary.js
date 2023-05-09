@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getYarValue } = require('../lib/session')
+const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
@@ -690,11 +690,13 @@ module.exports = [
         clonedApplicationIndex = cloneSource.applicationIndex
       }
 
-      // if (clonedSubmissionRef && summaryType === 'view-submitted'){
-      //   submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
-      // } else {
-      //   submission = getSubmission(request)
-      // }
+      if (clonedSubmissionRef && summaryType === 'view-submitted'){
+        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
+        submission.submissionRef = clonedSubmissionRef
+        setYarValue(request, 'submission', submission)
+      } else {
+        submission = getSubmission(request)
+      }
       
 
       try {
