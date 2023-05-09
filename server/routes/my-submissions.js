@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
@@ -317,6 +318,7 @@ module.exports = [
       },
     },
     handler: async (request, h) => {
+      clearChangeRoute(request)
       createSubmission(request)
       return h.redirect(`${nextPathPermitType}`)
     }

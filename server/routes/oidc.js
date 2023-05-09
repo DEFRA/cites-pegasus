@@ -11,15 +11,17 @@ const jwt = require('jsonwebtoken');
 const landingPage = '/my-submissions'
 
 function getRelationshipDetails(user) {
-  const relationshipDetails = {
-    organisation: null,
+  const relationshipDetails = {    
+    organisationId: null,
+    organisationName: null,
     userType: null
   }
 
   if (user.relationships && user.relationships.length === 1) {
     const parts = user.relationships[0].split(':')
     if (parts.length >= 5) {
-      relationshipDetails.organisation = parts[2]
+      relationshipDetails.organisationId = parts[1]
+      relationshipDetails.organisationName = parts[2]
       relationshipDetails.userType = parts[4]
     }
   }

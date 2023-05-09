@@ -9,7 +9,12 @@ function getSubmission(request) {
 }
 
 function createSubmission(request) {
-    const submission = { contactId: request.auth.credentials.contactId, applications: [{ applicationIndex: 0 }] }
+    const cidmAuth = getYarValue(request, 'CIDMAuth')
+    const submission = { 
+        contactId: request.auth.credentials.contactId, 
+        organisationId: cidmAuth.user.organisationId || null,
+        applications: [{ applicationIndex: 0 }] 
+    }
     setYarValue(request, 'submission', submission)
     return submission
 }
@@ -131,7 +136,10 @@ function getAppFlow(submission) {
     if (submission) {
         if (submission.submissionRef) {
             appFlow.push('pay-application')//TODO May need some extra logic around payment status here
-            appFlow.push('application-complete')
+            if (submission.paymentDetails) {
+                appFlow.push('application-complete')
+                appFlow.push('govpay')
+            }
             if (submission.applications?.length > 0) {
                 submission.applications.forEach((application, applicationIndex) => {
                     appFlow.push(`application-summary/view-submitted/${applicationIndex}`)

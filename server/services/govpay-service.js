@@ -2,10 +2,10 @@ const { govpayPaymentsURL, govpayCallbackURL } = require('../../config/config');
 const { readSecret } = require('../lib/key-vault')
 const Wreck = require('@hapi/wreck');
 
-async function createPayment(feeAmount, submissionRef, email, name, description) {
+async function createPayment(costingValue, submissionRef, email, name, description) {
 
     const requestPayload = {
-        "amount": feeAmount * 100,
+        "amount": costingValue * 100,
         "reference": submissionRef,
         "description": description,
         "return_url": `${govpayCallbackURL}/${submissionRef}`,

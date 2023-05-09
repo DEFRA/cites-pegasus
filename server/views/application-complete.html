@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block beforeContent %}{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel(panelContent) }}
+{#       
+      <div id="panel" class="govuk-panel">
+        <h2 class="govuk-heading-m">{{panelHeading}}</h2>
+        <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{panelText}}</p>
+        <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">{{submissionRef}}</p>
+      </div> #}
+
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+
+        <h2 class="govuk-heading-m">{{pageHeader}}</h2>
+
+        <p>{{pageBody1 | safe}}</p>
+        <p>{{pageBody2 | safe}}</p>
+        <p>{{pageBody3 | safe}}</p>
+
+        {{ govukButton({
+                    text: finishButton,
+                    type: "submit"
+                }) }}
+        
+      </form>
+    </div>
+  </div>
+{% endblock %}
