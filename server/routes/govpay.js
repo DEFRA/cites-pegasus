@@ -6,7 +6,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
 const { getDomain } = require('../lib/helper-functions')
 const { getPaymentStatus } = require("../services/govpay-service")
-const nextPathFailed = `${urlPrefix}/failed-payment`
+const nextPathFailed = `${urlPrefix}/payment-problem`
 const nextPathSuccess = `${urlPrefix}/application-complete`
 
 async function getFinishedPaymentStatus(paymentId) {
@@ -70,13 +70,14 @@ module.exports = [
       }
       //TODO Update the backend with the payment outcome
 
-
+      
       if (paymentStatus.status !== 'success') {
         return h. redirect(nextPathFailed)
       }
       if (paymentStatus.finished === false) {
         return h.redirect(nextPathFailed)
       }
+     
       
       return h.redirect(nextPathSuccess)
 

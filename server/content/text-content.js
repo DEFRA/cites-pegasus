@@ -992,6 +992,13 @@ const schema = Joi.object().keys({
       pageBody2: Joi.string().required(),
       pageBody3: Joi.string().required()
     }).required()
+  }).required(),
+  paymentProblem: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    goBackAndTryAgainLinkText: Joi.string().required(),
+    submitApplicationLinkText: Joi.string().required(),
   }).required()
 })
 

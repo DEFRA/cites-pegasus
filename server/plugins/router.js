@@ -38,6 +38,7 @@ const routes = [].concat(
   require('../routes/test'),
   require('../routes/oidc'),
   require('../routes/govpay'),
+  require('../routes/payment-problem'),
   require('../routes/profile'),
   require('../routes/pay-application'),
   require('../routes/application-complete')

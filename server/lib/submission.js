@@ -139,6 +139,7 @@ function getAppFlow(submission) {
             if (submission.paymentDetails) {
                 appFlow.push('application-complete')
                 appFlow.push('govpay')
+                appFlow.push('payment-problem')
             }
             if (submission.applications?.length > 0) {
                 submission.applications.forEach((application, applicationIndex) => {
