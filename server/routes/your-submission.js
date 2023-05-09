@@ -218,7 +218,7 @@ module.exports = [
       const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
       
       if(inProgressAppStatus) {
-        return h.redirect(`${nextPathspeciesName}/${inProgressAppStatus.applicationIndex}`)
+        return h.redirect(`${nextPathSpeciesName}/${inProgressAppStatus.applicationIndex}`)
       }
 
       const applicationIndex = createApplication(request)
