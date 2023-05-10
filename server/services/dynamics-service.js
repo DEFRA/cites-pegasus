@@ -330,7 +330,7 @@ async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searc
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
   const filterParts = [
-    //`_cites_submissionagent_value eq '${contactId}'`,//TODO Include the contactId filter once the contacts are synced with the back end
+    `_cites_submissionagent_value eq '${contactId}'`,//TODO Include the contactId filter once the contacts are synced with the back end
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]

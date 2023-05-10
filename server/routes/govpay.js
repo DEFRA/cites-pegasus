@@ -102,6 +102,8 @@ module.exports = [
       }
       //TODO Update the backend with the payment outcome
 
+      
+
 
       if (paymentStatus.status !== 'success') {
         return h.redirect(nextPathFailed)

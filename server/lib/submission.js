@@ -29,7 +29,7 @@ function mergeSubmission(request, data, path) {
     //const mergedSubmission = { ...emptySubmission, ...existingSubmission, ...data }
 
     setYarValue(request, 'submission', mergedSubmission)
-    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedSubmission, null, 4))//TODO Remove this
+    //console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedSubmission, null, 4))//TODO Remove this
 
     return mergedSubmission
 }
@@ -41,7 +41,7 @@ function setSubmission(request, data, path) {
     //console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
 
     setYarValue(request, 'submission', data)
-    console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
+    //console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
 }
 
 function clearSubmission(request) {
