@@ -874,6 +874,7 @@ const schema = Joi.object().keys({
     rowTextSexFemale: Joi.string().required(),
     rowTextNotKnown: Joi.string().required(),
     rowTextShowHide: Joi.string().required(),
+    rowTextOtherSourceCode: Joi.string().required(),
     returnToYourApplicationsLinkText: Joi.string().required(),
     areYouSure: Joi.object({
       permitType: areYouSureSchema,

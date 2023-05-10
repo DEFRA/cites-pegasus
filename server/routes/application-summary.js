@@ -154,6 +154,16 @@ function createApplicationSummaryModel(errors, data) {
       break
   }
 
+  // const statusTextMap = {
+  //   received: pageContent.rowTextReceived,
+  //   awaitingPayment: pageContent.rowTextAwaitingPayment,
+  //   awaitingReply: pageContent.rowTextAwaitingReply,
+  //   inProcess: pageContent.rowTextInProcess,
+  //   issued: pageContent.rowTextIssued,
+  //   refused: pageContent.rowTextRefused,
+  //   cancelled: pageContent.rowTextCancelled,
+  // };
+
   let specimenTypeValue = null
   switch (data.species.specimenType) {
     case "animalLiving":
@@ -370,6 +380,11 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity", "unit of measurement", summaryType))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText}`, hrefPrefix + "/sourceCode", "source code", summaryType))
+  
+  if (data.species.secondSourceCodeForI || data.species.secondSourceCodeForO) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${data.species.secondSourceCodeForI || data.species.secondSourceCodeForO} ${sourceCodeValueText}`,  "", "", summaryType))
+  }
+  
   if (data.permitType !== "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText}`, hrefPrefix + "/purposeCode", "purpose code", summaryType))
   }
