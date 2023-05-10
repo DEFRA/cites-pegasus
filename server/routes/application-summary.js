@@ -23,7 +23,7 @@ function createApplicationSummaryModel(errors, data) {
   const summaryType = data.summaryType
   const formattedApplicationIndex = data.clonedApplicationIndex ? (data.clonedApplicationIndex + 1).toString().padStart(3, '0') : (data.applicationIndex + 1).toString().padStart(3, '0')
   const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
-  
+
 
   let pageTitle = null
   let pageHeader = null
@@ -221,7 +221,7 @@ function createApplicationSummaryModel(errors, data) {
     sexDescription = pageContent.rowTextSexMale
   } else if (data.species.sex && data.species.sex === "F") {
     sexDescription = pageContent.rowTextSexFemale
-  } else if (data.species.sex && data.species.sex === "U"){
+  } else if (data.species.sex && data.species.sex === "U") {
     sexDescription = pageContent.rowTextNotKnown
   }
 
@@ -375,7 +375,7 @@ function createApplicationSummaryModel(errors, data) {
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type", summaryType))
   if (data.species.specimenType !== "animalLiving") {
-     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode} ${data.species.tradeTermCodeDesc}` : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code", summaryType))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode} ${data.species.tradeTermCodeDesc}` : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code", summaryType))
   }
   if (data.permitType === "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for", summaryType))
@@ -434,8 +434,8 @@ function createApplicationSummaryModel(errors, data) {
   const summaryListApplicantContactDetails = data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix, summaryType)
   const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix, summaryType)
   const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix, summaryType)
- 
-  const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex  : data.applicationIndex
+
+  const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex : data.applicationIndex
   const breadcrumbs = {
     items: [
       {
@@ -448,19 +448,40 @@ function createApplicationSummaryModel(errors, data) {
       },
       {
         text: `${data.submissionRef}/${formattedApplicationIndex}`,
-        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${breadcrumbsUrlApplicationIndex}`: "#"
-      },
-      summaryType === 'copy-as-new' && {
-        text: pageContent.pageHeaderCopy,
-        href: "#"
+        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${breadcrumbsUrlApplicationIndex}` : "#"
       }
     ]
   }
+  if(summaryType === 'copy-as-new') {
+    breadcrumbs.push({
+        text: pageContent.pageHeaderCopy,
+        href: "#"
+      })    
+  }
 
-  const backLink =  summaryType === 'check' ? `${previousPathComments}/${data.applicationIndex}` : nextPathYourSubmission
+  let backLink = null;
+  if (summaryType !== 'view-submitted' || summaryType !== 'copy-as-new') {
+    if (summaryType === 'check') {
+      backLink = `${previousPathComments}/${data.applicationIndex}`
+    } else {
+      backLink = nextPathYourSubmission
+    }    
+  }
+
+  // if (summaryType !== 'view-submitted') {
+  //   if (summaryType === 'check') {
+  //     backLink = `${previousPathComments}/${data.applicationIndex}`
+  //   } else {
+  //     if (data.referer && data.referer.includes('/application-summary/view-submitted/')) {
+  //       backLink = previousPathMySubmissions
+  //     } else {
+  //       backLink = nextPathYourSubmission
+  //     }
+  //   }    
+  // }
 
   const model = {
-    backLink: summaryType !== 'view-submitted' && summaryType !== 'copy-as-new'? backLink : "",
+    backLink: backLink,
     breadcrumbs: summaryType === 'view-submitted' || summaryType === 'copy-as-new' ? breadcrumbs : "",
     pageHeader: pageHeader,
     pageTitle: pageTitle,
@@ -504,7 +525,7 @@ function createSummaryListRow(classes, key, value, href, hiddenText, summaryType
     },
     actions: {
       items: [
-        summaryType !== 'view' &&  summaryType !== 'view-submitted' && {
+        summaryType !== 'view' && summaryType !== 'view-submitted' && {
           href: href,
           text: href ? "Change" : "",
           visuallyHiddenText: hiddenText
@@ -527,7 +548,7 @@ function getDateValue(date) {
 
 function getContactDetails(pageContent, contactDetailsData, hrefPrefix, summaryType) {
   const summaryListContactDetailsRows = []
-  summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details", summaryType ))
+  summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details", summaryType))
   summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextBusinessName, contactDetailsData.businessName, "", "", summaryType))
   summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextEmailAddress, contactDetailsData.email, "", "", summaryType))
   summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.countryDesc} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address", summaryType))
@@ -691,15 +712,17 @@ module.exports = [
         clonedApplicationIndex = cloneSource.applicationIndex
       }
 
-      if (clonedSubmissionRef && summaryType === 'view-submitted'){
-        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
-        submission.submissionRef = clonedSubmissionRef
-        setYarValue(request, 'submission', submission)      
+      if (clonedSubmissionRef && summaryType === 'view-submitted') {
+        //TODO - REMOVE THIS WHOLE BLOCK AS I DON'T THINK IT EVER GETS USED.
+        throw "Looks like we do need this code!!!"
+        // submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
+        // submission.submissionRef = clonedSubmissionRef
+        // setYarValue(request, 'submission', submission)
       }
-      
+
 
       try {
-        validateSubmission(submission,`${pageId}/${summaryType}/${applicationIndex}`)
+        validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`)
       } catch (err) {
         console.log(err)
         return h.redirect(invalidSubmissionPath)
@@ -708,9 +731,10 @@ module.exports = [
       clearChangeRoute(request)
 
       const pageData = {
+        //referer: request.headers.referer,
         summaryType: summaryType,
         applicationIndex: applicationIndex,
-        clonedApplicationIndex:clonedApplicationIndex,
+        clonedApplicationIndex: clonedApplicationIndex,
         submissionRef: submission.submissionRef || clonedSubmissionRef,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
@@ -821,19 +845,19 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-       
-        if (summaryType === 'view-submitted'){
-            try {
-              cloneSubmission(request, applicationIndex)
-            } catch (err) {
-              console.log(err)
-              return h.redirect(invalidSubmissionPath)
-            }
+
+        if (summaryType === 'view-submitted') {
+          try {
+            cloneSubmission(request, applicationIndex)
+          } catch (err) {
+            console.log(err)
+            return h.redirect(invalidSubmissionPath)
+          }
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
           return h.redirect(nextPathYourSubmission)
         }
-        
+
       }
     }
   },
@@ -868,7 +892,7 @@ module.exports = [
           }
 
           const pageData = {
-            summaryType:summaryType,
+            summaryType: summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
