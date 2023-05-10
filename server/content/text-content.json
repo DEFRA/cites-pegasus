@@ -475,8 +475,8 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
-      "secondSourceCodePrompt": "Choose a second source code",
-      "secondSourceCodes": [
+      "anotherSourceCodePrompt": "Choose a second source code",
+      "anotherSourceCodes": [
         {
           "text": "W - From the wild",
           "value": "W"
@@ -504,14 +504,14 @@
       ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.secondSourceCodeForI.any.only": "Select second source code",
-        "error.secondSourceCodeForO.any.only": "Select second source code",
-        "error.secondSourceCodeForI.string.empty": "Enter another source code",
-        "error.secondSourceCodeForI.string.length": "Source code must be one letter",
-        "error.secondSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.secondSourceCodeForO.string.empty": "Enter another source code",
-        "error.secondSourceCodeForO.string.length": "Source code must be one letter",
-        "error.secondSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForI.any.only": "Select second source code",
+        "error.anotherSourceCodeForO.any.only": "Select second source code",
+        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
+        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
+        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
+        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
+        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 150 characters or less"
@@ -538,8 +538,8 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
-      "secondSourceCodePrompt": "Choose a second source code",
-      "secondSourceCodes": [
+      "anotherSourceCodePrompt": "Choose a second source code",
+      "anotherSourceCodes": [
         {
           "text": "W - From the wild",
           "value": "W"
@@ -563,14 +563,14 @@
       ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.secondSourceCodeForI.any.only": "Select second source code",
-        "error.secondSourceCodeForO.any.only": "Select second source code",
-        "error.secondSourceCodeForI.string.empty": "Enter another source code",
-        "error.secondSourceCodeForI.string.length": "Source code must be one letter",
-        "error.secondSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.secondSourceCodeForO.string.empty": "Enter another source code",
-        "error.secondSourceCodeForO.string.length": "Source code must be one letter",
-        "error.secondSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForI.any.only": "Select second source code",
+        "error.anotherSourceCodeForO.any.only": "Select second source code",
+        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
+        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
+        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
+        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
+        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 150 characters or less"
@@ -1346,7 +1346,7 @@
       "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     },
     "notPaid": {
-      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",      
+      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
       "pageBody2": "They will contact you to confirm the amount you need to pay.",
       "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     }

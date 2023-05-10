@@ -166,23 +166,25 @@ const sourceCodeSchema = Joi.object({
   radioOptionUHint: Joi.string().required(),
   characterCountLabelEnterAReason: Joi.string().required(),
   dividerText: Joi.string().required(),
-  secondSourceCodePrompt: Joi.string().required(),
-  secondSourceCodes: Joi.array().items(
-    Joi.object({
-      "text": Joi.string().required(),
-      "value": Joi.string().required()
-    }).required()
-  ).required(),
+  anotherSourceCodePrompt: Joi.string().required(),
+  anotherSourceCodes: Joi.array()
+    .items(
+      Joi.object({
+        "text": Joi.string().required(),
+        "value": Joi.string().required()
+      }).required()
+    )
+    .required(),
   errorMessages: Joi.object({
     "error.sourceCode.any.required": Joi.string().required(),
-    "error.secondSourceCodeForI.any.only": Joi.string().required(),
-    "error.secondSourceCodeForO.any.only": Joi.string().required(),
-    "error.secondSourceCodeForI.string.empty": Joi.string().required(),
-    "error.secondSourceCodeForI.string.length": Joi.string().required(),
-    "error.secondSourceCodeForI.string.pattern.base": Joi.string().required(),
-    "error.secondSourceCodeForO.string.empty": Joi.string().required(),
-    "error.secondSourceCodeForO.string.length": Joi.string().required(),
-    "error.secondSourceCodeForO.string.pattern.base": Joi.string().required(),
+    "error.anotherSourceCodeForI.any.only": Joi.string().required(),
+    "error.anotherSourceCodeForO.any.only": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.empty": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.length": Joi.string().required(),
+    "error.anotherSourceCodeForI.string.pattern.base": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.empty": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.length": Joi.string().required(),
+    "error.anotherSourceCodeForO.string.pattern.base": Joi.string().required(),
     "error.enterAReason.string.empty": Joi.string().required(),
     "error.enterAReason.string.pattern.base": Joi.string().required(),
     "error.enterAReason.string.max": Joi.string().required()
@@ -769,12 +771,13 @@ const schema = Joi.object().keys({
     buttonDelete: Joi.string().required(),
     errorMessages: Joi.object({
       "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
-      "error.fileUpload.hapi.headers.content-type.any.only": Joi.string().required(),
+      "error.fileUpload.hapi.headers.content-type.any.only":
+        Joi.string().required(),
       "error.fileUpload.any.custom": Joi.string().required(),
       "error.fileUpload.upload.exception": Joi.string().required(),
       "error.file.delete.exception": Joi.string().required(),
-      "error.fileUpload.any.filesize": Joi.string().required(),
-    }).required(),
+      "error.fileUpload.any.filesize": Joi.string().required()
+    }).required()
   }).required(),
   comments: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -890,7 +893,7 @@ const schema = Joi.object().keys({
       exporterAddress: areYouSureSchema,
       reexporterAddress: areYouSureSchema,
       article10Address: areYouSureSchema
-    }).required(),
+    }).required()
   }).required(),
   yourSubmission: Joi.object({
     common: Joi.object({
@@ -914,10 +917,10 @@ const schema = Joi.object().keys({
       pageBody: Joi.string().required(),
       errorMessages: Joi.object({
         "error.areYouSure.part1.any.required": Joi.string().required(),
-        "error.areYouSure.part2.any.required": Joi.string().required(),
+        "error.areYouSure.part2.any.required": Joi.string().required()
       }).required()
     }).required(),
-    areYouSurePermitType: areYouSureSchema,
+    areYouSurePermitType: areYouSureSchema
   }).required(),
   declaration: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -929,8 +932,8 @@ const schema = Joi.object().keys({
     ),
     checkboxLabelIAgree: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.declaration.any.required": Joi.string().required(),
-    }).required(),
+      "error.declaration.any.required": Joi.string().required()
+    }).required()
   }).required(),
   mySubmissions: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -960,13 +963,13 @@ const schema = Joi.object().keys({
     rowTextStatus: Joi.string().required(),
     rowTextReceived: Joi.string().required(),
     rowTextAwaitingPayment: Joi.string().required(),
-    rowTextAwaitingReply:Joi.string().required(),
+    rowTextAwaitingReply: Joi.string().required(),
     rowTextInProcess: Joi.string().required(),
     rowTextIssued: Joi.string().required(),
     rowTextRefused: Joi.string().required(),
     rowTextCancelled: Joi.string().required(),
     pagebodyNoApplicationsFound: Joi.string().required(),
-    pagebodyZeroApplication: Joi.string().required(),
+    pagebodyZeroApplication: Joi.string().required()
   }).required(),
   payApplication: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -978,13 +981,13 @@ const schema = Joi.object().keys({
     headingPaymentAmount: Joi.string().required(),
     paymentDescription: Joi.string().required(),
     errorMessages: Joi.object({
-      'error.payNow.any.required': Joi.string().required(),
+      "error.payNow.any.required": Joi.string().required()
     }).required()
   }).required(),
   mySubmission: Joi.object({
     textBreadcrumbs: Joi.string().required(),
     tableHeadReferenceNumber: Joi.string().required(),
-    tableHeadScientificName: Joi.string().required(),
+    tableHeadScientificName: Joi.string().required()
   }).required(),
   applicationComplete: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -1007,7 +1010,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().required(),
     goBackAndTryAgainLinkText: Joi.string().required(),
-    submitApplicationLinkText: Joi.string().required(),
+    submitApplicationLinkText: Joi.string().required()
   }).required()
 })
 

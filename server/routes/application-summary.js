@@ -381,8 +381,8 @@ function createApplicationSummaryModel(errors, data) {
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText}`, hrefPrefix + "/sourceCode", "source code", summaryType))
   
-  if (data.species.secondSourceCodeForI || data.species.secondSourceCodeForO) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${data.species.secondSourceCodeForI || data.species.secondSourceCodeForO} ${sourceCodeValueText}`,  "", "", summaryType))
+  if (data.species.anotherSourceCodeForI || data.species.anotherSourceCodeForO) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForI || data.species.anotherSourceCodeForO} ${sourceCodeValueText}`,  "", "", summaryType))
   }
   
   if (data.permitType !== "article10") {

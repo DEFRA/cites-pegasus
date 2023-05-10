@@ -25,8 +25,8 @@ function createModel(errors, data) {
     const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
     const fields = [
       "sourceCode",
-      "secondSourceCodeForI",
-      "secondSourceCodeForO",
+      "anotherSourceCodeForI",
+      "anotherSourceCodeForO",
       "enterAReason"
     ]
     fields.forEach((field) => {
@@ -41,22 +41,22 @@ function createModel(errors, data) {
   }
 
 
-  const secondSourceCodeI = lodash.cloneDeep([
-    { text: pageContent.secondSourceCodePrompt, value: null },
-    ...pageContent.secondSourceCodes
+  const anotherSourceCodeI = lodash.cloneDeep([
+    { text: pageContent.anotherSourceCodePrompt, value: null },
+    ...pageContent.anotherSourceCodes
   ])
 
-  secondSourceCodeI.forEach((e) => {
-    if (e.value === data.secondSourceCodeForI) e.selected = "true"
+  anotherSourceCodeI.forEach((e) => {
+    if (e.value === data.anotherSourceCodeForI) e.selected = "true"
   })
 
-  const secondSourceCodeO = lodash.cloneDeep([
-    { text: pageContent.secondSourceCodePrompt, value: null },
-    ...pageContent.secondSourceCodes
+  const anotherSourceCodeO = lodash.cloneDeep([
+    { text: pageContent.anotherSourceCodePrompt, value: null },
+    ...pageContent.anotherSourceCodes
   ])
  
- secondSourceCodeO.forEach((e) => {
-    if (e.value === data.secondSourceCodeForO) e.selected = "true"
+ anotherSourceCodeO.forEach((e) => {
+    if (e.value === data.anotherSourceCodeForO) e.selected = "true"
   })
 
   var renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
@@ -65,19 +65,19 @@ function createModel(errors, data) {
 
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
-      id: "secondSourceCodeForI",
-      name: "secondSourceCodeForI",
-      items: secondSourceCodeI,
-      errorMessage: getFieldError(errorList, "#secondSourceCodeForI")
+      id: "anotherSourceCodeForI",
+      name: "anotherSourceCodeForI",
+      items: anotherSourceCodeI,
+      errorMessage: getFieldError(errorList, "#anotherSourceCodeForI")
     }
   })
 
   const sourceInputForO = nunjucks.renderString(renderString, {
     input: {
-      id: "secondSourceCodeForO",
-      name: "secondSourceCodeForO",
-      items: secondSourceCodeO,
-      errorMessage: getFieldError(errorList, "#secondSourceCodeForO")
+      id: "anotherSourceCodeForO",
+      name: "anotherSourceCodeForO",
+      items: anotherSourceCodeO,
+      errorMessage: getFieldError(errorList, "#anotherSourceCodeForO")
     }
   })
 
@@ -254,11 +254,11 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
-const secondSourceCodesPlantValues = textContent.sourceCode.plant.secondSourceCodes.map(
+const anotherSourceCodesPlantValues = textContent.sourceCode.plant.anotherSourceCodes.map(
   (e) => e.value
 )
 
-const secondSourceCodesAnimalValues = textContent.sourceCode.animal.secondSourceCodes.map(
+const anotherSourceCodesAnimalValues = textContent.sourceCode.animal.anotherSourceCodes.map(
   (e) => e.value
 )
 
@@ -293,8 +293,8 @@ module.exports = [
         speciesName: species.speciesName,
         kingdom: species.kingdom,
         sourceCode: species.sourceCode,
-        secondSourceCodeForI: species.secondSourceCodeForI,
-        secondSourceCodeForO: species.secondSourceCodeForO,
+        anotherSourceCodeForI: species.anotherSourceCodeForI,
+        anotherSourceCodeForO: species.anotherSourceCodeForO,
         enterAReason: species.enterAReason
       }
 
@@ -312,13 +312,13 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "A", "U", "Y"),
-          secondSourceCodeForI: Joi.when("sourceCode", {
+          anotherSourceCodeForI: Joi.when("sourceCode", {
             is: "I",
-            then: Joi.string().valid(...secondSourceCodesAnimalValues, ...secondSourceCodesPlantValues).required()
+            then: Joi.string().valid(...anotherSourceCodesAnimalValues, ...anotherSourceCodesPlantValues).required()
           }),
-          secondSourceCodeForO: Joi.when("sourceCode", {
+          anotherSourceCodeForO: Joi.when("sourceCode", {
             is: "O",
-            then: Joi.string().valid(...secondSourceCodesAnimalValues, ...secondSourceCodesPlantValues).required()
+            then: Joi.string().valid(...anotherSourceCodesAnimalValues, ...anotherSourceCodesPlantValues).required()
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
@@ -346,8 +346,8 @@ module.exports = [
         }
 
         species.sourceCode = request.payload.sourceCode
-        species.secondSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.secondSourceCodeForI.toUpperCase() : ""
-        species.secondSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.secondSourceCodeForO.toUpperCase() : ""
+        species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
+        species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
         species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
 
