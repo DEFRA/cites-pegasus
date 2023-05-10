@@ -2,12 +2,13 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
-const { createPayment } = require('../services/govpay-service')
+
 const textContent = require('../content/text-content')
 const pageId = 'pay-application'
 const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
-const nextPath = `${urlPrefix}/application-complete`
+const nextPathCreatePayment = `${urlPrefix}/govpay/create-payment`
+const nextPathNoPayment = `${urlPrefix}/application-complete`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -124,42 +125,12 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const payNow = request.payload.payNow === textContent.common.radioOptionYes;
-      const submission = getSubmission(request)
-
+      
       if (payNow) {
-        let name = ''
-        let email = ''
-        if (submission.isAgent) {
-          name = submission.agent.fullName
-          email = submission.agent.email
-        } else {
-          name = submission.applicant.fullName
-          email = submission.applicant.email
-        }
-
-        const response = await createPayment(submission.paymentDetails.costingValue, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
-
-        submission.paymentDetails = { paymentId: response.paymentId }
-
-        try {
-          mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
-        } catch (err) {
-          console.log(err)
-          return h.redirect(invalidSubmissionPath)
-        }
-
-        return h.redirect(response.nextUrl)
+        return h.redirect(nextPathCreatePayment);
       }
 
-      // try {
-      //   mergeSubmission(request, agentData, pageId)
-      // }
-      // catch (err) {
-      //   console.log(err);
-      //   return h.redirect(invalidSubmissionPath)
-      // }
-
-      return h.redirect(nextPath);
+      return h.redirect(nextPathNoPayment);
     }
   },
 }]

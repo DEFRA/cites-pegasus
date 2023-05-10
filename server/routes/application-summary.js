@@ -694,9 +694,7 @@ module.exports = [
       if (clonedSubmissionRef && summaryType === 'view-submitted'){
         submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
         submission.submissionRef = clonedSubmissionRef
-        setYarValue(request, 'submission', submission)
-      } else {
-        submission = getSubmission(request)
+        setYarValue(request, 'submission', submission)      
       }
       
 
