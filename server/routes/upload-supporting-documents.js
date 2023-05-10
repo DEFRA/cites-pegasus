@@ -69,7 +69,7 @@ function createModel(errors, data) {
     containerClasses: 'hide-when-loading',
     backLink: `${previousPath}`,
     formActionPage: `${currentPath}`,
-        ...(errorList ? { errorList } : {}),
+    ...(errorList ? { errorList } : {}),
     supportingDocuments: supportingDocuments,
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     isAgent: data.isAgent,
@@ -182,9 +182,9 @@ module.exports = [
       //   return h.redirect(invalidSubmissionPath)
       // }
 
-      const pageData = { 
+      const pageData = {
         isAgent: submission.isAgent,
-        files: submission.supportingDocuments?.files || [] 
+        files: submission.supportingDocuments?.files || []
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -298,6 +298,7 @@ module.exports = [
 
           const blobUrl = await addFileToBlobContainer(docs.containerName, request.payload.fileUpload)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl })
+
           try {
             mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
           } catch (err) {
@@ -321,7 +322,7 @@ module.exports = [
 
         const pageData = {
           isAgent: submission.isAgent,
-          files: docs.files 
+          files: docs.files
         }
 
         return h.view(pageId, createModel(null, pageData)).takeover()
@@ -377,9 +378,9 @@ module.exports = [
           return failAction(request, h, error)
         }
 
-        const pageData = { 
+        const pageData = {
           isAgent: submission.isAgent,
-          files: docs.files 
+          files: docs.files
         }
 
         return h.view(pageId, createModel(null, pageData)).takeover()
@@ -395,6 +396,18 @@ module.exports = [
         multipart: true
       },
       handler: async (request, h) => {
+        const submission = getSubmission(request)
+
+        if (submission.supportingDocuments && !submission.supportingDocuments?.files?.length) {
+          delete submission.supportingDocuments
+
+          try {
+            setSubmission(request, submission, `${pageId}`)
+          } catch (err) {
+            console.error(err);
+            return h.redirect(invalidSubmissionPath)
+          }
+        }
         return h.redirect(nextPath)
       }
     }
