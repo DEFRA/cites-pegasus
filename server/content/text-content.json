@@ -467,7 +467,6 @@
       "radioOptionFHint": "Animals born in captivity to first generation specimens or that do not meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-10-16-R11_0.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
       "radioOptionX": "X",
@@ -476,14 +475,43 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
+      "secondSourceCodePrompt": "Choose a second source code",
+      "secondSourceCodes": [
+        {
+          "text": "W - From the wild",
+          "value": "W"
+        },
+        {
+          "text": "R - Reared in a controlled environment (taken as eggs or juveniles from the wild)",
+          "value": "R"
+        },
+        {
+          "text": "D - Animals bred in captivity by a CITES registered breeder",
+          "value": "D"
+        },
+        {
+          "text": "C - Animals bred in captivity to second generation specimens or that meet the Commission Regulation criteria",
+          "value": "C"
+        },
+        {
+          "text": "F - Animals born in captivity to first generation specimens or that do not meet the Commission Regulation criteria",
+          "value": "F"
+        },
+        {
+          "text": "X - Taken from the marine environment",
+          "value": "X"
+        }
+      ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.secondSourceCodeForI.any.only": "Select second source code",
+        "error.secondSourceCodeForO.any.only": "Select second source code",
+        "error.secondSourceCodeForI.string.empty": "Enter another source code",
+        "error.secondSourceCodeForI.string.length": "Source code must be one letter",
+        "error.secondSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+        "error.secondSourceCodeForO.string.empty": "Enter another source code",
+        "error.secondSourceCodeForO.string.length": "Source code must be one letter",
+        "error.secondSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 150 characters or less"
@@ -500,7 +528,6 @@
       "radioOptionAHint": "Plants artificially propagated for non-commercial purposes",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
       "radioOptionX": "X",
@@ -511,14 +538,39 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
+      "secondSourceCodePrompt": "Choose a second source code",
+      "secondSourceCodes": [
+        {
+          "text": "W - From the wild",
+          "value": "W"
+        },
+        {
+          "text": "D - Plants artificially propagated for commercial purposes",
+          "value": "D"
+        },
+        {
+          "text": "A - Plants artificially propagated for non-commercial purposes",
+          "value": "A"
+        },
+        {
+          "text": "X - Taken from the marine environment",
+          "value": "X"
+        },
+        {
+          "text": "Y - Plants that meet the definition for assisted production",
+          "value": "Y"
+        }
+      ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.secondSourceCodeForI.any.only": "Select second source code",
+        "error.secondSourceCodeForO.any.only": "Select second source code",
+        "error.secondSourceCodeForI.string.empty": "Enter another source code",
+        "error.secondSourceCodeForI.string.length": "Source code must be one letter",
+        "error.secondSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
+        "error.secondSourceCodeForO.string.empty": "Enter another source code",
+        "error.secondSourceCodeForO.string.length": "Source code must be one letter",
+        "error.secondSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 150 characters or less"

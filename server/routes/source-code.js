@@ -4,6 +4,7 @@ const { findErrorList, getFieldError, isChecked } = require("../lib/helper-funct
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { ALPHA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
+const lodash = require("lodash")
 const nunjucks = require("nunjucks")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "source-code"
@@ -16,7 +17,6 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const isAnimal = data.kingdom === "Animalia"
-
   const pageContent = isAnimal ? textContent.sourceCode.animal : textContent.sourceCode.plant
 
   let errorList = null
@@ -25,8 +25,8 @@ function createModel(errors, data) {
     const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
     const fields = [
       "sourceCode",
-      "anotherSourceCodeForI",
-      "anotherSourceCodeForO",
+      "secondSourceCodeForI",
+      "secondSourceCodeForO",
       "enterAReason"
     ]
     fields.forEach((field) => {
@@ -40,43 +40,50 @@ function createModel(errors, data) {
     })
   }
 
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
+
+  const secondSourceCodeI = lodash.cloneDeep([
+    { text: pageContent.secondSourceCodePrompt, value: null },
+    ...pageContent.secondSourceCodes
+  ])
+
+  secondSourceCodeI.forEach((e) => {
+    if (e.value === data.secondSourceCodeForI) e.selected = "true"
+  })
+
+  const secondSourceCodeO = lodash.cloneDeep([
+    { text: pageContent.secondSourceCodePrompt, value: null },
+    ...pageContent.secondSourceCodes
+  ])
+ 
+ secondSourceCodeO.forEach((e) => {
+    if (e.value === data.secondSourceCodeForO) e.selected = "true"
+  })
+
+  var renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
-      id: "anotherSourceCodeForI",
-      name: "anotherSourceCodeForI",
-      classes: "govuk-input govuk-input--width-2",
-      label: {
-        text: pageContent.inputLabelEnterAnotherSourceCode
-      },
-      ...(data.anotherSourceCodeForI
-        ? { value: data.anotherSourceCodeForI }
-        : {}),
-      errorMessage: getFieldError(errorList, "#anotherSourceCodeForI")
+      id: "secondSourceCodeForI",
+      name: "secondSourceCodeForI",
+      items: secondSourceCodeI,
+      errorMessage: getFieldError(errorList, "#secondSourceCodeForI")
     }
   })
 
   const sourceInputForO = nunjucks.renderString(renderString, {
     input: {
-      id: "anotherSourceCodeForO",
-      name: "anotherSourceCodeForO",
-      classes: "govuk-input govuk-input--width-2",
-      label: {
-        text: pageContent.inputLabelEnterAnotherSourceCode
-      },
-      ...(data.anotherSourceCodeForO
-        ? { value: data.anotherSourceCodeForO }
-        : {}),
-      errorMessage: getFieldError(errorList, "#anotherSourceCodeForO")
+      id: "secondSourceCodeForO",
+      name: "secondSourceCodeForO",
+      items: secondSourceCodeO,
+      errorMessage: getFieldError(errorList, "#secondSourceCodeForO")
     }
   })
 
   var renderString = "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n {{govukCharacterCount(input)}}"
 
-  const sourceCharacterCount = nunjucks.renderString(renderString, {
+  const sourceCharacterCount =  nunjucks.renderString(renderString, {
     input: {
       id: "enterAReason",
       name: "enterAReason",
@@ -247,6 +254,15 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
+const secondSourceCodesPlantValues = textContent.sourceCode.plant.secondSourceCodes.map(
+  (e) => e.value
+)
+
+const secondSourceCodesAnimalValues = textContent.sourceCode.animal.secondSourceCodes.map(
+  (e) => e.value
+)
+
+
 module.exports = [
   {
     method: "GET",
@@ -277,8 +293,8 @@ module.exports = [
         speciesName: species.speciesName,
         kingdom: species.kingdom,
         sourceCode: species.sourceCode,
-        anotherSourceCodeForI: species.anotherSourceCodeForI,
-        anotherSourceCodeForO: species.anotherSourceCodeForO,
+        secondSourceCodeForI: species.secondSourceCodeForI,
+        secondSourceCodeForO: species.secondSourceCodeForO,
         enterAReason: species.enterAReason
       }
 
@@ -295,16 +311,14 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          sourceCode: Joi.string()
-            .required()
-            .valid("W", "R", "D", "C", "F", "I", "O", "X", "A", "U", "Y"),
-          anotherSourceCodeForI: Joi.when("sourceCode", {
+          sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "A", "U", "Y"),
+          secondSourceCodeForI: Joi.when("sourceCode", {
             is: "I",
-            then: Joi.string().length(1).regex(ALPHA_REGEX).required()
+            then: Joi.string().valid(...secondSourceCodesAnimalValues, ...secondSourceCodesPlantValues).required()
           }),
-          anotherSourceCodeForO: Joi.when("sourceCode", {
+          secondSourceCodeForO: Joi.when("sourceCode", {
             is: "O",
-            then: Joi.string().length(1).regex(ALPHA_REGEX).required()
+            then: Joi.string().valid(...secondSourceCodesAnimalValues, ...secondSourceCodesPlantValues).required()
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
@@ -319,12 +333,8 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        const animalSchema = Joi.string()
-          .required()
-          .valid("W", "R", "D", "C", "F", "I", "O", "X", "U")
-        const plantSchema = Joi.string()
-          .required()
-          .valid("W", "D", "A", "I", "O", "X", "U", "Y")
+        const animalSchema = Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U")
+        const plantSchema = Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y")
 
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
 
@@ -336,8 +346,8 @@ module.exports = [
         }
 
         species.sourceCode = request.payload.sourceCode
-        species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
-        species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
+        species.secondSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.secondSourceCodeForI.toUpperCase() : ""
+        species.secondSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.secondSourceCodeForO.toUpperCase() : ""
         species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
 
 

@@ -165,8 +165,8 @@ module.exports = [
         if (isChange) {
           //If changing speciesName, remove all other species data as far as the specimen description pages
           species.sourceCode = null
-          species.anotherSourceCodeForI = null
-          species.anotherSourceCodeForO = null
+          species.secondSourceCodeForI = null
+          species.secondSourceCodeForO = null
           species.enterAReason = null
           species.purposeCode = null
           species.useCertificateFor = null

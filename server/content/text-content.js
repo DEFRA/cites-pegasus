@@ -154,7 +154,6 @@ const sourceCodeSchema = Joi.object({
   radioOptionFHint: Joi.string().allow("", null),
   radioOptionI: Joi.string().required(),
   radioOptionIHint: Joi.string().required(),
-  inputLabelEnterAnotherSourceCode: Joi.string().required(),
   radioOptionO: Joi.string().required(),
   radioOptionOHint: Joi.string().required(),
   radioOptionX: Joi.string().required(),
@@ -167,14 +166,23 @@ const sourceCodeSchema = Joi.object({
   radioOptionUHint: Joi.string().required(),
   characterCountLabelEnterAReason: Joi.string().required(),
   dividerText: Joi.string().required(),
+  secondSourceCodePrompt: Joi.string().required(),
+  secondSourceCodes: Joi.array().items(
+    Joi.object({
+      "text": Joi.string().required(),
+      "value": Joi.string().required()
+    }).required()
+  ).required(),
   errorMessages: Joi.object({
     "error.sourceCode.any.required": Joi.string().required(),
-    "error.anotherSourceCodeForI.string.empty": Joi.string().required(),
-    "error.anotherSourceCodeForI.string.length": Joi.string().required(),
-    "error.anotherSourceCodeForI.string.pattern.base": Joi.string().required(),
-    "error.anotherSourceCodeForO.string.empty": Joi.string().required(),
-    "error.anotherSourceCodeForO.string.length": Joi.string().required(),
-    "error.anotherSourceCodeForO.string.pattern.base": Joi.string().required(),
+    "error.secondSourceCodeForI.any.only": Joi.string().required(),
+    "error.secondSourceCodeForO.any.only": Joi.string().required(),
+    "error.secondSourceCodeForI.string.empty": Joi.string().required(),
+    "error.secondSourceCodeForI.string.length": Joi.string().required(),
+    "error.secondSourceCodeForI.string.pattern.base": Joi.string().required(),
+    "error.secondSourceCodeForO.string.empty": Joi.string().required(),
+    "error.secondSourceCodeForO.string.length": Joi.string().required(),
+    "error.secondSourceCodeForO.string.pattern.base": Joi.string().required(),
     "error.enterAReason.string.empty": Joi.string().required(),
     "error.enterAReason.string.pattern.base": Joi.string().required(),
     "error.enterAReason.string.max": Joi.string().required()
