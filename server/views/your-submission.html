@@ -8,11 +8,6 @@
 
 
 {% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButton,
-    href: backLink,
-	  attributes: {id: 'linkBack'}
-  }) }}
 
 {% if errorList %}
     <div class="govuk-grid-row">

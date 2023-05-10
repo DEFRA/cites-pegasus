@@ -5,7 +5,6 @@ const { getSubmission, createApplication, validateSubmission, cloneApplication, 
 const textContent = require('../content/text-content')
 const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/application-summary/check/0`
 const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
 const nextPathViewApplication = `${urlPrefix}/application-summary/view`
 const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
@@ -65,7 +64,6 @@ function createSubmitApplicationModel(errors, data) {
   })
 
   const model = {
-    backLink: previousPath,
     pageTitle: pageContent.defaultTitle,
     captionText: pageContent.pageHeader,
     tableHeadScientificName: pageContent.tableHeadScientificName,
