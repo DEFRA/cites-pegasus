@@ -504,14 +504,8 @@
       ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.any.only": "Select second source code",
-        "error.anotherSourceCodeForO.any.only": "Select second source code",
-        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForI.any.only": "Enter another source code",
+        "error.anotherSourceCodeForO.any.only": "Enter another source code",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 150 characters or less"
@@ -563,14 +557,8 @@
       ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.any.only": "Select second source code",
-        "error.anotherSourceCodeForO.any.only": "Select second source code",
-        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForI.any.only": "Enter another source code",
+        "error.anotherSourceCodeForO.any.only": "Enter another source code",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 150 characters or less"

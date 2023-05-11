@@ -179,12 +179,6 @@ const sourceCodeSchema = Joi.object({
     "error.sourceCode.any.required": Joi.string().required(),
     "error.anotherSourceCodeForI.any.only": Joi.string().required(),
     "error.anotherSourceCodeForO.any.only": Joi.string().required(),
-    "error.anotherSourceCodeForI.string.empty": Joi.string().required(),
-    "error.anotherSourceCodeForI.string.length": Joi.string().required(),
-    "error.anotherSourceCodeForI.string.pattern.base": Joi.string().required(),
-    "error.anotherSourceCodeForO.string.empty": Joi.string().required(),
-    "error.anotherSourceCodeForO.string.length": Joi.string().required(),
-    "error.anotherSourceCodeForO.string.pattern.base": Joi.string().required(),
     "error.enterAReason.string.empty": Joi.string().required(),
     "error.enterAReason.string.pattern.base": Joi.string().required(),
     "error.enterAReason.string.max": Joi.string().required()
