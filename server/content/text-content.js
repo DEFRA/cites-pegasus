@@ -373,6 +373,7 @@ const schema = Joi.object().keys({
     bodyLinkText: Joi.string().required(),
     bodyLinkUrl: Joi.string().required(),
     bodyText2: Joi.string().required(),
+    bodyText3: Joi.string().required(),
     inputLabelSpeciesName: Joi.string().required(),
     errorMessages: Joi.object({
       "error.speciesName.string.empty": Joi.string().required()

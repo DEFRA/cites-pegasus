@@ -437,6 +437,7 @@
     "bodyLinkText": "search for the scientific name on species+",
     "bodyText2": "(opens in new tab), then copy and paste it below.",
     "bodyLinkUrl": "https://speciesplus.net/",
+    "bodyText3": "If you are applying for a hybrid species, enter the full species name; for example, 'falco peregrinus x falco cherrug' or 'porites spp'. If the species isn't recognised, contact the CITB team for assistance.",
     "inputLabelSpeciesName": "Scientific name",
     "errorMessages": {
       "error.speciesName.string.empty": "Enter the scientific name"

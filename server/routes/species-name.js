@@ -55,6 +55,7 @@ function createModel(errors, data) {
     bodyLinkText: pageContent.bodyLinkText,
     bodyLinkUrl: pageContent.bodyLinkUrl,
     bodyText2: pageContent.bodyText2,
+    bodyText3: pageContent.bodyText3,
     inputSpeciesName: {
       label: {
         text: pageContent.inputLabelSpeciesName
