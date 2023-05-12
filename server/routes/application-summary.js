@@ -77,125 +77,64 @@ function createApplicationSummaryModel(errors, data) {
       break
   }
 
-  let purposeCodeValueText = null
-  switch (data.species.purposeCode) {
-    case "B":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeB
-      break
-    case "E":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeE
-      break
-    case "G":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeG
-      break
-    case "H":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeH
-      break
-    case "L":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeL
-      break
-    case "M":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeM
-      break
-    case "N":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeN
-      break
-    case "P":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeP
-      break
-    case "Q":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeQ
-      break
-    case "S":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeS
-      break
-    case "T":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeT
-      break
-    case "Z":
-      purposeCodeValueText = pageContent.rowTextPurposeCodeZ
-      break
+  const purposeCodeValueText =  {
+    B: pageContent.rowTextPurposeCodeB,
+    E: pageContent.rowTextPurposeCodeE,
+    G: pageContent.rowTextPurposeCodeG,
+    H: pageContent.rowTextPurposeCodeH,
+    L: pageContent.rowTextPurposeCodeL,
+    M: pageContent.rowTextPurposeCodeM,
+    N: pageContent.rowTextPurposeCodeN,
+    P: pageContent.rowTextPurposeCodeP,
+    Q: pageContent.rowTextPurposeCodeQ,
+    S: pageContent.rowTextPurposeCodeS,
+    T: pageContent.rowTextPurposeCodeT,
+    Z: pageContent.rowTextPurposeCodeZ,
   }
 
-  let sourceCodeValueText = null
-  switch (data.species.sourceCode) {
-    case "W":
-      sourceCodeValueText = pageContent.rowTextSourceCodeW
-      break
-    case "R":
-      sourceCodeValueText = pageContent.rowTextSourceCodeR
-      break
-    case "D":
-      sourceCodeValueText = data.species.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant
-      break
-    case "C":
-      sourceCodeValueText = pageContent.rowTextSourceCodeC
-      break
-    case "F":
-      sourceCodeValueText = pageContent.rowTextSourceCodeF
-      break
-    case "I":
-      sourceCodeValueText = pageContent.rowTextSourceCodeI
-      break
-    case "O":
-      sourceCodeValueText = pageContent.rowTextSourceCodeO
-      break
-    case "X":
-      sourceCodeValueText = pageContent.rowTextSourceCodeX
-      break
-    case "Y":
-      sourceCodeValueText = pageContent.rowTextSourceCodeY
-      break
-    case "A":
-      sourceCodeValueText = pageContent.rowTextSourceCodeA
-      break
-    case "U":
-      sourceCodeValueText = data.species.enterAReason
-      break
+  const sourceCodeValueText = {
+     W: pageContent.rowTextSourceCodeW, 
+     R: pageContent.rowTextSourceCodeR,
+     D: data.species.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+     C: pageContent.rowTextSourceCodeC,
+     F: pageContent.rowTextSourceCodeF,
+     I: pageContent.rowTextSourceCodeI,
+     O: pageContent.rowTextSourceCodeO,
+     X: pageContent.rowTextSourceCodeX,
+     Y: pageContent.rowTextSourceCodeY,
+     A: pageContent.rowTextSourceCodeA,
+     U: data.species.enterAReason  
   }
 
-  let specimenTypeValue = null
-  switch (data.species.specimenType) {
-    case "animalLiving":
-      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalLiving
-      break
-    case "animalPart":
-      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalPart
-      break
-    case "animalWorked":
-      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalWorked
-      break
-    case "animalCoral":
-      specimenTypeValue = pageContent.rowTextSpecimenTypeAnimalCoral
-      break
-    case "plantLiving":
-      specimenTypeValue = pageContent.rowTextSpecimenTypePlantLiving
-      break
-    case "plantWorked":
-      specimenTypeValue = pageContent.rowTextSpecimenTypePlantProduct
-      break
-    case "plantProduct":
-      specimenTypeValue = pageContent.rowTextSpecimenTypePlantWorked
-      break
+  const otherSourceCodeValueText = {
+    W: pageContent.rowTextSourceCodeW,
+    R: pageContent.rowTextSourceCodeR,
+    D: data.species.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    C: pageContent.rowTextSourceCodeC,
+    F: pageContent.rowTextSourceCodeF,
+    A: pageContent.rowTextSourceCodeA,
+    X: pageContent.rowTextSourceCodeX,
+    Y: pageContent.rowTextSourceCodeY,
+  };
+
+  const otherSourceCode = data.species.anotherSourceCodeForI || data.species.anotherSourceCodeForO
+
+  const specimenTypeValue = {
+    animalLiving: pageContent.rowTextSpecimenTypeAnimalLiving,
+    animalPart: pageContent.rowTextSpecimenTypeAnimalPart,
+    animalWorked: pageContent.rowTextSpecimenTypeAnimalWorked,
+    animalCoral: pageContent.rowTextSpecimenTypeAnimalCoral,
+    plantLiving: pageContent.rowTextSpecimenTypePlantLiving,
+    plantWorked: pageContent.rowTextSpecimenTypePlantProduct,
+    plantProduct: pageContent.rowTextSpecimenTypePlantWorked,
   }
 
-  let a10CertificatePurposeValue = null
-
-  switch (data.species.useCertificateFor) {
-    case "legallyAcquired":
-      a10CertificatePurposeValue = pageContent.rowTextLegallyAcquired
-      break
-    case "commercialActivities":
-      a10CertificatePurposeValue = pageContent.rowTextCommercialActivities
-      break
-    case "moveALiveSpecimen":
-      a10CertificatePurposeValue = pageContent.rowTextMoveALiveSpecimen
-      break
-    case "other":
-      a10CertificatePurposeValue = pageContent.rowTextOther
-      break
+  const a10CertificatePurposeValue =  {
+    legallyAcquired: pageContent.rowTextLegallyAcquired,
+    commercialActivities: pageContent.rowTextCommercialActivities,
+    moveALiveSpecimen: pageContent.rowTextMoveALiveSpecimen,
+    other: pageContent.rowTextOther,
   }
-
 
   let quantityValue = null
   if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === "unmarked") {
@@ -369,16 +308,21 @@ function createApplicationSummaryModel(errors, data) {
   if (data.species.specimenType !== "animalLiving") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity", "unit of measurement", summaryType))
   }
-  summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText}`, hrefPrefix + "/sourceCode", "source code", summaryType))
-  if (data.permitType !== "article10") {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText}`, hrefPrefix + "/purposeCode", "purpose code", summaryType))
+  summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText[data.species.sourceCode]}`, hrefPrefix + "/sourceCode", "source code", summaryType))
+  
+  if (data.species.anotherSourceCodeForI || data.species.anotherSourceCodeForO) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${otherSourceCode} ${otherSourceCodeValueText[otherSourceCode]}`,  "", "", summaryType))
   }
-  summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue, hrefPrefix + "/specimenType", "specimen type", summaryType))
+  
+  if (data.permitType !== "article10") {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText[data.species.purposeCode]}`, hrefPrefix + "/purposeCode", "purpose code", summaryType))
+  }
+  summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue[data.species.specimenType], hrefPrefix + "/specimenType", "specimen type", summaryType))
   if (data.species.specimenType !== "animalLiving") {
      summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode} ${data.species.tradeTermCodeDesc}` : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code", summaryType))
   }
   if (data.permitType === "article10") {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue, hrefPrefix + "/useCertificateFor", "use certificate for", summaryType))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue[data.species.useCertificateFor], hrefPrefix + "/useCertificateFor", "use certificate for", summaryType))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMark ? data.species.uniqueIdentificationMark : pageContent.rowTextSpecimenIsNotMarked, hrefPrefix + "/uniqueIdentificationMark", "unique identification mark", summaryType))
   if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
