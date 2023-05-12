@@ -4,7 +4,7 @@ const pageId = 'oidc'
 const { getYarValue, setYarValue, clearYarSession } = require('../lib/session')
 const { getDomain } = require('../lib/helper-functions')
 const { getOpenIdClient } = require('../services/oidc-client')
-const { cidmCallbackUrl, postLogoutRedirectUrl } = require('../../config/config')
+const { cidmCallbackUrl, postLogoutRedirectUrl, postAccountManagementUrl } = require('../../config/config')
 
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
@@ -126,6 +126,18 @@ module.exports = [
 
       clearYarSession(request)
       return h.redirect(logoutUri).unstate('token').unstate('session');
+    },
+  },
+  {
+    method: 'GET',
+    path: '/account-management',
+    config: {
+      auth: false
+    },
+    handler: async (request, h) => {
+
+      clearYarSession(request)
+      return h.redirect(postAccountManagementUrl).unstate('session');
     },
   },
   {
