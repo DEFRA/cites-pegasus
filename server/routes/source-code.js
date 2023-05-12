@@ -87,7 +87,7 @@ function createModel(errors, data) {
     input: {
       id: "enterAReason",
       name: "enterAReason",
-      maxlength: 150,
+      maxlength: 300,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: pageContent.characterCountLabelEnterAReason
@@ -322,7 +322,7 @@ module.exports = [
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
-            then: Joi.string().min(1).max(151).regex(COMMENTS_REGEX).required()
+            then: Joi.string().min(1).max(300).regex(COMMENTS_REGEX).required()
           })
         }),
 
