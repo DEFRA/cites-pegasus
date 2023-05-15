@@ -13,7 +13,7 @@ CITES Application Portal
 | AUTHORITY_URL                            |                                                        |    yes   |         |                                  |       |
 | CIDM_ACCOUNT_MANAGEMENT_URL              | CIDM link for managing the user account                |    yes   |         |                                  |       |
 | CIDM_API_DISCOVERY_URLCIDM_CALLBACK_URL  | URL to use for communicating with the CIDM API         |    yes   |         |                                  | Must be registered with CIDM |
-| CIDM_POST_LOGOUT_REDIRECT_URL            | URL for CIDM to redirect to after the user logs out    |    yes   |         |                                  | Must be registered with CIDM |
+| CIDM_POST_LOGOUT_REDIRECT_URL            | URL for CIDM to redirect to after the user logs out    |    no    |         |                                  | Must be registered with CIDM |
 | DYNAMICS_BASE_URL                        | URL to use for communicating with the Dynamics API     |    yes   |         |                                  |       |
 | DYNAMICS_API_PATH                        | URL suffix to use for the Dynamics API                 |    yes   |         |                                  |       |
 | KNOWN_AUTHORITY                          | Known authority for communicating with Dynamics        |    yes   |         |                                  |       |
