@@ -4,12 +4,11 @@ const pageId = 'oidc'
 const { getYarValue, setYarValue, clearYarSession } = require('../lib/session')
 const { getDomain } = require('../lib/helper-functions')
 const { getOpenIdClient } = require('../services/oidc-client')
-const { cidmCallbackUrl, postLogoutRedirectUrl } = require('../../config/config')
+const { cidmCallbackUrl, cidmPostLogoutRedirectUrl, cidmAccountManagementUrl } = require('../../config/config')
 
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
 const landingPage = '/my-submissions'
-
 function getRelationshipDetails(user) {
   const relationshipDetails = {    
     organisationId: null,
@@ -119,13 +118,25 @@ module.exports = [
       const cidmAuth = getYarValue(request, 'CIDMAuth')
       const endSessionParams = {
         id_token_hint: cidmAuth?.idToken || null,
-        post_logout_redirect_uri: postLogoutRedirectUrl        
+        post_logout_redirect_uri: cidmPostLogoutRedirectUrl        
       }
 
       const logoutUri = oidcClient.endSessionUrl(endSessionParams)
 
       clearYarSession(request)
       return h.redirect(logoutUri).unstate('token').unstate('session');
+    },
+  },
+  {
+    method: 'GET',
+    path: '/account-management',
+    config: {
+      auth: false
+    },
+    handler: async (request, h) => {
+
+      clearYarSession(request)
+      return h.redirect(cidmAccountManagementUrl).unstate('session');
     },
   },
   {
