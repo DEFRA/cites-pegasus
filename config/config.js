@@ -6,7 +6,7 @@ require('dotenv').config()
 
 // Define config schema
 const schema = Joi.object().keys({
-  port: Joi.number().default(3000),
+  port: Joi.number().required(),
   env: Joi.string().valid(...envs).default(envs[0]),
   urlPrefix: Joi.string().default(urlPrefix),
   
