@@ -4,6 +4,7 @@
     "phaseBannerPhase": "beta",
     "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
     "navigationSignOut": "Sign out",
+    "navigationAccountManagement": "Account Management",
     "backLinkButton": "Back",
     "continueButton": "Continue",
     "confirmButton": "Confirm",
@@ -433,10 +434,8 @@
   "speciesName": {
     "defaultTitle": "What is the scientific name of the species?",
     "pageHeader": "What is the scientific name of the species?",
-    "bodyText": "Enter the exact scientific name as it appears on the CITES species list. You can ",
-    "bodyLinkText": "search for the scientific name on species+",
-    "bodyText2": "(opens in new tab), then copy and paste it below.",
-    "bodyLinkUrl": "https://speciesplus.net/",
+    "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on species+</a> (opens in a new tab)",
+    "bodyText2": "If you are applying for a hybrid species, enter the full species name; for example, 'falco peregrinus x falco cherrug' or 'porites spp'. If the species isn't recognised, contact the CITB team for assistance.",
     "inputLabelSpeciesName": "Scientific name",
     "errorMessages": {
       "error.speciesName.string.empty": "Enter the scientific name"
@@ -467,7 +466,6 @@
       "radioOptionFHint": "Animals born in captivity to first generation specimens or that do not meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-10-16-R11_0.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
       "radioOptionX": "X",
@@ -476,17 +474,40 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
+      "anotherSourceCodePrompt": "Choose a second source code",
+      "anotherSourceCodes": [
+        {
+          "text": "W - From the wild",
+          "value": "W"
+        },
+        {
+          "text": "R - Reared in a controlled environment (taken as eggs or juveniles from the wild)",
+          "value": "R"
+        },
+        {
+          "text": "D - Animals bred in captivity by a CITES registered breeder",
+          "value": "D"
+        },
+        {
+          "text": "C - Animals bred in captivity to second generation specimens or that meet the Commission Regulation criteria",
+          "value": "C"
+        },
+        {
+          "text": "F - Animals born in captivity to first generation specimens or that do not meet the Commission Regulation criteria",
+          "value": "F"
+        },
+        {
+          "text": "X - Taken from the marine environment",
+          "value": "X"
+        }
+      ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForI.any.only": "Enter another source code",
+        "error.anotherSourceCodeForO.any.only": "Enter another source code",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
-        "error.enterAReason.string.max": "Reason must be 150 characters or less"
+        "error.enterAReason.string.max": "Reason must be 300 characters or less"
       }
     },
     "plant": {
@@ -500,7 +521,6 @@
       "radioOptionAHint": "Plants artificially propagated for non-commercial purposes",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
-      "inputLabelEnterAnotherSourceCode": "Enter another source code",
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
       "radioOptionX": "X",
@@ -511,17 +531,36 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
+      "anotherSourceCodePrompt": "Choose a second source code",
+      "anotherSourceCodes": [
+        {
+          "text": "W - From the wild",
+          "value": "W"
+        },
+        {
+          "text": "D - Plants artificially propagated for commercial purposes",
+          "value": "D"
+        },
+        {
+          "text": "A - Plants artificially propagated for non-commercial purposes",
+          "value": "A"
+        },
+        {
+          "text": "X - Taken from the marine environment",
+          "value": "X"
+        },
+        {
+          "text": "Y - Plants that meet the definition for assisted production",
+          "value": "Y"
+        }
+      ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForI.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForI.string.pattern.base": "Source code must only include letters a to z",
-        "error.anotherSourceCodeForO.string.empty": "Enter another source code",
-        "error.anotherSourceCodeForO.string.length": "Source code must be one letter",
-        "error.anotherSourceCodeForO.string.pattern.base": "Source code must only include letters a to z",
+        "error.anotherSourceCodeForI.any.only": "Enter another source code",
+        "error.anotherSourceCodeForO.any.only": "Enter another source code",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
-        "error.enterAReason.string.max": "Reason must be 150 characters or less"
+        "error.enterAReason.string.max": "Reason must be 300 characters or less"
       }
     }
   },
@@ -1054,6 +1093,7 @@
     "rowTextSexFemale": "Female",
     "rowTextNotKnown": "Not known",
     "rowTextShowHide": "Show/Hide",
+    "rowTextOtherSourceCode": "Other source code",
     "returnToYourApplicationsLinkText": "Return to your applications",
     "areYouSure": {
       "permitType": {
@@ -1293,7 +1333,7 @@
       "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     },
     "notPaid": {
-      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",      
+      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
       "pageBody2": "They will contact you to confirm the amount you need to pay.",
       "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>."
     }

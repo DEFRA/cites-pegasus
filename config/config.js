@@ -14,7 +14,7 @@ const schema = Joi.object().keys({
   cidmCallbackUrl: Joi.string().required(),
   cidmApiDiscoveryUrl: Joi.string().required(),
   cidmAccountManagementUrl: Joi.string().required(),
-  postLogoutRedirectUrl: Joi.string().allow("", null),
+  cidmPostLogoutRedirectUrl: Joi.string().allow("", null),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
   cookieOptions: Joi.object({
@@ -45,7 +45,7 @@ const config = {
   cidmCallbackUrl: process.env.CIDM_CALLBACK_URL,
   cidmApiDiscoveryUrl: process.env.CIDM_API_DISCOVERY_URL,
   cidmAccountManagementUrl: process.env.CIDM_ACCOUNT_MANAGEMENT_URL,
-  postLogoutRedirectUrl: process.env.POST_LOGOUT_REDIRECT_URL,
+  cidmPostLogoutRedirectUrl: process.env.CIDM_POST_LOGOUT_REDIRECT_URL,
   addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
   cookieOptions: {

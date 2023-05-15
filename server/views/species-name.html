@@ -37,9 +37,8 @@
           }
         }) %}
 
-      <p>
-        {{bodyText}}<a href="{{bodyLinkUrl}}" target="_blank">{{bodyLinkText}}</a>&nbsp{{bodyText2}}
-      </p>
+      <p> {{bodyText1 | safe}} </p>
+      <p> {{bodyText2 | safe}} </p>
 
       {{ govukInput(inputSpeciesName) }}
       
