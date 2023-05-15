@@ -51,11 +51,8 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
-    bodyText: pageContent.bodyText,
-    bodyLinkText: pageContent.bodyLinkText,
-    bodyLinkUrl: pageContent.bodyLinkUrl,
+    bodyText1: pageContent.bodyText1,
     bodyText2: pageContent.bodyText2,
-    bodyText3: pageContent.bodyText3,
     inputSpeciesName: {
       label: {
         text: pageContent.inputLabelSpeciesName
