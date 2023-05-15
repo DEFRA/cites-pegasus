@@ -15,7 +15,6 @@ const schema = Joi.object().keys({
   cidmApiDiscoveryUrl: Joi.string().required(),
   cidmAccountManagementUrl: Joi.string().required(),
   cidmPostLogoutRedirectUrl: Joi.string().allow("", null),
-  accountManagementUrl: Joi.string().allow("", null),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
   cookieOptions: Joi.object({
