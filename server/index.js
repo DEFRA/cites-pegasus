@@ -9,6 +9,7 @@ const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
 async function createServer() {
+  console.log('###### CITES PORTAL STARTUP: Creating server config ######')
   const cacheConfig = await getCacheConfig()
   const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
@@ -40,8 +41,10 @@ async function createServer() {
     }
   })
 
+  console.log('###### CITES PORTAL STARTUP: Getting dynamics access token ######')
   await getAccessToken(server)
 
+  console.log('###### CITES PORTAL STARTUP: Getting dynamics ref data ######')
   const [oidcClient, countries, tradeTermCodes] = await Promise.all([
     getOpenIdClient(),
     getCountries(server),
@@ -53,7 +56,7 @@ async function createServer() {
   server.app.tradeTermCodes = tradeTermCodes;
 
 
-
+  console.log('###### CITES PORTAL STARTUP: Registering plugins ######')
   // Register the plugins
   await server.register(require('@hapi/inert'))
   await server.register(require('./plugins/oidc-auth'))
@@ -64,6 +67,7 @@ async function createServer() {
   await server.register(require('./plugins/yar'))
   await server.register(require('blipp'))
 
+  console.log('###### CITES PORTAL STARTUP: Ready to start server ######')
   return server
 }
 

@@ -367,7 +367,7 @@ async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searc
 
 async function getSubmissions(server, query, pageSize) {
 
-  console.log(query)
+  //console.log(query)
   const accessToken = await getAccessToken(server)
 
   try {
@@ -407,7 +407,7 @@ async function getSubmission(server, contactId, submissionRef) {
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode)"
   const filter = `$filter=cites_submissionreference eq '${submissionRef}'`// and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
-console.log(url)
+//console.log(url)
   const accessToken = await getAccessToken(server)
 
   try {
