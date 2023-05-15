@@ -1,5 +1,6 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
@@ -55,6 +56,23 @@
 {% endblock %}
 {% block content %}
   <h1 class="govuk-heading-xl">Default page template</h1>
+{% endblock %}
+
+{% block footer %}
+{{ govukFooter({
+  meta: {
+    items: [
+      {
+        href: "/privacy",
+        text: footerLinkTextPrivacy
+      },
+      {
+        href: "#",
+        text: footerLinkTextAccessibilityStatement
+      }
+    ]
+  }
+}) }}
 {% endblock %}
 
 {% block bodyEnd %}

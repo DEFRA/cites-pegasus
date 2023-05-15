@@ -225,6 +225,8 @@ const schema = Joi.object().keys({
     radioOptionYes: Joi.string().required(),
     radioOptionNo: Joi.string().required(),
     countrySelectDefault: Joi.string().required(),
+    footerLinkTextPrivacy: Joi.string().required(),
+    footerLinkTextAccessibilityStatement: Joi.string().required(),
     errorMessages: Joi.object()
   }).required(),
   permitType: Joi.object({
@@ -1004,6 +1006,58 @@ const schema = Joi.object().keys({
     pageBody: Joi.string().required(),
     goBackAndTryAgainLinkText: Joi.string().required(),
     submitApplicationLinkText: Joi.string().required()
+  }).required(),
+  privacy: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading1: Joi.string().required(),
+    heading2: Joi.string().required(),
+    heading3: Joi.string().required(),
+    heading4: Joi.string().required(),
+    heading5: Joi.string().required(),
+    heading6: Joi.string().required(),
+    heading7: Joi.string().required(),
+    heading8: Joi.string().required(),
+    heading9: Joi.string().required(),
+    heading10: Joi.string().required(),
+    heading11: Joi.string().required(),
+    heading12: Joi.string().required(),
+    heading13: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    pageBodyText4: Joi.string().required(),
+    bulletList1Items: Joi.array().items(
+      Joi.object({
+        bulletListItem: Joi.string().required(),
+      })
+    ),
+    pageBodyText5: Joi.string().required(),
+    pageBodyText6: Joi.string().required(),
+    pageBodyText7: Joi.string().required(),
+    pageBodyText8: Joi.string().required(),
+    pageBodyText9: Joi.string().required(),
+    pageBodyText10: Joi.string().required(),
+    bulletList2Items: Joi.array().items(
+      Joi.object({
+        bulletListItem: Joi.string().required(),
+      })
+    ),
+    pageBodyText11: Joi.string().required(),
+    pageBodyText12: Joi.string().required(),
+    pageBodyText13: Joi.string().required(),
+    pageBodyText14: Joi.string().required(),
+    pageBodyText15: Joi.string().required(),
+    pageBodyText16: Joi.string().required(),
+    pageBodyText17: Joi.string().required(),
+    pageBodyText18: Joi.string().required(),
+    pageBodyText19: Joi.string().required(),
+    pageBodyText20: Joi.string().required(),
+    pageBodyText21: Joi.string().required(),
+    pageBodyText22: Joi.string().required(),
+    pageBodyText23: Joi.string().required(),
+    pageBodyText24: Joi.string().required(),
+    pageBodyText25: Joi.string().required(),
   }).required()
 })
 
