@@ -1,14 +1,30 @@
-<!-- [![Build Status](https://travis-ci.com/DEFRA/hapi-web-boilerplate.svg?branch=master)](https://travis-ci.com/DEFRA/hapi-web-boilerplate) [![Maintainability](https://api.codeclimate.com/v1/badges/5c3956c73c9b1496dadd/maintainability)](https://codeclimate.com/github/DEFRA/hapi-web-boilerplate/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/5c3956c73c9b1496dadd/test_coverage)](https://codeclimate.com/github/DEFRA/hapi-web-boilerplate/test_coverage) [![Greenkeeper badge](https://badges.greenkeeper.io/DEFRA/hapi-web-boilerplate.svg)](https://greenkeeper.io/) -->
 
 CITES Application Portal
 
 # Environment variables
 (Be sure to describe any environment variables here by maintaining a list like this)
 
-| name     | description      | required | default |            valid            | notes |
-|----------|------------------|:--------:|---------|:---------------------------:|-------|
-| NODE_ENV | Node environment |    no    |         | development,test,production |       |
-| PORT     | Port number      |    no    | 3000    |                             |       |
+| name                                     | description                                            | required | default |            valid                 | notes |
+|------------------------------------------|--------------------------------------------------------|----------|---------|----------------------------------|-------|
+| NODE_ENV                                 | Node environment                                       |    no    | local   | local, dev, test, snd, pre, prod |       |
+| PORT                                     | Port number                                            |    no    | 8080    |                                  |       |
+| ADDRESS_LOOKUP_API_CERT_NAME             | Name of certificate to use for address lookup service  |    yes   |         |                                  |       |
+| ADDRESS_LOOKUP_BASE_URL                  | URL to use for address lookup API                      |    yes   |         |                                  |       |
+| AUTHORITY_URL                            |                                                        |    yes   |         |                                  |       |
+| CIDM_ACCOUNT_MANAGEMENT_URL              | CIDM link for managing the user account                |    yes   |         |                                  |       |
+| CIDM_API_DISCOVERY_URLCIDM_CALLBACK_URL  | URL to use for communicating with the CIDM API         |    yes   |         |                                  | Must be registered with CIDM |
+| CIDM_POST_LOGOUT_REDIRECT_URL            | URL for CIDM to redirect to after the user logs out    |    yes   |         |                                  | Must be registered with CIDM |
+| DYNAMICS_BASE_URL                        | URL to use for communicating with the Dynamics API     |    yes   |         |                                  |       |
+| DYNAMICS_API_PATH                        | URL suffix to use for the Dynamics API                 |    yes   |         |                                  |       |
+| KNOWN_AUTHORITY                          | Known authority for communicating with Dynamics        |    yes   |         |                                  |       |
+| GOVPAY_CALLBACK_URL                      | URL to send to Govpay for them to redirect back to     |    yes   |         |                                  |       |
+| GOVPAY_PAYMENTS_URL                      | URL to use for communicating with the Govpay API       |    yes   |         |                                  |       |
+| KEY_VAULT_NAME                           | Name of our Azure Key Vault                            |    yes   |         |                                  |       |
+| KEY_VAULT_URI                            | URL to use for communicating with our Azure Key Vault  |    yes   |         |                                  |       |
+| REDIS_HOSTNAME                           | Hostname of Azure Redis Cache instance                 |    yes   |         |                                  |       |
+| REDIS_PARTITION                          | Partition to use within Azure Redis Cache              |    yes   |         |                                  |       |
+| REDIS_PORT                               | Port number for communication with Azure Redis Cache   |    yes   |         |                                  |       |
+| SESSION_CACHE_TTL                        | Session timeout in milliseconds                        |    yes   |         |                                  |       |
 
 # Prerequisites
 
@@ -20,14 +36,11 @@ First build the application using:
 
 `$ npm run build`
 
-Currently this will just build the `govuk-frontend` sass but may be extended to include other build tasks as needed (e.g. client-side js using browserify or webpack etc.)
+This will just build the 'govuk-frontend' and 'custom' sass
 
 Now the application is ready to run:
 
 `$ node index.js`
-
-
-(You can delete the remainder of this readme once you're up and running)
 
 ## What is this?
 
@@ -37,21 +50,21 @@ A website to capture CITES permit applications
 
 Clone this repo and run the application as described above
 
-Check the server is running by pointing your browser to `http://localhost:3000`
+Check the server is running by pointing your browser to `http://localhost:8080` or whatever port you have in .env
 
 ## Project structure
 
 Here's the default structure for your project files.
 
 * **bin** (build tasks)
-* **client** (client js/sass code)
-* **config**
+* **client** (client sass code)
+* **config** (config and cache settings)
 * **server**
   * **content** (This is for the replaceable text content)
   * **plugins**
-  * **public**  (This folder is publicly served)
+  * **public**  
     * **static** (Put all static assets in here)
-    * **build** (This contains the build output files (js/css etc.) and is not checked-in)
+    * **build** (This contains the build output files (js/css etc.))
   * **routes**
   * **services** (Such as dynamics api code)
   * **views**
@@ -66,27 +79,17 @@ The configuration file for the server is found at `config/config.js`.
 This is where to put any config and all config should be read from the environment.
 The final config object should be validated using joi and the application should not start otherwise.
 
-A table of environment variables should be maintained in this README.
+A table of environment variables should be maintained in this README as above.
 
 ## Plugins
 
-hapi has a powerful plugin system and all server code should be loaded in a plugin.
-
 Plugins live in the `server/plugins` directory.
-
-## Logging
-
-The [good](https://github.com/hapijs/good) and [good-console](https://github.com/hapijs/good-console) plugins are included and configured in `server/plugins/logging`
-
-The logging plugin is only registered in when `NODE_ENV=development`.
-
-Error logging for production should use errbit.
 
 ## Views
 
 The [vison](https://github.com/hapijs/vision) plugin is used for template rendering support.
 
-The template engine used in nunjucks inline with the GDS Design System with support for view caching, layouts, partials and helpers.
+The template engine used is nunjucks inline with the GDS Design System with support for view caching, layouts, partials and helpers.
 
 ## Static files
 
@@ -149,12 +152,4 @@ For more information around using `npm-scripts` as a build tool:
 
 ## Testing
 
-[lab](https://github.com/hapijs/lab) and [code](https://github.com/hapijs/code) are used for unit testing.
-
-See the `/test` folder for more information.
-
-## Linting
-
-[standard.js](http://standardjs.com/) is used to lint both the server-side and client-side javascript code.
-
-It's defined as a build task and can be run using `npm run lint`.
+Automated testing is not included in this application yet.
