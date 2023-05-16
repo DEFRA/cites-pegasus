@@ -41,7 +41,8 @@ const routes = [].concat(
   require('../routes/payment-problem'),
   require('../routes/profile'),
   require('../routes/pay-application'),
-  require('../routes/application-complete')
+  require('../routes/application-complete'),
+  require('../routes/privacy')
 )
 
 module.exports = {
