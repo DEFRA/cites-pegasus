@@ -67,7 +67,7 @@ async function createServer() {
   await server.register(require('./plugins/yar'))
   await server.register(require('blipp'))
 
-  console.log('###### CITES PORTAL STARTUP: Ready to start server ######')
+  console.log(`###### CITES PORTAL STARTUP: Ready to start server on port ${config.port} ######`)
   return server
 }
 

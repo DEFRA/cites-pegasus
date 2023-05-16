@@ -2,6 +2,7 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications } = require('../lib/submission')
+const { setYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
 const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -172,6 +173,8 @@ module.exports = [
       }
 
       const completeApplications = getCompletedApplications(submission, appStatuses)
+      
+      setYarValue(request, 'cloneSource', null)
 
       const pageData = {
         permitType: submission.permitType,

@@ -21,7 +21,10 @@ function createApplicationSummaryModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationSummary
   const summaryType = data.summaryType
-  const formattedApplicationIndex = data.clonedApplicationIndex ? (data.clonedApplicationIndex + 1).toString().padStart(3, '0') : (data.applicationIndex + 1).toString().padStart(3, '0')
+  const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
+  //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
+  const formattedApplicationIndex = data.cloneSource ? (data.cloneSource.applicationIndex + 1).toString().padStart(3, '0') : (data.applicationIndex + 1).toString().padStart(3, '0')
+  const applicationRef = `${submissionRef}/${formattedApplicationIndex}`
   const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
 
 
@@ -47,8 +50,8 @@ function createApplicationSummaryModel(errors, data) {
       buttonText = commonContent.returnYourApplicationsButton
       break
     case "view-submitted":
-      pageTitle = `${data.submissionRef}/${formattedApplicationIndex}`
-      pageHeader = `${data.submissionRef}/${formattedApplicationIndex}`
+      pageTitle = applicationRef
+      pageHeader = applicationRef
       buttonText = commonContent.copyAsNewApplicationButton
       break
   }
@@ -379,7 +382,10 @@ function createApplicationSummaryModel(errors, data) {
   const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix, summaryType)
   const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix, summaryType)
 
-  const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex : data.applicationIndex
+  let submissionLink = `${previousPathMySubmission}/${data.cloneSource ? data.cloneSource.submissionRef : data.submissionRef}`
+  let applicationLink = `${currentPath}/view-submitted/${data.cloneSource ? data.cloneSource.applicationIndex : data.applicationIndex}`
+  
+  //const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex : data.applicationIndex
   const breadcrumbs = {
     items: [
       {
@@ -387,24 +393,26 @@ function createApplicationSummaryModel(errors, data) {
         href: previousPathMySubmissions,
       },
       {
-        text: data.submissionRef,
-        href: `${previousPathMySubmission}/${data.submissionRef}`,
+        text: submissionRef,
+        //href: `${previousPathMySubmission}/${data.submissionRef}`,
+        href: submissionLink
       },
       {
-        text: `${data.submissionRef}/${formattedApplicationIndex}`,
-        href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${breadcrumbsUrlApplicationIndex}` : "#"
+        text: applicationRef,
+        //href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${breadcrumbsUrlApplicationIndex}` : "#"
+        href: summaryType === 'copy-as-new' ? applicationLink : "#"
       }
     ]
   }
   if(summaryType === 'copy-as-new') {
-    breadcrumbs.push({
+    breadcrumbs.items.push({
         text: pageContent.pageHeaderCopy,
         href: "#"
       })    
   }
 
   let backLink = null;
-  if (summaryType !== 'view-submitted' || summaryType !== 'copy-as-new') {
+  if (summaryType !== 'view-submitted' && summaryType !== 'copy-as-new') {
     if (summaryType === 'check') {
       backLink = `${previousPathComments}/${data.applicationIndex}`
     } else {
@@ -645,25 +653,21 @@ module.exports = [
     handler: async (request, h) => {
       const { summaryType, applicationIndex } = request.params
       let submission = getSubmission(request)
-
+      
       // let submission
 
-      let clonedSubmissionRef
-      let clonedApplicationIndex
+      let cloneSource = null
       if (summaryType === 'copy-as-new' || (!submission.submissionRef && summaryType === 'view-submitted')) {
-        const cloneSource = getYarValue(request, 'cloneSource')
-        clonedSubmissionRef = cloneSource.submissionRef
-        clonedApplicationIndex = cloneSource.applicationIndex
+        cloneSource = getYarValue(request, 'cloneSource')        
       }
 
-      if (clonedSubmissionRef && summaryType === 'view-submitted') {
-        //TODO - REMOVE THIS WHOLE BLOCK AS I DON'T THINK IT EVER GETS USED.
-        throw "Looks like we do need this code!!!"
-        // submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, clonedSubmissionRef)
-        // submission.submissionRef = clonedSubmissionRef
-        // setYarValue(request, 'submission', submission)
+      if (cloneSource?.submissionRef && summaryType === 'view-submitted'){
+        //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
+        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, cloneSource?.submissionRef)
+        setYarValue(request, 'submission', submission)      
+        setYarValue(request, 'cloneSource', null)
       }
-
+      
 
       try {
         validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`)
@@ -678,8 +682,10 @@ module.exports = [
         //referer: request.headers.referer,
         summaryType: summaryType,
         applicationIndex: applicationIndex,
-        clonedApplicationIndex: clonedApplicationIndex,
-        submissionRef: submission.submissionRef || clonedSubmissionRef,
+        cloneSource,
+        //clonedApplicationIndex: clonedApplicationIndex,
+        //submissionRef: submission.submissionRef || clonedSubmissionRef,
+        submissionRef: submission.submissionRef,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
