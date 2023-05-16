@@ -1364,8 +1364,8 @@
     "heading12": "Complaints",
     "heading13": "Defra’s personal information charter",
     "pageBodyText1": "The data controller is the Department for Environment, Food and Rural Affairs (Defra). The Animal and Plant Health Agency (APHA), an executive agency of Defra will collect your data.",
-    "pageBodyText2": "If you have any questions about how Defra uses your data or your associated rights, email Defra’s Data Protection Manager <a href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3Adata.protection%40Defra.gov.uk'>data.protection@Defra.gov.uk</a>",
-    "pageBodyText3": "The Data Protection Officer responsible for monitoring that Defra is meeting the requirements of the legislation can be contacted by email at: <a href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3ADefraGroupDataProtectionOfficer%40Defra.gov.uk'>DefraGroupDataProtectionOfficer@Defra.gov.uk.</a>",
+    "pageBodyText2": "If you have any questions about how Defra uses your data or your associated rights, email Defra’s Data Protection Manager <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3Adata.protection%40Defra.gov.uk'>data.protection@Defra.gov.uk</a>",
+    "pageBodyText3": "The Data Protection Officer responsible for monitoring that Defra is meeting the requirements of the legislation can be contacted by email at: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3ADefraGroupDataProtectionOfficer%40Defra.gov.uk'>DefraGroupDataProtectionOfficer@Defra.gov.uk.</a>",
     "pageBodyText4": "Defra and APHA will use personal data that you or someone authorised to act on your behalf provide. The personal data that we process are your name, email address and postal address. We also process details of your CITES specimen to:",
     "bulletList1Items": [
       {
@@ -1413,9 +1413,9 @@
     "pageBodyText20": "Personal data may be stored or hosted in Ireland.",
     "pageBodyText21": "Under CITES, there is a statutory requirement for us to hold data on CITES where an applicant has applied for a permit. This application would have been under the provisions governing exemptions in the agreement.",
     "pageBodyText22": "Personal data will be held for seven years from the date we receive your application. It will be reviewed to determine whether a further retention period is required to ensure compliance with and appropriate enforcement of CITES. Data will be manually deleted once it has been determined it is appropriate to do so.",
-    "pageBodyText23": "Find out about your <a href='https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/individual-rights/'>individual rights</a> under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).",    
-    "pageBodyText24": "You have the right to <a href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
-    "pageBodyText25": "Defra’s <a href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
+    "pageBodyText23": "Find out about your <a target='_blank' href='https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/individual-rights/'>individual rights</a> under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).",    
+    "pageBodyText24": "You have the right to <a target='_blank' href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
+    "pageBodyText25": "Defra’s <a target='_blank' href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
 
   }
 }
