@@ -466,15 +466,19 @@ async function setSubmissionPayment(server, contactId, submissionRef, paymentRef
         throw `Submission not found with reference '${submissionRef}' and contact '${contactId}'`
       }
 
+      const payload = {
+        cites_paymentmethod: 149900000, // Gov Pay
+        cites_paymentreference: paymentRef,
+        cites_totalfeeamount: paymentValue/100,
+      }
+
       const postUrl = `${apiUrl}cites_submissions(${payload.value[0].cites_submissionid})`
-      const postResponse = Wreck.post(postUrl, { 
-        ...options, 
-        payload: {
-          cites_paymentmethod: 149900000, // Gov Pay
-          cites_paymentreference: paymentRef,
-          cites_totalfeeamount: paymentValue/100,
-        }
-      })
+      const postOptions = {
+        json: true,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+        payload: payload
+      }
+      const postResponse = Wreck.patch(postUrl, postOptions)
     }
 
     return null
