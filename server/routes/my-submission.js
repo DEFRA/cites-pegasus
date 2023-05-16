@@ -17,7 +17,7 @@ function createModel(errors, data) {
 
   const applicationsData = data.applications
   const applicationsTableData= applicationsData.map(application => {
-    const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0');
+    const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0'); //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
     const referenceNumber = `${data.submissionRef}/${applicationIndex}`
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
@@ -45,12 +45,14 @@ function createModel(errors, data) {
 
   const model = {
     breadcrumbs: breadcrumbs,
+    notificationHeader: pageContent.notificationHeader + data.cost,
+    notificationContent: pageContent.notificationContent,
     pageTitle: data.submissionRef,
     captionText: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadScientificName: pageContent. tableHeadScientificName,
     applicationsData : applicationsTableData,
-
+    showPayNowNotification: data.showPayNowNotification,
     inputPagination: data.totalApplications > pageSize ? paginate(data.submissionRef, data.totalApplications, data.pageNo, textPagination) : ""
   }
   return { ...commonContent, ...model }
@@ -113,16 +115,30 @@ module.exports = [
       const endIndex = startIndex + pageSize;
       const slicedApplications = applications.slice(startIndex, endIndex);
 
+      let showPayNowNotification = false
+      //if(status is make payment) {//TODO Only show the pay now notification if it needs paying
+      showPayNowNotification = true
+      const costing = await dynamics.getSubmissionCosting(request.server, submissionRef, request.auth.credentials.contactId)
+
+      if (costing && costing.Cost > 0)  {
+        submission.paymentDetails = { costingValue: costing.Cost, costingType: costing.Type}
+      } else {
+        console.log('Unable to determine cost')
+        throw 'Unable to determine cost'
+      }
+    //}
+
       const pageData = {
-        submissionRef: submissionRef,
+        submissionRef,
         pageNo: pageNo ? pageNo : 1,
         applications: slicedApplications,
-        startIndex: startIndex,
-        endIndex: endIndex,
+        startIndex,
+        endIndex,
         totalApplications: submission.applications.length,
+        showPayNowNotification,
+        cost: submission.paymentDetails?.costingValue
       }
 
-      submission.submissionRef = submissionRef
       setYarValue(request, 'submission', submission)
       
       return h.view(pageId, createModel(null, pageData))

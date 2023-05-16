@@ -2,7 +2,7 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
-
+const { getSubmissionCosting } = require('../services/dynamics-service')
 const textContent = require('../content/text-content')
 const pageId = 'pay-application'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -89,11 +89,20 @@ module.exports = [{
       costingValue = submission.paymentDetails.costingValue
     } else {
       //TODO Get payment type and fee amount from api
-      costingValue = 24.99
-      const costingType = 'simple'
-      submission.paymentDetails = { costingValue, costingType }
-
       try {
+        const response = getSubmissionCosting(request.server, submission.submissionRef, request.auth.credentials.contactId)
+
+        if (response && response.Cost > 0)  {
+          submission.paymentDetails = { costingValue: response.Cost, costingType: response.Type}
+        } else {
+          console.log('Unable to determine cost')
+          throw 'Unable to determine cost'
+        }
+      
+      // costingValue = 24.99
+      // const costingType = 'simple'
+      //submission.paymentDetails = { costingValue, costingType }
+
         mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
       } catch (err) {
         console.log(err)
@@ -102,8 +111,8 @@ module.exports = [{
     }
 
 
-    if (submission.paymentDetails.costingType === 'complex') {
-      return h.redirect(nextPath);
+    if (submission.paymentDetails.costingType === 'complex' && !submission.paymentDetails.costingValue) {
+      return h.redirect(nextPathNoPayment);
     }
 
 
@@ -125,7 +134,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const payNow = request.payload.payNow === textContent.common.radioOptionYes;
-      
+
       if (payNow) {
         return h.redirect(nextPathCreatePayment);
       }

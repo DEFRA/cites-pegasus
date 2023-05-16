@@ -7,68 +7,75 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
-
-
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% block beforeContent %}
-{# <div class="govuk-grid-row"> #}
+  {# <div class="govuk-grid-row"> #}
   {{ govukBreadcrumbs(breadcrumbs) }}
   {# </div> #}
 
   {% if errorList %}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-          {{govukErrorSummary ({
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
            "titleText": errorSummaryTitle,
            "errorList": errorList
         }) }}
-        </div>
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
 {% endblock %}
 {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <form method="POST"  autocomplete="off" novalidate="novalidate">
-            {# <div class="govuk-grid-row"> #}
-                <table class="govuk-table">
-                    <caption class="govuk-table__caption govuk-table__caption--l">{{captionText}}</caption>
-                    <thead class="govuk-table__head">
-                      <tr class="govuk-table__row">
-                        <th scope="col" class="govuk-table__header govuk-!-width-one-third">{{tableHeadReferenceNumber}}</th>
-                        <th scope="col" class="govuk-table__header govuk-!-width-two-third">{{ tableHeadScientificName}}</th>
-                      </tr>
-                    </thead>
-                    <tbody class="govuk-table__body">
-                      {% for application in applicationsData %}
-                      <tr class="govuk-table__row">
-                        <td class="govuk-table__cell">
-                          <a class="referencenumber-link" href="{{application.referenceNumberUrl}}">{{application.referenceNumber}}</a>
-                        </td>
-                        <td class="govuk-table__cell">{{application.speciesName}}</td>
-                      </tr> 
-                      {% endfor %}         
-                    </tbody>
-                </table>
-            {# </div> #}
-         
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
-              <p></p>
-            </div>
-            <div class="govuk-grid-column-one-half landingpage-row-wrapper">
-              {{ govukPagination(inputPagination) }}
-            </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% set html %}
+      <p class="govuk-notification-banner__heading">
+        {{notificationHeader}}       
+      </p>
+      <p>
+        {{notificationContent | safe}}        
+      </p>
+      {% endset %}
+
+{% if showPayNowNotification %}
+      {{ govukNotificationBanner({
+        html: html
+      }) }}
+{% endif %}
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        {# <div class="govuk-grid-row"> #}
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-table__caption--l">{{captionText}}</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header govuk-!-width-one-third">{{tableHeadReferenceNumber}}</th>
+              <th scope="col" class="govuk-table__header govuk-!-width-two-third">{{ tableHeadScientificName}}</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for application in applicationsData %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a class="referencenumber-link" href="{{application.referenceNumberUrl}}">{{application.referenceNumber}}</a>
+                </td>
+                <td class="govuk-table__cell">{{application.speciesName}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {# </div> #}
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <p></p>
+          </div>
+          <div class="govuk-grid-column-one-half landingpage-row-wrapper">
+            {{ govukPagination(inputPagination) }}
+          </div>
         </div>
-        
-      
-        </form>
-      </div>
+
+      </form>
     </div>
+  </div>
 {% endblock %}
-
-
-
-
-
