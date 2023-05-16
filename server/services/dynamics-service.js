@@ -447,6 +447,43 @@ async function getSubmission(server, contactId, submissionRef) {
   }
 }
 
+async function setSubmissionPayment(server, contactId, submissionRef, paymentRef, paymentValue) {
+  const top = "$top=1"
+  const select = "$select=cites_submissionid"
+  const filter = `$filter=cites_submissionreference eq '${submissionRef}' and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
+  const url = `${apiUrl}cites_submissions?${top}&${select}&${filter}`
+  //console.log(url)
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    const response = await Wreck.get(url, options)
+
+    const { res, payload } = response
+
+    if (payload) {
+      if (payload.value.length == 0) {
+        throw `Submission not found with reference '${submissionRef}' and contact '${contactId}'`
+      }
+
+      const postUrl = `${apiUrl}cites_submissions(${payload.value[0].cites_submissionid})`
+      const postResponse = Wreck.post(postUrl, { 
+        ...options, 
+        payload: {
+          cites_paymentmethod: 149900000, // Gov Pay
+          cites_paymentreference: paymentRef,
+          cites_totalfeeamount: paymentValue/100,
+        }
+      })
+    }
+
+    return null
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
 // async function getSubmissionCosting(server, submissionRef, contactId) {
 
 //   const accessToken = await getAccessToken(server)
