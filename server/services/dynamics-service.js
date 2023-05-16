@@ -302,6 +302,17 @@ function getDynamicsStatuses(portalStatuses) {
   return statuses
 }
 
+function getPaymentCalculationType(dynamicsType) {
+  switch (dynamicsType) {
+    case 149900000:
+      return "simple"
+    case 149900001:
+      return "complex"
+    default:
+      throw "Unknown Dynamics Payment Calculation Type."
+  }
+}
+
 const dynamicsPermitTypesMappings = {
   'import': 149900001,
   'export': 149900000,
@@ -393,7 +404,7 @@ async function getSubmissions(server, query, pageSize) {
 
 async function getSubmission(server, contactId, submissionRef) {
   const top = "$top=1"
-  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued"
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_totalfeecalculation,cites_paymentcalculationtype"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
   const filter = `$filter=cites_submissionreference eq '${submissionRef}' and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
@@ -416,10 +427,14 @@ async function getSubmission(server, contactId, submissionRef) {
 
       const jsonContent = JSON.parse((submission.cites_portaljsoncontent) + (submission.cites_portaljsoncontentcontinued || ''))
       jsonContent.submissionRef = submissionRef
+      jsonContent.payment = {
+        type: getPaymentCalculationType(submission.cites_paymentcalculationtype),
+        value: submission.cites_totalfeecalculation
+      }
 
       for (const jsonApplication of jsonContent.applications) {
-        dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonContent.applicationIndex)
-        jsonApplication.applicationRef = dynamicsApplications?.cites_applicationreference
+        const dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonContent.applicationIndex)
+        jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference
       }
 
       return jsonContent
