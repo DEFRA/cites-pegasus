@@ -17,8 +17,8 @@ function createModel(errors, data) {
 
   const applicationsData = data.applications
   const applicationsTableData= applicationsData.map(application => {
-    const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0'); //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
-    const referenceNumber = `${data.submissionRef}/${applicationIndex}`
+    //const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0'); //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
+    const referenceNumber = application.applicationRef
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    

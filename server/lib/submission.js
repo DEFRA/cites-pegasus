@@ -63,16 +63,15 @@ function validateSubmission(submission, path) {
 function cloneSubmission(request, applicationIndex) {
     const submission = getSubmission(request)
     const newApplication = submission.applications[applicationIndex]
-    const cloneSource = {submissionRef: submission.submissionRef, applicationIndex}
+    const cloneSource = {submissionRef: submission.submissionRef, applicationRef: newApplication.applicationRef, applicationIndex}
 
-    if(submission.hasOwnProperty('submissionRef')) {
-        delete submission.submissionRef
-    }
-    if(submission.hasOwnProperty('paymentDetails')) {
-        delete submission.paymentDetails  
-    }
+    delete submission.submissionRef
+    delete submission.submissionId
+    delete submission.paymentDetails  
     
     newApplication.applicationIndex = 0
+    delete newApplication.applicationRef
+    
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
     setYarValue(request, 'cloneSource', cloneSource)
