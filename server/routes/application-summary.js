@@ -617,12 +617,10 @@ function createAreYouSureModel(errors, data) {
         {
           value: true,
           text: commonContent.radioOptionYes,
-          checked: data.areYouSure
         },
         {
           value: false,
           text: commonContent.radioOptionNo,
-          checked: data.areYouSure === false
         }
       ],
       errorMessage: getFieldError(errorList, "#areYouSure")
@@ -757,7 +755,6 @@ module.exports = [
         permitType: submission.permitType,
         isAgent: submission.isAgent,
         changeRouteData: changeRouteData,
-        areYouSure: submission.areYouSure,
       }
       return h.view('are-you-sure', createAreYouSureModel(null, pageData))
     }
@@ -831,15 +828,15 @@ module.exports = [
           const submission = getSubmission(request)
           const changeRouteData = getChangeRouteData(request)
 
-          let areYouSure = null
-          switch (request.payload.areYouSure) {
-            case "true":
-              areYouSure = true
-              break
-            case "false":
-              areYouSure = false
-              break
-          }
+          // let areYouSure = null
+          // switch (request.payload.areYouSure) {
+          //   case "true":
+          //     areYouSure = true
+          //     break
+          //   case "false":
+          //     areYouSure = false
+          //     break
+          // }
 
           const pageData = {
             summaryType: summaryType,
@@ -847,7 +844,7 @@ module.exports = [
             permitType: submission.permitType,
             isAgent: submission.isAgent,
             changeRouteData: changeRouteData,
-            areYouSure: areYouSure,
+            areYouSure: request.payload.areYouSure,
           }
 
           return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()

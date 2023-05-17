@@ -141,13 +141,11 @@ function createAreYouSureModel(errors, data) {
       items: [
         {
           value: true,
-          text: commonContent.radioOptionYes,
-          checked: data.areYouSure
+          text: commonContent.radioOptionYes  
         },
         {
           value: false,
-          text: commonContent.radioOptionNo,
-          checked: data.areYouSure === false
+          text: commonContent.radioOptionNo
         }
       ],
       errorMessage: getFieldError(errorList, "#areYouSure")
@@ -382,7 +380,6 @@ module.exports = [
             confirmType: "remove",
             applications: applications,
             speciesName: submission.applications[applicationIndex].species.speciesName,
-            areYouSure: request.payload.areYouSure
            }
           return h.view(areYouSurePath, createAreYouSureModel(err, pageData)).takeover()
         }
