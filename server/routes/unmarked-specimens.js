@@ -98,7 +98,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -145,7 +145,7 @@ module.exports = [
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
           )
         } catch (err) {
-          console.log(err)
+          console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
         

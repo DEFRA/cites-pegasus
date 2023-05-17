@@ -72,7 +72,7 @@ module.exports = [
       try {
         validateSubmission(submission, pageId)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
@@ -107,7 +107,7 @@ module.exports = [
         try {
           response = await postSubmission(request.server, submission)
         } catch (err) {
-          console.log(err)
+          console.error(err)
           throw err
         }
 
@@ -122,7 +122,7 @@ module.exports = [
         try {
           mergeSubmission(request, submission, `${pageId}`)
         } catch (err) {
-          console.log(err)
+          console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
 

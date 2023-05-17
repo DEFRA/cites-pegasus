@@ -95,7 +95,7 @@ module.exports = [{
     try {
       validateSubmission(submission, pageId)
     } catch (err) {
-      console.log(err)
+      console.error(err)
       return h.redirect(invalidSubmissionPath)
     }
 
@@ -145,7 +145,7 @@ module.exports = [{
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 

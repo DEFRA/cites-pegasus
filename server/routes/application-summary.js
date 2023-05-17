@@ -668,7 +668,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -745,7 +745,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/are-you-sure/${summaryType}/${applicationIndex}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -797,7 +797,7 @@ module.exports = [
           try {
             cloneSubmission(request, applicationIndex)
           } catch (err) {
-            console.log(err)
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)

@@ -87,7 +87,7 @@ module.exports = [{
       
     }
     catch (err) {
-      console.log(err);
+      console.error(err);
       return h.redirect(invalidSubmissionPath)
     }
 
@@ -116,7 +116,7 @@ module.exports = [{
         mergeSubmission(request, agentData, pageId)        
       }
       catch (err){
-        console.log(err);
+        console.error(err);
         return h.redirect(invalidSubmissionPath)
       }
       

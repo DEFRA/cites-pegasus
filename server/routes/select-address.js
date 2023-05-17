@@ -153,7 +153,7 @@ module.exports = [{
             return h.view(pageId, createModel(null, pageData));
         }
         catch (err) {
-            console.log(err);
+            console.error(err);
             return h.redirect(invalidSubmissionPath)
         }
     }
@@ -223,7 +223,7 @@ module.exports = [{
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
             catch (err) {
-                console.log(err);
+                console.error(err);
                 return h.redirect(invalidSubmissionPath)
             }
 

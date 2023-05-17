@@ -5,23 +5,34 @@ const { createPayment } = require('../services/govpay-service')
 const urlPrefix = require('../../config/config').urlPrefix
 const pageId = 'payment-problem'
 const currentPath = `${urlPrefix}/${pageId}`
+const paymentRoutes = ['account', 'new-application']
 
-function createModel(){
+function createModel(paymentRoute) {
   const commonContent = textContent.common;
   const pageContent = textContent.paymentProblem;
   const submitApplicationAndPayLaterUrl = `${urlPrefix}/application-complete`
-  const goBackAndTryPaymentAgainUrl= `${urlPrefix}/govpay/create-payment`
- 
-  return { ...commonContent, ...pageContent, goBackAndTryPaymentAgainUrl, submitApplicationAndPayLaterUrl}
+  const returnToYourApplicationsUrl = `${urlPrefix}/`
+  const goBackAndTryPaymentAgainUrl = `${urlPrefix}/govpay/create-payment/${paymentRoute}`
+
+  return { ...commonContent, ...pageContent, goBackAndTryPaymentAgainUrl, submitApplicationAndPayLaterUrl, returnToYourApplicationsUrl, paymentRoute }
 }
 
 module.exports = [{
   method: 'GET',
-  path: `${currentPath}`,
+  path: `${currentPath}/{paymentRoute}`,
   config: {
-    auth: false
+    auth: false,
+    validate: {
+      params: Joi.object({
+        paymentRoute: Joi.string().valid(...paymentRoutes)
+      }),
+      failAction: (request, h, error) => {
+        console.log(error)
+      }
+    },
+
+    handler: async (request, h) => {
+      return h.view(pageId, createModel(request.params.paymentRoute));
+    }
   },
-  handler: async (request, h) => {
-       return h.view(pageId, createModel());  
-  }
 }]

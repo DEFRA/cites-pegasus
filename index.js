@@ -4,6 +4,6 @@ createServer()
   .then(server => server.start())
   .then(server => console.log('###### CITES PORTAL STARTUP: Server started ######'))
   .catch(err => {
-    console.log(err)
+    console.error(err)
     process.exit(1)
   })

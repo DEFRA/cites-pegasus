@@ -2,7 +2,6 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -13,12 +12,15 @@
 
       <p class="govuk-body">{{pageBody}}</p>
 
-      
       <p class="govuk-body">
         <a href="{{goBackAndTryPaymentAgainUrl}}">{{goBackAndTryAgainLinkText}}</a>
       </p>
       <p class="govuk-body">
-        <a href="{{submitApplicationAndPayLaterUrl}}">{{submitApplicationLinkText}}</a>
+        {% if paymentRoute === 'account' %}
+          <a href="{{returnToYourApplicationsUrl}}">{{returnToYourApplicationsLinkText}}</a>
+        {% else %}
+          <a href="{{submitApplicationAndPayLaterUrl}}">{{submitApplicationLinkText}}</a>
+        {% endif %}
       </p>
 
     </div>

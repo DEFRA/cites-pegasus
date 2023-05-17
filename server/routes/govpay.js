@@ -3,13 +3,16 @@ const { urlPrefix } = require('../../config/config')
 const config = require('../../config/config')
 const { createPayment } = require('../services/govpay-service')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
+const { setYarValue, getYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
 const { getDomain } = require('../lib/helper-functions')
 const { getPaymentStatus } = require("../services/govpay-service")
 const pageId = 'govpay'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathFailed = `${urlPrefix}/payment-problem`
-const nextPathSuccess = `${urlPrefix}/application-complete`
+const nextPathSuccessNewApplication = `${urlPrefix}/application-complete`
+const nextPathSuccessAccountFlow = `${urlPrefix}/payment-success`
+const paymentRoutes = ['account', 'new-application']
 
 async function getFinishedPaymentStatus(paymentId) {
 
@@ -40,7 +43,17 @@ async function getFinishedPaymentStatus(paymentId) {
 module.exports = [
   {
     method: 'GET',
-    path: `${currentPath}/create-payment`,
+    path: `${currentPath}/create-payment/{paymentRoute}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          paymentRoute: Joi.string().valid(...paymentRoutes)
+        }),
+        failAction: (request, h, error) => {
+          console.log(error)
+        }
+      }
+    },
     handler: async (request, h) => {
 
       const submission = getSubmission(request)
@@ -61,10 +74,11 @@ module.exports = [
       try {
         mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
+      setYarValue(request, 'govpay-paymentRoute', request.params.paymentRoute)
       return h.redirect(response.nextUrl)
     }
   },
@@ -97,23 +111,23 @@ module.exports = [
       try {
         mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
       //TODO Update the backend with the payment outcome
 
       
+      const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
 
-
-      if (paymentStatus.status !== 'success') {
-        return h.redirect(nextPathFailed)
+      if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
+        return h.redirect(`${nextPathFailed}/${paymentRoute}`)
       }
-      if (paymentStatus.finished === false) {
-        return h.redirect(nextPathFailed)
+      
+      if(paymentRoute === 'newApplication') {
+        return h.redirect(nextPathSuccessNewApplication)
+      } else {
+        return h.redirect(nextPathSuccessAccountFlow)
       }
-
-
-      return h.redirect(nextPathSuccess)
 
     }
   }

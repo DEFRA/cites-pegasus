@@ -166,7 +166,7 @@ module.exports = [
       try {
         appStatuses = validateSubmission(submission, pageId)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -190,7 +190,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/${areYouSurePath}/permit-type`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
@@ -210,7 +210,7 @@ module.exports = [
       try {
         appStatuses = validateSubmission(submission, `${pageId}/create-application`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }      
       
@@ -246,7 +246,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/${areYouSurePath}/remove`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
@@ -302,7 +302,7 @@ module.exports = [
       try {
         newApplicationIndex = cloneApplication(request, applicationIndex)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
       return h.redirect(`${nextPathCopyApplication}/${newApplicationIndex}`)
@@ -393,7 +393,7 @@ module.exports = [
           try {
             deleteApplication(request, applicationIndex)
           } catch (err) {
-            console.log(err)
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
           if (applications.length === 1 ) {
