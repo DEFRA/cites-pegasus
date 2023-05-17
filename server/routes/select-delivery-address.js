@@ -91,7 +91,7 @@ module.exports = [{
             validateSubmission(submission, `${pageId}`)
         }
         catch (err) {
-            console.log(err);
+            console.error(err);
             return h.redirect(invalidSubmissionPath)
         }
 
@@ -171,7 +171,7 @@ module.exports = [{
                 mergeSubmission(request, newSubmission, pageId)
             }
             catch (err) {
-                console.log(err);
+                console.error(err);
                 return h.redirect(`${invalidSubmissionPath} / `)
             }
 

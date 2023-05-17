@@ -42,11 +42,15 @@ function createModel(errors, data) {
       }
     ]
   }
+  const paymentLink = `${urlPrefix}/govpay/create-payment/account`  
+
+  const notificationHeader = pageContent.notificationHeader.replace('##COST##', data.cost)
+  const notificationContent = pageContent.notificationContent.replace('##PAYMENT_LINK##', paymentLink)
 
   const model = {
     breadcrumbs: breadcrumbs,
-    notificationHeader: pageContent.notificationHeader + data.cost,
-    notificationContent: pageContent.notificationContent,
+    notificationHeader: notificationHeader,
+    notificationContent: notificationContent,
     pageTitle: data.submissionRef,
     captionText: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
@@ -117,15 +121,10 @@ module.exports = [
 
       let showPayNowNotification = false
       //if(status is make payment) {//TODO Only show the pay now notification if it needs paying
-      showPayNowNotification = true
-      const costing = await dynamics.getSubmissionCosting(request.server, submissionRef, request.auth.credentials.contactId)
-
-      if (costing && costing.Cost > 0)  {
-        submission.paymentDetails = { costingValue: costing.Cost, costingType: costing.Type}
-      } else {
-        console.log('Unable to determine cost')
-        throw 'Unable to determine cost'
+      if(submission.paymentDetails.costingValue > 0){
+           showPayNowNotification = true
       }
+      
     //}
 
       const pageData = {

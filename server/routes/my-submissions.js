@@ -371,7 +371,7 @@ module.exports = [
           setYarValue(request, 'mySubmissions-queryUrls', null)
           setYarValue(request, 'mySubmissions-filterData', filterData)
         } catch (err) {
-          console.log(err)
+          console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
 

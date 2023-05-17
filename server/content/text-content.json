@@ -1308,8 +1308,8 @@
     "textBreadcrumbs": "Your applications",
     "tableHeadReferenceNumber": "Reference number",
     "tableHeadScientificName": " Scientific name",
-    "notificationHeader": "The fee for this application is £",
-    "notificationContent": "<a class='govuk-notification-banner__link' href='/pay-application'>Pay now</a> to complete your application."
+    "notificationHeader": "The fee for this application is £##COST##",
+    "notificationContent": "<a class='govuk-notification-banner__link' href='##PAYMENT_LINK##'>Pay now</a> to complete your application."
   },
   "payApplication": {
     "defaultTitle": "Pay for your CITES application",
@@ -1345,6 +1345,12 @@
     "pageHeader": "Sorry, there was a problem with the payment ",
     "pageBody": "You can try again. No money has been taken from your account.",
     "goBackAndTryAgainLinkText": "Go back to try the payment again",
-    "submitApplicationLinkText": "Submit application and pay later"
+    "submitApplicationLinkText": "Submit application and pay later",
+    "returnToYourApplicationsLinkText": "Return to your applications"
+  },
+  "paymentSuccess": {
+    "defaultTitle": "Your payment was successful",
+    "pageHeader": "Your payment was successful",
+    "returnToYourApplicationsLinkText": "Return to your applications" 
   }
 }

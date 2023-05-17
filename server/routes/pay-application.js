@@ -2,12 +2,11 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
-const { getSubmissionCosting } = require('../services/dynamics-service')
 const textContent = require('../content/text-content')
 const pageId = 'pay-application'
 const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
-const nextPathCreatePayment = `${urlPrefix}/govpay/create-payment`
+const nextPathCreatePayment = `${urlPrefix}/govpay/create-payment/new-application`
 const nextPathNoPayment = `${urlPrefix}/application-complete`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -85,36 +84,11 @@ module.exports = [{
     //TODO CHECK APPLICATION STATUS
     let costingValue = null
 
-    if (submission.paymentDetails) {
-      costingValue = submission.paymentDetails.costingValue
-    } else {
-      //TODO Get payment type and fee amount from api
-      try {
-        const response = getSubmissionCosting(request.server, submission.submissionRef, request.auth.credentials.contactId)
-
-        if (response && response.Cost > 0)  {
-          submission.paymentDetails = { costingValue: response.Cost, costingType: response.Type}
-        } else {
-          console.log('Unable to determine cost')
-          throw 'Unable to determine cost'
-        }
-      
-      // costingValue = 24.99
-      // const costingType = 'simple'
-      //submission.paymentDetails = { costingValue, costingType }
-
-        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
-      } catch (err) {
-        console.log(err)
-        return h.redirect(invalidSubmissionPath)
-      }
-    }
-
-
-    if (submission.paymentDetails.costingType === 'complex' && !submission.paymentDetails.costingValue) {
+    costingValue = submission.paymentDetails.costingValue
+    
+    if (submission.paymentDetails.costingType === 'complex') {
       return h.redirect(nextPathNoPayment);
     }
-
 
     return h.view(pageId, createModel(null, costingValue));
   }

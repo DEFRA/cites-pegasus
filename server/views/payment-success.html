@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {% set html %}
+          <p class="govuk-notification-banner__heading">
+            {{notificationHeader}}
+          </p>
+          <p>
+            {{notificationContent | safe}}
+          </p>
+          {% endset %}
+
+          {{ govukNotificationBanner({
+          type: 'success',
+          disableAutoFocus: true,
+          html: html
+      }) }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

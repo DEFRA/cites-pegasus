@@ -1005,7 +1005,13 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().required(),
     goBackAndTryAgainLinkText: Joi.string().required(),
-    submitApplicationLinkText: Joi.string().required()
+    submitApplicationLinkText: Joi.string().required(),
+    returnToYourApplicationsLinkText: Joi.string().required()
+  }).required(),
+  paymentSuccess: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    returnToYourApplicationsLinkText: Joi.string().required(),
   }).required()
 })
 
