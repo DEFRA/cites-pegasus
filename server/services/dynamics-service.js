@@ -393,15 +393,17 @@ async function getSubmissions(server, query, pageSize) {
 
 async function getSubmission(server, contactId, submissionRef) {
   const top = "$top=1"
-  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued"
-  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode)"
-  const filter = `$filter=cites_submissionreference eq '${submissionRef}'`// and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid"
+  const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
+  const filter = `$filter=cites_submissionreference eq '${submissionRef}' and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
+  
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
   //console.log(url)
   const accessToken = await getAccessToken(server)
 
   try {
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    console.log(`getSubmission call - url:${url}`)
     const response = await Wreck.get(url, options)
 
     const { res, payload } = response
@@ -412,13 +414,55 @@ async function getSubmission(server, contactId, submissionRef) {
       }
 
       const submission = payload.value[0]
+      const dynamicsApplications = payload.value[0].cites_cites_submission_incident_submission 
 
       const jsonContent = JSON.parse((submission.cites_portaljsoncontent) + (submission.cites_portaljsoncontentcontinued || ''))
       jsonContent.submissionRef = submissionRef
+      jsonContent.submissionId = submission.cites_submissionid
+
+      //for (const jsonApplication of jsonContent.applications) {
+      jsonContent.applications.forEach(jsonApplication => {
+        dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonApplication.applicationIndex)
+        jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference || `${submissionRef}/` + (jsonApplication.applicationIndex + 1).toString().padStart(3, '0') //NOTE - The second part of this condition is a bit of a fudge as it's possible that the cites_applicationreference could be null.  It's also possible tha the application ref is not just applicationIndex plus 1 though.
+      })
+
       return jsonContent
     }
 
     return null
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+async function updatePayment(server) {
+
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const url = `${apiUrl}cites_submissions()`
+
+    const requestPayload = {
+      cites_paymentmethod: 149900000, // Choice
+      cites_paymentreference: "abcd", // Text
+      cites_totalfeeamount: Number(parseFloat(12).toFixed(4)) // Currency
+    }
+
+    const options = {
+      json: true,
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+      payload: requestPayload
+    }
+
+    const { payload } = await Wreck.patch(url, options)
+
+    // if (payload.cites_species_response) {
+    //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
+    //   return JSON.parse(json)
+    // }
+
+    return payload
   } catch (err) {
     console.log(err)
     throw err

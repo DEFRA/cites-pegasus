@@ -112,6 +112,7 @@ module.exports = [
         }
 
         submission.submissionRef = response.submissionRef
+        submission.submissionId = response.submissionId
         const costingValue = response.costingValue ? response.costingValue : null
         submission.paymentDetails = { 
           costingType: response.costingType,
