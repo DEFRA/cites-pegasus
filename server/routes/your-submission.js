@@ -343,7 +343,6 @@ module.exports = [
           const pageData = {
             confirmType: 'permit-type',
             permitType: submission.permitType,
-            areYouSure: request.payload.areYouSure,
            }
           return h.view(areYouSurePath, createAreYouSureModel(err, pageData)).takeover()
         }

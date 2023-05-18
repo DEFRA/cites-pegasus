@@ -828,23 +828,12 @@ module.exports = [
           const submission = getSubmission(request)
           const changeRouteData = getChangeRouteData(request)
 
-          // let areYouSure = null
-          // switch (request.payload.areYouSure) {
-          //   case "true":
-          //     areYouSure = true
-          //     break
-          //   case "false":
-          //     areYouSure = false
-          //     break
-          // }
-
           const pageData = {
             summaryType: summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
             changeRouteData: changeRouteData,
-            areYouSure: request.payload.areYouSure,
           }
 
           return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
