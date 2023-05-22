@@ -659,7 +659,8 @@ module.exports = [
 
       if (cloneSource?.submissionRef && summaryType === 'view-submitted'){
         //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
-        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, cloneSource?.submissionRef)
+        const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
         setYarValue(request, 'submission', submission)      
         setYarValue(request, 'cloneSource', null)
       }

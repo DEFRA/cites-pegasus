@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { setYarValue } = require('../lib/session')
+const { setYarValue, getYarValue } = require('../lib/session')
 const dynamics = require("../services/dynamics-service")
 const textContent = require('../content/text-content')
 const pageId = 'my-submission'
@@ -107,7 +107,9 @@ module.exports = [
     handler: async (request, h) => {
       const submissionRef = request.params.submissionRef
       const pageNo = request.params.pageNo
-      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
+      const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+
+      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, submissionRef)
       const applications = submission.applications
      
       let startIndex =  null

@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require('../../config/config')
 const config = require('../../config/config')
 const { createPayment } = require('../services/govpay-service')
+const { setSubmissionPayment } = require('../services/dynamics-service')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
 const { setYarValue, getYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
@@ -114,14 +115,15 @@ module.exports = [
         console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
-      //TODO Update the backend with the payment outcome
-
-      
       const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
-
+      
       if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
         return h.redirect(`${nextPathFailed}/${paymentRoute}`)
       }
+
+      const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+
+      await setSubmissionPayment(request.server, contactId, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100)      
       
       if(paymentRoute === 'newApplication') {
         return h.redirect(nextPathSuccessNewApplication)

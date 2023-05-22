@@ -43,8 +43,6 @@ module.exports = [{
   handler: async (request, h) => {
     const submission = getSubmission(request) || null
 
-    console.log(submission.paymentDetails)
-
     const pageData = {
       submissionRef: submission.submissionRef, 
       costingType: submission.paymentDetails.costingType,

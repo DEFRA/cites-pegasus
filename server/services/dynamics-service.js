@@ -335,16 +335,17 @@ function reverseMapper(mapping, value) {
   return match ? match[0] : value.toString()
 }
 
-async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searchTerm) {
+async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes, statuses, searchTerm) {
   const select = "$select=cites_submissionreference,cites_submissionmethod,statuscode,createdon"//,cites_permittype"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
   const filterParts = [
-    `_cites_submissionagent_value eq '${contactId}'`,//TODO Include the contactId filter once the contacts are synced with the back end
+    `_cites_submissionagent_value eq '${contactId}'`,
+    `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`,
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
-  ]
+  ]  
 
   if (statuses && statuses.length > 0) {
     //const statusMappedList = statuses.map(x => `'${dynamicsStatusMappings[x]}'`).join(",")
@@ -430,11 +431,18 @@ function getPaymentCalculationType(dynamicsType) {
   }
 }
 
-async function getSubmission(server, contactId, submissionRef) {
+async function getSubmission(server, contactId, organisationId, submissionRef) {
   const top = "$top=1"
   const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
-  const filter = `$filter=cites_submissionreference eq '${submissionRef}' and _cites_submissionagent_value eq '${contactId}'`  //TODO Include the contactId filter once the contacts are synced with the back end
+  
+  const filterParts = [
+    `cites_submissionreference eq '${submissionRef}'`,
+    `_cites_submissionagent_value eq '${contactId}'`,
+    `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
+  ]
+
+  var filter = `$filter=${filterParts.join(" and ")}`
 
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
   //console.log(url)
@@ -487,17 +495,63 @@ async function getSubmission(server, contactId, submissionRef) {
   }
 }
 
-async function updatePayment(server) {
-
-  const accessToken = await getAccessToken(server)
+async function validateSubmission(accessToken, contactId, organisationId, submissionRef, submissionId) {
 
   try {
-    const url = `${apiUrl}cites_submissions()`
+    if (!submissionId && !submissionRef) {
+      throw 'Unable to identify submission'
+    }
+    const top = "$top=1"
+    const select = "$select=cites_submissionreference"
+    const filterParts = [
+      `$filter=_cites_submissionagent_value eq '${contactId}'`,
+      `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
+    ]
+        
+    if (submissionRef) {
+      filterParts.push(`cites_submissionreference eq '${submissionRef}'`)
+    }
+    if (submissionId) {
+      filterParts.push(`cites_submissionid eq '${submissionId}'`)
+    }
+
+    const url = `${apiUrl}cites_submissions?${top}&${select}&${filterParts.join(" and ")}`
+
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+
+    console.log(`HTTP Request Verb: GET Url: ${url}`)
+
+    const { payload } = await Wreck.get(url, options)
+
+    if (payload) {
+      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+
+      if (payload.value.length == 0) {
+        throw `Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`
+      }
+    }
+  }
+  catch (err) {
+    if (err.data?.payload) {
+      console.error(err.data.payload)
+    }
+    console.error(err)
+    throw err
+  }
+}
+
+async function setSubmissionPayment(server, contactId, organisationId, submissionId, paymentRef, paymentValue) {
+  const accessToken = await getAccessToken(server)
+  await validateSubmission(accessToken, contactId, organisationId, null, submissionId)//Not necessary as we are using submissionId which is server side
+
+  try {
+
+    const url = `${apiUrl}cites_submissions(${submissionId})`
 
     const requestPayload = {
-      cites_paymentmethod: 149900000, // Choice
-      cites_paymentreference: "abcd", // Text
-      cites_totalfeeamount: Number(parseFloat(12).toFixed(4)) // Currency
+      cites_paymentmethod: 149900000, // Gov Pay
+      cites_paymentreference: paymentRef,
+      cites_totalfeeamount: paymentValue,
     }
 
     const options = {
@@ -505,19 +559,13 @@ async function updatePayment(server) {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
       payload: requestPayload
     }
-
     console.log(`HTTP Request Verb: PATCH Url: ${url}`)
-    console.log('Request Payload: ' + JSON.stringify(requestPayload, null, 2));
+    console.log('Request Payload: ' + JSON.stringify(requestPayload, null, 2))
+
     const { payload } = await Wreck.patch(url, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
+    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
-    // if (payload.cites_species_response) {
-    //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-    //   return JSON.parse(json)
-    // }
-
-    return payload
   } catch (err) {
     if (err.data?.payload) {
       console.error(err.data.payload)
@@ -828,4 +876,4 @@ async function updatePayment(server) {
 //   return { Cost: 1.23, Type: 'complex' }
 // }
 
-module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission }
+module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission, setSubmissionPayment }

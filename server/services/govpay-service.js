@@ -61,7 +61,7 @@ async function getPaymentStatus(paymentId) {
         
         console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
-        return { paymentId: payload.paymentId, status: payload.state.status, finished: payload.state.finished, amount: payload.amount, email: payload.email }
+        return { paymentId: payload.payment_id, status: payload.state.status, finished: payload.state.finished, amount: payload.amount, email: payload.email }
     } catch (err) {
         if(err.data?.payload){
             console.error(err.data.payload)
