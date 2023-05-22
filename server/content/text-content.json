@@ -25,6 +25,7 @@
     "countrySelectDefault": "Select a country...",
     "footerLinkTextPrivacy": "Privacy",
     "footerLinkTextAccessibilityStatement": "Accessibility statement",
+    "footerLinkTextCookies": "Cookies",
     "errorMessages": {}
   },
   "permitType": {
@@ -1425,6 +1426,23 @@
     "pageBodyText24": "You have the right to <a target='_blank' href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
     "pageBodyText25": "Defra’s <a target='_blank' href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
 
+  },
+  "cookies": {
+    "defaultTitle": "Cookies",
+    "pageHeader": "Cookies",
+    "heading1": "Essential cookies",
+    "pageBody1": "Cookies are small files saved on your phone, tablet or computer when you visit a website.",
+    "pageBody2": "We use cookies to make CITES work and collect information about how you use our service.",
+    "pageBody3": "Essential cookies keep your information secure while you use CITES. We do not need to ask permission to use them.",
+    "tableHeadName": "Name",
+    "tableHeadPurpose": "Purpose",
+    "tableHeadExpires": "Expires",
+    "tableRow1": "Session",
+    "tableRow2": "To store details you enter on this site",
+    "tableRow3": "12 hours",
+    "tableRow4": "Token",
+    "tableRow5": "To keep you signed in",
+    "tableRow6": "When you close your browser"
   }
 }
 
