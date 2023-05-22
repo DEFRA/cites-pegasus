@@ -227,6 +227,7 @@ const schema = Joi.object().keys({
     countrySelectDefault: Joi.string().required(),
     footerLinkTextPrivacy: Joi.string().required(),
     footerLinkTextAccessibilityStatement: Joi.string().required(),
+    footerLinkTextCookies: Joi.string().required(),
     errorMessages: Joi.object()
   }).required(),
   permitType: Joi.object({
@@ -1066,6 +1067,23 @@ const schema = Joi.object().keys({
     pageBodyText23: Joi.string().required(),
     pageBodyText24: Joi.string().required(),
     pageBodyText25: Joi.string().required(),
+  }).required(),
+  cookies: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading1: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    tableHeadName: Joi.string().required(),
+    tableHeadPurpose: Joi.string().required(),
+    tableHeadExpires: Joi.string().required(),
+    tableRow1: Joi.string().required(),
+    tableRow2: Joi.string().required(),
+    tableRow3: Joi.string().required(),
+    tableRow4: Joi.string().required(),
+    tableRow5: Joi.string().required(),
+    tableRow6: Joi.string().required(),
   }).required()
 })
 

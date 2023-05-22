@@ -43,7 +43,8 @@ const routes = [].concat(
   require('../routes/profile'),
   require('../routes/pay-application'),
   require('../routes/application-complete'),
-  require('../routes/privacy')
+  require('../routes/privacy'),
+  require('../routes/cookies')
 )
 
 module.exports = {
