@@ -37,12 +37,11 @@
           }
         }) %}
 
-        <p>{{pageBody}}</p>
-        <ul class="govuk-list govuk-list--bullet">
-        {% for item in bulletListItems %}
-          <li>{{item.bulletListItem}}</li>
-          {% endfor %}
-        </ul>
+        <p>{{pageBodyText1}}</p>
+        <p>{{pageBodyText2}}</p>
+        <p>{{pageBodyText3}}</p>
+        <p>{{pageBodyTextAgent}}</p>
+       
        
         {{ govukCheckboxes(inputDeclaration) }}
 
