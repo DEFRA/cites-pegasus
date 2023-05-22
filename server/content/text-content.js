@@ -1031,7 +1031,6 @@ const schema = Joi.object().keys({
     heading10: Joi.string().required(),
     heading11: Joi.string().required(),
     heading12: Joi.string().required(),
-    heading13: Joi.string().required(),
     pageBodyText1: Joi.string().required(),
     pageBodyText2: Joi.string().required(),
     pageBodyText3: Joi.string().required(),
@@ -1062,11 +1061,7 @@ const schema = Joi.object().keys({
     pageBodyText18: Joi.string().required(),
     pageBodyText19: Joi.string().required(),
     pageBodyText20: Joi.string().required(),
-    pageBodyText21: Joi.string().required(),
-    pageBodyText22: Joi.string().required(),
-    pageBodyText23: Joi.string().required(),
-    pageBodyText24: Joi.string().required(),
-    pageBodyText25: Joi.string().required(),
+    pageBodyText21: Joi.string().required()
   }).required(),
   cookies: Joi.object({
     defaultTitle: Joi.string().required(),
