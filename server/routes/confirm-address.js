@@ -98,7 +98,7 @@ module.exports = [{
             validateSubmission(submission, `${pageId}/${request.params.contactType}`)
         }
         catch (err) {
-            console.log(err);
+            console.error(err);
             return h.redirect(invalidSubmissionPath)
         }
 
@@ -152,7 +152,7 @@ module.exports = [{
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
             }
             catch (err) {
-                console.log(err);
+                console.error(err);
                 return h.redirect(invalidSubmissionPath)
             }
 

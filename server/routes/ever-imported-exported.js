@@ -93,7 +93,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -170,7 +170,7 @@ module.exports = [
             `${pageId}/${applicationIndex}`
           )
         } catch (err) {
-          console.log(err)
+          console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
 

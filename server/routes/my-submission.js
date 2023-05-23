@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { setYarValue } = require('../lib/session')
+const { setYarValue, getYarValue } = require('../lib/session')
 const dynamics = require("../services/dynamics-service")
 const textContent = require('../content/text-content')
 const pageId = 'my-submission'
@@ -17,8 +17,8 @@ function createModel(errors, data) {
 
   const applicationsData = data.applications
   const applicationsTableData= applicationsData.map(application => {
-    const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0'); //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
-    const referenceNumber = `${data.submissionRef}/${applicationIndex}`
+    //const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0'); //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
+    const referenceNumber = application.applicationRef
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    
@@ -42,11 +42,15 @@ function createModel(errors, data) {
       }
     ]
   }
+  const paymentLink = `${urlPrefix}/govpay/create-payment/account`  
+
+  const notificationHeader = pageContent.notificationHeader.replace('##COST##', data.cost)
+  const notificationContent = pageContent.notificationContent.replace('##PAYMENT_LINK##', paymentLink)
 
   const model = {
     breadcrumbs: breadcrumbs,
-    notificationHeader: pageContent.notificationHeader + data.cost,
-    notificationContent: pageContent.notificationContent,
+    notificationHeader: notificationHeader,
+    notificationContent: notificationContent,
     pageTitle: data.submissionRef,
     captionText: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
@@ -103,7 +107,9 @@ module.exports = [
     handler: async (request, h) => {
       const submissionRef = request.params.submissionRef
       const pageNo = request.params.pageNo
-      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, submissionRef)
+      const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+
+      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, submissionRef)
       const applications = submission.applications
      
       let startIndex =  null
@@ -117,15 +123,10 @@ module.exports = [
 
       let showPayNowNotification = false
       //if(status is make payment) {//TODO Only show the pay now notification if it needs paying
-      showPayNowNotification = true
-      const costing = await dynamics.getSubmissionCosting(request.server, submissionRef, request.auth.credentials.contactId)
-
-      if (costing && costing.Cost > 0)  {
-        submission.paymentDetails = { costingValue: costing.Cost, costingType: costing.Type}
-      } else {
-        console.log('Unable to determine cost')
-        throw 'Unable to determine cost'
+      if(submission.paymentDetails.costingValue > 0){
+           showPayNowNotification = true
       }
+      
     //}
 
       const pageData = {

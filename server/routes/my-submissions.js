@@ -235,11 +235,12 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 
 async function getSubmissionsData(request, pageNo, filterData) {
   let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
+  const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
 
   if (!queryUrls) {
     const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
 
-    const queryUrl = await dynamics.getNewSubmissionsQueryUrl(request.auth.credentials.contactId, filterData?.permitTypes, filterData?.statuses, searchTerm)
+    const queryUrl = await dynamics.getNewSubmissionsQueryUrl(request.auth.credentials.contactId, organisationId, filterData?.permitTypes, filterData?.statuses, searchTerm)
     queryUrls = [queryUrl]
   }
 
@@ -371,7 +372,7 @@ module.exports = [
           setYarValue(request, 'mySubmissions-queryUrls', null)
           setYarValue(request, 'mySubmissions-filterData', filterData)
         } catch (err) {
-          console.log(err)
+          console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
 

@@ -29,11 +29,20 @@ async function createPayment(costingValue, submissionRef, email, name, descripti
             headers: { 'Authorization': `Bearer ${apiKey}` },
             payload: requestPayload
         }
+        console.log(`HTTP Request Verb: POST Url: ${govpayPaymentsURL}`)
+        console.log('Request Payload: ' + JSON.stringify(requestPayload, null, 2))
+    
         const { payload } = await Wreck.post(govpayPaymentsURL, options)
+    
+        console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
         return { paymentId: payload.payment_id, state: payload.state.status, nextUrl: payload._links.next_url.href }
     } catch (err) {
-        console.log(err)
+        if(err.data?.payload){
+            console.error(err.data.payload)
+        }
+        console.error(err)       
+       
         throw err
     }
 }
@@ -46,11 +55,19 @@ async function getPaymentStatus(paymentId) {
             json: true,
             headers: { 'Authorization': `Bearer ${apiKey}` },
         }
+        console.log(`HTTP Request Verb: GET Url: ${govpayPaymentsURL}/${paymentId}`)
+        
         const { payload } = await Wreck.get(`${govpayPaymentsURL}/${paymentId}`, options)
+        
+        console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
-        return { paymentId: payload.paymentId, status: payload.state.status, finished: payload.state.finished, amount: payload.amount, email: payload.email }
+        return { paymentId: payload.payment_id, status: payload.state.status, finished: payload.state.finished, amount: payload.amount, email: payload.email }
     } catch (err) {
-        console.log(err)
+        if(err.data?.payload){
+            console.error(err.data.payload)
+        }
+        console.error(err)       
+       
         throw err
     }
 }

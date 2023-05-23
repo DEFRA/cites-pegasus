@@ -227,6 +227,7 @@ const schema = Joi.object().keys({
     countrySelectDefault: Joi.string().required(),
     footerLinkTextPrivacy: Joi.string().required(),
     footerLinkTextAccessibilityStatement: Joi.string().required(),
+    footerLinkTextCookies: Joi.string().required(),
     errorMessages: Joi.object()
   }).required(),
   permitType: Joi.object({
@@ -920,11 +921,10 @@ const schema = Joi.object().keys({
   declaration: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBodyAgent: Joi.string().required(),
-    pageBodyApplicant: Joi.string().required(),
-    bulletListItems: Joi.array().items(
-      Joi.object().keys({ bulletListItem: Joi.string().required() })
-    ),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    pageBodyTextAgent: Joi.string().required(),
     checkboxLabelIAgree: Joi.string().required(),
     errorMessages: Joi.object({
       "error.declaration.any.required": Joi.string().required()
@@ -1007,7 +1007,13 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().required(),
     goBackAndTryAgainLinkText: Joi.string().required(),
-    submitApplicationLinkText: Joi.string().required()
+    submitApplicationLinkText: Joi.string().required(),
+    returnToYourApplicationsLinkText: Joi.string().required()
+  }).required(),
+  paymentSuccess: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    returnToYourApplicationsLinkText: Joi.string().required(),
   }).required(),
   privacy: Joi.object({
     defaultTitle: Joi.string().required(),
@@ -1024,7 +1030,6 @@ const schema = Joi.object().keys({
     heading10: Joi.string().required(),
     heading11: Joi.string().required(),
     heading12: Joi.string().required(),
-    heading13: Joi.string().required(),
     pageBodyText1: Joi.string().required(),
     pageBodyText2: Joi.string().required(),
     pageBodyText3: Joi.string().required(),
@@ -1055,11 +1060,24 @@ const schema = Joi.object().keys({
     pageBodyText18: Joi.string().required(),
     pageBodyText19: Joi.string().required(),
     pageBodyText20: Joi.string().required(),
-    pageBodyText21: Joi.string().required(),
-    pageBodyText22: Joi.string().required(),
-    pageBodyText23: Joi.string().required(),
-    pageBodyText24: Joi.string().required(),
-    pageBodyText25: Joi.string().required(),
+    pageBodyText21: Joi.string().required()
+  }).required(),
+  cookies: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading1: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    tableHeadName: Joi.string().required(),
+    tableHeadPurpose: Joi.string().required(),
+    tableHeadExpires: Joi.string().required(),
+    tableRow1: Joi.string().required(),
+    tableRow2: Joi.string().required(),
+    tableRow3: Joi.string().required(),
+    tableRow4: Joi.string().required(),
+    tableRow5: Joi.string().required(),
+    tableRow6: Joi.string().required(),
   }).required()
 })
 

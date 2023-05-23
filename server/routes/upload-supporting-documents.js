@@ -21,7 +21,7 @@ readSecret('BLOB-STORAGE-CONNECTION-STRING')
     blobServiceClient = BlobServiceClient.fromConnectionString(secret.value);
   })
   .catch(err => {
-    console.log(err)
+    console.error(err)
     throw err
   })
 
@@ -178,7 +178,7 @@ module.exports = [
       // try {
       //   validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       // } catch (err) {
-      //   console.log(err)
+      //   console.error(err)
       //   return h.redirect(invalidSubmissionPath)
       // }
 
@@ -307,7 +307,7 @@ module.exports = [
           }
         }
         catch (err) {
-          console.log(err)
+          console.error(err)
           const error = {
             details: [
               {
@@ -365,7 +365,7 @@ module.exports = [
           }
         }
         catch (err) {
-          console.log(err)
+          console.error(err)
           const error = {
             details: [
               {

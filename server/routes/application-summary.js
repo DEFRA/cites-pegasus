@@ -22,9 +22,7 @@ function createApplicationSummaryModel(errors, data) {
   const pageContent = textContent.applicationSummary
   const summaryType = data.summaryType
   const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
-  //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
-  const formattedApplicationIndex = data.cloneSource ? (data.cloneSource.applicationIndex + 1).toString().padStart(3, '0') : (data.applicationIndex + 1).toString().padStart(3, '0')
-  const applicationRef = `${submissionRef}/${formattedApplicationIndex}`
+  const applicationRef = data.cloneSource ? data.cloneSource.applicationRef : data.applicationRef
   const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
 
 
@@ -661,7 +659,8 @@ module.exports = [
 
       if (cloneSource?.submissionRef && summaryType === 'view-submitted'){
         //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
-        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, cloneSource?.submissionRef)
+        const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+        submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
         setYarValue(request, 'submission', submission)      
         setYarValue(request, 'cloneSource', null)
       }
@@ -670,7 +669,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -689,6 +688,7 @@ module.exports = [
         applicant: submission.applicant,
         agent: submission?.agent,
         delivery: submission.delivery,
+        applicationRef: submission.applications[applicationIndex].applicationRef,
         species: submission.applications[applicationIndex].species,
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
@@ -746,7 +746,7 @@ module.exports = [
       try {
         validateSubmission(submission, `${pageId}/are-you-sure/${summaryType}/${applicationIndex}`)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
@@ -782,6 +782,7 @@ module.exports = [
             applicant: submission.applicant,
             agent: submission?.agent,
             delivery: submission.delivery,
+            applicationRef: submission.applications[applicationIndex].applicationRef,
             species: submission.applications[applicationIndex].species,
             importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
             permitDetails: submission.applications[applicationIndex].permitDetails,
@@ -797,7 +798,7 @@ module.exports = [
           try {
             cloneSubmission(request, applicationIndex)
           } catch (err) {
-            console.log(err)
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
@@ -828,23 +829,12 @@ module.exports = [
           const submission = getSubmission(request)
           const changeRouteData = getChangeRouteData(request)
 
-          // let areYouSure = null
-          // switch (request.payload.areYouSure) {
-          //   case "true":
-          //     areYouSure = true
-          //     break
-          //   case "false":
-          //     areYouSure = false
-          //     break
-          // }
-
           const pageData = {
             summaryType: summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
             changeRouteData: changeRouteData,
-            areYouSure: request.payload.areYouSure,
           }
 
           return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()

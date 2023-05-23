@@ -10,30 +10,34 @@ const previousPath = `${urlPrefix}/`
 const nextPath = `${urlPrefix}/applying-on-behalf`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 const invalidSubmissionPath = `${urlPrefix}/`
+const previousPathYourSubmission = `${urlPrefix}/your-submission`
 
 function createModel(errors, data) {
   const commonContent = textContent.common;
   const pageContent = textContent.permitType;
 
   let errorList = null
-  if(errors){
-      errorList = []
-      const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-      const fields = ['permitType']
-      fields.forEach(field => {
-          const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-          if (fieldError) {
-              errorList.push({
-                  text: fieldError,
-                  href: `#${field}`
-              })
-          }
-      })
+  if (errors) {
+    errorList = []
+    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+    const fields = ['permitType']
+    fields.forEach(field => {
+      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+      if (fieldError) {
+        errorList.push({
+          text: fieldError,
+          href: `#${field}`
+        })
+      }
+    })
   }
 
-  const defaultBacklink = previousPath
+  let defaultBacklink = previousPath
+  if (data.fromYourSubmission) {
+    defaultBacklink = previousPathYourSubmission
+  }
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: currentPath,
@@ -90,18 +94,22 @@ module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
-    const submission = getSubmission(request);
+    const submission = getSubmission(request)
 
+    let appStatuses = []
     try {
-      validateSubmission(submission, pageId)
+      appStatuses = validateSubmission(submission, pageId)
     } catch (err) {
-      console.log(err)
+      console.error(err)
       return h.redirect(invalidSubmissionPath)
     }
 
+    const fromYourSubmission = appStatuses.some((application) => application.status === "complete")    
+
     const pageData = {
       backLinkOverride: checkChangeRouteExit(request, true),
-      permitType: submission?.permitType
+      permitType: submission?.permitType,
+      fromYourSubmission: fromYourSubmission
     }
 
     return h.view(pageId, createModel(null, pageData));
@@ -117,9 +125,12 @@ module.exports = [{
         permitType: Joi.string().required().valid('import', 'export', 'reexport', 'article10', 'other')
       }),
       failAction: (request, h, err) => {
+        const submission = getSubmission(request)
+        const appStatuses = validateSubmission(submission, pageId)
         const pageData = {
           backLinkOverride: checkChangeRouteExit(request, true),
-          permitType: request.payload.permitType
+          permitType: request.payload.permitType,
+          fromYourSubmission: appStatuses.some((application) => application.status === "complete")
         }
 
         return h.view(pageId, createModel(err, pageData)).takeover()
@@ -145,7 +156,7 @@ module.exports = [{
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
