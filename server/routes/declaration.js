@@ -43,9 +43,10 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
-    pageBody: data.isAgent ? pageContent.pageBodyAgent : pageContent.pageBodyApplicant,
-    bulletListItems: data.isAgent ? pageContent.bulletListItems : "",
-
+    pageBodyText1: pageContent.pageBodyText1,
+    pageBodyText2: pageContent.pageBodyText2,
+    pageBodyText3: pageContent.pageBodyText3,
+    pageBodyTextAgent: data.isAgent ? pageContent.pageBodyTextAgent : "",
 
     inputDeclaration: {
       idPrefix: "declaration",

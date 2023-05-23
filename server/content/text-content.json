@@ -32,13 +32,13 @@
     "defaultTitle": "What type of permit or certificate are you applying for?",
     "pageHeader": "What type of permit or certificate are you applying for?",
     "radioOptionImport": "Import",
-    "radioOptionImportHint": "To move a species into Great Britain from another country.",
+    "radioOptionImportHint": "To move a species to or within the United Kingdom",
     "radioOptionExport": "Export",
-    "radioOptionExportHint": "To move a species out of Great Britain to another country.",
+    "radioOptionExportHint": "To move a species out of or within the United Kingdom.",
     "radioOptionReexport": "Re-export",
-    "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
+    "radioOptionReexportHint": "To move a species that has been imported into the United Kingdom, out of or within the United Kingdom.",
     "radioOptionArticle10": "Article 10",
-    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
+    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes within Great Britain.",
     "radioOptionOther": "Other",
     "errorMessages": {
       "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
@@ -1256,16 +1256,10 @@
   "declaration": {
     "defaultTitle": "Declaration",
     "pageHeader": "Declaration",
-    "pageBodyAgent": "By submitting, you agree that:",
-    "pageBodyApplicant": "By submitting, you agree that the information you have provided is correct.",
-    "bulletListItems": [
-      {
-        "bulletListItem": "the information you have provided is correct"
-      },
-      {
-        "bulletListItem": "you have the owner’s permission to apply on their behalf"
-      }
-    ],
+    "pageBodyText1": "By submitting, you agree with the following statements:",
+    "pageBodyText2": "I attach the necessary documentary evidence and declare that all particulars provided are correct to the best of my knowledge and belief.",
+    "pageBodyText3": "I declare that an application for a certificate for the specimens was not previously rejected.",
+    "pageBodyTextAgent": "I have the owner’s permission to apply on their behalf.",
     "checkboxLabelIAgree": "I agree",
     "errorMessages": {
       "error.declaration.any.required": "You must agree to the declaration"

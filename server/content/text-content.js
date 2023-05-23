@@ -921,11 +921,10 @@ const schema = Joi.object().keys({
   declaration: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBodyAgent: Joi.string().required(),
-    pageBodyApplicant: Joi.string().required(),
-    bulletListItems: Joi.array().items(
-      Joi.object().keys({ bulletListItem: Joi.string().required() })
-    ),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    pageBodyTextAgent: Joi.string().required(),
     checkboxLabelIAgree: Joi.string().required(),
     errorMessages: Joi.object({
       "error.declaration.any.required": Joi.string().required()
