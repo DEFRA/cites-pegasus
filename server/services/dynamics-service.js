@@ -433,7 +433,7 @@ function getPaymentCalculationType(dynamicsType) {
 
 async function getSubmission(server, contactId, organisationId, submissionRef) {
   const top = "$top=1"
-  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype"
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
   
   const filterParts = [
@@ -473,7 +473,8 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
       jsonContent.submissionId = submission.cites_submissionid
       jsonContent.paymentDetails = {
         costingType: getPaymentCalculationType(submission.cites_paymentcalculationtype),
-        costingValue: submission.cites_totalfeecalculation
+        costingValue: submission.cites_totalfeecalculation,
+        feePaid: submission.cites_feehasbeenpaid
       }
 
       //for (const jsonApplication of jsonContent.applications) {
