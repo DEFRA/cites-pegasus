@@ -15,8 +15,6 @@
     <div class="govuk-grid-column-full">
 
       <h1 class="govuk-heading-l"> {{pageHeader}} </h1>
-
-      <h2 class="govuk-heading-m"> {{heading1}} </h2>
          <p class="govuk-body"> {{pageBodyText1 | safe}} </p>
          <p class="govuk-body"> {{pageBodyText2 | safe}} </p>
          <ul class="govuk-list govuk-list--bullet">
@@ -27,63 +25,27 @@
         <p class="govuk-body"> {{pageBodyText3| safe}} </p>
         <p class="govuk-body"> {{pageBodyText4| safe}} </p>
        
+      <h2 class="govuk-heading-m"> {{heading1}} </h2>
+        <p class="govuk-body"> {{pageBodyText5 | safe}} </p>
 
       <h2 class="govuk-heading-m"> {{heading2}} </h2>
-        <p class="govuk-body"> {{pageBodyText4 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText5 | safe}} </p>
+        <p class="govuk-body"> {{pageBodyText6 | safe}} </p>
         <ul class="govuk-list govuk-list--bullet">
             {% for item in bulletList2Items %}
               <li>{{item.bulletListItem}}</li>
               {% endfor %}
-            </ul>
+        </ul>
+        <p class="govuk-body"> {{pageBodyText7 | safe}} </p>
 
-      <h3 class="govuk-heading-m"> {{heading3}} </h3>
-        <p class="govuk-body"> {{pageBodyText6 | safe}} </p>
+      <h3 class="govuk-heading-s"> {{heading3}} </h3>
+        <p class="govuk-body"> {{pageBodyText8 | safe}} </p>
 
       <h2 class="govuk-heading-m"> {{heading4}} </h2>
-        <p class="govuk-body"> {{pageBodyText7 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText8 | safe}} </p>
         <p class="govuk-body"> {{pageBodyText9 | safe}} </p>
+
+      <h2 class="govuk-heading-m"> {{heading5}} </h3>
         <p class="govuk-body"> {{pageBodyText10 | safe}} </p>
-        <ul class="govuk-list govuk-list--bullet">
-          {% for item in bulletList2Items %}
-            <li>{{item.bulletListItem}}</li>
-            {% endfor %}
-          </ul>
-
-      <h3 class="govuk-heading-m"> {{heading5}} </h3>
-        <p class="govuk-body"> {{pageBodyText11 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText12 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText13 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText14 | safe}} </p>
        
-      <h2 class="govuk-heading-m"> {{heading6}} </h2>
-        <p class="govuk-body"> {{pageBodyText15 | safe}} </p>
-
-      <h3 class="govuk-heading-m"> {{heading7}} </h3>
-        <p class="govuk-body"> {{pageBodyText16 | safe}} </p>
-
-      <h3 class="govuk-heading-m"> {{heading8}} </h3>
-        <p class="govuk-body"> {{pageBodyText17 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText18 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText19 | safe}} </p>
-
-      <h3 class="govuk-heading-m"> {{heading9}} </h3>
-        <p class="govuk-body"> {{pageBodyText20 | safe}} </p>
-
-      <h2 class="govuk-heading-m"> {{heading10}} </h2>
-        <p class="govuk-body"> {{pageBodyText21 | safe}} </p>
-        <p class="govuk-body"> {{pageBodyText22 | safe}} </p>
-
-      <h2 class="govuk-heading-m"> {{heading11}} </h2>
-        <p class="govuk-body"> {{pageBodyText23 | safe}} </p>
-
-      <h2 class="govuk-heading-m"> {{heading12}} </h2>
-        <p class="govuk-body"> {{pageBodyText24 | safe}} </p>
-
-      <h2 class="govuk-heading-m"> {{heading13}} </h2>
-        <p class="govuk-body"> {{pageBodyText25 | safe}} </p>
-
     </div>
   </div>
 {% endblock %}

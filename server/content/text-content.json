@@ -1439,10 +1439,7 @@
     "heading2": "Feedback and contact information",
     "heading3": "Enforcement procedure",
     "heading4": "Technical information about this service’s accessibility",
-    "heading5": "Compliance status",
-    "heading6": "Non accessible content",
-    "heading7": "Non-compliance with the accessibility regulations",
-    "heading8": "Preparation of this accessibility statement",
+    "heading5": "Preparation of this accessibility statement",
     "pageBodyText1": "This accessibility statement applies to the digital service of the ‘Apply for a CITES permit' to move or trade endangered species.",
     "pageBodyText2": "This service is run by the Department for Environment, Farming and Rural Affairs (Defra). We want as many people as possible to be able to use this service. For example, that means you should be able to:",
     "bulletList1Items": [
@@ -1465,9 +1462,7 @@
     "pageBodyText3": "We’ve also made the text in the service as simple as possible to understand.",
     "pageBodyText4": "<a target='_blank' href='https://mcmw.abilitynet.org.uk/'>AbilityNet</a> has advice on making your device easier to use if you have a disability.",
     "pageBodyText5": "This service has been tested internally by the team developing it. It has also been developed using GOV.UK patterns, which are rigorously tested for accessibility issues.",
-    "pageBodyText6": "We know some parts of this website are not fully accessible:",
-    "pageBodyText7": "The ‘How do you know the item was made before 1918’ other-reason checkbox has been assigned an Invalid-aria Attribute. Some of the codings indicate that the value entered into a field does not conform to the format expected",
-    "pageBodyText8": "Let us know if you:",
+    "pageBodyText6": "Let us know if you:",
     "bulletList2Items": [
       {
         "bulletListItem": "need help using this website"
@@ -1476,12 +1471,11 @@
         "bulletListItem": "find any problems not listed on this page or think we’re not meeting accessibility requirements"
       }
     ],
-    "pageBodyText9": "Contact: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>help@apha.gov.uk</a>",
-    "pageBodyText10": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).",
-    "pageBodyText11": "Defra is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
-    "pageBodyText12": "This website is partially compliant with the <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>Web Content Accessibility Guidelines version 2.1 AA standard, due to the non-compliances.</a>",
-    "pageBodyText13": "The content listed below is non-accessible for the following reasons:",
- }
+    "pageBodyText7": "Contact: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>help@apha.gov.uk</a>",
+    "pageBodyText8": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).",
+    "pageBodyText9": "Defra is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
+    "pageBodyText10": "This statement was prepared on 15 May 2023."
+}
 }
 
 
