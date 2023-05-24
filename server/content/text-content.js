@@ -1078,7 +1078,36 @@ const schema = Joi.object().keys({
     tableRow4: Joi.string().required(),
     tableRow5: Joi.string().required(),
     tableRow6: Joi.string().required(),
-  }).required()
+  }).required(),
+  accessibility: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading1: Joi.string().required(),
+    heading2: Joi.string().required(),
+    heading3: Joi.string().required(),
+    heading4: Joi.string().required(),
+    heading5: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    bulletList1Items: Joi.array().items(
+      Joi.object({
+        bulletListItem: Joi.string().required(),
+      })
+    ),
+    pageBodyText3: Joi.string().required(),
+    pageBodyText4: Joi.string().required(),
+    pageBodyText5: Joi.string().required(),
+    pageBodyText6: Joi.string().required(),
+    bulletList2Items: Joi.array().items(
+      Joi.object({
+        bulletListItem: Joi.string().required(),
+      })
+    ),
+    pageBodyText7: Joi.string().required(),
+    pageBodyText8: Joi.string().required(),
+    pageBodyText9: Joi.string().required(),
+    pageBodyText10: Joi.string().required()
+  }).required(),
 })
 
 // Validate config

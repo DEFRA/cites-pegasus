@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButtonText,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l"> {{pageHeader}} </h1>
+         <p class="govuk-body"> {{pageBodyText1 | safe}} </p>
+         <p class="govuk-body"> {{pageBodyText2 | safe}} </p>
+         <ul class="govuk-list govuk-list--bullet">
+            {% for item in bulletList1Items %}
+              <li>{{item.bulletListItem}}</li>
+              {% endfor %}
+            </ul>
+        <p class="govuk-body"> {{pageBodyText3| safe}} </p>
+        <p class="govuk-body"> {{pageBodyText4| safe}} </p>
+       
+      <h2 class="govuk-heading-m"> {{heading1}} </h2>
+        <p class="govuk-body"> {{pageBodyText5 | safe}} </p>
+
+      <h2 class="govuk-heading-m"> {{heading2}} </h2>
+        <p class="govuk-body"> {{pageBodyText6 | safe}} </p>
+        <ul class="govuk-list govuk-list--bullet">
+            {% for item in bulletList2Items %}
+              <li>{{item.bulletListItem}}</li>
+              {% endfor %}
+        </ul>
+        <p class="govuk-body"> {{pageBodyText7 | safe}} </p>
+
+      <h3 class="govuk-heading-s"> {{heading3}} </h3>
+        <p class="govuk-body"> {{pageBodyText8 | safe}} </p>
+
+      <h2 class="govuk-heading-m"> {{heading4}} </h2>
+        <p class="govuk-body"> {{pageBodyText9 | safe}} </p>
+
+      <h2 class="govuk-heading-m"> {{heading5}} </h3>
+        <p class="govuk-body"> {{pageBodyText10 | safe}} </p>
+       
+    </div>
+  </div>
+{% endblock %}

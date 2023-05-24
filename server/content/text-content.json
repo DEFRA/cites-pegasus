@@ -1431,7 +1431,51 @@
     "tableRow4": "Token",
     "tableRow5": "To keep you signed in",
     "tableRow6": "When you close your browser"
-  }
+  },
+  "accessibility": {
+    "defaultTitle": "Accessibility statement for ‘Apply for a CITES permit' to move or trade endangered species",
+    "pageHeader": "Accessibility statement for ‘Apply for a CITES permit' to move or trade endangered species",
+    "heading1": "How accessible this website is",
+    "heading2": "Feedback and contact information",
+    "heading3": "Enforcement procedure",
+    "heading4": "Technical information about this service’s accessibility",
+    "heading5": "Preparation of this accessibility statement",
+    "pageBodyText1": "This accessibility statement applies to the digital service of the ‘Apply for a CITES permit' to move or trade endangered species.",
+    "pageBodyText2": "This service is run by the Department for Environment, Farming and Rural Affairs (Defra). We want as many people as possible to be able to use this service. For example, that means you should be able to:",
+    "bulletList1Items": [
+      {
+        "bulletListItem": "change colours, contrast levels and fonts"
+      },
+      {
+        "bulletListItem": "zoom in up to 300% without the text spilling off the screen"
+      },
+      {
+        "bulletListItem": "navigate most of the service using just a keyboard"
+      },
+      {
+        "bulletListItem": "navigate most of the service using speech recognition software"
+      },
+      {
+        "bulletListItem": "listen to most of the service using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)"
+      }
+    ],
+    "pageBodyText3": "We’ve also made the text in the service as simple as possible to understand.",
+    "pageBodyText4": "<a target='_blank' href='https://mcmw.abilitynet.org.uk/'>AbilityNet</a> has advice on making your device easier to use if you have a disability.",
+    "pageBodyText5": "This service has been tested internally by the team developing it. It has also been developed using GOV.UK patterns, which are rigorously tested for accessibility issues.",
+    "pageBodyText6": "Let us know if you:",
+    "bulletList2Items": [
+      {
+        "bulletListItem": "need help using this website"
+      },
+      {
+        "bulletListItem": "find any problems not listed on this page or think we’re not meeting accessibility requirements"
+      }
+    ],
+    "pageBodyText7": "Contact: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>help@apha.gov.uk</a>",
+    "pageBodyText8": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).",
+    "pageBodyText9": "Defra is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
+    "pageBodyText10": "This statement was prepared on 15 May 2023."
+}
 }
 
 
