@@ -13,7 +13,8 @@ const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
 const invalidSubmissionPath = `${urlPrefix}/`
 const permitTypes = ['import', 'export', 'reexport', 'article10']
-const statuses = ['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'issued', 'refused', 'cancelled']
+const statuses = ['awaitingPayment', 'inProgress', 'closed']//['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'inProgress', 'issued', 'refused', 'cancelled']
+
 const pageSize = 15
 
 
@@ -42,13 +43,14 @@ function createModel(errors, data) {
   const submissionsData = data.submissions
 
   const statusTextMap = {
-    received: pageContent.rowTextReceived,
-    awaitingPayment: pageContent.rowTextAwaitingPayment,
-    awaitingReply: pageContent.rowTextAwaitingReply,
-    inProcess: pageContent.rowTextInProcess,
-    issued: pageContent.rowTextIssued,
-    refused: pageContent.rowTextRefused,
-    cancelled: pageContent.rowTextCancelled,
+    received: commonContent.statusDescriptionReceived,
+    awaitingPayment: commonContent.statusDescriptionAwaitingPayment,
+    awaitingReply: commonContent.statusDescriptionAwaitingReply,
+    inProgress: commonContent.statusDescriptionInProgress,
+    issued: commonContent.statusDescriptionIssued,
+    refused: commonContent.statusDescriptionRefused,
+    cancelled: commonContent.statusDescriptionCancelled,
+    closed: commonContent.statusDescriptionClosed
   };
 
   const submissionsTableData = submissionsData.map(submission => {
@@ -72,17 +74,7 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
 
-  const breadcrumbs = {
-    items: [
-      {
-        text: pageContent.pageHeader,
-        href: "#"
-      }
-    ]
-  }
-
   const model = {
-    breadcrumbs: breadcrumbs,
     pageTitle: pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
     clearSearchLinkText: pageContent.linkTextClearSearch,
@@ -125,22 +117,22 @@ function createModel(errors, data) {
       items: [
         {
           value: "import",
-          text: pageContent.checkboxLabelImport,
+          text: commonContent.permitTypeDescriptionImport,
           checked: isChecked(data.permitTypes, "import")
         },
         {
           value: "export",
-          text: pageContent.checkboxLabelExport,
+          text: commonContent.permitTypeDescriptionExport,
           checked: isChecked(data.permitTypes, "export")
         },
         {
           value: "reexport",
-          text: pageContent.checkboxLabelReexport,
+          text: commonContent.permitTypeDescriptionReexport,
           checked: isChecked(data.permitTypes, "reexport")
         },
         {
           value: "article10",
-          text: pageContent.checkboxLabelArticle10,
+          text: commonContent.permitTypeDescriptionArticle10,
           checked: isChecked(data.permitTypes, "article10")
         }
       ],
@@ -151,45 +143,45 @@ function createModel(errors, data) {
       name: "statuses",
       items: [
         {
-          value: "received",
-          text: pageContent.checkboxLabelReceived,
-          checked: isChecked(data.statuses, "received")
+          value: "inProgress",
+          text: commonContent.statusDescriptionInProgress,
+          checked: isChecked(data.statuses, "inProgress")
         },
         {
           value: "awaitingPayment",
-          text: pageContent.checkboxLabelAwaitingPayment,
+          text: commonContent.statusDescriptionAwaitingPayment,
           checked: isChecked(data.statuses, "awaitingPayment")
         },
         {
-          value: "awaitingReply",
-          text: pageContent.checkboxLabelAwaitingReply,
-          checked: isChecked(data.statuses, "awaitingReply")
-        },
-        {
-          value: "inProcess",
-          text: pageContent.checkboxLabelInProcess,
-          checked: isChecked(data.statuses, "inProcess")
-        },
-        {
-          value: "issued",
-          text: pageContent.checkboxLabelIssued,
-          checked: isChecked(data.statuses, "issued")
-        },
-        {
-          value: "refused",
-          text: pageContent.checkboxLabelRefused,
-          checked: isChecked(data.statuses, "refused")
-        },
-        {
-          value: "cancelled",
-          text: pageContent.checkboxLabelCancelled,
-          checked: isChecked(data.statuses, "cancelled")
-        },
-        {
           value: "closed",
-          text: pageContent.checkboxLabelClosed,
+          text: commonContent.statusDescriptionClosed,
           checked: isChecked(data.statuses, "closed")
         }
+        // {
+        //   value: "received",
+        //   text: commonContent.statusDescriptionReceived,
+        //   checked: isChecked(data.statuses, "received")
+        // },
+        // {
+        //   value: "awaitingReply",
+        //   text: commonContent.statusDescriptionAwaitingReply,
+        //   checked: isChecked(data.statuses, "awaitingReply")
+        // },
+        // {
+        //   value: "issued",
+        //   text: commonContent.statusDescriptionIssued,
+        //   checked: isChecked(data.statuses, "issued")
+        // },
+        // {
+        //   value: "refused",
+        //   text: commonContent.statusDescriptionRefused,
+        //   checked: isChecked(data.statuses, "refused")
+        // },
+        // {
+        //   value: "cancelled",
+        //   text: commonContent.statusDescriptionCancelled,
+        //   checked: isChecked(data.statuses, "cancelled")
+        // },
       ],
     },
 
