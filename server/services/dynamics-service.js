@@ -241,8 +241,6 @@ async function getTradeTermCodes(server) {
   }
 }
 
-
-
 function getPortalApplicationStatus(dynamicsStatus) {
   switch (dynamicsStatus) {
     case 1: // Not evaluated
@@ -343,11 +341,11 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
   var statuses = [];
 
   if (portalStatuses.includes('awaitingPayment')) {
-    statuses.push(149900002)
-  }
-
-  if (portalStatuses.includes('inProgress')) {
     statuses.push(1)
+  }
+  
+  if (portalStatuses.includes('inProgress')) {
+    statuses.push(149900002)
   }
 
   if (portalStatuses.includes('closed')) {
@@ -574,6 +572,11 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
   }
 }
 
+function getDynamicsSubmissionStatus(portalStatus){
+  const results = getDynamicsSubmissionStatuses([portalStatus])
+  return results[0]
+}
+
 async function setSubmissionPayment(server, contactId, organisationId, submissionId, paymentRef, paymentValue) {
   const accessToken = await getAccessToken(server)
   await validateSubmission(accessToken, contactId, organisationId, null, submissionId)//Not necessary as we are using submissionId which is server side
@@ -586,6 +589,7 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
       cites_paymentmethod: 149900000, // Gov Pay
       cites_paymentreference: paymentRef,
       cites_totalfeeamount: paymentValue,
+      statuscode: getDynamicsSubmissionStatus('inProgress')
     }
 
     const options = {
