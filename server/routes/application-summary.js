@@ -57,24 +57,29 @@ function createApplicationSummaryModel(errors, data) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
   let headingPermitDetails = null
+  let permitTypeValue = null
   switch (data.permitType) {
     case "import":
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
       headingImporterExporterDetails = pageContent.headerExportOrReexporterContactDetails
       headingPermitDetails = pageContent.headerExportOrReexportPermitDetails
+      permitTypeValue = commonContent.permitTypeDescriptionImport
       break
     case "export":
       headerApplicantContactDetails = pageContent.headerExporterContactDetails
       headingImporterExporterDetails = pageContent.headerImporterContactDetails
+      permitTypeValue = commonContent.permitTypeDescriptionExport
       break
     case "reexport":
       headerApplicantContactDetails = pageContent.headerReexporterContactDetails
       headingImporterExporterDetails = pageContent.headerImporterContactDetails
       headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
+      permitTypeValue = commonContent.permitTypeDescriptionReexport
       break
     case "article10":
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
+      permitTypeValue = commonContent.permitTypeDescriptionArticle10
       break
   }
 
@@ -278,7 +283,7 @@ function createApplicationSummaryModel(errors, data) {
     name: "permitType",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      createSummaryListRow("govuk-summary-list__row border-top", pageContent.rowTextPermitType, data.permitType, hrefPrefix + "/permitType", "permit type", summaryType),
+      createSummaryListRow("govuk-summary-list__row border-top", pageContent.rowTextPermitType, permitTypeValue, hrefPrefix + "/permitType", "permit type", summaryType),
     ]
   }
 
