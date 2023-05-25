@@ -227,6 +227,7 @@ const schema = Joi.object().keys({
     countrySelectDefault: Joi.string().required(),
     footerLinkTextPrivacy: Joi.string().required(),
     footerLinkTextAccessibilityStatement: Joi.string().required(),
+    footerLinkTextCookies: Joi.string().required(),
     permitTypeDescriptionImport: Joi.string().required(),
     permitTypeDescriptionExport: Joi.string().required(),
     permitTypeDescriptionReexport: Joi.string().required(),
@@ -932,11 +933,10 @@ const schema = Joi.object().keys({
   declaration: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBodyAgent: Joi.string().required(),
-    pageBodyApplicant: Joi.string().required(),
-    bulletListItems: Joi.array().items(
-      Joi.object().keys({ bulletListItem: Joi.string().required() })
-    ),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    pageBodyTextAgent: Joi.string().required(),
     checkboxLabelIAgree: Joi.string().required(),
     errorMessages: Joi.object({
       "error.declaration.any.required": Joi.string().required()
@@ -1023,7 +1023,6 @@ const schema = Joi.object().keys({
     heading10: Joi.string().required(),
     heading11: Joi.string().required(),
     heading12: Joi.string().required(),
-    heading13: Joi.string().required(),
     pageBodyText1: Joi.string().required(),
     pageBodyText2: Joi.string().required(),
     pageBodyText3: Joi.string().required(),
@@ -1054,12 +1053,54 @@ const schema = Joi.object().keys({
     pageBodyText18: Joi.string().required(),
     pageBodyText19: Joi.string().required(),
     pageBodyText20: Joi.string().required(),
-    pageBodyText21: Joi.string().required(),
-    pageBodyText22: Joi.string().required(),
-    pageBodyText23: Joi.string().required(),
-    pageBodyText24: Joi.string().required(),
-    pageBodyText25: Joi.string().required(),
-  }).required()
+    pageBodyText21: Joi.string().required()
+  }).required(),
+  cookies: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading1: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
+    tableHeadName: Joi.string().required(),
+    tableHeadPurpose: Joi.string().required(),
+    tableHeadExpires: Joi.string().required(),
+    tableRow1: Joi.string().required(),
+    tableRow2: Joi.string().required(),
+    tableRow3: Joi.string().required(),
+    tableRow4: Joi.string().required(),
+    tableRow5: Joi.string().required(),
+    tableRow6: Joi.string().required(),
+  }).required(),
+  accessibility: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading1: Joi.string().required(),
+    heading2: Joi.string().required(),
+    heading3: Joi.string().required(),
+    heading4: Joi.string().required(),
+    heading5: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    bulletList1Items: Joi.array().items(
+      Joi.object({
+        bulletListItem: Joi.string().required(),
+      })
+    ),
+    pageBodyText3: Joi.string().required(),
+    pageBodyText4: Joi.string().required(),
+    pageBodyText5: Joi.string().required(),
+    pageBodyText6: Joi.string().required(),
+    bulletList2Items: Joi.array().items(
+      Joi.object({
+        bulletListItem: Joi.string().required(),
+      })
+    ),
+    pageBodyText7: Joi.string().required(),
+    pageBodyText8: Joi.string().required(),
+    pageBodyText9: Joi.string().required(),
+    pageBodyText10: Joi.string().required()
+  }).required(),
 })
 
 // Validate config

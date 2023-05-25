@@ -25,6 +25,7 @@
     "countrySelectDefault": "Select a country...",
     "footerLinkTextPrivacy": "Privacy",
     "footerLinkTextAccessibilityStatement": "Accessibility statement",
+    "footerLinkTextCookies": "Cookies",
     "permitTypeDescriptionImport": "Import",
     "permitTypeDescriptionExport": "Export",
     "permitTypeDescriptionReexport": "Re-export",
@@ -43,13 +44,13 @@
     "defaultTitle": "What type of permit or certificate are you applying for?",
     "pageHeader": "What type of permit or certificate are you applying for?",
     "radioOptionImport": "Import",
-    "radioOptionImportHint": "To move a species into Great Britain from another country.",
+    "radioOptionImportHint": "To move a species to or within the United Kingdom",
     "radioOptionExport": "Export",
-    "radioOptionExportHint": "To move a species out of Great Britain to another country.",
+    "radioOptionExportHint": "To move a species out of or within the United Kingdom.",
     "radioOptionReexport": "Re-export",
-    "radioOptionReexportHint": "To move a species that has already been imported into Great Britain to another country.",
+    "radioOptionReexportHint": "To move a species that has been imported into the United Kingdom, out of or within the United Kingdom.",
     "radioOptionArticle10": "Article 10",
-    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes.",
+    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes within Great Britain.",
     "radioOptionOther": "Other",
     "errorMessages": {
       "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
@@ -448,8 +449,8 @@
   "speciesName": {
     "defaultTitle": "What is the scientific name of the species?",
     "pageHeader": "What is the scientific name of the species?",
-    "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on species+</a> (opens in a new tab)",
-    "bodyText2": "If you are applying for a hybrid species, enter the full species name; for example, 'falco peregrinus x falco cherrug' or 'porites spp'. If the species isn't recognised, contact the CITB team for assistance.",
+    "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on species+</a> (opens in a new tab).",
+    "bodyText2": "If you are applying for a hybrid species, enter the full species name; for example, 'Falco peregrinus x Falco cherrug' or 'Porites spp'. If the species isn't recognised,  <a target='_blank' href='https://www.gov.uk/guidance/contact-apha#endangered-plant-and-animal-species-cites'>contact us</a> for assistance.",
     "inputLabelSpeciesName": "Scientific name",
     "errorMessages": {
       "error.speciesName.string.empty": "Enter the scientific name"
@@ -1267,16 +1268,10 @@
   "declaration": {
     "defaultTitle": "Declaration",
     "pageHeader": "Declaration",
-    "pageBodyAgent": "By submitting, you agree that:",
-    "pageBodyApplicant": "By submitting, you agree that the information you have provided is correct.",
-    "bulletListItems": [
-      {
-        "bulletListItem": "the information you have provided is correct"
-      },
-      {
-        "bulletListItem": "you have the owner’s permission to apply on their behalf"
-      }
-    ],
+    "pageBodyText1": "By submitting, you agree with the following statements:",
+    "pageBodyText2": "I attach the necessary documentary evidence and declare that all particulars provided are correct to the best of my knowledge and belief.",
+    "pageBodyText3": "I declare that an application for a certificate for the specimens was not previously rejected.",
+    "pageBodyTextAgent": "I have the owner’s permission to apply on their behalf.",
     "checkboxLabelIAgree": "I agree",
     "errorMessages": {
       "error.declaration.any.required": "You must agree to the declaration"
@@ -1359,11 +1354,10 @@
     "heading6": "A law-based requirement to provide personal data",
     "heading7": "What happens if you do not provide the necessary data",
     "heading8": "Who Defra and APHA share your data with",
-    "heading9": "Storing data outside the UK",
-    "heading10": "How long Defra and APHA hold personal data",
-    "heading11": "Your rights",
-    "heading12": "Complaints",
-    "heading13": "Defra’s personal information charter",
+    "heading9": "How long Defra and APHA hold personal data",
+    "heading10": "Your rights",
+    "heading11": "Complaints",
+    "heading12": "Defra’s personal information charter",
     "pageBodyText1": "The data controller is the Department for Environment, Food and Rural Affairs (Defra). The Animal and Plant Health Agency (APHA), an executive agency of Defra will collect your data.",
     "pageBodyText2": "If you have any questions about how Defra uses your data or your associated rights, email Defra’s Data Protection Manager <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3Adata.protection%40Defra.gov.uk'>data.protection@Defra.gov.uk</a>",
     "pageBodyText3": "The Data Protection Officer responsible for monitoring that Defra is meeting the requirements of the legislation can be contacted by email at: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3ADefraGroupDataProtectionOfficer%40Defra.gov.uk'>DefraGroupDataProtectionOfficer@Defra.gov.uk.</a>",
@@ -1385,9 +1379,8 @@
     "pageBodyText5": "If you complete a registration or application on behalf of someone else, we will also collect and process your name, email address and postal address.",
     "pageBodyText6": "We have obtained your data from your application for CITES permits to move or trade endangered species. This data is provided either from you directly or someone authorised to act on your behalf.",
     "pageBodyText7": "When you apply for CITES permits to move or trade endangered species, we will use your data to check that you comply with and to enforce the agreement.",
-    "pageBodyText8": "This means that we will keep official records of your compliance history as evidence. For purposes of enforcing CITES, we may share your data with other parties including JNCC, Kew and Border Force.",
-    "pageBodyText9": "We will share your data when we review your application, so that an expert from our scientific authorities can assess the application.",
-    "pageBodyText10":  "We may also:",
+    "pageBodyText8": "We will share your data when we review your application, so that an expert from our scientific authorities can assess the application.",
+    "pageBodyText9":  "We may also:",
     "bulletList2Items": [
       {
         "bulletListItem": "contact you or someone acting on your behalf to request further information on the application"
@@ -1402,23 +1395,80 @@
         "bulletListItem": "check that you or someone acting on your behalf complies with CITES"
       }
     ],
-    "pageBodyText11": "Where APHA uses your data to help develop an assessor’s expertise, the legal basis for this data-use is described in Article 6 (1) (a) of the UK General Data Protection Regulation (GDPR). Article 6 (1) (a) relates to processing your data where you have freely and voluntarily given consent for your data to be used for that purpose.",
-    "pageBodyText12": "Where APHA uses your data to check that the specimen complies with CITES, the legal basis for this data use is described in Article 6 (1) (e) of the UK GDPR. Article 6 (1) (e) relates to the processing of your data necessary for the exercise of official authority vested in the controller (Defra and APHA).",
-    "pageBodyText13": "Defra and APHA are official authorities and make up a UK government department that has official responsibility for regulating the implementation and application of CITES.",
-    "pageBodyText14": "Consent to process your data to help further the expertise of the prescribed institution. You can withdraw your consent at any time before your data is shared with an expert assessor to help them to further their expertise.",
-    "pageBodyText15": "You are required by law to provide your data to APHA so they can ensure that any movement or trade of endangered species is compliant with CITES. There is a statutory requirement for you to provide your personal data.",
-    "pageBodyText16": "Without necessary data, we will not be able to process your application for a permit. You will not be able to move or trade the specimen within your application.",
-    "pageBodyText17": "We will share your data with the assessor who assesses the application to give their expert opinion on whether the item meets the exemption criteria.",
-    "pageBodyText18": "Your personal data is shared with assessors to review your application, as well as third parties including JNCC, Kew and Border Force.",
-    "pageBodyText19": "We will not share your data with any other third parties, except where we are required to do so by law or court order, to detect or prevent crime, or to apprehend or prosecute offenders.",
-    "pageBodyText20": "Personal data may be stored or hosted in Ireland.",
-    "pageBodyText21": "Under CITES, there is a statutory requirement for us to hold data on CITES where an applicant has applied for a permit. This application would have been under the provisions governing exemptions in the agreement.",
-    "pageBodyText22": "Personal data will be held for seven years from the date we receive your application. It will be reviewed to determine whether a further retention period is required to ensure compliance with and appropriate enforcement of CITES. Data will be manually deleted once it has been determined it is appropriate to do so.",
-    "pageBodyText23": "Find out about your <a target='_blank' href='https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/individual-rights/'>individual rights</a> under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).",    
-    "pageBodyText24": "You have the right to <a target='_blank' href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
-    "pageBodyText25": "Defra’s <a target='_blank' href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
-
-  }
+    "pageBodyText10": "Where APHA uses your data to check that the specimen complies with CITES, the legal basis for this data use is described in Article 6 (1) (e) of the UK GDPR. Article 6 (1) (e) relates to the processing of your data necessary for the exercise of official authority vested in the controller (Defra and APHA), as stated in the Wildlife trade regulations.",
+    "pageBodyText11": "You are required by law to provide your data to APHA so they can ensure that any movement or trade of endangered species is compliant with CITES under the Wildlife trade regulations.",
+    "pageBodyText12": "You are required by law to provide your data to APHA so they can ensure that any movement or trade of endangered species is compliant with CITES. There is a statutory requirement for you to provide your personal data.",
+    "pageBodyText13": "Without necessary data, we will not be able to process your application for a permit. You will not be able to move or trade the specimen within your application.",
+    "pageBodyText14": "We will share your data with APHA and Defra to give their expert opinion on whether the item meets the exemption criteria.",
+    "pageBodyText15": "Your personal data is shared with assessors to review your application, as well as third parties including JNCC, Kew and Border Force.",
+    "pageBodyText16": "We will not share your data with any other third parties, except where we are required to do so by law or court order, to detect or prevent crime, or to apprehend or prosecute offenders.",
+    "pageBodyText17": "Under CITES, there is a statutory requirement for us to hold data on CITES where an applicant has applied for a permit. This application would have been under the provisions governing exemptions in the agreement.",
+    "pageBodyText18": "Personal data will be held for seven years from the date we receive your application. It will be reviewed to determine whether a further retention period is required to ensure compliance with and appropriate enforcement of CITES. Data will be manually deleted once it has been determined it is appropriate to do so.",
+    "pageBodyText19": "Find out about your <a target='_blank' href='https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/individual-rights/'>individual rights</a> under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).",    
+    "pageBodyText20": "You have the right to <a target='_blank' href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
+    "pageBodyText21": "Defra’s <a target='_blank' href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
+  },
+  "cookies": {
+    "defaultTitle": "Cookies",
+    "pageHeader": "Cookies",
+    "heading1": "Essential cookies",
+    "pageBodyText1": "Cookies are small files saved on your phone, tablet or computer when you visit a website.",
+    "pageBodyText2": "We use cookies to make CITES work and collect information about how you use our service.",
+    "pageBodyText3": "Essential cookies keep your information secure while you use CITES. We do not need to ask permission to use them.",
+    "tableHeadName": "Name",
+    "tableHeadPurpose": "Purpose",
+    "tableHeadExpires": "Expires",
+    "tableRow1": "Session",
+    "tableRow2": "To store details you enter on this site",
+    "tableRow3": "12 hours",
+    "tableRow4": "Token",
+    "tableRow5": "To keep you signed in",
+    "tableRow6": "When you close your browser"
+  },
+  "accessibility": {
+    "defaultTitle": "Accessibility statement for ‘Apply for a CITES permit' to move or trade endangered species",
+    "pageHeader": "Accessibility statement for ‘Apply for a CITES permit' to move or trade endangered species",
+    "heading1": "How accessible this website is",
+    "heading2": "Feedback and contact information",
+    "heading3": "Enforcement procedure",
+    "heading4": "Technical information about this service’s accessibility",
+    "heading5": "Preparation of this accessibility statement",
+    "pageBodyText1": "This accessibility statement applies to the digital service of the ‘Apply for a CITES permit' to move or trade endangered species.",
+    "pageBodyText2": "This service is run by the Department for Environment, Farming and Rural Affairs (Defra). We want as many people as possible to be able to use this service. For example, that means you should be able to:",
+    "bulletList1Items": [
+      {
+        "bulletListItem": "change colours, contrast levels and fonts"
+      },
+      {
+        "bulletListItem": "zoom in up to 300% without the text spilling off the screen"
+      },
+      {
+        "bulletListItem": "navigate most of the service using just a keyboard"
+      },
+      {
+        "bulletListItem": "navigate most of the service using speech recognition software"
+      },
+      {
+        "bulletListItem": "listen to most of the service using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)"
+      }
+    ],
+    "pageBodyText3": "We’ve also made the text in the service as simple as possible to understand.",
+    "pageBodyText4": "<a target='_blank' href='https://mcmw.abilitynet.org.uk/'>AbilityNet</a> has advice on making your device easier to use if you have a disability.",
+    "pageBodyText5": "This service has been tested internally by the team developing it. It has also been developed using GOV.UK patterns, which are rigorously tested for accessibility issues.",
+    "pageBodyText6": "Let us know if you:",
+    "bulletList2Items": [
+      {
+        "bulletListItem": "need help using this website"
+      },
+      {
+        "bulletListItem": "find any problems not listed on this page or think we’re not meeting accessibility requirements"
+      }
+    ],
+    "pageBodyText7": "Contact: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>help@apha.gov.uk</a>",
+    "pageBodyText8": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).",
+    "pageBodyText9": "Defra is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
+    "pageBodyText10": "This statement was prepared on 15 May 2023."
+}
 }
 
 
