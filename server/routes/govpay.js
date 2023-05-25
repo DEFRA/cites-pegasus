@@ -125,7 +125,7 @@ module.exports = [
 
       await setSubmissionPayment(request.server, contactId, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100)      
       
-      if(paymentRoute === 'newApplication') {
+      if(paymentRoute === 'new-application') {
         return h.redirect(nextPathSuccessNewApplication)
       } else {
         return h.redirect(nextPathSuccessAccountFlow)
