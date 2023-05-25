@@ -243,7 +243,7 @@ async function getTradeTermCodes(server) {
 
 
 
-function getPortalStatus(dynamicsStatus) {
+function getPortalApplicationStatus(dynamicsStatus) {
   switch (dynamicsStatus) {
     case 1: // Not evaluated
     case 149900007: // To be evaluated
@@ -260,7 +260,7 @@ function getPortalStatus(dynamicsStatus) {
     case 149900002: // Being Assessed
     case 149900003: // Authorised
     case 4: // Evaluated
-      return 'inProcess'
+      return 'inProgress'
 
     case 5: // Issued
       return 'issued'
@@ -280,7 +280,23 @@ function getPortalStatus(dynamicsStatus) {
   }
 }
 
-function getDynamicsStatuses(portalStatuses) {
+function getPortalSubmissionStatus(dynamicsStatuscode, dynamicsStatecode) {
+  if (dynamicsStatecode !== 0) {
+    return 'closed'
+  }
+
+  switch (dynamicsStatuscode) {
+    case 1:
+      return 'awaitingPayment'
+    case 149900002:
+      return 'inProgress'
+
+    default:
+      return ''
+  }
+}
+
+function getDynamicsApplicationStatuses(portalStatuses) {
   var statuses = [];
 
   if (portalStatuses.includes('received')) {
@@ -296,7 +312,7 @@ function getDynamicsStatuses(portalStatuses) {
     statuses.push(3)
   }
 
-  if (portalStatuses.includes('inProcess')) {
+  if (portalStatuses.includes('inProgress') || portalStatuses.includes('inProcess')) {
     statuses.push(149900000)
     statuses.push(149900001)
     statuses.push(149900002)
@@ -323,6 +339,24 @@ function getDynamicsStatuses(portalStatuses) {
   return statuses
 }
 
+function getDynamicsSubmissionStatuses(portalStatuses) {
+  var statuses = [];
+
+  if (portalStatuses.includes('awaitingPayment')) {
+    statuses.push(149900002)
+  }
+
+  if (portalStatuses.includes('inProgress')) {
+    statuses.push(1)
+  }
+
+  if (portalStatuses.includes('closed')) {
+    throw "Not implemented yet!"
+  }
+
+  return statuses
+}
+
 const dynamicsPermitTypesMappings = {
   'import': 149900001,
   'export': 149900000,
@@ -336,7 +370,7 @@ function reverseMapper(mapping, value) {
 }
 
 async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes, statuses, searchTerm) {
-  const select = "$select=cites_submissionreference,cites_submissionmethod,statuscode,createdon"//,cites_permittype"
+  const select = "$select=cites_submissionreference,cites_submissionmethod,statuscode,statecode,createdon"//,cites_permittype"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
@@ -345,12 +379,10 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
     `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`,
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
-  ]  
+  ]
 
   if (statuses && statuses.length > 0) {
-    //const statusMappedList = statuses.map(x => `'${dynamicsStatusMappings[x]}'`).join(",")
-    //const statusMappedList = getDynamicsStatuses(statuses).join(",")
-    const statusMappedList = getDynamicsStatuses(statuses).map(x => `'${x}'`).join(",")
+    const statusMappedList = getDynamicsSubmissionStatuses(statuses).map(x => `'${x}'`).join(",")
     filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
   }
 
@@ -398,7 +430,7 @@ async function getSubmissions(server, query, pageSize) {
 
           return {
             submissionRef: x.cites_submissionreference,
-            status: getPortalStatus(x.statuscode),
+            status: getPortalSubmissionStatus(x.statuscode, x.statecode),
             //status: reverseMapper(dynamicsStatusMappings, x.statuscode),
             dateSubmitted: x.createdon,
             //permitType: reverseMapper(dynamicsPermitTypesMappings, x.cites_cites_submission_incident_submission[0].cites_permittype)
@@ -433,9 +465,9 @@ function getPaymentCalculationType(dynamicsType) {
 
 async function getSubmission(server, contactId, organisationId, submissionRef) {
   const top = "$top=1"
-  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype"
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,statuscode,statecode"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
-  
+
   const filterParts = [
     `cites_submissionreference eq '${submissionRef}'`,
     `_cites_submissionagent_value eq '${contactId}'`,
@@ -471,9 +503,11 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
       const jsonContent = JSON.parse((submission.cites_portaljsoncontent) + (submission.cites_portaljsoncontentcontinued || ''))
       jsonContent.submissionRef = submissionRef
       jsonContent.submissionId = submission.cites_submissionid
+      jsonContent.submissionStatus = getPortalSubmissionStatus(submission.statuscode, submission.statecode)
       jsonContent.paymentDetails = {
         costingType: getPaymentCalculationType(submission.cites_paymentcalculationtype),
-        costingValue: submission.cites_totalfeecalculation
+        costingValue: submission.cites_totalfeecalculation,
+        feePaid: submission.cites_feehasbeenpaid
       }
 
       //for (const jsonApplication of jsonContent.applications) {
@@ -507,7 +541,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
       `$filter=_cites_submissionagent_value eq '${contactId}'`,
       `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
     ]
-        
+
     if (submissionRef) {
       filterParts.push(`cites_submissionreference eq '${submissionRef}'`)
     }
@@ -798,7 +832,7 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
 //     { submissionRef: 'CD5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
 //     { submissionRef: 'EF9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
 //     { submissionRef: 'GH1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
-//     { submissionRef: 'IJ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
+//     { submissionRef: 'IJ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
 //     { submissionRef: 'KL4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
 //     { submissionRef: 'MN5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
 //     { submissionRef: 'AB1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
@@ -807,7 +841,7 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
 //     { submissionRef: 'GH1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
 //     { submissionRef: 'IJ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
 //     { submissionRef: 'KL4549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
-//     { submissionRef: 'MN5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
+//     { submissionRef: 'MN5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
 //     // { submissionRef: 'AB1238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
 //     // { submissionRef: 'CD5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
 //     // { submissionRef: 'EF9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },
@@ -819,7 +853,7 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
 //     // { submissionRef: 'CZ5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
 //     // { submissionRef: 'EZ9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
 //     // { submissionRef: 'GZ1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'IZ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
+//     // { submissionRef: 'IZ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
 //     // { submissionRef: 'KZ4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
 //     // { submissionRef: 'MZ5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
 //     // { submissionRef: 'AZ1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
@@ -828,7 +862,7 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
 //     // { submissionRef: 'GZ1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
 //     // { submissionRef: 'IZZ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
 //     // { submissionRef: 'KLZ549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
-//     // { submissionRef: 'MNZ5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProcess', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
+//     // { submissionRef: 'MNZ5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
 //     // { submissionRef: 'AB1Z238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
 //     // { submissionRef: 'CDZ5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
 //     // { submissionRef: 'EFZ9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },

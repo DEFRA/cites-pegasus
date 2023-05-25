@@ -121,7 +121,7 @@ module.exports = [
         return h.redirect(`${nextPathFailed}/${paymentRoute}`)
       }
 
-      const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+      const { user: { contactId, organisationId } } = getYarValue(request, 'CIDMAuth')  
 
       await setSubmissionPayment(request.server, contactId, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100)      
       

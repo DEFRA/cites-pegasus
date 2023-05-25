@@ -118,17 +118,15 @@ module.exports = [
       } else {
         startIndex = 0
       }
-      const endIndex = startIndex + pageSize;
-      const slicedApplications = applications.slice(startIndex, endIndex);
+      const endIndex = startIndex + pageSize
+      const slicedApplications = applications.slice(startIndex, endIndex)
 
       let showPayNowNotification = false
-      //if(status is make payment) {//TODO Only show the pay now notification if it needs paying
-      if(submission.paymentDetails.costingValue > 0){
+      
+      if(submission.paymentDetails.feePaid === false && submission.submissionStatus === 'awaitingPayment' && submission.paymentDetails.costingValue > 0){
            showPayNowNotification = true
       }
       
-    //}
-
       const pageData = {
         submissionRef,
         pageNo: pageNo ? pageNo : 1,
