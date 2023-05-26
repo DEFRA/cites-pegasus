@@ -46,7 +46,7 @@ function createModel(errors, data) {
     received: commonContent.statusDescriptionReceived,
     awaitingPayment: commonContent.statusDescriptionAwaitingPayment,
     awaitingReply: commonContent.statusDescriptionAwaitingReply,
-    inProgress: commonContent.statusDescriptionInProgress,
+    inProgress: commonContent.statusDescriptionInProgress, 
     issued: commonContent.statusDescriptionIssued,
     refused: commonContent.statusDescriptionRefused,
     cancelled: commonContent.statusDescriptionCancelled,
@@ -59,7 +59,7 @@ function createModel(errors, data) {
     const applicationDate = getApplicationDate(submission.dateSubmitted)
     const status = statusTextMap[submission.status] || submission.status
 
-    return { referenceNumber, referenceNumberUrl, applicationDate, status }
+    return { referenceNumber, referenceNumberUrl, applicationDate, status: submission.status === 'inProgress' ? '' : status }//Temporarily hidden "In Progress" until the closed status is introduced
   })
 
   const startIndex = (data.pageNo - 1) * pageSize
@@ -142,21 +142,21 @@ function createModel(errors, data) {
       idPrefix: "statuses",
       name: "statuses",
       items: [
-        {
-          value: "inProgress",
-          text: commonContent.statusDescriptionInProgress,
-          checked: isChecked(data.statuses, "inProgress")
-        },
+        // {
+        //   value: "inProgress",
+        //   text: commonContent.statusDescriptionInProgress,
+        //   checked: isChecked(data.statuses, "inProgress")
+        // },
         {
           value: "awaitingPayment",
           text: commonContent.statusDescriptionAwaitingPayment,
           checked: isChecked(data.statuses, "awaitingPayment")
-        },
-        {
-          value: "closed",
-          text: commonContent.statusDescriptionClosed,
-          checked: isChecked(data.statuses, "closed")
         }
+        // {
+        //   value: "closed",
+        //   text: commonContent.statusDescriptionClosed,
+        //   checked: isChecked(data.statuses, "closed")
+        // }
         // {
         //   value: "received",
         //   text: commonContent.statusDescriptionReceived,
@@ -246,6 +246,8 @@ async function getSubmissionsData(request, pageNo, filterData) {
   if (nextQueryUrl && queryUrls.length === pageNo) {
     queryUrls.push(nextQueryUrl)
   }
+
+
 
   setYarValue(request, 'mySubmissions-queryUrls', queryUrls)
 
