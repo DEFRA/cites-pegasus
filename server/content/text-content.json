@@ -4,7 +4,7 @@
     "phaseBannerPhase": "beta",
     "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
     "navigationSignOut": "Sign out",
-    "navigationAccountManagement": "Account Management",
+    "navigationAccountManagement": "<a href='/account-management' target='_blank' class='govuk-header__link'>Account Management</a>",
     "backLinkButton": "Back",
     "continueButton": "Continue",
     "confirmButton": "Confirm",
