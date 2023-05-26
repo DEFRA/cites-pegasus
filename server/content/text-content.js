@@ -206,7 +206,6 @@ const schema = Joi.object().keys({
     phaseBannerPhase: Joi.string().required(),
     phaseBannerHTML: Joi.string().required(),
     navigationSignOut: Joi.string().required(),
-    navigationAccountManagement: Joi.string().required(),
     backLinkButton: Joi.string().required(),
     continueButton: Joi.string().required(),
     confirmButton: Joi.string().required(),
