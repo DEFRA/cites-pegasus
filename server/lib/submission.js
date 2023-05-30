@@ -68,6 +68,8 @@ function cloneSubmission(request, applicationIndex) {
     delete submission.submissionRef
     delete submission.submissionId
     delete submission.paymentDetails  
+    delete submission.supportingDocuments
+    delete submission.submissionStatus
     
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
