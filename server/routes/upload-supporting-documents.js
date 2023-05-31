@@ -287,6 +287,7 @@ module.exports = [
         try {
           if (!docs.containerName) {
             const containerName = await createBlobContainer()
+            console.log(`Blob container created with name ${containerName}`)
             docs.containerName = containerName
             try {
               mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
@@ -297,6 +298,7 @@ module.exports = [
           }
 
           const blobUrl = await addFileToBlobContainer(docs.containerName, request.payload.fileUpload)
+          console.log(`File added to blob container with url ${blobUrl}`)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl })
 
           try {
