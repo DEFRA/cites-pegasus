@@ -5,7 +5,7 @@
   {{ govukBackLink({
     text: backLinkButtonText,
     href: backLink,
-	  attributes: {id: 'linkBack'}
+	  attributes: {id: 'linkBack', onclick: "history.back(); return false;"}
   }) }}
 
 {% endblock %}
