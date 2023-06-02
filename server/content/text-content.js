@@ -441,7 +441,8 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     radioOptionLegallyAcquired: Joi.string().required(),
     radioOptionCommercialActivities: Joi.string().required(),
-    radioOptionOther: Joi.string().required(),
+    radioOptionNonDetrimentalPurposes: Joi.string().required(),
+    radioOptionDisplayWithoutSale: Joi.string().required(),
     radioOptionMoveALiveSpecimen: Joi.string().required(),
     errorMessages: Joi.object({
       "error.useCertificateFor.any.required": Joi.string().required()

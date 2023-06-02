@@ -615,7 +615,8 @@
     "pageHeader": "What will you use the certificate for?",
     "radioOptionLegallyAcquired": "To prove that you legally acquired a specimen",
     "radioOptionCommercialActivities": "To use the specimen for commercial activities",
-    "radioOptionOther": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
+    "radioOptionNonDetrimentalPurposes": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
+    "radioOptionDisplayWithoutSale": "To display the specimen to the public without sale",
     "radioOptionMoveALiveSpecimen": "To move a live specimen within Great Britain",
     "errorMessages": {
       "error.useCertificateFor.any.required": "Select what you will use the certificate for"
