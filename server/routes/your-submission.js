@@ -25,7 +25,7 @@ function createSubmitApplicationModel(errors, data) {
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications)
       break
     case "export":
-      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications) 
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.exportApplications) 
       break
     case "reexport":
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.reexportApplications)
