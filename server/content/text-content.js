@@ -441,7 +441,8 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     radioOptionLegallyAcquired: Joi.string().required(),
     radioOptionCommercialActivities: Joi.string().required(),
-    radioOptionOther: Joi.string().required(),
+    radioOptionNonDetrimentalPurposes: Joi.string().required(),
+    radioOptionDisplayWithoutSale: Joi.string().required(),
     radioOptionMoveALiveSpecimen: Joi.string().required(),
     errorMessages: Joi.object({
       "error.useCertificateFor.any.required": Joi.string().required()
@@ -835,7 +836,8 @@ const schema = Joi.object().keys({
     rowTextA10CertificatePurpose: Joi.string().required(),
     rowTextLegallyAcquired: Joi.string().required(),
     rowTextCommercialActivities: Joi.string().required(),
-    rowTextOther: Joi.string().required(),
+    rowTextNonDetrimentalPurposes: Joi.string().required(),
+    rowTextDisplayWithoutSale: Joi.string().required(),
     rowTextMoveALiveSpecimen: Joi.string().required(),
     rowTextAcquiredDate: Joi.string().required(),
     rowTextExistingArticle10Certificate: Joi.string().required(),

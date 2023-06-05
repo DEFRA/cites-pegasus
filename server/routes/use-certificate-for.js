@@ -72,12 +72,19 @@ function createModel(errors, data) {
           )
         },
         {
-          value:
-            "other",
-          text: pageContent.radioOptionOther,
+          value: "displayWithoutSale",
+          text: pageContent.radioOptionDisplayWithoutSale,
           checked: isChecked(
             data.useCertificateFor,
-            "other"
+            "displayWithoutSale"
+          )
+        },
+        {
+          value: "nonDetrimentalPurposes",
+          text: pageContent.radioOptionNonDetrimentalPurposes,
+          checked: isChecked(
+            data.useCertificateFor,
+            "nonDetrimentalPurposes"
           )
         },
         {
@@ -137,7 +144,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "other", "moveALiveSpecimen").required()
+          useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "nonDetrimentalPurposes", "displayWithoutSale", "moveALiveSpecimen").required()
         }),
         failAction: (request, h, err) => {
           const pageData = {
