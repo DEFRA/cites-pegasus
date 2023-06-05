@@ -139,7 +139,8 @@ function createApplicationSummaryModel(errors, data) {
     legallyAcquired: pageContent.rowTextLegallyAcquired,
     commercialActivities: pageContent.rowTextCommercialActivities,
     moveALiveSpecimen: pageContent.rowTextMoveALiveSpecimen,
-    other: pageContent.rowTextOther,
+    nonDetrimentalPurposes: pageContent.rowTextNonDetrimentalPurposes,
+    displayWithoutSale: pageContent.rowTextDisplayWithoutSale
   }
 
   let quantityValue = null
