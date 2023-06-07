@@ -103,7 +103,11 @@ module.exports = [{
         payNow: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo)
       }),
       failAction: (request, h, err) => {
-        return h.view(pageId, createModel(err, 0)).takeover()
+        const submission = getSubmission(request) || null
+
+        const costingValue = submission.paymentDetails.costingValue
+
+        return h.view(pageId, createModel(err, costingValue)).takeover()
       }
     },
     handler: async (request, h) => {
