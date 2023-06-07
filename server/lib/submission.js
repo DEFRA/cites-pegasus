@@ -10,10 +10,10 @@ function getSubmission(request) {
 
 function createSubmission(request) {
     const cidmAuth = getYarValue(request, 'CIDMAuth')
-    const submission = { 
-        contactId: request.auth.credentials.contactId, 
+    const submission = {
+        contactId: request.auth.credentials.contactId,
         organisationId: cidmAuth.user.organisationId || null,
-        applications: [{ applicationIndex: 0 }] 
+        applications: [{ applicationIndex: 0 }]
     }
     setYarValue(request, 'submission', submission)
     return submission
@@ -63,17 +63,17 @@ function validateSubmission(submission, path) {
 function cloneSubmission(request, applicationIndex) {
     const submission = getSubmission(request)
     const newApplication = submission.applications[applicationIndex]
-    const cloneSource = {submissionRef: submission.submissionRef, applicationRef: newApplication.applicationRef, applicationIndex}
+    const cloneSource = { submissionRef: submission.submissionRef, applicationRef: newApplication.applicationRef, applicationIndex }
 
     delete submission.submissionRef
     delete submission.submissionId
-    delete submission.paymentDetails  
+    delete submission.paymentDetails
     delete submission.supportingDocuments
     delete submission.submissionStatus
-    
+
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
-    
+
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
     setYarValue(request, 'cloneSource', cloneSource)
@@ -107,6 +107,28 @@ function deleteApplication(request, applicationIndex) {
         application.applicationIndex = index;
     })
     setYarValue(request, 'submission', submission)
+    return submission
+}
+
+function deleteInProgressApplications(request) {
+    while (true) {
+        const submission = getSubmission(request)
+        const { applicationStatuses } = getAppFlow(submission)
+        if (!applicationStatuses.some(appStatus => appStatus.status === "in-progress")) {
+            //All partial / in-progress applications have been removed
+            break
+        }
+
+        //Remove any partial / in-progress applications
+        for (const appStatus of applicationStatuses) {
+
+            if (appStatus.status === "in-progress") {
+                deleteApplication(request, appStatus.applicationIndex)
+                //Only delete 1 at a time then refetch from session as the deleteApplication changes the indexes
+                break
+            }
+        }
+    }
 }
 
 function getCompletedApplications(submission, appStatuses) {
@@ -361,6 +383,7 @@ module.exports = {
     createApplication,
     cloneApplication,
     deleteApplication,
+    deleteInProgressApplications,
     validateSubmission,
     cloneApplication,
     deleteApplication,
