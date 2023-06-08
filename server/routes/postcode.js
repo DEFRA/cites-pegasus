@@ -96,6 +96,7 @@ function createModel(errors, data) {
             id: "postcode",
             name: "postcode",
             classes: "govuk-!-width-two-thirds",
+            attributes: {maxlength: 8},
             ...(data.postcode ? { value: data.postcode } : {}),
             errorMessage: getFieldError(errorList, '#postcode')
         },
