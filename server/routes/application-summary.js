@@ -131,8 +131,8 @@ function createApplicationSummaryModel(errors, data) {
     animalWorked: pageContent.rowTextSpecimenTypeAnimalWorked,
     animalCoral: pageContent.rowTextSpecimenTypeAnimalCoral,
     plantLiving: pageContent.rowTextSpecimenTypePlantLiving,
-    plantWorked: pageContent.rowTextSpecimenTypePlantProduct,
-    plantProduct: pageContent.rowTextSpecimenTypePlantWorked,
+    plantProduct: pageContent.rowTextSpecimenTypePlantProduct,
+    plantWorked: pageContent.rowTextSpecimenTypePlantWorked,
   }
 
   const a10CertificatePurposeValue =  {

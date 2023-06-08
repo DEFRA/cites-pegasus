@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { isValidDate, isPastDate } = require("../lib/validators")
+const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -294,50 +294,22 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
 }
 
 function permitIssueDateValidator(value, helpers) {
-  const { day, month, year, customLabelPrefix } = value.hasOwnProperty("exportOrReexportPermitIssueDate-day")
+  const { day, month, year, fieldName } = value.hasOwnProperty("exportOrReexportPermitIssueDate-day")
     ? {
       day: value["exportOrReexportPermitIssueDate-day"],
       month: value["exportOrReexportPermitIssueDate-month"],
       year: value["exportOrReexportPermitIssueDate-year"],
-      customLabelPrefix: "exportOrReexportPermitIssueDate"
+      fieldName: "exportOrReexportPermitIssueDate"
     } : {
       day: value["countryOfOriginPermitIssueDate-day"],
       month: value["countryOfOriginPermitIssueDate-month"],
       year: value["countryOfOriginPermitIssueDate-year"],
-      customLabelPrefix: "countryOfOriginPermitIssueDate"
+      fieldName: "countryOfOriginPermitIssueDate"
     }
+  const dateValidatorResponse = dateValidator(day, month, year, false, fieldName, helpers)
 
-  if (!day && !month && !year) {
-    return helpers.error("any.empty", { customLabel: customLabelPrefix })
-  }
-  if (!day && !month) {
-    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-month` })
-  }
-  if (!day && !year) {
-    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day-year` })
-  }
-  if (!month && !year) {
-    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month-year` })
-  }
-  if (!day) {
-    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-day` })
-  }
-  if (!month) {
-    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-month` })
-  }
-  if (!year) {
-    return helpers.error("any.empty", { customLabel: `${customLabelPrefix}-year` })
-  }
-  if (
-    !isValidDate(day, month, year)) {
-    return helpers.error("any.invalid", { customLabel: customLabelPrefix })
-  } else {
-    const date = new Date(year, month - 1, day)
-    if (!isPastDate(date, true)) {
-      return helpers.error("any.future", { customLabel: customLabelPrefix })
-    }
-  }
-  return value
+  return dateValidatorResponse === null ? value : dateValidatorResponse
+
 }
 
 const payloadSchema = Joi.object({
