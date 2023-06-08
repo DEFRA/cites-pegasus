@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
-const { isValidDate, isPastDate } = require("../lib/validators")
+const { dateValidator } = require("../lib/validators")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "created-date"
@@ -163,42 +163,9 @@ function createdDateValidator(value, helpers) {
     isExactDateUnknown } = value
 
   if (!isExactDateUnknown) {
-
-    if (!day && !month && !year) {
-      return helpers.error('any.empty', { customLabel: 'createdDate' });
-    }
-
-    if (!day && !month) {
-      return helpers.error('any.empty', { customLabel: 'createdDate-day-month' });
-    }
-
-    if (!day && !year) {
-      return helpers.error('any.empty', { customLabel: 'createdDate-day-year' });
-    }
-
-    if (!month && !year) {
-      return helpers.error('any.empty', { customLabel: 'createdDate-month-year' });
-    }
-
-    if (!day) {
-      return helpers.error('any.empty', { customLabel: 'createdDate-day' });
-    }
-
-    if (!month) {
-      return helpers.error('any.empty', { customLabel: 'createdDate-month' });
-    }
-
-    if (!year) {
-      return helpers.error('any.empty', { customLabel: 'createdDate-year' });
-    }
-
-    if (!isValidDate(day, month, year)) {
-      return helpers.error('any.invalid', { customLabel: 'createdDate' });
-    } else {
-      const date = new Date(year, month - 1, day);
-      if (!isPastDate(date, true)) {
-        return helpers.error('any.future', { customLabel: 'createdDate' });
-      }
+    const dateValidatorResponse = dateValidator(day, month, year, false, 'createdDate', helpers)
+    if (dateValidatorResponse) {
+      return dateValidatorResponse
     }
   }
   return value

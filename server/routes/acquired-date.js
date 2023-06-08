@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { isValidDate, isPastDate } = require("../lib/validators")
+const { dateValidator } = require("../lib/validators")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
@@ -166,43 +166,51 @@ function acquiredDateValidator(value, helpers) {
     isExactDateUnknown } = value
 
   if (!isExactDateUnknown) {
-
-    if (!day && !month && !year) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate' });
+    const dateValidatorResponse = dateValidator(day, month, year, false, 'acquiredDate', helpers)
+    if (dateValidatorResponse) {
+      return dateValidatorResponse
     }
 
-    if (!day && !month) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate-day-month' });
-    }
+    // if (!day && !month && !year) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate' });
+    // }
 
-    if (!day && !year) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate-day-year' });
-    }
+    // if (!day && !month) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-day-month' });
+    // }
 
-    if (!month && !year) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate-month-year' });
-    }
+    // if (!day && !year) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-day-year' });
+    // }
 
-    if (!day) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate-day' });
-    }
+    // if (!month && !year) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-month-year' });
+    // }
 
-    if (!month) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate-month' });
-    }
+    // if (!day) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-day' });
+    // }
 
-    if (!year) {
-      return helpers.error('any.empty', { customLabel: 'acquiredDate-year' });
-    }
+    // if (!month) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-month' });
+    // }
 
-    if (!isValidDate(day, month, year)) {
-      return helpers.error('any.invalid', { customLabel: 'acquiredDate' });
-    } else {
-      const date = new Date(year, month - 1, day);
-      if (!isPastDate(date, true)) {
-        return helpers.error('any.future', { customLabel: 'acquiredDate' });
-      }
-    }
+    // if (!year) {
+    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-year' });
+    // }
+
+    // if (!isValidDate(day, month, year)) {
+    //   return helpers.error('any.invalid', { customLabel: 'acquiredDate' });
+    // }
+
+    // if (!isAfterMinDate(day, month, year)) {
+    //   return helpers.error('any.beforeMinDate', { customLabel: 'acquiredDate' });
+    // }
+
+    // const date = new Date(year, month - 1, day);
+    // if (!isPastDate(date, true)) {
+    //   return helpers.error('any.future', { customLabel: 'acquiredDate' });
+    // }
   }
   return value
 }
@@ -308,7 +316,7 @@ module.exports = [
         if (exitChangeRouteUrl) {
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         return h.redirect(
           `${nextPath}/${applicationIndex}`
         )
