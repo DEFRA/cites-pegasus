@@ -4,7 +4,7 @@ const { findErrorList, getFieldError, isChecked } = require('../lib/helper-funct
 const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const { checkChangeRouteExit } = require("../lib/change-route")
-const { isValidDate, isPastDate } = require("../lib/validators")
+const { dateValidator } = require("../lib/validators")
 const nunjucks = require("nunjucks")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -29,7 +29,10 @@ function createModel(errors, data) {
     const fields = [
       "dateOfBirth",
       "dateOfBirth-day",
+      "dateOfBirth-day-month",
+      "dateOfBirth-day-year",
       "dateOfBirth-month",
+      "dateOfBirth-month-year",
       "dateOfBirth-year",
       "sex",
       "parentDetails",
@@ -51,7 +54,10 @@ function createModel(errors, data) {
     const dateOfBirthFields = [
       "dateOfBirth",
       "dateOfBirth-day",
+      "dateOfBirth-day-month",
+      "dateOfBirth-day-year",
       "dateOfBirth-month",
+      "dateOfBirth-month-year",
       "dateOfBirth-year"
     ]
     dateOfBirthFields.forEach((field) => {
@@ -79,6 +85,26 @@ function createModel(errors, data) {
   //nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => x = getRadioItem(data.sex, x, errorList))
 
+  const dateOfBirthInputGroupItems = getDateOfBirthInputGroupItems(dateOfBirthComponents, dateOfBirthErrors)
+
+  const inputDateOfBirth = {
+    id: "dateOfBirth",
+    name: "dateOfBirth",
+    namePrefix: "dateOfBirth",
+    hint: {
+      text: pageContent.inputHintDateOfBirth
+    },
+    // fieldset: {
+    //   legend: {
+    //     text: pageContent.pageHeader,
+    //     isPageHeading: true,
+    //     classes: "govuk-fieldset__legend--l"
+    //   }
+    // },
+    items: dateOfBirthInputGroupItems,
+    errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
+  }
+  
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -107,23 +133,7 @@ function createModel(errors, data) {
     //     text: pageContent.inputHintDateOfBirth
     //   }
     // },
-    inputDateOfBirth: {
-      id: "dateOfBirth",
-      name: "dateOfBirth",
-      namePrefix: "dateOfBirth",
-      hint: {
-        text: pageContent.inputHintDateOfBirth
-      },
-      // fieldset: {
-      //   legend: {
-      //     text: pageContent.pageHeader,
-      //     isPageHeading: true,
-      //     classes: "govuk-fieldset__legend--l"
-      //   }
-      // },
-      items: getDateOfBirthInputGroupItems(dateOfBirthComponents, dateOfBirthErrors),
-      errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
-    },
+    inputDateOfBirth: inputDateOfBirth,
 
     inputParentDetails: {
       name: "parentDetails",
@@ -201,23 +211,13 @@ function dateOfBirthValidator(value, helpers) {
     "dateOfBirth-year": year
   } = value
 
-  if (day || month || year) {
-    if ((day && (!month || !year))
-      || (month && !year)) {
-      return helpers.error('any.invalid', { customLabel: 'dateOfBirth' });
-    }
+  if ((day + month + year).length === 0){
+    return value
+  }
 
-    const adjustedDay = !day ? 1 : day
-    const adjustedMonth = !month && !day ? 1 : month
-    
-    if (!isValidDate(adjustedDay, adjustedMonth, year)) {
-      return helpers.error('any.invalid', { customLabel: 'dateOfBirth' });
-    } else {
-      const date = new Date(year, adjustedMonth - 1, adjustedDay);
-      if (!isPastDate(date, true)) {
-        return helpers.error('any.future', { customLabel: 'dateOfBirth' });
-      }
-    }
+  const dateValidatorResponse = dateValidator(day, month, year, false, 'dateOfBirth', helpers)
+  if (dateValidatorResponse) {
+    return dateValidatorResponse
   }
 
   return value
@@ -323,7 +323,7 @@ module.exports = [
         if (exitChangeRouteUrl) {
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         if (submission.permitType === 'article10') {
           return h.redirect(`${nextPathAcquiredDate}/${applicationIndex}`)
         } else {

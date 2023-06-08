@@ -488,6 +488,7 @@ const schema = Joi.object().keys({
       "error.createdDate.any.empty": Joi.string().required(),
       "error.createdDate.any.future": Joi.string().required(),
       "error.createdDate.any.invalid": Joi.string().required(),
+      "error.createdDate.any.beforeMinDate": Joi.string().required(),
       "error.createdDate-day.any.empty": Joi.string().required(),
       "error.createdDate-day-month.any.empty": Joi.string().required(),
       "error.createdDate-day-year.any.empty": Joi.string().required(),
@@ -508,6 +509,7 @@ const schema = Joi.object().keys({
       "error.acquiredDate.any.empty": Joi.string().required(),
       "error.acquiredDate.any.future": Joi.string().required(),
       "error.acquiredDate.any.invalid": Joi.string().required(),
+      "error.acquiredDate.any.beforeMinDate": Joi.string().required(),
       "error.acquiredDate-day.any.empty": Joi.string().required(),
       "error.acquiredDate-day-month.any.empty": Joi.string().required(),
       "error.acquiredDate-day-year.any.empty": Joi.string().required(),
@@ -602,7 +604,14 @@ const schema = Joi.object().keys({
         "error.dateOfBirth.any.invalid": Joi.string().required(),
         "error.dateOfBirth-day.number.base": Joi.string().required(),
         "error.dateOfBirth-month.number.base": Joi.string().required(),
-        "error.dateOfBirth-year.number.base": Joi.string().required()
+        "error.dateOfBirth-year.number.base": Joi.string().required(),
+        "error.dateOfBirth-day.any.empty": Joi.string().required(),
+        "error.dateOfBirth-month.any.empty": Joi.string().required(),
+        "error.dateOfBirth-year.any.empty": Joi.string().required(),
+        "error.dateOfBirth-day-month.any.empty": Joi.string().required(),
+        "error.dateOfBirth-day-year.any.empty": Joi.string().required(),
+        "error.dateOfBirth-month-year.any.empty": Joi.string().required(),
+        "error.dateOfBirth.any.beforeMinDate": Joi.string().required()
       })
       .required()
   }).required(),
@@ -704,61 +713,42 @@ const schema = Joi.object().keys({
       "error.exportOrReexportCountry.any.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.required": Joi.string().required(),
       "error.exportOrReexportCountry.string.max": Joi.string().required(),
-      "error.exportOrReexportPermitNumber.any.required":
-        Joi.string().required(),
-      "error.exportOrReexportPermitNumber.string.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitNumber.string.pattern.base":
-        Joi.string().required(),
+      "error.exportOrReexportPermitNumber.any.required": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.empty": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.pattern.base": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.min": Joi.string().required(),
       "error.exportOrReexportPermitNumber.string.max": Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate.any.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate.any.future":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate.any.invalid":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate-day.any.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate-day-month.any.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate-day-year.any.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate-month.any.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate-month-year.any.empty":
-        Joi.string().required(),
-      "error.exportOrReexportPermitIssueDate-year.any.empty":
-        Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.custom": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.future": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.invalid": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.beforeMinDate": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day-month.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day-year.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-month.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-month-year.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-year.any.empty": Joi.string().required(),
       "error.countryOfOrigin.string.empty": Joi.string().required(),
       "error.countryOfOrigin.any.empty": Joi.string().required(),
       "error.countryOfOrigin.any.required": Joi.string().required(),
       "error.countryOfOrigin.string.max": Joi.string().required(),
       "error.countryOfOriginPermitNumber.any.required": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.empty": Joi.string().required(),
-      "error.countryOfOriginPermitNumber.string.pattern.base":
-        Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.pattern.base": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.min": Joi.string().required(),
       "error.countryOfOriginPermitNumber.string.max": Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate.any.custom":
-        Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.custom": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate.any.empty": Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate.any.future":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate.any.invalid":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-day.any.empty":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-day-month.any.empty":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-day-year.any.empty":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-month.any.empty":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-month-year.any.empty":
-        Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-year.any.empty":
-        Joi.string().required()
+      "error.countryOfOriginPermitIssueDate.any.future": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.invalid": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.beforeMinDate": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day-month.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day-year.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-month.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-month-year.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-year.any.empty": Joi.string().required()
     }).required()
   }).required(),
   uploadSupportingDocuments: Joi.object({
