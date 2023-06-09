@@ -1313,7 +1313,8 @@
     "tableHeadReferenceNumber": "Reference number",
     "tableHeadScientificName": " Scientific name",
     "notificationHeader": "The fee for this application is £##COST##",
-    "notificationContent": "<a class='govuk-notification-banner__link' href='##PAYMENT_LINK##'>Pay now</a> to complete your application."
+    "notificationContent": "<a class='govuk-notification-banner__link' href='##PAYMENT_LINK##'>Pay now</a> to complete your application.",
+    "pendingApplicationsBodyText": "Someone from the team will be in touch shortly if your pending application requires further attention."
   },
   "payApplication": {
     "defaultTitle": "Pay for your CITES application",

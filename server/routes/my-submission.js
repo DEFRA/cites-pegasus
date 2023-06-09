@@ -16,9 +16,11 @@ function createModel(errors, data) {
   const pageContent = textContent.mySubmission
 
   const applicationsData = data.applications
+  const hasPendingApplications = applicationsData.some(application => !application.applicationRef)
+
   const applicationsTableData= applicationsData.map(application => {
-    //const applicationIndex = (application.applicationIndex + 1).toString().padStart(3, '0'); //TODO CHANGE TO USE CORRECT APPLICATION REF VALUE
     const referenceNumber = application.applicationRef
+    
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     const speciesName= application.species.speciesName
    
@@ -54,10 +56,12 @@ function createModel(errors, data) {
     pageTitle: data.submissionRef,
     captionText: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
-    tableHeadScientificName: pageContent. tableHeadScientificName,
+    tableHeadScientificName: pageContent.tableHeadScientificName,
+    pendingApplicationsBodyText: pageContent.pendingApplicationsBodyText,
     applicationsData : applicationsTableData,
     showPayNowNotification: data.showPayNowNotification,
-    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionRef, data.totalApplications, data.pageNo, textPagination) : ""
+    inputPagination: data.totalApplications > pageSize ? paginate(data.submissionRef, data.totalApplications, data.pageNo, textPagination) : "",
+    hasPendingApplications: hasPendingApplications
   }
   return { ...commonContent, ...model }
 }

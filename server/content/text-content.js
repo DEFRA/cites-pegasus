@@ -970,6 +970,7 @@ const schema = Joi.object().keys({
     tableHeadScientificName: Joi.string().required(),
     notificationHeader: Joi.string().required(),
     notificationContent: Joi.string().required(),
+    pendingApplicationsBodyText: Joi.string().required()
   }).required(),
   applicationComplete: Joi.object({
     defaultTitle: Joi.string().required(),
