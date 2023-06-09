@@ -511,7 +511,7 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
       //for (const jsonApplication of jsonContent.applications) {
       jsonContent.applications.forEach(jsonApplication => {
         dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonApplication.applicationIndex)
-        jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference || `${submissionRef}/` + (jsonApplication.applicationIndex + 1).toString().padStart(3, '0') //NOTE - The second part of this condition is a bit of a fudge as it's possible that the cites_applicationreference could be null.  It's also possible tha the application ref is not just applicationIndex plus 1 though.
+        jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference
       })
 
       return jsonContent
