@@ -1,3 +1,6 @@
+const { COMMENTS_REGEX } = require("../lib//regex-validation")
+
+
 function isValidDate(day, month, year) {
     const date = new Date(year, month - 1, day)
 
@@ -69,9 +72,25 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
     return null
 }
 
+
+function textAreaMinMaxValidator(value, minLength, maxLength, fieldName, helpers) {
+    const modifiedValue = value.replace(/\r/g, '');
+  
+    if (modifiedValue.length < minLength ) {
+      return helpers.error('string.min', { customLabel: fieldName});
+    }
+
+    if (modifiedValue.length > maxLength) {
+        return helpers.error('string.max', { customLabel: fieldName});
+      }
+  
+    return modifiedValue;
+  }
+
 module.exports = {
     isValidDate,
     isPastDate,
     isAfterMinDate,
-    dateValidator
+    dateValidator,
+    textAreaMinMaxValidator
 }

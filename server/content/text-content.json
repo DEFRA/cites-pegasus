@@ -771,6 +771,7 @@
       "error.parentDetails.string.min": "Parent details must be 3 characters or more",
       "error.parentDetails.string.max": "Parent details must be 250 characters or less",
       "error.description.string.max": "Description must be 500 characters or less",
+      "error.description.string.pattern.base":  "Description must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
       "error.dateOfBirth.any.future": "Date of birth must be in the past",
       "error.dateOfBirth.any.invalid": "Enter a real date of birth",
       "error.dateOfBirth-day.number.base": "Date of birth must only include numbers 0 to 9",
@@ -1028,7 +1029,8 @@
     "pageHeader": "Add remarks",
     "inputHintAddRemarks": "Include any other comments that may support your application (optional).",
     "errorMessages": {
-      "error.comments.string.max": "Comments must be 500 characters or less"
+      "error.comments.string.max": "Comments must be 500 characters or less",
+      "error.comments.string.pattern.base":  "Comments must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
     }
   },
   "applicationSummary": {
