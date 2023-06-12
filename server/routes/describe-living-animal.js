@@ -5,7 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/s
 const textContent = require('../content/text-content')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { dateValidator } = require("../lib/validators")
-const nunjucks = require("nunjucks")
+const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
@@ -223,6 +223,17 @@ function dateOfBirthValidator(value, helpers) {
   return value
 }
 
+function textAreaValidator(value, helpers) {
+  const modifiedvalue = value.replace(/\r/g, '')
+  const schema = Joi.string().max(500).regex(COMMENTS_REGEX)
+  const result = schema.validate(modifiedvalue)
+
+  if (result.error) {
+    return helpers.error(result.error.details[0].type, { customLabel: "description" })
+  }
+  return modifiedvalue
+}
+
 module.exports = [
   {
     method: "GET",
@@ -273,7 +284,7 @@ module.exports = [
         payload: Joi.object({
           sex: Joi.string().required().valid("M", "F", "U"),
           parentDetails: Joi.string().min(3).max(250),
-          description: Joi.string().max(500).optional().allow(null, ""),
+          description: Joi.string().custom(textAreaValidator).optional().allow(null, ""),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
           "dateOfBirth-year": Joi.number().optional().allow(null, ""),
@@ -304,7 +315,7 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        species.specimenDescriptionLivingAnimal = request.payload.description.
+        species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
         species.parentDetails = submission.permitType === 'article10' ? request.payload.parentDetails : null
         species.sex = request.payload.sex
