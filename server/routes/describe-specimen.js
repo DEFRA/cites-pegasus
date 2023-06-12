@@ -4,6 +4,7 @@ const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
+const { textAreaMinMaxValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -36,11 +37,11 @@ function createModel(errors, data) {
     })
   }
 
-  const previousPath = data.numberOfUnmarkedSpecimens ? previousPathUnmarkedSpecimens : previousPathUniqueId 
+  const previousPath = data.numberOfUnmarkedSpecimens ? previousPathUnmarkedSpecimens : previousPathUniqueId
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -65,6 +66,21 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function failAction(request, h, err) {
+  const { applicationIndex } = request.params
+  const submission = getSubmission(request)
+  const species = submission.applications[applicationIndex].species
+
+  const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
+    applicationIndex: applicationIndex,
+    speciesName: species.speciesName,
+    numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
+    ...request.payload
+  }
+  return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
 module.exports = [
@@ -113,29 +129,26 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          specimenDescriptionGeneric: Joi.string().min(5).max(500).regex(COMMENTS_REGEX).required()
+          specimenDescriptionGeneric: Joi.string().regex(COMMENTS_REGEX).required()
         }),
-        failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
-          const submission = getSubmission(request)
-          const species = submission.applications[applicationIndex].species
-
-          const pageData = {
-            backLinkOverride: checkChangeRouteExit(request, true),
-            applicationIndex: applicationIndex,
-            speciesName: species.speciesName,
-            numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
-            ...request.payload
-          }
-          return h.view(pageId, createModel(err, pageData)).takeover()
-        }
+        failAction: failAction
       },
+
       handler: async (request, h) => {
         const { applicationIndex } = request.params
+
+        const modifiedDescription = request.payload.specimenDescriptionGeneric.replace(/\r/g, '')
+        const schema = Joi.object({ specimenDescriptionGeneric: Joi.string().min(5).max(500) })
+        const result = schema.validate({specimenDescriptionGeneric: modifiedDescription},  { abortEarly: false })
+
+        if (result.error) {
+          return failAction(request, h, result.error)
+        }
+
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        species.specimenDescriptionGeneric = request.payload.specimenDescriptionGeneric
+        species.specimenDescriptionGeneric = modifiedDescription
         species.specimenDescriptionLivingAnimal = null
         species.sex = null
         species.parentDetails = null
@@ -152,7 +165,7 @@ module.exports = [
         if (exitChangeRouteUrl) {
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         if (submission.permitType === "article10") {
           return h.redirect(`${nextPathArticle10}/${applicationIndex}`
           )

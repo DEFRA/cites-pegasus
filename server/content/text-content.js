@@ -599,6 +599,7 @@ const schema = Joi.object().keys({
         "error.parentDetails.string.min": Joi.string().required(),
         "error.parentDetails.string.max": Joi.string().required(),
         "error.description.string.max": Joi.string().required(),
+        "error.description.string.pattern.base": Joi.string().required(),
         "error.dateOfBirth.any.future": Joi.string().required(),
         "error.dateOfBirth.any.invalid": Joi.string().required(),
         "error.dateOfBirth-day.number.base": Joi.string().required(),
@@ -782,7 +783,8 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     inputHintAddRemarks: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.comments.string.max": Joi.string().required()
+      "error.comments.string.max": Joi.string().required(),
+      "error.comments.string.pattern.base": Joi.string().required()
     }).required()
   }).required(),
   applicationSummary: Joi.object({
