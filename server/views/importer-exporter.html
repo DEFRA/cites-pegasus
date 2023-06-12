@@ -34,36 +34,33 @@
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
         {% call govukFieldset({
           legend: {
-            text: heading,
-            classes: "govuk-fieldset__legend--m",
-            isPageHeading: true
-          }
-        }) %}
-        <p>
-          {{ govukSelect(selectCountry) }}
-          {% endcall %}
-
-          {% call govukFieldset({
-          legend: {
-            text: headingAddress,
-            classes: "govuk-fieldset__legend--m",
+            html: '<h2 class="govuk-fieldset__legend--m">' + heading + '</h2>',
             isPageHeading: false
           }
         }) %}
-          <p>
-            {{ govukInput(inputFullName) }}
-            {{ govukInput(inputAddressLine1) }}
-            {{ govukInput(inputAddressLine2) }}
-            {{ govukInput(inputAddressLine3) }}
-            {{ govukInput(inputAddressLine4) }}
-            {{ govukInput(inputPostcode) }}
-            {% endcall %}
 
-            {{ govukButton({
+        {{ govukSelect(selectCountry) }}
+        {% endcall %}
+
+        {% call govukFieldset({
+          legend: {
+            html: '<h2 class="govuk-fieldset__legend--m">' + headingAddress + '</h2>',
+            isPageHeading: false
+          }
+        }) %}
+        {{ govukInput(inputFullName) }}
+        {{ govukInput(inputAddressLine1) }}
+        {{ govukInput(inputAddressLine2) }}
+        {{ govukInput(inputAddressLine3) }}
+        {{ govukInput(inputAddressLine4) }}
+        {{ govukInput(inputPostcode) }}
+        {% endcall %}
+
+        {{ govukButton({
               text: continueButton,
               type: "submit"
             }) }}
-          </form>
-        </div>
-      </div>
-    {% endblock %}
+      </form>
+    </div>
+  </div>
+{% endblock %}

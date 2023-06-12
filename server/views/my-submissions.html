@@ -57,11 +57,26 @@
         <h2 class="govuk-heading-m">
           {{headerFilters}}
         </h2>
-        <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyPermitType}}</p>
-        {{ govukCheckboxes(checkboxPermitType) }}
-        <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyStatus}}</p>
-        {{ govukCheckboxes(checkboxStatus) }}
+        {% call govukFieldset({
+          legend: {
+            text: pageBodyPermitType,
+            classes: "govuk-fieldset__legend--s",
+            isPageHeading: true
+          }
+        }) %}
+          {{ govukCheckboxes(checkboxPermitType) }}
+        {% endcall %}
 
+        {% call govukFieldset({
+          legend: {
+            text: pageBodyStatus,
+            classes: "govuk-fieldset__legend--s",
+            isPageHeading: true
+          }
+        }) %}
+          {# <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyStatus}}</p> #}
+          {{ govukCheckboxes(checkboxStatus) }}
+        {% endcall %}
         {{ govukButton({
                     text: buttonApplyFilters,
                     classes: "govuk-button--secondary",
@@ -86,7 +101,7 @@
               {% for submission in submissionsData %}
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell">
-                    <a class="referencenumber-link"href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
+                    <a class="referencenumber-link" href="{{submission.referenceNumberUrl}}">{{submission.referenceNumber}}</a>
                   </td>
                   <td class="govuk-table__cell" style="text-align:right">{{submission.applicationDate}}</td>
                   <td class="govuk-table__cell" style="text-align:right">{{submission.status}}</td>

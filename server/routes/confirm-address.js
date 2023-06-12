@@ -15,14 +15,14 @@ function createModel(errors, data) {
 
     if (data.contactType === 'applicant') {
         if (data.isAgent) {
-            pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.agentLed)
+            pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.agentLed)
         } else {
-            pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.applicant)
+            pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.applicant)
         }
     } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.agent)
+        pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.agent)
     } else {
-        pageContent = lodash.merge(textContent.enterAddress.common, textContent.confirmAddress.delivery)
+        pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.delivery)
     }
 
     let previousPath = ''

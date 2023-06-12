@@ -69,7 +69,7 @@ function createModel(errors, data) {
             name: "deliveryAddressOption",
             fieldset: {
                 legend: {
-                    text: pageContent.heading,
+                    text: pageContent.pageHeader,
                     isPageHeading: true,
                     classes: "govuk-fieldset__legend--l"
                 }

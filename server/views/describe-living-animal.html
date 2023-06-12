@@ -26,61 +26,86 @@
   {% endif %}
 
 {% endblock %}
-{% block content %}  
-    <span class="govuk-caption-l"> {{captionText}} </span>
-    <h1 class="govuk-heading-l">{{pageHeader}}</h1>
-    <div class="govuk-grid-column">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        <div class="govuk-grid-row">
+{% block content %}
+  <span class="govuk-caption-l">
+    {{captionText}}
+  </span>
+  <h1 class="govuk-heading-l">{{pageHeader}}</h1>
+  <div class="govuk-grid-column">
+    <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      <div class="govuk-grid-row">
+        <fieldset class="govuk-fieldset">
           <div class="govuk-grid-column-one-half">
-            <h1 class="govuk-heading-s">{{inputLabelSex}}</h1>
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <h2 class="govuk-fieldset__heading">
+                {{inputLabelSex}}
+              </h2>
+            </legend>
           </div>
           <div class="govuk-grid-column-one-half">
             {{ govukRadios(inputSex) }}
           </div>
-        </div>
+        </fieldset>
+      </div>
 
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        <div class="govuk-grid-row">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      <div class="govuk-grid-row">
+        <fieldset class="govuk-fieldset">
           <div class="govuk-grid-column-one-half">
-            <h1 class="govuk-heading-s">{{inputLabelDateOfBirth}}</h1>
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <h2 class="govuk-fieldset__heading">{{inputLabelDateOfBirth}}</h2>
+            </legend>
           </div>
           <div class="govuk-grid-column-one-half">
             {{ govukDateInput(inputDateOfBirth) }}
           </div>
-        </div>
+        </fieldset>
+      </div>
 
-        {% if showParentDetails %}
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
-              <h1 class="govuk-heading-s">{{inputLabelParentDetails}}</h1>
-            </div>
-            <div class="govuk-grid-column-one-half">
-              {{govukCharacterCount(inputParentDetails)}}
-            </div>
-          </div>
-        {% endif %}
-
+      {% if showParentDetails %}
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
-            <h1 class="govuk-heading-s">{{inputLabelDescription}}</h1>
+          {# <div class="govuk-grid-column-one-half">
+            <h2 class="govuk-heading-s">{{inputLabelParentDetails}}</h2>
           </div>
           <div class="govuk-grid-column-one-half">
-            {{govukCharacterCount(inputDescription)}}
+            {{govukCharacterCount(inputParentDetails)}}
+          </div> #}
+          <fieldset class="govuk-fieldset">
+          <div class="govuk-grid-column-one-half">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <h2 class="govuk-fieldset__heading">{{inputLabelParentDetails}}</h2>
+            </legend>
           </div>
+          <div class="govuk-grid-column-one-half">
+            {{ govukCharacterCount(inputParentDetails) }}
+          </div>
+        </fieldset>
         </div>
+      {% endif %}
 
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+      <div class="govuk-grid-row">
+        <fieldset class="govuk-fieldset">
+          <div class="govuk-grid-column-one-half">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <h2 class="govuk-fieldset__heading">{{inputLabelDescription}}</h2>
+            </legend>
+          </div>
+          <div class="govuk-grid-column-one-half">
+            {{ govukCharacterCount(inputDescription) }}
+          </div>
+        </fieldset>
+      </div>
 
-        {{ govukButton({
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      {{ govukButton({
         text: continueButton,
         type: "submit"
       }) }}
 
-      </form>
-    </div>
+    </form>
+  </div>
 {% endblock %}

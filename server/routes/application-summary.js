@@ -16,6 +16,7 @@ const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-n
 const invalidSubmissionPath = `${urlPrefix}/`
 const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
 
+let changeLinkText
 
 function createApplicationSummaryModel(errors, data) {
   const commonContent = textContent.common
@@ -24,7 +25,8 @@ function createApplicationSummaryModel(errors, data) {
   const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
   const applicationRef = data.cloneSource ? data.cloneSource.applicationRef : data.applicationRef
   const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
-
+  
+  changeLinkText = pageContent.changeLinkText
 
   let pageTitle = null
   let pageHeader = null
@@ -480,13 +482,13 @@ function createSummaryListRow(classes, key, value, href, hiddenText, summaryType
       text: value
     },
     actions: {
-      items: [
-        summaryType !== 'view' && summaryType !== 'view-submitted' && {
+      items: href && summaryType !== 'view' && summaryType !== 'view-submitted' ? [
+        {
           href: href,
-          text: href ? "Change" : "",
+          text: changeLinkText,
           visuallyHiddenText: hiddenText
         }
-      ]
+      ]: []
     }
   }
   return summaryListRow
