@@ -304,7 +304,7 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        species.specimenDescriptionLivingAnimal = request.payload.description
+        species.specimenDescriptionLivingAnimal = request.payload.description.
         species.specimenDescriptionGeneric = null
         species.parentDetails = submission.permitType === 'article10' ? request.payload.parentDetails : null
         species.sex = request.payload.sex

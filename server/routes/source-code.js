@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { ALPHA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
+const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const nunjucks = require("nunjucks")
@@ -262,6 +262,16 @@ const anotherSourceCodesAnimalValues = textContent.sourceCode.animal.anotherSour
   (e) => e.value
 )
 
+function textAreaValidator(value, helpers) {
+  const modifiedvalue = value.replace(/\r/g, '')
+  const schema = Joi.string().max(300).regex(COMMENTS_REGEX)
+  const result = schema.validate(modifiedvalue)
+
+  if (result.error) {
+    return helpers.error(result.error.details[0].type, { customLabel: "enterAReason" })
+  }
+  return modifiedvalue
+}
 
 module.exports = [
   {
@@ -322,7 +332,7 @@ module.exports = [
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
-            then: Joi.string().min(1).max(300).regex(COMMENTS_REGEX).required()
+            then: Joi.any().custom(textAreaValidator).required()
           })
         }),
 
@@ -348,7 +358,7 @@ module.exports = [
         species.sourceCode = request.payload.sourceCode
         species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
         species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
-        species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
+        species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason.replace(/\r/g, '') : ""
 
 
         try {

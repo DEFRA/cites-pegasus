@@ -4,7 +4,6 @@ const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
-const { textAreaMinMaxValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`

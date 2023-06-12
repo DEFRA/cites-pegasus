@@ -4,6 +4,7 @@ const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
+const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "comments"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
@@ -77,6 +78,17 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function textAreaValidator(value, helpers) {
+  const modifiedvalue = value.replace(/\r/g, '')
+  const schema = Joi.string().max(500).regex(COMMENTS_REGEX)
+  const result = schema.validate(modifiedvalue)
+
+  if (result.error) {
+    return helpers.error(result.error.details[0].type, { customLabel: "comments" })
+  }
+  return modifiedvalue
+}
+
 module.exports = [
   {
     method: "GET",
@@ -122,7 +134,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-            comments: Joi.string().max(500).optional().allow(null, ""),
+            comments: Joi.string().custom(textAreaValidator).optional().allow(null, ""),
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
@@ -143,7 +155,7 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
       
-        submission.applications[applicationIndex].comments = request.payload.comments ? request.payload.comments : ""
+        submission.applications[applicationIndex].comments = request.payload.comments ? request.payload.comments.replace(/\r/g, '') : ""
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
