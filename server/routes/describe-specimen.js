@@ -4,6 +4,7 @@ const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
+const { textAreaMinMaxValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -67,6 +68,13 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function textAreaValidator(value, helpers) {
+  const minLength = 5
+  const maxLength = 500
+ 
+  return textAreaMinMaxValidator(value, minLength, maxLength, 'specimenDescriptionGeneric', helpers)
+}
+
 module.exports = [
   {
     method: "GET",
@@ -113,8 +121,8 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          specimenDescriptionGeneric: Joi.string().min(5).max(500).regex(COMMENTS_REGEX).required()
-        }),
+          specimenDescriptionGeneric: Joi.string().custom(textAreaValidator).regex(COMMENTS_REGEX).required()
+        }),   
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
@@ -135,7 +143,7 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        species.specimenDescriptionGeneric = request.payload.specimenDescriptionGeneric
+        species.specimenDescriptionGeneric = request.payload.specimenDescriptionGeneric.replace(/\r/g, '')
         species.specimenDescriptionLivingAnimal = null
         species.sex = null
         species.parentDetails = null
