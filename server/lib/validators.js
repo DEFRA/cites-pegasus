@@ -1,5 +1,3 @@
-const { COMMENTS_REGEX } = require("../lib//regex-validation")
-
 
 function isValidDate(day, month, year) {
     const date = new Date(year, month - 1, day)
