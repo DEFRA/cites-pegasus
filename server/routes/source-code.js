@@ -262,17 +262,6 @@ const anotherSourceCodesAnimalValues = textContent.sourceCode.animal.anotherSour
   (e) => e.value
 )
 
-function textAreaValidator(value, helpers) {
-  const modifiedvalue = value.replace(/\r/g, '')
-  const schema = Joi.string().max(300).regex(COMMENTS_REGEX)
-  const result = schema.validate(modifiedvalue)
-
-  if (result.error) {
-    return helpers.error(result.error.details[0].type, { customLabel: "enterAReason" })
-  }
-  return modifiedvalue
-}
-
 module.exports = [
   {
     method: "GET",
@@ -332,7 +321,7 @@ module.exports = [
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
-            then: Joi.any().custom(textAreaValidator).required()
+            then: Joi.string().regex(COMMENTS_REGEX).required()
           })
         }),
 
@@ -343,13 +332,20 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        const animalSchema = Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U")
-        const plantSchema = Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y")
-
+        const animalSchema = Joi.object({ 
+          sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U"),
+          enterAReason: Joi.string().max(300)
+        })
+        const plantSchema = Joi.object({ 
+          sourceCode:  Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y"),
+          enterAReason: Joi.string().max(300)
+        })
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
-
-        const result = payloadSchema.validate(request.payload.sourceCode, { abortEarly: false })
-
+        const modifiedEnterAReason = request.payload.enterAReason.replace(/\r/g, '')
+       
+        const result = payloadSchema.validate({
+          sourceCode: request.payload.sourceCode,
+          enterAReason: modifiedEnterAReason},  { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -359,7 +355,6 @@ module.exports = [
         species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
         species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
         species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason.replace(/\r/g, '') : ""
-
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)

@@ -223,15 +223,21 @@ function dateOfBirthValidator(value, helpers) {
   return value
 }
 
-function textAreaValidator(value, helpers) {
-  const modifiedvalue = value.replace(/\r/g, '')
-  const schema = Joi.string().max(500).regex(COMMENTS_REGEX)
-  const result = schema.validate(modifiedvalue)
-
-  if (result.error) {
-    return helpers.error(result.error.details[0].type, { customLabel: "description" })
+function failAction(request, h, err) {
+  const { applicationIndex } = request.params
+  const submission = getSubmission(request)
+  const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
+    applicationIndex: request.params.applicationIndex,
+    speciesName: submission.applications[applicationIndex].species.speciesName,
+    permitType: submission.permitType,
+    description: request.payload.description,
+    parentDetails: request.payload.parentDetails,
+    dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
+    sex: request.payload.sex
+    //undeterminedSexReason: request.payload.undeterminedSexReason
   }
-  return modifiedvalue
+  return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
 module.exports = [
@@ -284,7 +290,7 @@ module.exports = [
         payload: Joi.object({
           sex: Joi.string().required().valid("M", "F", "U"),
           parentDetails: Joi.string().min(3).max(250),
-          description: Joi.string().custom(textAreaValidator).optional().allow(null, ""),
+          description: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
           "dateOfBirth-year": Joi.number().optional().allow(null, ""),
@@ -293,25 +299,19 @@ module.exports = [
           //   then: Joi.string().required().min(3).max(50)
           // })
         }).custom(dateOfBirthValidator),
-        failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
-          const submission = getSubmission(request)
-          const pageData = {
-            backLinkOverride: checkChangeRouteExit(request, true),
-            applicationIndex: request.params.applicationIndex,
-            speciesName: submission.applications[applicationIndex].species.speciesName,
-            permitType: submission.permitType,
-            description: request.payload.description,
-            parentDetails: request.payload.parentDetails,
-            dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
-            sex: request.payload.sex
-            //undeterminedSexReason: request.payload.undeterminedSexReason
-          }
-          return h.view(pageId, createModel(err, pageData)).takeover()
-        }
+        failAction: failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
+
+        const modifiedDescription = request.payload.description.replace(/\r/g, '')
+        const schema = Joi.object({ description: Joi.string().max(500).optional().allow(null, "") })
+        const result = schema.validate({description: modifiedDescription},  { abortEarly: false })
+
+        if (result.error) {
+          return failAction(request, h, result.error)
+        }
+
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 

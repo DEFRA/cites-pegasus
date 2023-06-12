@@ -78,15 +78,19 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function textAreaValidator(value, helpers) {
-  const modifiedvalue = value.replace(/\r/g, '')
-  const schema = Joi.string().max(500).regex(COMMENTS_REGEX)
-  const result = schema.validate(modifiedvalue)
+function failAction(request, h, err) {
+  const { applicationIndex } = request.params
+  const submission = getSubmission(request)
 
-  if (result.error) {
-    return helpers.error(result.error.details[0].type, { customLabel: "comments" })
+  const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
+    applicationIndex: applicationIndex,
+    permitType: submission.permitType,
+    permitDetails: submission.applications[applicationIndex].permitDetails,
+    isEverImportedExported: submission.applications[applicationIndex].species.isEverImportedExported,
+    ...request.payload
   }
-  return modifiedvalue
+  return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
 module.exports = [
@@ -119,7 +123,6 @@ module.exports = [
         isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
         comments: submission.applications[applicationIndex].comments
       }
-
       return h.view(pageId, createModel(null, pageData))
     }
   },
@@ -134,28 +137,23 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-            comments: Joi.string().custom(textAreaValidator).optional().allow(null, ""),
+            comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
         }),
-        failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
-          const submission = getSubmission(request)
-
-          const pageData = {
-            backLinkOverride: checkChangeRouteExit(request, true),
-            applicationIndex: applicationIndex,
-            permitType: submission.permitType,
-            permitDetails: submission.applications[applicationIndex].permitDetails,
-            isEverImportedExported: submission.applications[applicationIndex].species.isEverImportedExported,
-            ...request.payload
-          }
-          return h.view(pageId, createModel(err, pageData)).takeover()
-        }
+        failAction: failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
+
+        const modifiedComments = request.payload.comments.replace(/\r/g, '')
+        const schema = Joi.object({ comments: Joi.string().max(500).optional().allow(null, "") })
+        const result = schema.validate({comments: modifiedComments},  { abortEarly: false })
+
+        if (result.error) {
+          return failAction(request, h, result.error)
+        }
+
         const submission = getSubmission(request)
-      
-        submission.applications[applicationIndex].comments = request.payload.comments ? request.payload.comments.replace(/\r/g, '') : ""
+        submission.applications[applicationIndex].comments = modifiedComments ? modifiedComments : ""
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
