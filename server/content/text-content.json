@@ -151,8 +151,8 @@
     "errorMessages": {
       "error.fullName.string.empty": "Full name is required",
       "error.fullName.string.max": "Full name must be 150 characters or less",
-      "error.fullName.string.pattern.base": "Full name is invalid",
-      "error.businessName.string.pattern.base": "Business name is invalid",
+      "error.fullName.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
+      "error.businessName.string.pattern.base": "Business name must only include letters a to z, numbers 0 to 9, and special characters such as commas, full stops, hyphens and apostrophes",
       "error.businessName.string.max": "Business name must be 150 characters or less",
       "error.email.string.email": "Enter an email address in the correct format, like name@example.com",
       "error.email.string.max": "Email must be 150 characters or less"
