@@ -334,11 +334,11 @@ module.exports = [
 
         const animalSchema = Joi.object({ 
           sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U"),
-          enterAReason: Joi.string().max(300)
+          enterAReason: Joi.string().max(300).allow("", null),
         })
         const plantSchema = Joi.object({ 
           sourceCode:  Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y"),
-          enterAReason: Joi.string().max(300)
+          enterAReason: Joi.string().max(300).allow("", null),
         })
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
         const modifiedEnterAReason = request.payload.enterAReason.replace(/\r/g, '')
@@ -355,7 +355,7 @@ module.exports = [
         species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
         species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
         species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason.replace(/\r/g, '') : ""
-
+ 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
