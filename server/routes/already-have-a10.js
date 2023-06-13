@@ -44,6 +44,7 @@ function createModel(errors, data) {
       id: "a10CertificateNumber",
       name: "a10CertificateNumber",
       classes: "govuk-input govuk-input--width-20",
+      autocomplete: "on",
       label: {
         text: pageContent.inputLabelA10CertificateNumber
       },

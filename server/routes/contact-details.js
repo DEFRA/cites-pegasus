@@ -91,6 +91,7 @@ function createModel(errors, data) {
             id: "fullName",
             name: "fullName",
             classes: "govuk-!-width-two-thirds",
+            autocomplete: "name",
             ...(data.fullName ? { value: data.fullName } : {}),
             errorMessage: getFieldError(errorList, '#fullName')
         },
@@ -104,6 +105,7 @@ function createModel(errors, data) {
             },
             id: "businessName",
             name: "businessName",
+            autocomplete: "on",
             classes: "govuk-!-width-two-thirds",
             ...(data.businessName ? { value: data.businessName } : {}),
             errorMessage: getFieldError(errorList, '#businessName')
@@ -119,6 +121,7 @@ function createModel(errors, data) {
             id: "email",
             name: "email",
             classes: "govuk-!-width-two-thirds",
+            autocomplete: "email",
             ...(data.email ? { value: data.email } : {}),
             errorMessage: getFieldError(errorList, '#email')
         }

@@ -115,8 +115,7 @@ const confirmAddressSchema = Joi.object({
   pageHeaderImport: Joi.string().required(),
   pageHeaderExport: Joi.string().required(),
   pageHeaderReexport: Joi.string().required(),
-  pageHeaderArticle10: Joi.string().required(),
-  changeAddressLinkText: Joi.string()
+  pageHeaderArticle10: Joi.string().required()  
 })
 
 const importerExporterDetailsSchema = Joi.object({
@@ -198,6 +197,8 @@ const areYouSureSchema = Joi.object({
 const yourSubmissionSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   pageHeader: Joi.string().required(),
+  copyAriaLabel: Joi.string().required(),
+  removeAriaLabel: Joi.string().required()
 }).required()
 
 const schema = Joi.object().keys({
@@ -796,6 +797,7 @@ const schema = Joi.object().keys({
     defaultTitleView: Joi.string().required(),
     pageHeaderView: Joi.string().required(),
     textBreadcrumbs: Joi.string().required(),
+    changeLinkText: Joi.string().required(),
     headerPermit: Joi.string().required(),
     rowTextPermitType: Joi.string().required(),
     headerYourContactDetails: Joi.string().required(),

@@ -100,7 +100,7 @@
       "inputHintBusinessNameExport": "If you are a business, give the business name.",
       "inputHintBusinessNameReexport": "If you are a business, give the business name.",
       "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
-      "inputLabelEmail": "Email address",
+      "inputLabelEmail": "Email address (optional)",
       "inputHintEmailImport": "We will only use this to send you a copy of the application.",
       "inputHintEmailExport": "We will only use this to send you a copy of the application.",
       "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
@@ -121,7 +121,7 @@
       "inputHintBusinessNameExport": "If you are a business, give the business name.",
       "inputHintBusinessNameReexport": "If you are a business, give the business name.",
       "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
-      "inputLabelEmail": "Email address",
+      "inputLabelEmail": "Email address (optional)",
       "inputHintEmailImport": "We will only use this to send you a copy of the application.",
       "inputHintEmailExport": "We will only use this to send you a copy of the application.",
       "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
@@ -142,7 +142,7 @@
       "inputHintBusinessNameExport": "If the exporter is a business, give the business name.",
       "inputHintBusinessNameReexport": "If the re-exporter is a business, give the business name.",
       "inputHintBusinessNameArticle10": "If the applicant is a business, give the business name.",
-      "inputLabelEmail": "Email address",
+      "inputLabelEmail": "Email address (optional)",
       "inputHintEmailImport": "We will only use the importer’s email address to contact them about the application.",
       "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
       "inputHintEmailReexport": "We will only use the re-exporter’s email address to contact them about the application.",
@@ -154,7 +154,7 @@
       "error.fullName.string.pattern.base": "Full name is invalid",
       "error.businessName.string.pattern.base": "Business name is invalid",
       "error.businessName.string.max": "Business name must be 150 characters or less",
-      "error.email.string.email": "Email format is invalid",
+      "error.email.string.email": "Enter an email address in the correct format, like name@example.com",
       "error.email.string.max": "Email must be 150 characters or less"
     }
   },
@@ -861,8 +861,8 @@
     }
   },
   "quantity": {
-    "defaultTitle": "Quantity or net mass",
-    "pageHeader": "Quantity or net mass",
+    "defaultTitle": "Enter quantity or net mass",
+    "pageHeader": "Enter quantity or net mass",
     "inputLabelQuantity": "Quantity or net mass",
     "selectLabelUnitOfMeasurement": "Unit of measurement",
     "unitOfMeasurementPrompt": "Choose unit of measurement",
@@ -1041,6 +1041,7 @@
     "defaultTitleView": "Application",
     "pageHeaderView": "Application",
     "textBreadcrumbs": "Your applications",
+    "changeLinkText": "Change",
     "headerPermit": "About the permit",
     "rowTextPermitType": "Permit type",
     "headerYourContactDetails": "Your contact details",
@@ -1246,19 +1247,27 @@
     },
     "importApplications": {
       "defaultTitle": "Your import application",
-      "pageHeader": "Your import application"
+      "pageHeader": "Your import application",
+      "copyAriaLabel": "Copy this import application",
+      "removeAriaLabel": "Remove this import application"
     },
     "exportApplications": {
       "defaultTitle": "Your export application",
-      "pageHeader": "Your export application"
+      "pageHeader": "Your export application",
+      "copyAriaLabel": "Copy this export application",
+      "removeAriaLabel": "Remove this export application"
     },
     "reexportApplications": {
       "defaultTitle": "Your reexport application",
-      "pageHeader": "Your reexport application"
+      "pageHeader": "Your reexport application",
+      "copyAriaLabel": "Copy this reexport application",
+      "removeAriaLabel": "Remove this reexport application"
     },
     "article10Applications": {
       "defaultTitle": "Your article 10 application",
-      "pageHeader": "Your article 10 application"
+      "pageHeader": "Your article 10 application",
+      "copyAriaLabel": "Copy this article 10 application",
+      "removeAriaLabel": "Remove this article 10 application"
     },
     "areYouSureRemove": {
       "defaultTitlePart1": "Are you sure that you want to remove",

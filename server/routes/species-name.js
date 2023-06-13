@@ -60,6 +60,7 @@ function createModel(errors, data) {
       id: "speciesName",
       name: "speciesName",
       classes: "govuk-!-width-two-thirds",
+      autocomplete: "on",
       ...(data.speciesName ? { value: data.speciesName } : {}),
       errorMessage: getFieldError(errorList, "#speciesName")
     }

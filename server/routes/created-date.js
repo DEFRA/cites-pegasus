@@ -82,6 +82,7 @@ function createModel(errors, data) {
       id: "approximateDate",
       name: "approximateDate",
       classes: "govuk-input govuk-!-width-two-thirds",
+      autocomplete: "on",
       label: {
         text: pageContent.inputLabelApproximateDate
       },

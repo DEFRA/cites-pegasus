@@ -90,6 +90,7 @@ function createModel(errors, data) {
       },
       id: "name",
       name: "name",
+      autocomplete: "name",
       ...(data.name ? { value: data.name } : {}),
       errorMessage: getFieldError(errorList, '#name')
     },
@@ -99,6 +100,7 @@ function createModel(errors, data) {
       },
       id: "addressLine1",
       name: "addressLine1",
+      autocomplete: "address-line1",
       ...(data.addressLine1 ? { value: data.addressLine1 } : {}),
       errorMessage: getFieldError(errorList, '#addressLine1')
     },
@@ -108,6 +110,7 @@ function createModel(errors, data) {
       },
       id: "addressLine2",
       name: "addressLine2",
+      autocomplete: "address-line2",
       ...(data.addressLine2 ? { value: data.addressLine2 } : {}),
       errorMessage: getFieldError(errorList, '#addressLine2')
     },
@@ -117,6 +120,7 @@ function createModel(errors, data) {
       },
       id: "addressLine3",
       name: "addressLine3",
+      autocomplete: "address-line3",
       ...(data.addressLine3 ? { value: data.addressLine3 } : {}),
       errorMessage: getFieldError(errorList, '#addressLine3')
     },
@@ -126,6 +130,7 @@ function createModel(errors, data) {
       },
       id: "addressLine4",
       name: "addressLine4",
+      autocomplete: "address-line4",
       ...(data.addressLine4 ? { value: data.addressLine4 } : {}),
       errorMessage: getFieldError(errorList, '#addressLine4')
     },
@@ -136,6 +141,7 @@ function createModel(errors, data) {
       id: "postcode",
       name: "postcode",
       classes: "govuk-!-width-one-third",
+      autocomplete: "postal-code",
       ...(data.postcode ? { value: data.postcode } : {}),
       errorMessage: getFieldError(errorList, '#postcode')
     }

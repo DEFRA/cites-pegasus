@@ -54,7 +54,7 @@ function createModel(errors, data) {
     notificationHeader: notificationHeader,
     notificationContent: notificationContent,
     pageTitle: data.submissionRef,
-    captionText: data.submissionRef,
+    pageHeader: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadScientificName: pageContent.tableHeadScientificName,
     pendingApplicationsBodyText: pageContent.pendingApplicationsBodyText,
