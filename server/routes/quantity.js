@@ -61,6 +61,7 @@ function createModel(errors, data) {
       id: "quantity",
       name: "quantity",
       classes: "govuk-input--width-4",
+      autocomplete: "on",
       label: {
         text: pageContent.inputLabelQuantity
       },

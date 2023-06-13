@@ -101,6 +101,7 @@ function createModel(errors, data) {
       name: "searchTerm",
       classes: "govuk-grid-column-one-half",
       inputmode: "search",
+      autocomplete: "on",
       label: {
         text: pageContent.inputLabelSearch
       },

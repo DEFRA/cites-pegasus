@@ -46,6 +46,7 @@ function createModel(errors, data) {
     inputNumberOfUnmarkedSpecimens: {
       id: "numberOfUnmarkedSpecimens",
       name: "numberOfUnmarkedSpecimens",
+      autocomplete: "on",
       label: {
         text: pageContent.pageHeader,
         classes: "govuk-label--l",
