@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
-const { ALPHA_REGEX, COMMENTS_REGEX } = require("../lib/regex-validation")
+const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const nunjucks = require("nunjucks")
@@ -262,7 +262,6 @@ const anotherSourceCodesAnimalValues = textContent.sourceCode.animal.anotherSour
   (e) => e.value
 )
 
-
 module.exports = [
   {
     method: "GET",
@@ -322,7 +321,7 @@ module.exports = [
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
-            then: Joi.string().min(1).max(300).regex(COMMENTS_REGEX).required()
+            then: Joi.string().regex(COMMENTS_REGEX).required()
           })
         }),
 
@@ -333,13 +332,20 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        const animalSchema = Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U")
-        const plantSchema = Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y")
-
+        const animalSchema = Joi.object({ 
+          sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U"),
+          enterAReason: Joi.string().max(300).allow("", null),
+        })
+        const plantSchema = Joi.object({ 
+          sourceCode:  Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y"),
+          enterAReason: Joi.string().max(300).allow("", null),
+        })
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
-
-        const result = payloadSchema.validate(request.payload.sourceCode, { abortEarly: false })
-
+        const modifiedEnterAReason = request.payload.enterAReason.replace(/\r/g, '')
+       
+        const result = payloadSchema.validate({
+          sourceCode: request.payload.sourceCode,
+          enterAReason: modifiedEnterAReason},  { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -348,9 +354,8 @@ module.exports = [
         species.sourceCode = request.payload.sourceCode
         species.anotherSourceCodeForI = request.payload.sourceCode === "I" ? request.payload.anotherSourceCodeForI.toUpperCase() : ""
         species.anotherSourceCodeForO = request.payload.sourceCode === "O" ? request.payload.anotherSourceCodeForO.toUpperCase() : ""
-        species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason : ""
-
-
+        species.enterAReason = request.payload.sourceCode === "U" ? request.payload.enterAReason.replace(/\r/g, '') : ""
+ 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {

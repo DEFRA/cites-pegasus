@@ -5,7 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/s
 const textContent = require('../content/text-content')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { dateValidator } = require("../lib/validators")
-const nunjucks = require("nunjucks")
+const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
@@ -223,6 +223,23 @@ function dateOfBirthValidator(value, helpers) {
   return value
 }
 
+function failAction(request, h, err) {
+  const { applicationIndex } = request.params
+  const submission = getSubmission(request)
+  const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
+    applicationIndex: request.params.applicationIndex,
+    speciesName: submission.applications[applicationIndex].species.speciesName,
+    permitType: submission.permitType,
+    description: request.payload.description,
+    parentDetails: request.payload.parentDetails,
+    dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
+    sex: request.payload.sex
+    //undeterminedSexReason: request.payload.undeterminedSexReason
+  }
+  return h.view(pageId, createModel(err, pageData)).takeover()
+}
+
 module.exports = [
   {
     method: "GET",
@@ -273,7 +290,7 @@ module.exports = [
         payload: Joi.object({
           sex: Joi.string().required().valid("M", "F", "U"),
           parentDetails: Joi.string().min(3).max(250),
-          description: Joi.string().max(500).optional().allow(null, ""),
+          description: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
           "dateOfBirth-year": Joi.number().optional().allow(null, ""),
@@ -282,29 +299,23 @@ module.exports = [
           //   then: Joi.string().required().min(3).max(50)
           // })
         }).custom(dateOfBirthValidator),
-        failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
-          const submission = getSubmission(request)
-          const pageData = {
-            backLinkOverride: checkChangeRouteExit(request, true),
-            applicationIndex: request.params.applicationIndex,
-            speciesName: submission.applications[applicationIndex].species.speciesName,
-            permitType: submission.permitType,
-            description: request.payload.description,
-            parentDetails: request.payload.parentDetails,
-            dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
-            sex: request.payload.sex
-            //undeterminedSexReason: request.payload.undeterminedSexReason
-          }
-          return h.view(pageId, createModel(err, pageData)).takeover()
-        }
+        failAction: failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
+
+        const modifiedDescription = request.payload.description.replace(/\r/g, '')
+        const schema = Joi.object({ description: Joi.string().max(500).optional().allow(null, "") })
+        const result = schema.validate({description: modifiedDescription},  { abortEarly: false })
+
+        if (result.error) {
+          return failAction(request, h, result.error)
+        }
+
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        species.specimenDescriptionLivingAnimal = request.payload.description
+        species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
         species.parentDetails = submission.permitType === 'article10' ? request.payload.parentDetails : null
         species.sex = request.payload.sex
