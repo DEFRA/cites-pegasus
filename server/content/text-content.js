@@ -197,6 +197,8 @@ const areYouSureSchema = Joi.object({
 const yourSubmissionSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   pageHeader: Joi.string().required(),
+  copyAriaLabel: Joi.string().required(),
+  removeAriaLabel: Joi.string().required()
 }).required()
 
 const schema = Joi.object().keys({

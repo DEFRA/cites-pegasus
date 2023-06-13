@@ -50,8 +50,9 @@
                     text: copyButton,
                     type: "submit",
                     classes: "govuk-button--secondary",
-                    attributes: {
-                      formAction: application.formActionCopy
+                    attributes: {        
+                      "aria-label": copyAriaLabel,
+                       formAction: application.formActionCopy
                     }
                   }) }}
                 </td>
@@ -61,6 +62,7 @@
                     type: "submit",
                     classes: "govuk-button--warning",
                     attributes: {
+                      "aria-label": removeAriaLabel,
                       formAction: application.formActionRemove
                     }
                   }) }}

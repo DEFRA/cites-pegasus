@@ -74,6 +74,8 @@ function createSubmitApplicationModel(errors, data) {
     addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
     addAnotherSpeciesUrl: `${currentPath}/create-application`,
     applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
+    copyAriaLabel: pageContent.copyAriaLabel,
+    removeAriaLabel: pageContent.removeAriaLabel,
     applyForADifferentTypeOfPermitUrl: `${currentPath}/${areYouSurePath}/permit-type`,
   }
   return { ...commonContent, ...model }
