@@ -116,7 +116,6 @@ function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, err
       id: inputId,
       name: inputId,
       classes: "govuk-input govuk-input--width-10",
-      autocomplete: "on",
       label: { text: textContent.uniqueIdentificationMark.inputLabelUniqueIdentificationMark },
       ...(uniqueIdentificationMark ? { value: uniqueIdentificationMark } : {}),
       errorMessage: getFieldError(errorList, "#" + inputId)
