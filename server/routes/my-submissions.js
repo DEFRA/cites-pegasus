@@ -22,24 +22,6 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmissions
 
-  var renderString = "{% from 'govuk/components/button/macro.njk' import govukButton %} \n {{govukButton(input)}}"
-
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-
-  const searchButton = nunjucks.renderString(renderString, {
-    input: {
-      id: "searchButton",
-      name: "searchButton",
-      type: "submit",
-      classes: "govuk-button--search",
-      html: '<svg class="gem-c-search__icon" width="20" height="20" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><circle cx="12.0161" cy="11.0161" r="8.51613" stroke="currentColor" stroke-width="3"></circle><line x1="17.8668" y1="17.3587" x2="26.4475" y2="25.9393" stroke="currentColor" stroke-width="3"></line></svg>',
-      attributes: {
-        formAction: `${currentPath}`
-      }
-    }
-  })
-
-
   const submissionsData = data.submissions
 
   const statusTextMap = {
@@ -78,7 +60,7 @@ function createModel(errors, data) {
     pageTitle: pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
     clearSearchLinkText: pageContent.linkTextClearSearch,
-    clearSearchUrl: currentPath,
+    currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
     headerFilters: pageContent.heading1,
     pageBodyPermitType: pageContent.pageBodyPermitType,
@@ -91,7 +73,6 @@ function createModel(errors, data) {
     //textPagination: textPagination,
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: `${currentPath}/new-application`,
-    formActionApplyFilters: `${currentPath}`,
     // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
     // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
     // textPagination: textPagination,
@@ -104,10 +85,6 @@ function createModel(errors, data) {
       autocomplete: "on",
       label: {
         text: pageContent.inputLabelSearch
-      },
-      suffix: {
-        classes: "govuk-input__suffix--search",
-        html: searchButton
       },
       ...(data.searchTerm ? { value: data.searchTerm } : {}),
     },

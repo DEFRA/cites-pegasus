@@ -34,12 +34,25 @@
       </div>
     </div>
     <div class="govuk-grid-row" style="display: flex; align-content: center">
-      <div class="govuk-grid-column-one-half">
-        {{ govukInput(inputSearch) }}
+      <div class="govuk-grid-column-one-half search-container">
+        <div class="govuk-grid-column-full search-input">
+          {{ govukInput(inputSearch) }}
+        </div>
+        <div class="govuk-input__suffix govuk-button--search">
+          {{ govukButton({
+            type: "submit",
+            classes: "govuk-button--search",
+            html: '<svg class="gem-c-search__icon" width="20" height="20" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><circle cx="12.0161" cy="11.0161" r="8.51613" stroke="currentColor" stroke-width="3"></circle><line x1="17.8668" y1="17.3587" x2="26.4475" y2="25.9393" stroke="currentColor" stroke-width="3"></line></svg>',
+            attributes: {
+              formAction: currentPath
+            }
+          }) }}
+
+        </div>
       </div>
       <div class="govuk-grid-column-one-quarter govuk-!-padding-top-7">
         <p class="govuk-body">
-          <a href="{{clearSearchUrl}}">{{clearSearchLinkText}}</a>
+          <a href="{{currentPath}}">{{clearSearchLinkText}}</a>
         </p>
       </div>
       <div class="govuk-grid-column-one-quarter govuk-!-padding-top-5 landingpage-row-wrapper">
@@ -82,7 +95,7 @@
                     classes: "govuk-button--secondary",
                     type: "submit",
                     attributes: {
-                      formAction: formActionApplyFilters
+                      formAction: currentPath
                     }
                   }) }}
       </div>
