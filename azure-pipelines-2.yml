@@ -21,6 +21,7 @@ steps:
     cliProjectKey: 'defragovuk_Defra-APHA-CITES'
     cliProjectName: 'Defra-APHA-CITES'
     cliSources: '.'
+  
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
@@ -30,3 +31,9 @@ steps:
     npm install
     npm run build
   displayName: 'npm install and build'
+- task: SonarCloudAnalyze@1
+  inputs:
+    jdkversion: 'JAVA_HOME_11_X64'
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
