@@ -13,14 +13,13 @@ steps:
 - checkout: self
   fetchDepth: 0
 - task: SonarCloudPrepare@1
+  displayName: 'Prepare analysis configuration'
   inputs:
-    SonarCloud: 'SonarCloud'
+    SonarCloud: 'SC'
     organization: 'defragovuk'
     scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: 'defragovuk_Defra-APHA-CITES'
-    cliProjectName: 'Defra-APHA-CITES'
-    cliSources: '.'
+    projectKey: 'defragovuk_Defra-APHA-CITES'
+    projectName: 'defragovuk_Defra-APHA-CITES'
   
 - task: NodeTool@0
   inputs:
