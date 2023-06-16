@@ -167,9 +167,11 @@ async function getSpecies(server, speciesName) {
     const { payload } = response
 
     if (payload) {
-      //const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-      //return JSON.parse(payload)
-      return { scientificName: payload.cites_name, kingdom: payload.cites_kingdom }
+      return { 
+        scientificName: payload.cites_name, 
+        kingdom: payload.cites_kingdom, 
+        hasRestriction: payload.cites_restrictionapply, 
+        warningMessage: payload.cites_warningmessage}
     }
 
     return null

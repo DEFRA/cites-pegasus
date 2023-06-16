@@ -1098,6 +1098,10 @@ const schema = Joi.object().keys({
     pageBodyText9: Joi.string().required(),
     pageBodyText10: Joi.string().required()
   }).required(),
+  speciesWarning: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required()
+  }).required()
 })
 
 // Validate config

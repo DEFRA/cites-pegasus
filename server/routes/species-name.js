@@ -8,7 +8,8 @@ const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
-const nextPath = `${urlPrefix}/source-code`
+const nextPathSourceCode = `${urlPrefix}/source-code`
+const nextPathSpeciesWarning = `${urlPrefix}/species-warning`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 const yourSubmission = `${urlPrefix}/your-submission`
@@ -160,6 +161,8 @@ module.exports = [
         species.speciesName = speciesData?.scientificName
         species.speciesSearchData = request.payload.speciesName
         species.kingdom = speciesData?.kingdom
+        species.hasRestriction =  speciesData?.hasRestriction || true
+        species.warningMessage = speciesData.warningMessage || "warning message"
 
         if (isChange) {
           //If changing speciesName, remove all other species data as far as the specimen description pages
@@ -205,7 +208,11 @@ module.exports = [
           return h.redirect(`${unknownSpeciesPath}/${applicationIndex}`)
         }
 
-        return h.redirect(`${nextPath}/${applicationIndex}`)
+        if (species.hasRestriction) {
+          return h.redirect(`${nextPathSpeciesWarning}/${applicationIndex}`)
+        }
+
+        return h.redirect(`${nextPathSourceCode}/${applicationIndex}`)
       }
     }
   }

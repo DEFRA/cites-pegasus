@@ -1494,7 +1494,11 @@
     "pageBodyText8": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).",
     "pageBodyText9": "Defra is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
     "pageBodyText10": "This statement was prepared on 15 May 2023."
-}
+},
+  "speciesWarning": {
+    "defaultTitle": "This species has exemptions and restrictions",
+    "pageHeader": "This species has exemptions and restrictions"
+  }
 }
 
 
