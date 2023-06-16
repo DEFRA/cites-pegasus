@@ -15,7 +15,7 @@ steps:
 - task: SonarCloudPrepare@1
   displayName: 'Prepare analysis configuration'
   inputs:
-    SonarCloud: 'SC'
+    SonarCloud: 'SonarCloud'
     organization: 'defragovuk'
     scannerMode: 'CLI'
     projectKey: 'defragovuk_Defra-APHA-CITES'
