@@ -56,17 +56,10 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-
+      const cidmAuth = getYarValue(request, 'CIDMAuth')
       const submission = getSubmission(request)
-      let name = ''
-      let email = ''
-      if (submission.isAgent) {
-        name = submission.agent.fullName
-        email = submission.agent.email
-      } else {
-        name = submission.applicant.fullName
-        email = submission.applicant.email
-      }
+      let name = cidmAuth.user.firstName + ' ' + cidmAuth.user.lastName
+      let email = cidmAuth.user.email
 
       const response = await createPayment(submission.paymentDetails.costingValue, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
 

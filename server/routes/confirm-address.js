@@ -5,7 +5,7 @@ const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
 const currentPath = `${urlPrefix}/${pageId}`
-const contactTypes = ['agent', 'applicant', 'delivery']
+const contactTypes = ['applicant', 'delivery']
 const invalidSubmissionPath = `${urlPrefix}/`
 const lodash = require('lodash')
 
@@ -19,8 +19,6 @@ function createModel(errors, data) {
         } else {
             pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.applicant)
         }
-    } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.agent)
     } else {
         pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.delivery)
     }

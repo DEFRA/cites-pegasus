@@ -39,15 +39,6 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
             endUrls.push(`${urlPrefix}/comments/${applicationIndex}`)//You must go all the way through the flow                        
             confirm = true
             break
-        case "agentContactDetails"://DONE
-            startUrl = `${urlPrefix}/contact-details/agent`
-            confirm = true
-            break
-        case "agentAddress"://DONE  //Change flow
-            startUrl = `${urlPrefix}/postcode/agent`
-            endUrls.push(`${urlPrefix}/confirm-address/agent`)
-            confirm = true
-            break
         case "applicantContactDetails"://DONE
             startUrl = `${urlPrefix}/contact-details/applicant`
             confirm = true

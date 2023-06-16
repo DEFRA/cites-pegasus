@@ -120,8 +120,8 @@ module.exports = [{
         return h.redirect(invalidSubmissionPath)
       }
       
-      const pathSuffix = isAgent ? 'agent' : 'applicant'
-      return h.redirect(nextPath + pathSuffix);
+      
+      return h.redirect(nextPath + 'applicant');
     }
   },
 }]
