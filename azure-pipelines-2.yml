@@ -18,8 +18,8 @@ steps:
     SonarCloud: 'SonarCloud'
     organization: 'defragovuk'
     scannerMode: 'CLI'
-    projectKey: 'defragovuk_Defra-APHA-CITES'
-    projectName: 'defragovuk_Defra-APHA-CITES'
+    projectKey: 'Defra-APHA-CITES'
+    projectName: 'Defra-APHA-CITES'
   
 - task: NodeTool@0
   inputs:
