@@ -25,6 +25,7 @@
 {% endblock %}
 {% block content %}
 
+
   <form method="POST" autocomplete="off" novalidate="novalidate">
     <div class="govuk-grid-row govuk-!-margin-bottom-3">
       <div class="govuk-grid-column-three-quarters">
@@ -33,6 +34,9 @@
         </h1>
       </div>
     </div>
+    {% if organisationName %}
+<h2 class="govuk-heading-m">{{organisationName}}</h2>
+{% endif %}
     <div class="govuk-grid-row" style="display: flex; align-content: center">
       <div class="govuk-grid-column-one-half search-container">
         <div class="govuk-grid-column-full search-input">
