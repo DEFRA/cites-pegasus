@@ -496,7 +496,8 @@ const schema = Joi.object().keys({
       "error.createdDate-month.any.empty": Joi.string().required(),
       "error.createdDate-month-year.any.empty": Joi.string().required(),
       "error.createdDate-year.any.empty": Joi.string().required(),
-      "error.approximateDate.string.empty": Joi.string().required()
+      "error.approximateDate.string.empty": Joi.string().required(),
+      "error.approximateDate.string.max": Joi.string().required()
     }).required()
   }).required(),
   acquiredDate: Joi.object({
@@ -517,7 +518,8 @@ const schema = Joi.object().keys({
       "error.acquiredDate-month.any.empty": Joi.string().required(),
       "error.acquiredDate-month-year.any.empty": Joi.string().required(),
       "error.acquiredDate-year.any.empty": Joi.string().required(),
-      "error.approximateDate.string.empty": Joi.string().required()
+      "error.approximateDate.string.empty": Joi.string().required(),
+      "error.approximateDate.string.max": Joi.string().required()
     }).required()
   }).required(),
   uniqueIdentificationMark: Joi.object({

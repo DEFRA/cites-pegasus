@@ -669,7 +669,8 @@
       "error.createdDate-month.any.empty": "The date the worked item or finished product was created must include a month",
       "error.createdDate-month-year.any.empty": "The date the worked item or finished product was created must include a month and year",
       "error.createdDate-year.any.empty": "The date the worked item or finished product was created must include a year",
-      "error.approximateDate.string.empty": "Enter an approximate date or period of time "
+      "error.approximateDate.string.empty": "Enter an approximate date or period of time",
+      "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
     }
   },
   "acquiredDate": {
@@ -690,7 +691,8 @@
       "error.acquiredDate-month.any.empty": "The date that you acquired the specimen must include a month",
       "error.acquiredDate-month-year.any.empty": "The date that you acquired the specimen must include a month and year",
       "error.acquiredDate-year.any.empty": "The date that you acquired the specimen must include a year",
-      "error.approximateDate.string.empty": "Enter an approximate date or period of time "
+      "error.approximateDate.string.empty": "Enter an approximate date or period of time",
+      "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
     }
   },
   "uniqueIdentificationMark": {
