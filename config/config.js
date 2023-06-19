@@ -49,7 +49,7 @@ const config = {
   cidmPostLogoutRedirectUrl: process.env.CIDM_POST_LOGOUT_REDIRECT_URL,
   addressLookupBaseUrl: process.env.ADDRESS_LOOKUP_BASE_URL,
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
-  enableSpeciesWarning: process.env.ENABLE_SPECIES_WARNING,
+  enableSpeciesWarning: process.env.ENABLE_SPECIES_WARNING || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',
