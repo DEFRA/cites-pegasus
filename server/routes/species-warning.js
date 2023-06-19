@@ -4,8 +4,8 @@ const { getSubmission, validateSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'species-warning'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/source-code`
-const nextPath = `${urlPrefix}/`
+const previousPath = `${urlPrefix}/species-name`
+const nextPath = `${urlPrefix}/source-code`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 
@@ -59,9 +59,26 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: currentPath,
+  path: `${currentPath}/{applicationIndex}`,
+  options: {
+    validate: {
+      params: Joi.object({
+        applicationIndex: Joi.number().required()
+      })
+    }
+  },
   handler: async (request, h) => {
-    return h.redirect(nextPath)
+    const { applicationIndex } = request.params
+      const submission = getSubmission(request)
+
+      try {
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
+      } catch (err) {
+        console.error(err)
+        return h.redirect(invalidSubmissionPath)
+      }
+
+    return h.redirect(`${nextPath}/${applicationIndex}`)
   },
 }
 ]

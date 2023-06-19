@@ -170,7 +170,7 @@ async function getSpecies(server, speciesName) {
       return { 
         scientificName: payload.cites_name, 
         kingdom: payload.cites_kingdom, 
-        hasRestriction: payload.cites_restrictionapply, 
+        hasRestriction: payload.cites_restrictionsapply,
         warningMessage: payload.cites_warningmessage}
     }
 

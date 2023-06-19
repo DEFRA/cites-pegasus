@@ -161,8 +161,8 @@ module.exports = [
         species.speciesName = speciesData?.scientificName
         species.speciesSearchData = request.payload.speciesName
         species.kingdom = speciesData?.kingdom
-        species.hasRestriction =  speciesData?.hasRestriction || true
-        species.warningMessage = speciesData.warningMessage || "warning message"
+        species.hasRestriction =  speciesData?.hasRestriction 
+        species.warningMessage = speciesData.warningMessage
 
         if (isChange) {
           //If changing speciesName, remove all other species data as far as the specimen description pages
