@@ -92,10 +92,7 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: `${currentPath}/new-application`,
     formActionApplyFilters: `${currentPath}`,
-    // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
-    // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
-    // textPagination: textPagination,
-
+    organisationName: data.organisationName,
     inputSearch: {
       id: "searchTerm",
       name: "searchTerm",
@@ -287,6 +284,8 @@ module.exports = [
       const filterData = getYarValue(request, 'mySubmissions-filterData')
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
+      
+      const cidmAuth = getYarValue(request, 'CIDMAuth')
 
       const pageData = {
         pageNo: pageNo,
@@ -297,6 +296,7 @@ module.exports = [
         permitTypes: filterData?.permitTypes,
         statuses: filterData?.statuses,
         searchTerm: filterData?.searchTerm,
+        organisationName: cidmAuth.user.organisationName
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -371,7 +371,8 @@ module.exports = [
         }
 
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
-
+        const cidmAuth = getYarValue(request, 'CIDMAuth')
+        
         const pageData = {
           pageNo: pageNo,
           submissions: submissions,
@@ -380,7 +381,8 @@ module.exports = [
           permitTypes: filterData.permitTypes,
           statuses: filterData.statuses,
           searchTerm: filterData.searchTerm,
-          noApplicationFound: submissions.length === 0
+          noApplicationFound: submissions.length === 0,
+          organisationName: cidmAuth.user.organisationName
         }
 
         return h.view(pageId, createModel(null, pageData))
