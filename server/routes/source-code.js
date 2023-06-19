@@ -2,6 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const config = require('../../config/config')
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
@@ -98,7 +99,7 @@ function createModel(errors, data) {
     }
   })
 
-  const defaultBacklink = data.hasRestriction ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
+  const defaultBacklink = data.hasRestriction && config.enableSpeciesWarning ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
