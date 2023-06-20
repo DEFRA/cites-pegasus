@@ -41,8 +41,8 @@ window.onload = function () {
                                       '<ul class="govuk-list govuk-error-summary__list">' +
                                         '<li><a href="#fileUpload">' + errorMessage + '</a></li>' +
                                       '</ul>' +
-                                    '</div>'
-                                  '</div>'
+                                    '</div>' +
+                                  '</div>' +
                                 '</div>'
 
       const errorSummaryContainer = document.getElementById('divErrorSummaryContainer');
