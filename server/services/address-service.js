@@ -15,7 +15,7 @@ async function getAddressesByPostcode(postcode) {
         //Wreck.agents.https = new HTTPS.Agent({ cert: pfx.cer });
 
         const secret = await readSecret(config.addressLookupAPICertName)
-        const cert = new Buffer.from(secret.value, 'base64')
+        const cert = Buffer.from(secret.value, 'base64')
         Wreck.agents.https = new HTTPS.Agent({ pfx: cert });
 
         const url = `${config.addressLookupBaseUrl}postcodes?postcode=${postcode}`
