@@ -943,6 +943,7 @@ const schema = Joi.object().keys({
   mySubmissions: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
+    pageHeaderOrganisation: Joi.string().required(),
     inputLabelSearch: Joi.string().required(),
     linkTextClearSearch: Joi.string().required(),
     buttonStartNewApplication: Joi.string().required(),

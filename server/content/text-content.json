@@ -1307,6 +1307,7 @@
   "mySubmissions": {
     "defaultTitle": "Your applications",
     "pageHeader": "Your applications",
+    "pageHeaderOrganisation": "Your applications for ##ORGANISATION_NAME##",
     "inputLabelSearch": "Search",
     "linkTextClearSearch": "Clear search",
     "buttonStartNewApplication": "Start new application",
