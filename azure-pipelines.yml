@@ -53,11 +53,11 @@ steps:
 
 - task: GitHubRelease@1
   inputs:
-      gitHubConnection: 'CITES-Pegasus-Public-Repo'
-      repositoryName: '$(Build.SourcesDirectory)'
-      action: 'create'
-      target: '$(Build.SourceVersion)'
-      tagSource: 'gitTag'
-      assets: '$(Build.SourceDirectory)/*'
-      changeLogCompareToRelease: 'lastFullRelease'
-      changeLogType: 'commitBased'
+    gitHubConnection: 'CITES-Pegasus-Public-Repo'
+    repositoryName: 'DEFRA/cites-pegasus'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'gitTag'
+    tagPattern: '*'
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
