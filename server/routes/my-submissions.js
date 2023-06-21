@@ -56,9 +56,11 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
 
+  const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##',data.organisationName) : pageContent.pageHeader
+
   const model = {
     pageTitle: pageContent.defaultTitle,
-    pageHeader: pageContent.pageHeader,
+    pageHeader: pageHeader,
     clearSearchLinkText: pageContent.linkTextClearSearch,
     currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
