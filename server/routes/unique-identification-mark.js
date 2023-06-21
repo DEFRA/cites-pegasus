@@ -29,7 +29,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["uniqueIdentificationMarkType", "inputCT", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI"]
+    const fields = ["uniqueIdentificationMarkType", "inputCB", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -46,7 +46,7 @@ function createModel(errors, data) {
     { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasInput: true },
     { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasInput: true },
     { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasInput: true },
-    { text: pageContent.radioOptionCableTie, value: 'CT', hasInput: true },
+    { text: pageContent.radioOptionCableTie, value: 'CB', hasInput: true },
     { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasInput: true },
     { text: pageContent.radioOptionLabel, value: 'LB', hasInput: true },
     { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasInput: true },
@@ -177,8 +177,8 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CT", "HU", "LB", "SI", "SN", "unmarked"),
-          inputCT: getUniqueIdentificationMarkInputSchema("CT"),
+          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "unmarked"),
+          inputCB: getUniqueIdentificationMarkInputSchema("CB"),
           inputCR: getUniqueIdentificationMarkInputSchema("CR"),
           inputHU: getUniqueIdentificationMarkInputSchema("HU"),
           inputLB: getUniqueIdentificationMarkInputSchema("LB"),
