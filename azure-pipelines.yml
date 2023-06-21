@@ -50,3 +50,14 @@ steps:
     targetPath: '$(Build.ArtifactStagingDirectory)/npm'
     artifactName: npm
   displayName: 'Publish npm artifact'
+
+- task: GitHubRelease@1
+  inputs:
+      gitHubConnection: 'CITES-Pegasus-Public-Repo'
+      repositoryName: '$(Build.SourcesDirectory)'
+      action: 'create'
+      target: '$(Build.SourceVersion)'
+      tagSource: 'gitTag'
+      assets: '$(Build.SourceDirectory)/*'
+      changeLogCompareToRelease: 'lastFullRelease'
+      changeLogType: 'commitBased'
