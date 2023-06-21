@@ -41,7 +41,7 @@ function createModel(errors, data) {
     const applicationDate = getApplicationDate(submission.dateSubmitted)
     const status = statusTextMap[submission.status] || submission.status
 
-    return { referenceNumber, referenceNumberUrl, applicationDate, status: submission.status === 'inProgress' ? '' : status }//Temporarily hidden "In Progress" until the closed status is introduced
+    return { referenceNumber, referenceNumberUrl, applicationDate, status: (submission.status === 'inProgress' || submission.status === 'closed') ? '' : status }//Temporarily hidden "In Progress"and "closed" until the closed status is introduced
   })
 
   const startIndex = (data.pageNo - 1) * pageSize
