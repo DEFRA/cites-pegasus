@@ -126,12 +126,12 @@ function createModel(errors, data) {
           value: "awaitingPayment",
           text: commonContent.statusDescriptionAwaitingPayment,
           checked: isChecked(data.statuses, "awaitingPayment")
+        },
+        {
+          value: "closed",
+          text: commonContent.statusDescriptionClosed,
+          checked: isChecked(data.statuses, "closed")
         }
-        // {
-        //   value: "closed",
-        //   text: commonContent.statusDescriptionClosed,
-        //   checked: isChecked(data.statuses, "closed")
-        // }
         // {
         //   value: "received",
         //   text: commonContent.statusDescriptionReceived,
