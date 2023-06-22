@@ -167,7 +167,7 @@ async function getSpecies(server, speciesName) {
     const { payload } = response
 
     if (payload) {
-      if (config.enableSpeciesWarning){
+      if (config.enableSpeciesWarning && payload.cites_warningmessage){
         return { 
           scientificName: payload.cites_name, 
           kingdom: payload.cites_kingdom, 
