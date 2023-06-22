@@ -105,7 +105,7 @@ module.exports = [
 
       const paymentId = submission.paymentDetails.paymentId
 
-      const paymentStatus = await getFinishedPaymentStatus(paymentId, 60000, 2000)
+      const paymentStatus = await getFinishedPaymentStatus(paymentId)
 
       submission.paymentDetails = { paymentStatus }
 

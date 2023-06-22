@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- main
+- #main
 
 pool:
   vmImage: ubuntu-latest
@@ -15,10 +15,10 @@ steps:
 - task: SonarCloudPrepare@1
   displayName: 'Prepare analysis configuration'
   inputs:
-    SonarCloud: 'SonarCloud'
+    SonarCloud: 'SC'
     organization: 'defragovuk'
     scannerMode: 'CLI'
-    projectKey: 'Defra-APHA-CITES'
+    projectKey: 'defragovuk_Defra-APHA-CITES'
     projectName: 'Defra-APHA-CITES'
   
 - task: NodeTool@0

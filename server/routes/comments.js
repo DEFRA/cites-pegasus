@@ -53,7 +53,6 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    formActionPage: `${currentPath}/${data.applicationIndex}`,
     pageTitle: errorList
     ? commonContent.errorSummaryTitlePrefix + errorList[0].text
     : `${pageContent.defaultTitle}`,

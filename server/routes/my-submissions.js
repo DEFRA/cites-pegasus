@@ -41,7 +41,7 @@ function createModel(errors, data) {
     const applicationDate = getApplicationDate(submission.dateSubmitted)
     const status = statusTextMap[submission.status] || submission.status
 
-    return { referenceNumber, referenceNumberUrl, applicationDate, status: submission.status === 'inProgress' ? '' : status }//Temporarily hidden "In Progress" until the closed status is introduced
+    return { referenceNumber, referenceNumberUrl, applicationDate, status: (submission.status === 'inProgress' || submission.status === 'closed') ? '' : status }//Temporarily hidden "In Progress"and "closed" until the closed status is introduced
   })
 
   const startIndex = (data.pageNo - 1) * pageSize
@@ -56,9 +56,11 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
 
+  const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##',data.organisationName) : pageContent.pageHeader
+
   const model = {
     pageTitle: pageContent.defaultTitle,
-    pageHeader: pageContent.pageHeader,
+    pageHeader: pageHeader,
     clearSearchLinkText: pageContent.linkTextClearSearch,
     currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
@@ -73,10 +75,7 @@ function createModel(errors, data) {
     //textPagination: textPagination,
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: `${currentPath}/new-application`,
-    // hrefPrevious:  currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
-    // hrefNext: currentPage === totalPages ? "#" :`${currentPath}/${currentPage + 1}`,
-    // textPagination: textPagination,
-
+    organisationName: data.organisationName,
     inputSearch: {
       id: "searchTerm",
       name: "searchTerm",
@@ -265,6 +264,8 @@ module.exports = [
       const filterData = getYarValue(request, 'mySubmissions-filterData')
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
+      
+      const cidmAuth = getYarValue(request, 'CIDMAuth')
 
       const pageData = {
         pageNo: pageNo,
@@ -275,6 +276,7 @@ module.exports = [
         permitTypes: filterData?.permitTypes,
         statuses: filterData?.statuses,
         searchTerm: filterData?.searchTerm,
+        organisationName: cidmAuth.user.organisationName
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -349,7 +351,8 @@ module.exports = [
         }
 
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
-
+        const cidmAuth = getYarValue(request, 'CIDMAuth')
+        
         const pageData = {
           pageNo: pageNo,
           submissions: submissions,
@@ -358,7 +361,8 @@ module.exports = [
           permitTypes: filterData.permitTypes,
           statuses: filterData.statuses,
           searchTerm: filterData.searchTerm,
-          noApplicationFound: submissions.length === 0
+          noApplicationFound: submissions.length === 0,
+          organisationName: cidmAuth.user.organisationName
         }
 
         return h.view(pageId, createModel(null, pageData))

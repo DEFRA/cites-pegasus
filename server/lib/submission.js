@@ -381,15 +381,12 @@ module.exports = {
     mergeSubmission,
     getSubmission,
     clearSubmission,
-    validateSubmission,
     cloneSubmission,
     createApplication,
-    cloneApplication,
     deleteApplication,
     deleteInProgressApplications,
     validateSubmission,
     cloneApplication,
-    deleteApplication,
     getCompletedApplications,
     getApplicationIndex
 }

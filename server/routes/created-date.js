@@ -222,7 +222,7 @@ module.exports = [
           isExactDateUnknown: Joi.boolean().default(false),//.allow(null),
           approximateDate: Joi.when("isExactDateUnknown", {
             is: true,
-            then: Joi.string().required()
+            then: Joi.string().max(150).required()
           }),
           "createdDate-day": Joi.any().optional(),
           "createdDate-month": Joi.any().optional(),

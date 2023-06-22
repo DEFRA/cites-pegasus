@@ -669,7 +669,8 @@
       "error.createdDate-month.any.empty": "The date the worked item or finished product was created must include a month",
       "error.createdDate-month-year.any.empty": "The date the worked item or finished product was created must include a month and year",
       "error.createdDate-year.any.empty": "The date the worked item or finished product was created must include a year",
-      "error.approximateDate.string.empty": "Enter an approximate date or period of time "
+      "error.approximateDate.string.empty": "Enter an approximate date or period of time",
+      "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
     }
   },
   "acquiredDate": {
@@ -690,7 +691,8 @@
       "error.acquiredDate-month.any.empty": "The date that you acquired the specimen must include a month",
       "error.acquiredDate-month-year.any.empty": "The date that you acquired the specimen must include a month and year",
       "error.acquiredDate-year.any.empty": "The date that you acquired the specimen must include a year",
-      "error.approximateDate.string.empty": "Enter an approximate date or period of time "
+      "error.approximateDate.string.empty": "Enter an approximate date or period of time",
+      "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
     }
   },
   "uniqueIdentificationMark": {
@@ -714,9 +716,9 @@
       "error.inputCR.string.empty": "Enter the specimen’s unique identification mark",
       "error.inputCR.string.max": "Unique identification mark must be 150 characters or less",
       "error.inputCR.string.min": "Unique identification mark must be 3 characters or more",
-      "error.inputCT.string.empty": "Enter the specimen’s unique identification mark",
-      "error.inputCT.string.max": "Unique identification mark must be 150 characters or less",
-      "error.inputCT.string.min": "Unique identification mark must be 3 characters or more",
+      "error.inputCB.string.empty": "Enter the specimen’s unique identification mark",
+      "error.inputCB.string.max": "Unique identification mark must be 150 characters or less",
+      "error.inputCB.string.min": "Unique identification mark must be 3 characters or more",
       "error.inputHU.string.empty": "Enter the specimen’s unique identification mark",
       "error.inputHU.string.max": "Unique identification mark must be 150 characters or less",
       "error.inputHU.string.min": "Unique identification mark must be 3 characters or more",
@@ -1305,6 +1307,7 @@
   "mySubmissions": {
     "defaultTitle": "Your applications",
     "pageHeader": "Your applications",
+    "pageHeaderOrganisation": "Your applications for ##ORGANISATION_NAME##",
     "inputLabelSearch": "Search",
     "linkTextClearSearch": "Clear search",
     "buttonStartNewApplication": "Start new application",

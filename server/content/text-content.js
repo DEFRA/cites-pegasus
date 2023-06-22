@@ -496,7 +496,8 @@ const schema = Joi.object().keys({
       "error.createdDate-month.any.empty": Joi.string().required(),
       "error.createdDate-month-year.any.empty": Joi.string().required(),
       "error.createdDate-year.any.empty": Joi.string().required(),
-      "error.approximateDate.string.empty": Joi.string().required()
+      "error.approximateDate.string.empty": Joi.string().required(),
+      "error.approximateDate.string.max": Joi.string().required()
     }).required()
   }).required(),
   acquiredDate: Joi.object({
@@ -517,7 +518,8 @@ const schema = Joi.object().keys({
       "error.acquiredDate-month.any.empty": Joi.string().required(),
       "error.acquiredDate-month-year.any.empty": Joi.string().required(),
       "error.acquiredDate-year.any.empty": Joi.string().required(),
-      "error.approximateDate.string.empty": Joi.string().required()
+      "error.approximateDate.string.empty": Joi.string().required(),
+      "error.approximateDate.string.max": Joi.string().required()
     }).required()
   }).required(),
   uniqueIdentificationMark: Joi.object({
@@ -542,9 +544,9 @@ const schema = Joi.object().keys({
       "error.inputCR.string.empty": Joi.string().required(),
       "error.inputCR.string.max": Joi.string().required(),
       "error.inputCR.string.min": Joi.string().required(),
-      "error.inputCT.string.empty": Joi.string().required(),
-      "error.inputCT.string.max": Joi.string().required(),
-      "error.inputCT.string.min": Joi.string().required(),
+      "error.inputCB.string.empty": Joi.string().required(),
+      "error.inputCB.string.max": Joi.string().required(),
+      "error.inputCB.string.min": Joi.string().required(),
       "error.inputHU.string.empty": Joi.string().required(),
       "error.inputHU.string.max": Joi.string().required(),
       "error.inputHU.string.min": Joi.string().required(),
@@ -941,6 +943,7 @@ const schema = Joi.object().keys({
   mySubmissions: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
+    pageHeaderOrganisation: Joi.string().required(),
     inputLabelSearch: Joi.string().required(),
     linkTextClearSearch: Joi.string().required(),
     buttonStartNewApplication: Joi.string().required(),
