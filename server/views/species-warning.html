@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+
+        <h1 class="govuk-heading-l">
+            {{pageHeader}}
+        </h1>
+
+        {{ govukWarningText({
+            text: warningMessage,
+            iconFallbackText: "Warning"
+          }) }}
+        
+        {{ govukButton({
+        text: continueButton,
+        type: "submit"
+      }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

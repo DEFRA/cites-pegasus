@@ -225,6 +225,9 @@ function getAppFlow(submission) {
 
                         if (application.species?.speciesName) {
                             appFlow.push(`source-code/${applicationIndex}`)
+                            if (application.species.hasRestriction) {
+                                appFlow.push(`species-warning/${applicationIndex}`)
+                            }
                         } else {
                             return { appFlow, applicationStatuses }
                         }
