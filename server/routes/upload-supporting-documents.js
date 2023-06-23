@@ -2,9 +2,8 @@ const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission } = require('../lib/submission')
-const { readSecret } = require('../lib/key-vault')
 const config = require('../../config/config')
-const { BlobServiceClient } = require("@azure/storage-blob");
+const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists } = require("../services/blob-storage-service");
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -15,15 +14,6 @@ const invalidSubmissionPath = `${urlPrefix}/`
 const Boom = require('@hapi/boom');
 const maxFileSizeBytes = 10485760
 let blobServiceClient = null
-
-readSecret('BLOB-STORAGE-CONNECTION-STRING')
-  .then(secret => {
-    blobServiceClient = BlobServiceClient.fromConnectionString(secret.value);
-  })
-  .catch(err => {
-    console.error(err)
-    throw err
-  })
 
 function createModel(errors, data) {
 
@@ -108,47 +98,47 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
-async function createBlobContainer(attemptNo = 1) {
-  const containerName = `cites-submission-${new Date().getTime()}`;
+// async function createBlobContainer(attemptNo = 1) {
+//   const containerName = `cites-submission-${new Date().getTime()}`;
 
-  try {
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-    await containerClient.create();
-  }
+//   try {
+//     const containerClient = blobServiceClient.getContainerClient(containerName);
+//     await containerClient.create();
+//   }
 
-  catch (err) {
-    console.log(`cites-submission-${new Date().getTime()}`)
-    if (err.code === 'ContainerAlreadyExists') {
-      if (attemptNo >= 5) {
-        console.log("Unable to find unique container name after 5 attempts")
-        throw Boom.badImplementation("Unable to find unique container name after 5 attempts", err)
-      }
+//   catch (err) {
+//     console.log(`cites-submission-${new Date().getTime()}`)
+//     if (err.code === 'ContainerAlreadyExists') {
+//       if (attemptNo >= 5) {
+//         console.log("Unable to find unique container name after 5 attempts")
+//         throw Boom.badImplementation("Unable to find unique container name after 5 attempts", err)
+//       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
+//       await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
 
-      return await createBlobContainer(attemptNo + 1)
-    }
-    throw err
-  }
+//       return await createBlobContainer(attemptNo + 1)
+//     }
+//     throw err
+//   }
 
-  return containerName
-}
+//   return containerName
+// }
 
-async function addFileToBlobContainer(containerName, fileUpload) {
-  const containerClient = blobServiceClient.getContainerClient(containerName);
-  const blockBlobClient = containerClient.getBlockBlobClient(fileUpload.hapi.filename);
-  await blockBlobClient.uploadData(fileUpload._data);
+// async function addFileToBlobContainer(containerName, fileUpload) {
+//   const containerClient = blobServiceClient.getContainerClient(containerName);
+//   const blockBlobClient = containerClient.getBlockBlobClient(fileUpload.hapi.filename);
+//   await blockBlobClient.uploadData(fileUpload._data);
 
-  return blockBlobClient.url
-}
+//   return blockBlobClient.url
+// }
 
-async function deleteFileFromBlobContainer(containerName, fileName) {
-  const containerClient = blobServiceClient.getContainerClient(containerName);
-  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-  await blockBlobClient.deleteIfExists();
-  // const blobClient = containerClient.getBlobClient(fileName);
-  // return blobClient.deleteIfExists();
-}
+// async function deleteFileFromBlobContainer(containerName, fileName) {
+//   const containerClient = blobServiceClient.getContainerClient(containerName);
+//   const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+//   await blockBlobClient.deleteIfExists();
+//   // const blobClient = containerClient.getBlobClient(fileName);
+//   // return blobClient.deleteIfExists();
+// }
 
 module.exports = [
   {
@@ -159,10 +149,7 @@ module.exports = [
 
       //Check that the container is still in azure
       if (submission.supportingDocuments?.containerName) {
-        const containerClient = blobServiceClient.getContainerClient(submission.supportingDocuments.containerName);
-
-        const exists = await containerClient.exists();
-
+        const exists = await checkContainerExists(submission.supportingDocuments.containerName)
         if (!exists) {
           submission.supportingDocuments = { files: [] }
           try {
@@ -286,7 +273,7 @@ module.exports = [
 
         try {
           if (!docs.containerName) {
-            const containerName = await createBlobContainer()
+            const containerName = await createContainerWithTimestamp('cites-submission')
             console.log(`Blob container created with name ${containerName}`)
             docs.containerName = containerName
             try {
@@ -297,7 +284,7 @@ module.exports = [
             }
           }
 
-          const blobUrl = await addFileToBlobContainer(docs.containerName, request.payload.fileUpload)
+          const blobUrl = await saveFileToContainer(docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
           console.log(`File added to blob container with url ${blobUrl}`)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl })
 
@@ -356,7 +343,7 @@ module.exports = [
         }
 
         try {
-          await deleteFileFromBlobContainer(docs.containerName, existingFile.fileName)
+          await deleteFileFromContainer(docs.containerName, existingFile.fileName)
           docs.files.splice(docs.files.indexOf(existingFile), 1)
 
           try {

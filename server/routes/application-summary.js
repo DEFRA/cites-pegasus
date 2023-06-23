@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
@@ -809,8 +809,10 @@ module.exports = [
             console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
+          saveDraftSubmission(request)
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
+          saveDraftSubmission(request)
           return h.redirect(nextPathYourSubmission)
         }
 

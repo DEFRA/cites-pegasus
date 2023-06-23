@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
@@ -68,6 +68,7 @@ function createModel(errors, data) {
     pageBodyPermitType: pageContent.pageBodyPermitType,
     pageBodyStatus: pageContent.pageBodyStatus,
     buttonApplyFilters: pageContent.buttonApplyFilters,
+    draftSubmissionExists: data.draftSubmissionExists,
     submissionsData: submissionsTableData,
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
@@ -266,6 +267,8 @@ module.exports = [
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
       
       const cidmAuth = getYarValue(request, 'CIDMAuth')
+      
+      const draftSubmissionExists = await checkDraftSubmissionExists(request)
 
       const pageData = {
         pageNo: pageNo,
@@ -276,7 +279,8 @@ module.exports = [
         permitTypes: filterData?.permitTypes,
         statuses: filterData?.statuses,
         searchTerm: filterData?.searchTerm,
-        organisationName: cidmAuth.user.organisationName
+        organisationName: cidmAuth.user.organisationName,
+        draftSubmissionExists: draftSubmissionExists
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -352,7 +356,8 @@ module.exports = [
 
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
         const cidmAuth = getYarValue(request, 'CIDMAuth')
-        
+        const draftSubmissionExists = await checkDraftSubmissionExists(request)
+
         const pageData = {
           pageNo: pageNo,
           submissions: submissions,
@@ -362,7 +367,8 @@ module.exports = [
           statuses: filterData.statuses,
           searchTerm: filterData.searchTerm,
           noApplicationFound: submissions.length === 0,
-          organisationName: cidmAuth.user.organisationName
+          organisationName: cidmAuth.user.organisationName,
+          draftSubmissionExists: draftSubmissionExists
         }
 
         return h.view(pageId, createModel(null, pageData))

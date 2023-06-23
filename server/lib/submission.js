@@ -1,7 +1,8 @@
 const { getYarValue, setYarValue } = require('./session')
+const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer } = require('../services/blob-storage-service')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
-
+const submissionFileName = 'submission.json'
 
 function getSubmission(request) {
     const session = getYarValue(request, 'submission')
@@ -58,6 +59,33 @@ function validateSubmission(submission, path) {
         }
     }
     return applicationStatuses
+}
+
+function getContainerName(submission) {
+    const uniqueId = submission.organisationId ? submission.organisationId : submission.contactId
+    return `cites-draft-${uniqueId}`
+}
+
+async function checkDraftSubmissionExists(request) {
+    const submission = getSubmission(request)
+    const containerName = getContainerName(submission)
+    return await checkFileExists(containerName, submissionFileName)
+}
+
+async function saveDraftSubmission(request) {
+    const submission = getSubmission(request)
+    const containerName = getContainerName(submission)
+    const containerExists = await checkContainerExists(containerName)
+    if(!containerExists) {
+        await createContainer(containerName)
+    }
+    await saveObjectToContainer(containerName, submissionFileName, submission)    
+}
+
+async function deleteDraftSubmission(request) {
+    const submission = getSubmission(request)
+    const containerName = getContainerName(submission)
+    await deleteFileFromContainer(containerName, submissionFileName)
 }
 
 function cloneSubmission(request, applicationIndex) {
@@ -385,5 +413,8 @@ module.exports = {
     validateSubmission,
     cloneApplication,
     getCompletedApplications,
-    getApplicationIndex
+    getApplicationIndex,
+    saveDraftSubmission,
+    checkDraftSubmissionExists,
+    deleteDraftSubmission
 }

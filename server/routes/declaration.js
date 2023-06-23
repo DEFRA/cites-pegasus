@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications } = require("../lib/submission")
+const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission } = require("../lib/submission")
 const { postSubmission } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "declaration"
@@ -113,6 +113,8 @@ module.exports = [
           console.error(err)
           throw err
         }
+
+        await deleteDraftSubmission(request)
 
         submission.submissionRef = response.submissionRef
         submission.submissionId = response.submissionId
