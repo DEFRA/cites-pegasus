@@ -65,15 +65,16 @@ function cloneSubmission(request, applicationIndex) {
     const newApplication = submission.applications[applicationIndex]
     const cloneSource = { submissionRef: submission.submissionRef, applicationRef: newApplication.applicationRef, applicationIndex }
 
+    delete submission.agent
     delete submission.submissionRef
     delete submission.submissionId
     delete submission.paymentDetails
     delete submission.supportingDocuments
     delete submission.submissionStatus
-
+    
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
-
+    
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
     setYarValue(request, 'cloneSource', cloneSource)
@@ -176,23 +177,9 @@ function getAppFlow(submission) {
             if (submission.permitType && submission.permitType !== 'other') {
                 appFlow.push('applying-on-behalf')
 
-                if (submission.isAgent === true) {
-                    appFlow.push('contact-details/agent')
-                    if (submission.agent?.fullName) {
-                        appFlow.push('postcode/agent')
-                        appFlow.push('enter-address/agent')
-                        if (submission.agent.candidateAddressData?.addressSearchData?.postcode) {
-                            appFlow.push('select-address/agent')
-                        }
-                        if (submission.agent.candidateAddressData?.selectedAddress) {
-                            appFlow.push('confirm-address/agent')
-                        }
-                    } else {
-                        return { appFlow, applicationStatuses }
-                    }
-                }
 
-                if (submission.isAgent === false || (submission.isAgent === true && submission.agent?.address)) {
+                if (typeof submission.isAgent === 'boolean') {
+
                     appFlow.push('contact-details/applicant')
                     if (submission.applicant?.fullName) {
                         appFlow.push('postcode/applicant')
@@ -204,6 +191,7 @@ function getAppFlow(submission) {
                             appFlow.push('confirm-address/applicant')
                         }
                     }
+
                 } else {
                     return { appFlow, applicationStatuses }
                 }

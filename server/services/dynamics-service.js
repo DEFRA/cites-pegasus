@@ -133,10 +133,6 @@ function mapSubmissionToPayload(submission) {
     payload.applicant.candidateAddressData.addressSearchData.results = null
   }
 
-  if (payload.agent?.candidateAddressData?.addressSearchData?.results) {
-    payload.agent.candidateAddressData.addressSearchData.results = null
-  }
-
   if (payload.delivery.candidateAddressData?.addressSearchData?.results) {
     payload.delivery.candidateAddressData.addressSearchData.results = null
   }

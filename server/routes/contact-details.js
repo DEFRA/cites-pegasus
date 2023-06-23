@@ -8,7 +8,7 @@ const textContent = require('../content/text-content')
 const { getYarValue } = require('../lib/session')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
-const contactTypes = ['agent', 'applicant']
+const contactTypes = ['applicant']
 const nextPath = `${urlPrefix}/postcode`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -27,7 +27,7 @@ function createModel(errors, data) {
         pageContent = textContent.contactDetails.agent
     }
 
-    let previousPath = data.contactType === 'applicant' && data.isAgent ? `${urlPrefix}/confirm-address/agent` : `${urlPrefix}/applying-on-behalf`
+    let previousPath = `${urlPrefix}/applying-on-behalf`
 
     let defaultTitle = ''
     let pageHeader = ''

@@ -7,7 +7,7 @@ const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/confirm-address/applicant`
-const deliveryAddressOptions = ['applicant', 'agent', 'different']
+const deliveryAddressOptions = ['applicant', 'different']
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -15,23 +15,13 @@ function createModel(errors, data) {
     const pageContent = textContent.selectDeliveryAddress;
 
     const applicantAddressSummary = getAddressSummary(data.applicantAddress)
-    const agentAddressSummary = data.agentAddress ? getAddressSummary(data.agentAddress) : ''
-
+    
     let deliveryAddressOptionItems = [{
         value: "applicant",
         //text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
         text: applicantAddressSummary,
         checked: isChecked(data.deliveryAddressOption, "applicant")
     }]
-
-    if (data.isAgent) {
-        deliveryAddressOptionItems.push({
-            value: "agent",
-            //text: `${pageContent.radioOptionDeliverToAgentAddress} ${agentAddressSummary}`,
-            text: agentAddressSummary,
-            checked: isChecked(data.deliveryAddressOption, "agent")
-        })
-    }
 
     deliveryAddressOptionItems.push({
         value: "different",
@@ -96,11 +86,9 @@ module.exports = [{
         }
 
         const pageData = {
-            isAgent: submission?.isAgent,
             permitType: submission?.permitType,
             deliveryAddressOption: submission?.delivery?.addressOption || null,
-            applicantAddress: submission.applicant.address,
-            agentAddress: submission.agent?.address
+            applicantAddress: submission.applicant.address            
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -119,11 +107,9 @@ module.exports = [{
                 const submission = getSubmission(request);
 
                 const pageData = {
-                    isAgent: submission?.isAgent,
                     permitType: submission?.permitType,
                     deliveryAddressOption: submission?.delivery?.addressOption,
-                    applicantAddress: submission.applicant.address,
-                    agentAddress: submission.agent?.address
+                    applicantAddress: submission.applicant.address
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
@@ -141,10 +127,7 @@ module.exports = [{
             switch (deliveryAddressOption) {
                 case 'applicant':
                     deliveryAddress = { ...submission.applicant.address }
-                    break;
-                case 'agent':
-                    deliveryAddress = { ...submission.agent.address }
-                    break;
+                    break;                
                 case 'different':
                     deliveryAddress = null
                     nextPath = `${urlPrefix}/postcode/delivery`
