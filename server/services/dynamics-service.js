@@ -2,11 +2,11 @@ const MSAL = require('@azure/msal-node');
 const Wreck = require('@hapi/wreck');
 const { getYarValue, setYarValue } = require('../lib/session')
 var moment = require('moment');
-const config = require('../../config/config').dynamicsAPI
+const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 const lodash = require('lodash');
 //const tradeTermCode = require('../routes/trade-term-code');
-const apiUrl = config.baseURL + config.apiPath
+const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -14,16 +14,16 @@ async function getClientCredentialsToken() {
 
   const msalConfig = {
     auth: {
-      authority: config.authorityUrl,
+      authority: config.dynamicsAPI.authorityUrl,
       clientId: clientId.value,
       clientSecret: clientSecret.value,
-      knownAuthorities: [config.knownAuthority]
+      knownAuthorities: [config.dynamicsAPI.knownAuthority]
     }
   }
 
   const cca = new MSAL.ConfidentialClientApplication(msalConfig);
   return cca.acquireTokenByClientCredential({
-    scopes: [`${config.baseURL}/.default`],
+    scopes: [`${config.dynamicsAPI.baseURL}/.default`],
   })
 }
 
@@ -133,10 +133,6 @@ function mapSubmissionToPayload(submission) {
     payload.applicant.candidateAddressData.addressSearchData.results = null
   }
 
-  if (payload.agent?.candidateAddressData?.addressSearchData?.results) {
-    payload.agent.candidateAddressData.addressSearchData.results = null
-  }
-
   if (payload.delivery.candidateAddressData?.addressSearchData?.results) {
     payload.delivery.candidateAddressData.addressSearchData.results = null
   }
@@ -167,9 +163,18 @@ async function getSpecies(server, speciesName) {
     const { payload } = response
 
     if (payload) {
-      //const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-      //return JSON.parse(payload)
-      return { scientificName: payload.cites_name, kingdom: payload.cites_kingdom }
+      if (config.enableSpeciesWarning && payload.cites_warningmessage){
+        return { 
+          scientificName: payload.cites_name, 
+          kingdom: payload.cites_kingdom, 
+          hasRestriction: payload.cites_restrictionsapply,
+          warningMessage: payload.cites_warningmessage}
+      } else {
+        return { 
+          scientificName: payload.cites_name, 
+          kingdom: payload.cites_kingdom, 
+        }
+      }
     }
 
     return null

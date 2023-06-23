@@ -25,7 +25,7 @@ function createApplicationSummaryModel(errors, data) {
   const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
   const applicationRef = data.cloneSource ? data.cloneSource.applicationRef : data.applicationRef
   const hrefPrefix = `../../application-summary/${summaryType}/change/${data.applicationIndex}`
-  
+
   changeLinkText = pageContent.changeLinkText
 
   let pageTitle = null
@@ -85,7 +85,9 @@ function createApplicationSummaryModel(errors, data) {
       break
   }
 
-  const purposeCodeValueText =  {
+  const headerContactDetails = data.isAgent ? headerApplicantContactDetails : pageContent.headerYourContactDetails
+
+  const purposeCodeValueText = {
     B: pageContent.rowTextPurposeCodeB,
     E: pageContent.rowTextPurposeCodeE,
     G: pageContent.rowTextPurposeCodeG,
@@ -101,17 +103,17 @@ function createApplicationSummaryModel(errors, data) {
   }
 
   const sourceCodeValueText = {
-     W: pageContent.rowTextSourceCodeW, 
-     R: pageContent.rowTextSourceCodeR,
-     D: data.species.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
-     C: pageContent.rowTextSourceCodeC,
-     F: pageContent.rowTextSourceCodeF,
-     I: pageContent.rowTextSourceCodeI,
-     O: pageContent.rowTextSourceCodeO,
-     X: pageContent.rowTextSourceCodeX,
-     Y: pageContent.rowTextSourceCodeY,
-     A: pageContent.rowTextSourceCodeA,
-     U: data.species.enterAReason  
+    W: pageContent.rowTextSourceCodeW,
+    R: pageContent.rowTextSourceCodeR,
+    D: data.species.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    C: pageContent.rowTextSourceCodeC,
+    F: pageContent.rowTextSourceCodeF,
+    I: pageContent.rowTextSourceCodeI,
+    O: pageContent.rowTextSourceCodeO,
+    X: pageContent.rowTextSourceCodeX,
+    Y: pageContent.rowTextSourceCodeY,
+    A: pageContent.rowTextSourceCodeA,
+    U: data.species.enterAReason
   }
 
   const otherSourceCodeValueText = {
@@ -137,7 +139,7 @@ function createApplicationSummaryModel(errors, data) {
     plantWorked: pageContent.rowTextSpecimenTypePlantWorked,
   }
 
-  const a10CertificatePurposeValue =  {
+  const a10CertificatePurposeValue = {
     legallyAcquired: pageContent.rowTextLegallyAcquired,
     commercialActivities: pageContent.rowTextCommercialActivities,
     moveALiveSpecimen: pageContent.rowTextMoveALiveSpecimen,
@@ -175,44 +177,7 @@ function createApplicationSummaryModel(errors, data) {
 
 
 
-  let yourContactDetailsData = null
-  if (!data.isAgent) {
-    yourContactDetailsData = {
-      fullName: data.applicant.fullName,
-      businessName: data.applicant.businessName,
-      email: data.applicant.email,
-      address: {
-        addressLine1: data.applicant.address.addressLine1,
-        addressLine2: data.applicant.address.addressLine2,
-        addressLine3: data.applicant.address.addressLine3 ? data.applicant.address.addressLine3 : "",
-        addressLine4: data.applicant.address.addressLine4 ? data.applicant.address.addressLine4 : "",
-        postcode: data.applicant.address.postcode,
-        country: data.applicant.address.country,
-        countryDesc: data.applicant.address.countryDesc
-      },
-      hrefPathSuffixContactDetails: "/applicantContactDetails",
-      hrefPathSuffixAddress: "/applicantAddress"
-    }
-  } else {
-    yourContactDetailsData = {
-      fullName: data.agent.fullName,
-      businessName: data.agent.businessName,
-      email: data.agent.email,
-      address: {
-        addressLine1: data.agent.address.addressLine1,
-        addressLine2: data.agent.address.addressLine2,
-        addressLine3: data.agent.address.addressLine3 ? data.agent.address.addressLine3 : "",
-        addressLine4: data.agent.address.addressLine4 ? data.agent.address.addressLine4 : "",
-        postcode: data.agent.address.postcode,
-        country: data.agent.address.country,
-        countryDesc: data.agent.address.countryDesc
-      },
-      hrefPathSuffixContactDetails: "/agentContactDetails",
-      hrefPathSuffixAddress: "/agentAddress"
-    }
-  }
-
-  const agentApplicantContactDetailsData = {
+  const applicantContactDetailsData = {
     fullName: data.applicant.fullName,
     businessName: data.applicant.businessName,
     email: data.applicant.email,
@@ -318,11 +283,11 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? hrefPrefix + "/unmarkedSpecimens" : hrefPrefix + "/quantity", "unit of measurement", summaryType))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSourceCode, `${data.species.sourceCode} ${sourceCodeValueText[data.species.sourceCode]}`, hrefPrefix + "/sourceCode", "source code", summaryType))
-  
+
   if (data.species.anotherSourceCodeForI || data.species.anotherSourceCodeForO) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${otherSourceCode} ${otherSourceCodeValueText[otherSourceCode]}`,  "", "", summaryType))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${otherSourceCode} ${otherSourceCodeValueText[otherSourceCode]}`, "", "", summaryType))
   }
-  
+
   if (data.permitType !== "article10") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText[data.species.purposeCode]}`, hrefPrefix + "/purposeCode", "purpose code", summaryType))
   }
@@ -383,14 +348,14 @@ function createApplicationSummaryModel(errors, data) {
       createSummaryListRow("govuk-summary-list__row border-top", pageContent.headerRemarks, data.comments, hrefPrefix + "/comments", "remarks", summaryType),
     ]
   }
-  const summaryListYourContactDetails = getContactDetails(pageContent, yourContactDetailsData, hrefPrefix, summaryType)
-  const summaryListApplicantContactDetails = data.isAgent && getContactDetails(pageContent, agentApplicantContactDetailsData, hrefPrefix, summaryType)
+
+  const summaryListApplicantContactDetails = getContactDetails(pageContent, applicantContactDetailsData, hrefPrefix, summaryType)
   const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix, summaryType)
   const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix, summaryType)
 
   let submissionLink = `${previousPathMySubmission}/${data.cloneSource ? data.cloneSource.submissionRef : data.submissionRef}`
   let applicationLink = `${currentPath}/view-submitted/${data.cloneSource ? data.cloneSource.applicationIndex : data.applicationIndex}`
-  
+
   //const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex : data.applicationIndex
   const breadcrumbs = {
     items: [
@@ -410,11 +375,11 @@ function createApplicationSummaryModel(errors, data) {
       }
     ]
   }
-  if(summaryType === 'copy-as-new') {
+  if (summaryType === 'copy-as-new') {
     breadcrumbs.items.push({
-        text: pageContent.pageHeaderCopy,
-        href: "#"
-      })    
+      text: pageContent.pageHeaderCopy,
+      href: "#"
+    })
   }
 
   let backLink = null;
@@ -423,7 +388,7 @@ function createApplicationSummaryModel(errors, data) {
       backLink = `${previousPathComments}/${data.applicationIndex}`
     } else {
       backLink = nextPathYourSubmission
-    }    
+    }
   }
 
   // if (summaryType !== 'view-submitted') {
@@ -446,8 +411,7 @@ function createApplicationSummaryModel(errors, data) {
     buttonText: buttonText,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     headerPermit: pageContent.headerPermit,
-    headerYourContactDetails: pageContent.headerYourContactDetails,
-    headerApplicantContactDetails: data.isAgent ? headerApplicantContactDetails : "",
+    headerContactDetails: headerContactDetails,
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
     headingImporterExporterDetails: headingImporterExporterDetails,
@@ -458,7 +422,6 @@ function createApplicationSummaryModel(errors, data) {
     returnToYourApplicationsLinkUrl: summaryType === 'view-submitted' ? `${urlPrefix}/my-submissions` : "",
 
     summaryListAboutThePermit: summaryListAboutThePermit,
-    summaryListYourContactDetails: summaryListYourContactDetails,
     summaryListApplicantContactDetails: summaryListApplicantContactDetails,
     summaryListDeliveryAddress: summaryListDeliveryAddress,
     summaryListSpecimenDetails: summaryListSpecimenDetails,
@@ -488,7 +451,7 @@ function createSummaryListRow(classes, key, value, href, hiddenText, summaryType
           text: changeLinkText,
           visuallyHiddenText: hiddenText
         }
-      ]: []
+      ] : []
     }
   }
   return summaryListRow
@@ -544,10 +507,6 @@ function createAreYouSureModel(errors, data) {
     pageContent = areYouSureText.scientificName
   } else if (changeType === "deliveryAddress") {
     pageContent = areYouSureText.deliveryAddress
-  } else if (changeType === "agentContactDetails") {
-    pageContent = areYouSureText.yourContactDetails
-  } else if (changeType === "agentAddress") {
-    pageContent = areYouSureText.yourAddress
   } else if (!data.isAgent) {
     if (changeType === "applicantContactDetails") {
       pageContent = areYouSureText.yourContactDetails
@@ -657,22 +616,22 @@ module.exports = [
     handler: async (request, h) => {
       const { summaryType, applicationIndex } = request.params
       let submission = getSubmission(request)
-      
+
       // let submission
 
       let cloneSource = null
       if (summaryType === 'copy-as-new' || (!submission.submissionRef && summaryType === 'view-submitted')) {
-        cloneSource = getYarValue(request, 'cloneSource')        
+        cloneSource = getYarValue(request, 'cloneSource')
       }
 
-      if (cloneSource?.submissionRef && summaryType === 'view-submitted'){
+      if (cloneSource?.submissionRef && summaryType === 'view-submitted') {
         //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
-        const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+        const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
         submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
-        setYarValue(request, 'submission', submission)      
+        setYarValue(request, 'submission', submission)
         setYarValue(request, 'cloneSource', null)
       }
-      
+
 
       try {
         validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`)
@@ -694,7 +653,6 @@ module.exports = [
         permitType: submission.permitType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
-        agent: submission?.agent,
         delivery: submission.delivery,
         applicationRef: submission.applications[applicationIndex].applicationRef,
         species: submission.applications[applicationIndex].species,
@@ -788,7 +746,6 @@ module.exports = [
             permitType: submission.permitType,
             isAgent: submission.isAgent,
             applicant: submission.applicant,
-            agent: submission?.agent,
             delivery: submission.delivery,
             applicationRef: submission.applications[applicationIndex].applicationRef,
             species: submission.applications[applicationIndex].species,

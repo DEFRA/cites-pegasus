@@ -2,6 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const config = require('../../config/config')
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
@@ -9,7 +10,8 @@ const nunjucks = require("nunjucks")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/species-name`
+const previousPathSpeciesName = `${urlPrefix}/species-name`
+const previousPathSpeciesWarning = `${urlPrefix}/species-warning`
 const nextPathPurposeCode = `${urlPrefix}/purpose-code`
 const nextPathUseCertFor = `${urlPrefix}/use-certificate-for`
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -97,7 +99,7 @@ function createModel(errors, data) {
     }
   })
 
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const defaultBacklink = data.hasRestriction && config.enableSpeciesWarning ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -249,6 +251,7 @@ function failAction(request, h, err) {
     applicationIndex: request.params.applicationIndex,
     speciesName: species.speciesName,
     kingdom: species.kingdom,
+    hasRestriction: species.hasRestriction, 
     ...request.payload
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -291,6 +294,7 @@ module.exports = [
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
         kingdom: species.kingdom,
+        hasRestriction: species.hasRestriction, 
         sourceCode: species.sourceCode,
         anotherSourceCodeForI: species.anotherSourceCodeForI,
         anotherSourceCodeForO: species.anotherSourceCodeForO,
