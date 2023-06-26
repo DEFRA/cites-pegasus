@@ -1305,6 +1305,11 @@
     }
   },
   "mySubmissions": {
+    "draftNotificationTitle": "Reminder",
+    "draftNotificationHeader": "You have a saved application.",
+    "draftNotificationBody": "You will not be able to start another application while this application is still being worked on",
+    "draftContinue": "Continue the application",
+    "draftDelete": "Delete this application",
     "defaultTitle": "Your applications",
     "pageHeader": "Your applications",
     "pageHeaderOrganisation": "Your applications for ##ORGANISATION_NAME##",

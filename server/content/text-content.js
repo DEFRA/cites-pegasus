@@ -800,7 +800,7 @@ const schema = Joi.object().keys({
     pageHeaderView: Joi.string().required(),
     textBreadcrumbs: Joi.string().required(),
     changeLinkText: Joi.string().required(),
-    headerPermit: Joi.string().required(),
+    headerPermit: Joi.string().required(),    
     rowTextPermitType: Joi.string().required(),
     headerYourContactDetails: Joi.string().required(),
     headerApplicantContactDetails: Joi.string().required(),
@@ -941,6 +941,11 @@ const schema = Joi.object().keys({
     }).required()
   }).required(),
   mySubmissions: Joi.object({
+    draftNotificationTitle: Joi.string().required(),
+    draftNotificationHeader: Joi.string().required(),
+    draftNotificationBody: Joi.string().required(),
+    draftContinue: Joi.string().required(),
+    draftDelete: Joi.string().required(),
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageHeaderOrganisation: Joi.string().required(),

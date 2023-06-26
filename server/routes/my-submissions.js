@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists, loadDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
@@ -11,6 +11,8 @@ const pageId = "my-submissions"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
+const draftContinuePath = `${currentPath}/draft-continue`
+const draftDeletePath = `${currentPath}/draft-delete`
 const invalidSubmissionPath = `${urlPrefix}/`
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['awaitingPayment', 'inProgress', 'closed']//['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'inProgress', 'issued', 'refused', 'cancelled']
@@ -61,6 +63,13 @@ function createModel(errors, data) {
   const model = {
     pageTitle: pageContent.defaultTitle,
     pageHeader: pageHeader,
+    draftNotificationTitle: pageContent.draftNotificationTitle,
+    draftNotificationHeader: pageContent.draftNotificationHeader,
+    draftNotificationBody: pageContent.draftNotificationBody,
+    draftContinue: pageContent.draftContinue,
+    draftDelete: pageContent.draftDelete,
+    draftContinuePath: draftContinuePath,
+    draftDeletePath: draftDeletePath,
     clearSearchLinkText: pageContent.linkTextClearSearch,
     currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
@@ -392,5 +401,13 @@ module.exports = [
       return h.redirect(`${nextPathMySubmission}/${submissionRef}`)
     }
   },
+  {
+    method: "GET",
+    path: `${currentPath}/draft-continue`,
+    handler: async (request, h) => {
+      const submission = await loadDraftSubmission(request)
+      return h.redirect(submission.savePointUrl)
+    }
+  }
 ]
 

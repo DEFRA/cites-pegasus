@@ -81,7 +81,7 @@ async function saveObjectToContainer(containerName, filename, object) {
         console.log(err)
         throw err
     }
-    console.log('object saved')
+
     return blockBlobClient.url
 }
 
@@ -98,7 +98,7 @@ async function deleteFileFromContainer(containerName, fileName) {
 }
 
 async function checkFileExists(containerName, fileName) {
-    if(checkContainerExists(containerName)) {
+    if (checkContainerExists(containerName)) {
         const containerClient = blobServiceClient.getContainerClient(containerName)
         const blockBlobClient = containerClient.getBlockBlobClient(fileName)
         return await blockBlobClient.exists()
@@ -106,9 +106,51 @@ async function checkFileExists(containerName, fileName) {
     return false
 }
 
+
+async function getObjectFromContainer(containerName, filename) {
+    if (!checkContainerExists(containerName)) {
+        const err = 'Container does not exist'
+        console.log(err)
+        throw err
+    }
+    try {
+        const containerClient = blobServiceClient.getContainerClient(containerName)
+        const blockBlobClient = containerClient.getBlockBlobClient(filename)
+        const downloadResponse = await blockBlobClient.download(0)
+        const downloadedData = await streamToBuffer(downloadResponse.readableStreamBody)
+        const object = JSON.parse(downloadedData.toString('utf-8'))
+        return object
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+function streamToBuffer(readableStream) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        readableStream.on('data', (data) => {
+            chunks.push(data instanceof Buffer ? data : Buffer.from(data));
+        });
+        readableStream.on('end', () => {
+            resolve(Buffer.concat(chunks));
+        });
+        readableStream.on('error', reject);
+    });
+}
+
 async function checkContainerExists(containerName) {
     const containerClient = blobServiceClient.getContainerClient(containerName)
     return await containerClient.exists()
 }
 
-module.exports = { createContainer, saveFileToContainer, deleteFileFromContainer, createContainerWithTimestamp, checkContainerExists, saveObjectToContainer, checkFileExists }
+module.exports = { 
+    createContainer, 
+    saveFileToContainer, 
+    deleteFileFromContainer,
+    createContainerWithTimestamp, 
+    checkContainerExists, 
+    saveObjectToContainer, 
+    checkFileExists,
+    getObjectFromContainer
+ }

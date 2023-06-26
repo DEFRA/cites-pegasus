@@ -758,7 +758,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-
+        const savePointUrl = `${currentPath}/${summaryType}/${applicationIndex}`
         if (summaryType === 'view-submitted') {
           try {
             cloneSubmission(request, applicationIndex)
@@ -766,10 +766,10 @@ module.exports = [
             console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
-          saveDraftSubmission(request)
+          saveDraftSubmission(request, `${nextPathCopyAsNewApplication}/0`)
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
-          saveDraftSubmission(request)
+          saveDraftSubmission(request, nextPathYourSubmission)
           return h.redirect(nextPathYourSubmission)
         }
 

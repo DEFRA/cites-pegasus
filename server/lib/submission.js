@@ -1,5 +1,5 @@
 const { getYarValue, setYarValue } = require('./session')
-const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer } = require('../services/blob-storage-service')
+const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const submissionFileName = 'submission.json'
@@ -61,30 +61,45 @@ function validateSubmission(submission, path) {
     return applicationStatuses
 }
 
-function getContainerName(submission) {
-    const uniqueId = submission.organisationId ? submission.organisationId : submission.contactId
+function getContainerName(request) {
+    const cidmAuth = getYarValue(request, 'CIDMAuth')
+    const uniqueId = cidmAuth.user.organisationId ? cidmAuth.user.organisationId : cidmAuth.user.contactId
     return `cites-draft-${uniqueId}`
 }
 
 async function checkDraftSubmissionExists(request) {
-    const submission = getSubmission(request)
-    const containerName = getContainerName(submission)
+    const containerName = getContainerName(request)
     return await checkFileExists(containerName, submissionFileName)
 }
 
-async function saveDraftSubmission(request) {
+async function saveDraftSubmission(request, savePointUrl) {
     const submission = getSubmission(request)
-    const containerName = getContainerName(submission)
+    submission.savePointUrl = savePointUrl
+    submission.savePointDate = new Date()
+    const containerName = getContainerName(request)
     const containerExists = await checkContainerExists(containerName)
-    if(!containerExists) {
+    if (!containerExists) {
         await createContainer(containerName)
     }
-    await saveObjectToContainer(containerName, submissionFileName, submission)    
+    await saveObjectToContainer(containerName, submissionFileName, submission)
+}
+
+async function loadDraftSubmission(request) {
+    try {
+        const containerName = getContainerName(request)
+        const draftSubmission = await getObjectFromContainer(containerName, submissionFileName)
+        setSubmission(request, draftSubmission, null)
+        return draftSubmission
+    }
+    catch (err) {
+        console.log(err)
+        throw err
+    }
 }
 
 async function deleteDraftSubmission(request) {
     const submission = getSubmission(request)
-    const containerName = getContainerName(submission)
+    const containerName = getContainerName(request)
     await deleteFileFromContainer(containerName, submissionFileName)
 }
 
@@ -99,10 +114,10 @@ function cloneSubmission(request, applicationIndex) {
     delete submission.paymentDetails
     delete submission.supportingDocuments
     delete submission.submissionStatus
-    
+
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
-    
+
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
     setYarValue(request, 'cloneSource', cloneSource)
@@ -407,5 +422,6 @@ module.exports = {
     getApplicationIndex,
     saveDraftSubmission,
     checkDraftSubmissionExists,
-    deleteDraftSubmission
+    deleteDraftSubmission,
+    loadDraftSubmission
 }
