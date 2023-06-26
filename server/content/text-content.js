@@ -602,6 +602,7 @@ const schema = Joi.object().keys({
         "error.parentDetails.string.empty": Joi.string().required(),
         "error.parentDetails.string.min": Joi.string().required(),
         "error.parentDetails.string.max": Joi.string().required(),
+        "error.parentDetails.string.pattern.base": Joi.string().required(),
         "error.description.string.max": Joi.string().required(),
         "error.description.string.pattern.base": Joi.string().required(),
         "error.dateOfBirth.any.future": Joi.string().required(),
