@@ -1,7 +1,7 @@
 const hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
-var Fs = require('fs');
+const Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
 const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service');
 
