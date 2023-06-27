@@ -101,10 +101,10 @@
       "inputHintBusinessNameReexport": "If you are a business, give the business name.",
       "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
       "inputLabelEmail": "Email address (optional)",
-      "inputHintEmailImport": "We will only use this to send you a copy of the application.",
-      "inputHintEmailExport": "We will only use this to send you a copy of the application.",
-      "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
-      "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
+      "inputHintEmailImport": "We will only use this to communicate with you about your application.",
+      "inputHintEmailExport": "We will only use this to communicate with you about your application.",
+      "inputHintEmailReexport": "We will only use this to communicate with you about your application.",
+      "inputHintEmailArticle10": "We will only use this to communicate with you about your application."
     },
     "applicant": {
       "defaultTitleImport": "Enter your contact details",
@@ -122,10 +122,10 @@
       "inputHintBusinessNameReexport": "If you are a business, give the business name.",
       "inputHintBusinessNameArticle10": "If you are a business, give the business name.",
       "inputLabelEmail": "Email address (optional)",
-      "inputHintEmailImport": "We will only use this to send you a copy of the application.",
-      "inputHintEmailExport": "We will only use this to send you a copy of the application.",
-      "inputHintEmailReexport": "We will only use this to send you a copy of the application.",
-      "inputHintEmailArticle10": "We will only use this to send you a copy of the application."
+      "inputHintEmailImport": "We will only use this to communicate with you about your application.",
+      "inputHintEmailExport": "We will only use this to communicate with you about your application.",
+      "inputHintEmailReexport": "We will only use this to communicate with you about your application.",
+      "inputHintEmailArticle10": "We will only use this to communicate with you about your application."
     },
     "agentLed": {
       "defaultTitleImport": "Enter the importer’s contact details",
@@ -143,10 +143,10 @@
       "inputHintBusinessNameReexport": "If the re-exporter is a business, give the business name.",
       "inputHintBusinessNameArticle10": "If the applicant is a business, give the business name.",
       "inputLabelEmail": "Email address (optional)",
-      "inputHintEmailImport": "We will only use the importer’s email address to contact them about the application.",
-      "inputHintEmailExport": "We will only use the exporter’s email address to contact them about the application.",
-      "inputHintEmailReexport": "We will only use the re-exporter’s email address to contact them about the application.",
-      "inputHintEmailArticle10": "We will only use the applicant’s email address to contact them about the application."
+      "inputHintEmailImport": "We will only use the importer’s email address to communicate with them about this application.",
+      "inputHintEmailExport": "We will only use the exporter’s email address to communicate with them about this application.",
+      "inputHintEmailReexport": "We will only use the re-exporter’s email address to communicate with them about this application.",
+      "inputHintEmailArticle10": "We will only use the applicant’s email address to communicate with them about this application."
     },
     "errorMessages": {
       "error.fullName.string.empty": "Full name is required",
@@ -1298,7 +1298,7 @@
     "pageHeader": "Declaration",
     "pageBodyText1": "By submitting, you agree with the following statements:",
     "pageBodyText2": "I attach the necessary documentary evidence and declare that all particulars provided are correct to the best of my knowledge and belief.",
-    "pageBodyText3": "I declare that an application for a certificate for the specimens was not previously rejected.",
+    "pageBodyText3": "I declare that an application for a certificate for the specimens was not previously refused.",
     "pageBodyTextAgent": "I have the owner’s permission to apply on their behalf.",
     "checkboxLabelIAgree": "I agree",
     "errorMessages": {
