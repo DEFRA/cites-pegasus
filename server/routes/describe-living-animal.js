@@ -303,9 +303,11 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const modifiedParentDetails = request.payload.parentDetails.replace(/\r/g, '')
+        const modifiedParentDetails = submission.permitType === 'article10' ? request.payload.parentDetails.replace(/\r/g, '') : null
         const schema = Joi.object({ 
           description: Joi.string().max(500).optional().allow(null, ""),
           parentDetails: Joi.string().min(3).max(250).optional().allow(null, "") })
@@ -315,8 +317,7 @@ module.exports = [
           return failAction(request, h, result.error)
         }
 
-        const submission = getSubmission(request)
-        const species = submission.applications[applicationIndex].species
+        
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
