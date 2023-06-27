@@ -289,7 +289,7 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           sex: Joi.string().required().valid("M", "F", "U"),
-          parentDetails: Joi.string().min(3).max(250),
+          parentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
           description: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
@@ -305,8 +305,11 @@ module.exports = [
         const { applicationIndex } = request.params
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const schema = Joi.object({ description: Joi.string().max(500).optional().allow(null, "") })
-        const result = schema.validate({description: modifiedDescription},  { abortEarly: false })
+        const modifiedParentDetails = request.payload.parentDetails.replace(/\r/g, '')
+        const schema = Joi.object({ 
+          description: Joi.string().max(500).optional().allow(null, ""),
+          parentDetails: Joi.string().min(3).max(250).optional().allow(null, "") })
+        const result = schema.validate({description: modifiedDescription, parentDetails: modifiedParentDetails },  { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -317,7 +320,7 @@ module.exports = [
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
-        species.parentDetails = submission.permitType === 'article10' ? request.payload.parentDetails : null
+        species.parentDetails = submission.permitType === 'article10' ? request.payload.parentDetails.replace(/\r/g, '') : null
         species.sex = request.payload.sex
         species.dateOfBirth = { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]) }
         // species.undeterminedSexReason = request.payload.sex === 'U' ? request.payload.undeterminedSexReason : null
