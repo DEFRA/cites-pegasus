@@ -56,12 +56,12 @@ async function saveFileToContainer(containerName, filename, data) {
         const containerClient = blobServiceClient.getContainerClient(containerName);
         const blockBlobClient = containerClient.getBlockBlobClient(filename);
         await blockBlobClient.uploadData(data);
+        return blockBlobClient.url
     }
     catch (err) {
         console.log(err)
         throw err
     }
-    return blockBlobClient.url
 }
 
 async function saveObjectToContainer(containerName, filename, object) {
