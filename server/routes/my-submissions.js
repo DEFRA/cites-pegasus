@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists, loadDraftSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
@@ -408,6 +408,14 @@ module.exports = [
       const submission = await loadDraftSubmission(request)
       return h.redirect(submission.savePointUrl)
     }
-  }
+  },
+  {
+    method: "GET",
+    path: `${currentPath}/draft-delete`,
+    handler: async (request, h) => {
+      await deleteDraftSubmission(request)
+      return h.redirect(request.headers.referer)
+    }
+  }  
 ]
 

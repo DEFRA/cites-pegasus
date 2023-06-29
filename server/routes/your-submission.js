@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications } = require('../lib/submission')
+const { getSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission } = require('../lib/submission')
 const { setYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
 const pageId = 'your-submission'
@@ -393,6 +393,7 @@ module.exports = [
         if (request.payload.areYouSure) {
           try {
             deleteApplication(request, applicationIndex)
+            saveDraftSubmission(request, currentPath)
           } catch (err) {
             console.error(err)
             return h.redirect(invalidSubmissionPath)

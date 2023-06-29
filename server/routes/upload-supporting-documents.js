@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, setSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
 const config = require('../../config/config')
 const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists } = require("../services/blob-storage-service");
 const textContent = require('../content/text-content')
@@ -290,6 +290,7 @@ module.exports = [
 
           try {
             mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
+            saveDraftSubmission(request, currentPath)
           } catch (err) {
             console.error(err);
             return h.redirect(invalidSubmissionPath)
@@ -352,6 +353,7 @@ module.exports = [
             console.error(err);
             return h.redirect(invalidSubmissionPath)
           }
+          saveDraftSubmission(request, currentPath)
         }
         catch (err) {
           console.error(err)

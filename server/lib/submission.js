@@ -2,6 +2,7 @@ const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
+const config = require('../../config/config')
 const submissionFileName = 'submission.json'
 
 function getSubmission(request) {
@@ -68,11 +69,18 @@ function getContainerName(request) {
 }
 
 async function checkDraftSubmissionExists(request) {
+    if (!config.enableDraftSubmission){
+        return false
+    }
     const containerName = getContainerName(request)
     return await checkFileExists(containerName, submissionFileName)
 }
 
 async function saveDraftSubmission(request, savePointUrl) {
+    if (!config.enableDraftSubmission){
+        return
+    }
+    
     const submission = getSubmission(request)
     submission.savePointUrl = savePointUrl
     submission.savePointDate = new Date()
