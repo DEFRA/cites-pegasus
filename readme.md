@@ -25,6 +25,9 @@ CITES Application Portal
 | REDIS_PARTITION                          | Partition to use within Azure Redis Cache              |    yes   |         |                                  |       |
 | REDIS_PORT                               | Port number for communication with Azure Redis Cache   |    yes   |         |                                  |       |
 | SESSION_CACHE_TTL                        | Session timeout in milliseconds                        |    yes   |         |                                  |       |
+| ENABLE_SPECIES_WARNING                   | Enable species warning message                         |    yes   |         |                                  |       |
+
+
 
 # Prerequisites
 
