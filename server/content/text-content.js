@@ -388,6 +388,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     bodyText1: Joi.string().required(),
     bodyText2: Joi.string().required(),
+    bodyText3: Joi.string().required(),
     inputLabelSpeciesName: Joi.string().required(),
     errorMessages: Joi.object({
       "error.speciesName.string.empty": Joi.string().required()
@@ -398,8 +399,6 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     bodyText1: Joi.string().required(),
     bodyText2: Joi.string().required(),
-    linkText: Joi.string().required(),
-    linkUrl: Joi.string().required(),
     searchAgainButton: Joi.string().required()
   }).required(),
   sourceCode: Joi.object({
