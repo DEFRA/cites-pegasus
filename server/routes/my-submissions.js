@@ -13,6 +13,7 @@ const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
 const draftContinuePath = `${currentPath}/draft-continue`
 const draftDeletePath = `${currentPath}/draft-delete`
+const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['awaitingPayment', 'inProgress', 'closed']//['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'inProgress', 'issued', 'refused', 'cancelled']
@@ -30,7 +31,7 @@ function createModel(errors, data) {
     received: commonContent.statusDescriptionReceived,
     awaitingPayment: commonContent.statusDescriptionAwaitingPayment,
     awaitingReply: commonContent.statusDescriptionAwaitingReply,
-    inProgress: commonContent.statusDescriptionInProgress, 
+    inProgress: commonContent.statusDescriptionInProgress,
     issued: commonContent.statusDescriptionIssued,
     refused: commonContent.statusDescriptionRefused,
     cancelled: commonContent.statusDescriptionCancelled,
@@ -58,7 +59,7 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
 
-  const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##',data.organisationName) : pageContent.pageHeader
+  const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
 
   const model = {
     pageTitle: pageContent.defaultTitle,
@@ -214,7 +215,7 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 
 async function getSubmissionsData(request, pageNo, filterData) {
   let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
-  const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+  const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
 
   if (!queryUrls) {
     const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
@@ -274,9 +275,9 @@ module.exports = [
       const filterData = getYarValue(request, 'mySubmissions-filterData')
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
-      
+
       const cidmAuth = getYarValue(request, 'CIDMAuth')
-      
+
       const draftSubmissionExists = await checkDraftSubmissionExists(request)
 
       const pageData = {
@@ -306,6 +307,10 @@ module.exports = [
       },
     },
     handler: async (request, h) => {
+      const draftSubmissionExists = await checkDraftSubmissionExists(request)
+      if (draftSubmissionExists) {
+        return h.redirect(draftSubmissionWarning)
+      }
       clearChangeRoute(request)
       createSubmission(request)
       return h.redirect(`${nextPathPermitType}`)
@@ -416,6 +421,6 @@ module.exports = [
       await deleteDraftSubmission(request)
       return h.redirect(request.headers.referer)
     }
-  }  
+  }
 ]
 
