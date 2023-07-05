@@ -38,6 +38,11 @@ module.exports = [
     handler: async (request, h) => {
       const oidcClient = request.server.app.oidcClient
       const params = await oidcClient.callbackParams(request.raw.req);
+      
+      if (!params.code) {
+        //This is most likely a redirect from CIDM account management rather than a login request
+        return h.redirect('/')
+      }
 
       const tokenSet = await oidcClient.callback(
         cidmCallbackUrl,

@@ -22,9 +22,12 @@
       <p class="govuk-body">{{pageBody}}</p>
 
       
-      <p class="govuk-body govuk-!-margin-bottom-7">
-        {{bodyText1}}{{unknownSpeciesName}}{{bodyText2}}<a target="_blank" href="{{linkUrl}}">{{linkText}}</a>
-      </p>
+      {# <p class="govuk-body govuk-!-margin-bottom-7"> #}
+      <p>{{ bodyText1 | safe }}</p>
+      <p>{{ bodyText2 | safe }}</p>
+
+        {# {{bodyText1}}{{unknownSpeciesName}}{{bodyText2}}<a target="_blank" href="{{linkUrl}}">{{linkText}}</a> #}
+      {# </p> #}
 
       {{ govukButton({
       text: searchAgainButton,
