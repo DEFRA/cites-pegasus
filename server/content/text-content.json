@@ -450,7 +450,8 @@
     "defaultTitle": "What is the scientific name of the species?",
     "pageHeader": "What is the scientific name of the species?",
     "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on species+</a> (opens in a new tab).",
-    "bodyText2": "If you are applying for a hybrid species, enter the full species name; for example, 'Falco peregrinus x Falco cherrug' or 'Porites spp'. If the species isn't recognised,  <a target='_blank' href='https://www.gov.uk/guidance/contact-apha#endangered-plant-and-animal-species-cites'>contact us</a> for assistance.",
+    "bodyText2": "If you are applying for a hybrid species that is not listed, please select the option 'New Plant Hybrid' or 'New Animal Hybrid'.",
+    "bodyText3": "Applications made using this selection will be rejected if the species name is listed.",
     "inputLabelSpeciesName": "Scientific name",
     "errorMessages": {
       "error.speciesName.string.empty": "Enter the scientific name"
@@ -459,10 +460,8 @@
   "couldNotConfirm": {
     "pageTitle": "We could not confirm the scientific name",
     "pageHeader": "We could not confirm the scientific name",
-    "bodyText1": "We could not confirm the scientific name ‘",
-    "bodyText2": "’ on the species list. You can ",
-    "linkText": "check scientific names on species+ (opens in a new tab)",
-    "linkUrl": "https://speciesplus.net/",
+    "bodyText1": "We have been unable to confirm your scientific name, please check your spelling is correct. If your species is an unlisted hybrid please select 'New Plant Hybrid' or 'New Animal Hybrid'.",
+    "bodyText2": " You can <a target='_blank' href='https://speciesplus.net/'>check scientific names on species+ (opens in a new tab)</a>",
     "searchAgainButton": "Search again"
   },
   "sourceCode": {
