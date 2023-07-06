@@ -3,7 +3,7 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, createSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
@@ -11,6 +11,9 @@ const pageId = "my-submissions"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
+const draftContinuePath = `${currentPath}/draft-continue`
+const draftDeletePath = `${currentPath}/draft-delete`
+const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
 const permitTypes = ['import', 'export', 'reexport', 'article10']
 const statuses = ['awaitingPayment', 'inProgress', 'closed']//['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'inProgress', 'issued', 'refused', 'cancelled']
@@ -28,7 +31,7 @@ function createModel(errors, data) {
     received: commonContent.statusDescriptionReceived,
     awaitingPayment: commonContent.statusDescriptionAwaitingPayment,
     awaitingReply: commonContent.statusDescriptionAwaitingReply,
-    inProgress: commonContent.statusDescriptionInProgress, 
+    inProgress: commonContent.statusDescriptionInProgress,
     issued: commonContent.statusDescriptionIssued,
     refused: commonContent.statusDescriptionRefused,
     cancelled: commonContent.statusDescriptionCancelled,
@@ -56,11 +59,18 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
 
-  const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##',data.organisationName) : pageContent.pageHeader
+  const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
 
   const model = {
     pageTitle: pageContent.defaultTitle,
     pageHeader: pageHeader,
+    draftNotificationTitle: pageContent.draftNotificationTitle,
+    draftNotificationHeader: pageContent.draftNotificationHeader,
+    draftNotificationBody: pageContent.draftNotificationBody,
+    draftContinue: pageContent.draftContinue,
+    draftDelete: pageContent.draftDelete,
+    draftContinuePath: draftContinuePath,
+    draftDeletePath: draftDeletePath,
     clearSearchLinkText: pageContent.linkTextClearSearch,
     currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
@@ -68,6 +78,7 @@ function createModel(errors, data) {
     pageBodyPermitType: pageContent.pageBodyPermitType,
     pageBodyStatus: pageContent.pageBodyStatus,
     buttonApplyFilters: pageContent.buttonApplyFilters,
+    draftSubmissionExists: data.draftSubmissionExists,
     submissionsData: submissionsTableData,
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
@@ -204,7 +215,7 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 
 async function getSubmissionsData(request, pageNo, filterData) {
   let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
-  const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
+  const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
 
   if (!queryUrls) {
     const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
@@ -264,8 +275,10 @@ module.exports = [
       const filterData = getYarValue(request, 'mySubmissions-filterData')
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
-      
+
       const cidmAuth = getYarValue(request, 'CIDMAuth')
+
+      const draftSubmissionExists = await checkDraftSubmissionExists(request)
 
       const pageData = {
         pageNo: pageNo,
@@ -276,7 +289,8 @@ module.exports = [
         permitTypes: filterData?.permitTypes,
         statuses: filterData?.statuses,
         searchTerm: filterData?.searchTerm,
-        organisationName: cidmAuth.user.organisationName
+        organisationName: cidmAuth.user.organisationName,
+        draftSubmissionExists: draftSubmissionExists
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -293,6 +307,10 @@ module.exports = [
       },
     },
     handler: async (request, h) => {
+      const draftSubmissionExists = await checkDraftSubmissionExists(request)
+      if (draftSubmissionExists) {
+        return h.redirect(draftSubmissionWarning)
+      }
       clearChangeRoute(request)
       createSubmission(request)
       return h.redirect(`${nextPathPermitType}`)
@@ -352,7 +370,8 @@ module.exports = [
 
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
         const cidmAuth = getYarValue(request, 'CIDMAuth')
-        
+        const draftSubmissionExists = await checkDraftSubmissionExists(request)
+
         const pageData = {
           pageNo: pageNo,
           submissions: submissions,
@@ -362,7 +381,8 @@ module.exports = [
           statuses: filterData.statuses,
           searchTerm: filterData.searchTerm,
           noApplicationFound: submissions.length === 0,
-          organisationName: cidmAuth.user.organisationName
+          organisationName: cidmAuth.user.organisationName,
+          draftSubmissionExists: draftSubmissionExists
         }
 
         return h.view(pageId, createModel(null, pageData))
@@ -386,5 +406,21 @@ module.exports = [
       return h.redirect(`${nextPathMySubmission}/${submissionRef}`)
     }
   },
+  {
+    method: "GET",
+    path: `${currentPath}/draft-continue`,
+    handler: async (request, h) => {
+      const submission = await loadDraftSubmission(request)
+      return h.redirect(submission.savePointUrl)
+    }
+  },
+  {
+    method: "GET",
+    path: `${currentPath}/draft-delete`,
+    handler: async (request, h) => {
+      await deleteDraftSubmission(request)
+      return h.redirect(request.headers.referer)
+    }
+  }
 ]
 

@@ -2,7 +2,7 @@ const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
@@ -13,6 +13,7 @@ const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
+const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/copy-as-new`
 const invalidSubmissionPath = `${urlPrefix}/`
 const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
 
@@ -758,16 +759,22 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-
+        const savePointUrl = `${currentPath}/${summaryType}/${applicationIndex}`
         if (summaryType === 'view-submitted') {
+          const draftSubmissionExists = await checkDraftSubmissionExists(request)
+          if(draftSubmissionExists) {
+            return h.redirect(`${draftSubmissionWarning}/${applicationIndex}`)
+          }
           try {
             cloneSubmission(request, applicationIndex)
           } catch (err) {
             console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
+          saveDraftSubmission(request, `${nextPathCopyAsNewApplication}/0`)
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
+          saveDraftSubmission(request, nextPathYourSubmission)
           return h.redirect(nextPathYourSubmission)
         }
 

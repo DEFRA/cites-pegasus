@@ -46,7 +46,8 @@ const routes = [].concat(
   require('../routes/privacy'),
   require('../routes/cookies'),
   require('../routes/accessibility'),
-  require('../routes/species-warning')
+  require('../routes/species-warning'),
+  require('../routes/draft-submission-warning')
 )
 
 module.exports = {

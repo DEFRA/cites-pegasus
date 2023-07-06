@@ -115,7 +115,7 @@ const confirmAddressSchema = Joi.object({
   pageHeaderImport: Joi.string().required(),
   pageHeaderExport: Joi.string().required(),
   pageHeaderReexport: Joi.string().required(),
-  pageHeaderArticle10: Joi.string().required()  
+  pageHeaderArticle10: Joi.string().required()
 })
 
 const importerExporterDetailsSchema = Joi.object({
@@ -941,6 +941,11 @@ const schema = Joi.object().keys({
     }).required()
   }).required(),
   mySubmissions: Joi.object({
+    draftNotificationTitle: Joi.string().required(),
+    draftNotificationHeader: Joi.string().required(),
+    draftNotificationBody: Joi.string().required(),
+    draftContinue: Joi.string().required(),
+    draftDelete: Joi.string().required(),
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageHeaderOrganisation: Joi.string().required(),
@@ -1104,6 +1109,14 @@ const schema = Joi.object().keys({
   speciesWarning: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required()
+  }).required(),
+  draftSubmissionWarning: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.areYouSure.any.required": Joi.string().required(),
+    }).required()
   }).required()
 })
 
