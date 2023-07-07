@@ -89,7 +89,9 @@ async function deleteFileFromContainer(containerName, fileName) {
     try {
         const containerClient = blobServiceClient.getContainerClient(containerName);
         const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-        await blockBlobClient.deleteIfExists({ deleteSnapshots: 'include' });
+        if(await checkContainerExists(containerName)) {
+            await blockBlobClient.deleteIfExists({ deleteSnapshots: 'include' });
+        }
     }
     catch (err) {
         console.log(err)
