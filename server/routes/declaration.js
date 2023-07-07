@@ -1,7 +1,8 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission } = require("../lib/submission")
+const config = require('../../config/config')
+const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission, setSubmission } = require("../lib/submission")
 const { postSubmission } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "declaration"
@@ -101,11 +102,11 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        
+
         deleteInProgressApplications(request)
 
         const submission = getSubmission(request)
-        
+
         let response
         try {
           response = await postSubmission(request.server, submission)
@@ -119,7 +120,7 @@ module.exports = [
         submission.submissionRef = response.submissionRef
         submission.submissionId = response.submissionId
         const costingValue = response.costingValue ? response.costingValue : null
-        submission.paymentDetails = { 
+        submission.paymentDetails = {
           costingType: response.costingType,
           costingValue: costingValue
         }
@@ -132,6 +133,28 @@ module.exports = [
         }
 
         return h.redirect(nextPath)
+      }
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/set-submission`,
+    config: {
+      auth: false,
+      validate: {
+        options: { abortEarly: false },
+        payload: Joi.object({
+          submission: Joi.object().required(),
+        })
+      },
+      handler: async (request, h) => {
+        if (config.env === 'prod' || config.env === 'production' || config.env === 'live') {
+          return h.response().code(403)
+        }
+        const sub = getSubmission(request)
+        setSubmission(request, request.payload.submission)
+
+        return h.response().code(200)
       }
     }
   }
