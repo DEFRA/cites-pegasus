@@ -35,7 +35,7 @@ const routes = [].concat(
   require('../routes/my-submissions'),
   require('../routes/my-submission'),
   require('../routes/public'),
-  require('../routes/test'),
+  //require('../routes/test'),
   require('../routes/oidc'),
   require('../routes/govpay'),
   require('../routes/payment-problem'),
