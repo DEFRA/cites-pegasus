@@ -1325,7 +1325,16 @@
     "rowTextApplicationDate": "Application date",
     "rowTextStatus": "Status",
     "pagebodyNoApplicationsFound": "No applications found.",
-    "pagebodyZeroApplication": " You have not yet made an application using this service."
+    "pagebodyZeroApplication": " You have not yet made an application using this service.",
+    "areYouSureDraftDelete": {
+      "defaultTitle": "Are you sure that you want to delete the saved application?",
+      "pageHeader": "Are you sure that you want to delete the saved application?",
+      "pageBody1": "If you delete this application you will lose all the information saved so far",
+      "pageBody2": "",
+      "errorMessages": {
+        "error.areYouSure.any.required": "Select yes if you want to delete the saved application"
+      }
+    }
   },
   "mySubmission": {
     "textBreadcrumbs": "Your applications",

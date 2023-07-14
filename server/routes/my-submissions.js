@@ -178,6 +178,71 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function createAreYouSureModel(errors) {
+  const commonContent = textContent.common
+  
+  let pageHeader = null
+  let defaultTitle = null
+  let formActionPage = null
+  let pageBody = null
+  let errorMessageRemove = null
+  
+    pageContent = textContent.mySubmissions.areYouSureDraftDelete,
+    defaultTitle = pageContent.defaultTitle
+    pageHeader =pageContent.pageHeader
+    pageBody= `${pageContent.pageBody1}`
+    formActionPage= `${currentPath}/draft-delete`  
+  
+  let errorList = null
+  if (errors) {
+    errorList = []
+    const mergedErrorMessages = {
+      ...commonContent.errorMessages,
+      ...pageContent.errorMessages,
+      ...errorMessageRemove
+    }
+    const fields = ["areYouSure"]
+    fields.forEach((field) => {
+      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+      if (fieldError) {
+        errorList.push({
+          text: fieldError,
+          href: `#${field}`
+        })
+      }
+    })
+  }
+
+  const model = {
+    backLink: `${currentPath}`,
+    formActionPage: formActionPage,
+    ...(errorList ? { errorList } : {}),
+    pageTitle: errorList
+      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
+      : defaultTitle,
+    pageHeader: pageHeader,
+    pageBody: pageBody,
+  
+    inputAreYouSure: {
+      idPrefix: "areYouSure",
+      name: "areYouSure",
+      classes: "govuk-radios--inline",
+      items: [
+        {
+          value: true,
+          text: commonContent.radioOptionYes  
+        },
+        {
+          value: false,
+          text: commonContent.radioOptionNo
+        }
+      ],
+      errorMessage: getFieldError(errorList, "#areYouSure")
+    }
+  }
+  return { ...commonContent, ...model }
+}
+
 function getApplicationDate(date) {
   const dateObj = new Date(date);
   const options = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -418,8 +483,41 @@ module.exports = [
     method: "GET",
     path: `${currentPath}/draft-delete`,
     handler: async (request, h) => {
-      await deleteDraftSubmission(request)
-      return h.redirect(request.headers.referer)
+      // const pageData = {
+      //   pageNo: pageNo,
+      //   submissions: submissions,
+      //   pageSize: pageSize,
+      //   totalSubmissions: totalSubmissions,
+      //   permitTypes: filterData.permitTypes,
+      //   statuses: filterData.statuses,
+      //   searchTerm: filterData.searchTerm,
+      //   noApplicationFound: submissions.length === 0,
+      //   organisationName: cidmAuth.user.organisationName,
+      //   draftSubmissionExists: draftSubmissionExists
+      // }
+
+      return h.view('are-you-sure', createAreYouSureModel(null))
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/draft-delete`,
+    options: {
+      validate: {
+        options: { abortEarly: false },
+        payload: Joi.object({
+          areYouSure: Joi.boolean().required()
+        }),
+        failAction: (request, h, err) => {
+          return h.view('are-you-sure', createAreYouSureModel(err)).takeover()
+        }
+      },
+      handler: async (request, h) => {     
+        if(request.payload.areYouSure){
+          await deleteDraftSubmission(request)
+        }
+        return h.redirect(currentPath)
+      }
     }
   }
 ]

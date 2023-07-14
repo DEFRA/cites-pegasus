@@ -961,7 +961,8 @@ const schema = Joi.object().keys({
     rowTextApplicationDate: Joi.string().required(),
     rowTextStatus: Joi.string().required(),
     pagebodyNoApplicationsFound: Joi.string().required(),
-    pagebodyZeroApplication: Joi.string().required()
+    pagebodyZeroApplication: Joi.string().required(),
+    areYouSureDraftDelete: areYouSureSchema
   }).required(),
   payApplication: Joi.object({
     defaultTitle: Joi.string().required(),
