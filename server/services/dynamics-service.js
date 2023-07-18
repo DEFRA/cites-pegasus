@@ -353,11 +353,11 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
     statuses.push(149900002)
   }
 
-  if (portalStatuses.includes('closed')) {
-    throw "Not implemented yet!"
-    // statuses.push(149900005)
-    // statuses.push(149900006)
-  }
+  // if (portalStatuses.includes('closed')) {
+  //   throw "Not implemented yet!"
+  //   // statuses.push(149900005)
+  //   // statuses.push(149900006)
+  // }
 
   return statuses
 }
@@ -388,7 +388,15 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
 
   if (statuses && statuses.length > 0) {
     const statusMappedList = getDynamicsSubmissionStatuses(statuses).map(x => `'${x}'`).join(",")
-    filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
+    if(statuses.includes('closed')) {
+      if(statusMappedList){
+        filterParts.push(`(Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}]) or Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1']))`)
+      } else {
+        filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1'])`)
+      }
+    } else {
+      filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
+    }
   }
 
   if (permitTypes && permitTypes.length > 0) {
