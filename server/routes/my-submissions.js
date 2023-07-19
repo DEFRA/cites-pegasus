@@ -44,7 +44,7 @@ function createModel(errors, data) {
     const applicationDate = getApplicationDate(submission.dateSubmitted)
     const status = statusTextMap[submission.status] || submission.status
 
-    return { referenceNumber, referenceNumberUrl, applicationDate, status: (submission.status === 'inProgress' || submission.status === 'closed') ? '' : status }//Temporarily hidden "In Progress"and "closed" until the closed status is introduced
+    return { referenceNumber, referenceNumberUrl, applicationDate, status }
   })
 
   const startIndex = (data.pageNo - 1) * pageSize
@@ -130,21 +130,21 @@ function createModel(errors, data) {
       idPrefix: "statuses",
       name: "statuses",
       items: [
-        // {
-        //   value: "inProgress",
-        //   text: commonContent.statusDescriptionInProgress,
-        //   checked: isChecked(data.statuses, "inProgress")
-        // },
+        {
+          value: "inProgress",
+          text: commonContent.statusDescriptionInProgress,
+          checked: isChecked(data.statuses, "inProgress")
+        },
         {
           value: "awaitingPayment",
           text: commonContent.statusDescriptionAwaitingPayment,
           checked: isChecked(data.statuses, "awaitingPayment")
+        },
+        {
+          value: "closed",
+          text: commonContent.statusDescriptionClosed,
+          checked: isChecked(data.statuses, "closed")
         }
-        // {
-        //   value: "closed",
-        //   text: commonContent.statusDescriptionClosed,
-        //   checked: isChecked(data.statuses, "closed")
-        // }
         // {
         //   value: "received",
         //   text: commonContent.statusDescriptionReceived,
