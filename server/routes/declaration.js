@@ -151,7 +151,7 @@ module.exports = [
         if (config.env === 'prod' || config.env === 'production' || config.env === 'live') {
           return h.response().code(403)
         }
-        const sub = getSubmission(request)
+        
         setSubmission(request, request.payload.submission)
 
         return h.response().code(200)
