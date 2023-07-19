@@ -181,17 +181,11 @@ function createModel(errors, data) {
 function createAreYouSureModel(errors) {
   const commonContent = textContent.common
   
-  let pageHeader = null
-  let defaultTitle = null
-  let formActionPage = null
-  let pageBody = null
-  let errorMessageRemove = null
-  
-    pageContent = textContent.mySubmissions.areYouSureDraftDelete,
-    defaultTitle = pageContent.defaultTitle
-    pageHeader =pageContent.pageHeader
-    pageBody= `${pageContent.pageBody1}`
-    formActionPage= `${currentPath}/draft-delete`  
+  const pageContent = textContent.mySubmissions.areYouSureDraftDelete
+  const defaultTitle = pageContent.defaultTitle
+  const pageHeader =pageContent.pageHeader
+  const pageBody= `${pageContent.pageBody1}`
+  const formActionPage= `${currentPath}/draft-delete`  
   
   let errorList = null
   if (errors) {
@@ -199,7 +193,6 @@ function createAreYouSureModel(errors) {
     const mergedErrorMessages = {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages,
-      ...errorMessageRemove
     }
     const fields = ["areYouSure"]
     fields.forEach((field) => {
