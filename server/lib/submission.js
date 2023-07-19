@@ -109,7 +109,6 @@ async function deleteDraftSubmission(request) {
     if (!config.enableDraftSubmission){
         return
     }
-    const submission = getSubmission(request)
     const containerName = getContainerName(request)
     await deleteFileFromContainer(containerName, submissionFileName)
 }

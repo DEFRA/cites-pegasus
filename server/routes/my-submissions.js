@@ -476,19 +476,6 @@ module.exports = [
     method: "GET",
     path: `${currentPath}/draft-delete`,
     handler: async (request, h) => {
-      // const pageData = {
-      //   pageNo: pageNo,
-      //   submissions: submissions,
-      //   pageSize: pageSize,
-      //   totalSubmissions: totalSubmissions,
-      //   permitTypes: filterData.permitTypes,
-      //   statuses: filterData.statuses,
-      //   searchTerm: filterData.searchTerm,
-      //   noApplicationFound: submissions.length === 0,
-      //   organisationName: cidmAuth.user.organisationName,
-      //   draftSubmissionExists: draftSubmissionExists
-      // }
-
       return h.view('are-you-sure', createAreYouSureModel(null))
     }
   },
