@@ -13,7 +13,6 @@ const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = `${urlPrefix}/`
 const Boom = require('@hapi/boom');
 const maxFileSizeBytes = 10485760
-let blobServiceClient = null
 
 function createModel(errors, data) {
 
@@ -68,7 +67,6 @@ function createModel(errors, data) {
       name: "fileUpload",
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
-        //multiple: true,
         accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
       }
     }
@@ -98,48 +96,6 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
-// async function createBlobContainer(attemptNo = 1) {
-//   const containerName = `cites-submission-${new Date().getTime()}`;
-
-//   try {
-//     const containerClient = blobServiceClient.getContainerClient(containerName);
-//     await containerClient.create();
-//   }
-
-//   catch (err) {
-//     console.log(`cites-submission-${new Date().getTime()}`)
-//     if (err.code === 'ContainerAlreadyExists') {
-//       if (attemptNo >= 5) {
-//         console.log("Unable to find unique container name after 5 attempts")
-//         throw Boom.badImplementation("Unable to find unique container name after 5 attempts", err)
-//       }
-
-//       await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
-
-//       return await createBlobContainer(attemptNo + 1)
-//     }
-//     throw err
-//   }
-
-//   return containerName
-// }
-
-// async function addFileToBlobContainer(containerName, fileUpload) {
-//   const containerClient = blobServiceClient.getContainerClient(containerName);
-//   const blockBlobClient = containerClient.getBlockBlobClient(fileUpload.hapi.filename);
-//   await blockBlobClient.uploadData(fileUpload._data);
-
-//   return blockBlobClient.url
-// }
-
-// async function deleteFileFromBlobContainer(containerName, fileName) {
-//   const containerClient = blobServiceClient.getContainerClient(containerName);
-//   const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-//   await blockBlobClient.deleteIfExists();
-//   // const blobClient = containerClient.getBlobClient(fileName);
-//   // return blobClient.deleteIfExists();
-// }
-
 module.exports = [
   {
     method: "GET",
@@ -162,20 +118,12 @@ module.exports = [
 
       }
 
-      // try {
-      //   validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
-      // } catch (err) {
-      //   console.error(err)
-      //   return h.redirect(invalidSubmissionPath)
-      // }
-
       const pageData = {
         isAgent: submission.isAgent,
         files: submission.supportingDocuments?.files || []
       }
 
       return h.view(pageId, createModel(null, pageData))
-
     }
   },
   {
@@ -190,20 +138,6 @@ module.exports = [
         multipart: true,
         timeout: false
       },
-      // validate: {
-      //   // payload: Joi.object({
-      //   //   fileUpload: Joi.array().items(Joi.object({
-      //   //     hapi: Joi.object({
-      //   //       filename: Joi.string().required(),
-      //   //       headers: Joi.object({
-      //   //         'content-disposition': Joi.string().required(),
-      //   //         'content-type': Joi.string().valid('application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg').required()
-      //   //       }).unknown(true),
-      //   //     }).unknown(true),
-      //   //     _data: Joi.any().required()
-      //   //   }).unknown(true)).required().min(1).max(5),
-      //   // }).unknown(true).required(),
-      //   failAction: failAction
       handler: async (request, h) => {
         if (request.headers["content-length"] > maxFileSizeBytes) {
           const error = {
@@ -214,8 +148,7 @@ module.exports = [
               }
             ]
           }
-          return failAction(request, h, error)
-          //return h.response('File size is too large').code(413)
+          return failAction(request, h, error)          
         }
 
         let payloadSchema = null
@@ -231,17 +164,6 @@ module.exports = [
         if (error) {
           return failAction(request, h, error)
         }
-
-        // const files = []
-        // if (Array.isArray(value.fileUpload)) {
-        //   value.fileUpload.forEach(file => {
-        //     files.push(file)
-        //   })
-        // } else {
-        //   files.push(value.fileUpload)
-        // }
-
-        // console.log(files)
 
         const submission = getSubmission(request)
 

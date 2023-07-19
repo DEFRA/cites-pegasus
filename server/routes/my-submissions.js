@@ -181,17 +181,11 @@ function createModel(errors, data) {
 function createAreYouSureModel(errors) {
   const commonContent = textContent.common
   
-  let pageHeader = null
-  let defaultTitle = null
-  let formActionPage = null
-  let pageBody = null
-  let errorMessageRemove = null
-  
-    pageContent = textContent.mySubmissions.areYouSureDraftDelete,
-    defaultTitle = pageContent.defaultTitle
-    pageHeader =pageContent.pageHeader
-    pageBody= `${pageContent.pageBody1}`
-    formActionPage= `${currentPath}/draft-delete`  
+  const pageContent = textContent.mySubmissions.areYouSureDraftDelete
+  const defaultTitle = pageContent.defaultTitle
+  const pageHeader =pageContent.pageHeader
+  const pageBody= `${pageContent.pageBody1}`
+  const formActionPage= `${currentPath}/draft-delete`  
   
   let errorList = null
   if (errors) {
@@ -199,7 +193,6 @@ function createAreYouSureModel(errors) {
     const mergedErrorMessages = {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages,
-      ...errorMessageRemove
     }
     const fields = ["areYouSure"]
     fields.forEach((field) => {
@@ -483,19 +476,6 @@ module.exports = [
     method: "GET",
     path: `${currentPath}/draft-delete`,
     handler: async (request, h) => {
-      // const pageData = {
-      //   pageNo: pageNo,
-      //   submissions: submissions,
-      //   pageSize: pageSize,
-      //   totalSubmissions: totalSubmissions,
-      //   permitTypes: filterData.permitTypes,
-      //   statuses: filterData.statuses,
-      //   searchTerm: filterData.searchTerm,
-      //   noApplicationFound: submissions.length === 0,
-      //   organisationName: cidmAuth.user.organisationName,
-      //   draftSubmissionExists: draftSubmissionExists
-      // }
-
       return h.view('are-you-sure', createAreYouSureModel(null))
     }
   },

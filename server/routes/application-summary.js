@@ -760,7 +760,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-        const savePointUrl = `${currentPath}/${summaryType}/${applicationIndex}`
+        
         if (summaryType === 'view-submitted') {
           const draftSubmissionExists = await checkDraftSubmissionExists(request)
           if(draftSubmissionExists) {
