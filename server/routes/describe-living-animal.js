@@ -35,7 +35,8 @@ function createModel(errors, data) {
       "dateOfBirth-month-year",
       "dateOfBirth-year",
       "sex",
-      "parentDetails",
+      "maleParentDetails",
+      "femaleParentDetails",
       "description"
     ]
 
@@ -118,7 +119,8 @@ function createModel(errors, data) {
     inputLabelSex: pageContent.inputLabelSex,
     inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
     inputLabelDescription: pageContent.inputLabelDescription,
-    inputLabelParentDetails: pageContent.inputLabelParentDetails,
+    inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
+    inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
     showParentDetails: data.permitType === 'article10',
     inputSex: {
       idPrefix: "sex",
@@ -135,15 +137,25 @@ function createModel(errors, data) {
     // },
     inputDateOfBirth: inputDateOfBirth,
 
-    inputParentDetails: {
-      name: "parentDetails",
-      id: "parentDetails",
+    inputMaleParentDetails: {
+      name: "maleParentDetails",
+      id: "maleParentDetails",
       maxlength: 250,
       hint: {
-        text: pageContent.inputHintParentDetails
+        text: pageContent.inputHintMaleParentDetails
       },
-      ...(data.parentDetails ? { value: data.parentDetails } : {}),
-      errorMessage: getFieldError(errorList, "#parentDetails")
+      ...(data.maleParentDetails ? { value: data.maleParentDetails } : {}),
+      errorMessage: getFieldError(errorList, "#maleParentDetails")
+    },
+    inputFemaleParentDetails: {
+      name: "femaleParentDetails",
+      id: "femaleParentDetails",
+      maxlength: 250,
+      hint: {
+        text: pageContent.inputHintFemaleParentDetails
+      },
+      ...(data.femaleParentDetails ? { value: data.femaleParentDetails } : {}),
+      errorMessage: getFieldError(errorList, "#femaleParentDetails")
     },
     inputDescription: {
       name: "description",
@@ -232,7 +244,8 @@ function failAction(request, h, err) {
     speciesName: submission.applications[applicationIndex].species.speciesName,
     permitType: submission.permitType,
     description: request.payload.description,
-    parentDetails: request.payload.parentDetails,
+    maleParentDetails: request.payload.maleParentDetails,
+    femaleParentDetails: request.payload.femaleParentDetails,
     dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
     sex: request.payload.sex
     //undeterminedSexReason: request.payload.undeterminedSexReason
@@ -269,7 +282,8 @@ module.exports = [
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
         permitType: submission.permitType,
-        parentDetails: species.parentDetails,
+        maleParentDetails: species.maleParentDetails,
+        femaleParentDetails: species.femaleParentDetails,
         description: species.specimenDescriptionLivingAnimal,
         dateOfBirth: { day: species.dateOfBirth?.day, month: species.dateOfBirth?.month, year: species.dateOfBirth?.year },
         sex: species.sex
@@ -289,7 +303,8 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           sex: Joi.string().required().valid("M", "F", "U"),
-          parentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
+          maleParentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
+          femaleParentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
           description: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
@@ -307,11 +322,13 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const modifiedParentDetails = submission.permitType === 'article10' ? request.payload.parentDetails.replace(/\r/g, '') : null
+        const modifiedMaleParentDetails = submission.permitType === 'article10' ? request.payload.maleParentDetails.replace(/\r/g, '') : null
+        const modifiedFemaleParentDetails = submission.permitType === 'article10' ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         const schema = Joi.object({ 
           description: Joi.string().max(500).optional().allow(null, ""),
-          parentDetails: Joi.string().min(3).max(250).optional().allow(null, "") })
-        const result = schema.validate({description: modifiedDescription, parentDetails: modifiedParentDetails },  { abortEarly: false })
+          maleParentDetails: Joi.string().min(3).max(250).optional().allow(null, ""),
+          femaleParentDetails: Joi.string().min(3).max(250).optional().allow(null, "") })
+        const result = schema.validate({description: modifiedDescription, maleParentDetails: modifiedMaleParentDetails, femaleParentDetails: modifiedFemaleParentDetails },  { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -321,7 +338,8 @@ module.exports = [
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
-        species.parentDetails = submission.permitType === 'article10' ? request.payload.parentDetails.replace(/\r/g, '') : null
+        species.maleParentDetails = submission.permitType === 'article10' ? request.payload.maleParentDetails.replace(/\r/g, '') : null
+        species.femaleParentDetails = submission.permitType === 'article10' ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         species.sex = request.payload.sex
         species.dateOfBirth = { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]) }
         // species.undeterminedSexReason = request.payload.sex === 'U' ? request.payload.undeterminedSexReason : null

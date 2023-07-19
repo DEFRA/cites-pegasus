@@ -476,6 +476,17 @@ function getPaymentCalculationType(dynamicsType) {
   }
 }
 
+function updateSubmissionSchema(jsonContent) {
+  jsonContent.applications.forEach(jsonApplication => {
+    if(jsonApplication.species.hasOwnProperty("parentDetails") && !jsonApplication.species.hasOwnProperty("maleParentDetails")) {
+      jsonApplication.species.maleParentDetails = jsonApplication.species.parentDetails
+      jsonApplication.species.femaleParentDetails = null
+      delete jsonApplication.species.parentDetails
+    }    
+  })
+  return jsonContent
+}
+
 async function getSubmission(server, contactId, organisationId, submissionRef) {
   const top = "$top=1"
   const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,statuscode,statecode"
@@ -529,7 +540,9 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
         jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference
       })
 
-      return jsonContent
+      const updatedJsonContent = updateSubmissionSchema(jsonContent)
+
+      return updatedJsonContent
     }
 
     return null
@@ -627,306 +640,5 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
     throw err
   }
 }
-
-// async function getSubmissionCosting(server, submissionRef, contactId) {
-
-//   const accessToken = await getAccessToken(server)
-
-//   try {
-//     const url = `${apiUrl}cites_GetSubmissionCostingForPortal`
-
-//     const requestPayload = {
-//       Payload: {
-//         "@odata.type": "#Microsoft.Dynamics.CRM.expando",
-//         SubmissionReference: submissionRef,
-//         ContactId: contactId
-//       }
-//     }
-
-//     const options = {
-//       json: true,
-//       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-//       payload: requestPayload
-//     }
-
-//     const { payload } = await Wreck.post(url, options)
-
-//     // if (payload.cites_species_response) {
-//     //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-//     //   return JSON.parse(json)
-//     // }
-
-//     return payload
-//   } catch (err) {
-//     console.error(err)
-//     throw err
-//   }
-// }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Stubs
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// async function getAccessToken(server) {
-
-// }
-
-// async function getSpecies(server, speciesName) {
-
-//       return { scientificName: 'Python curtus', kingdom: 'Animalia' }
-
-// }
-
-
-// async function getCountries(server) {
-//         return [
-//           {name: 'UNITED KINGDOM',code: 'UK'},
-//           {name: 'FRANCE',code: 'FRA'},
-//           {name: 'SPAIN',code: 'SPA'}
-//         ]
-// }
-
-// async function getTradeTermCodes(server) {  
-//       return [
-//           { name: 'Living animal', code: 'LIV', id: 'ABC' },
-//           { name: 'Bark', code: 'BAR', id: 'DEF' },
-//           { name: 'Horn', code: 'hor', id: 'GHI' }
-//       ]
-// }
-// async function getNewSubmissionsQueryUrl(contactId, permitTypes, statuses, searchTerm)
-// {
-//   return `${apiUrl}cites_submissions?`
-// }
-
-// async function getSubmission(request, submissionRef) {
-//   return {
-//     "contactId": "4e76b334-0ee5-ed11-a7c7-6045bd8d148f",
-//     "permitType": "import",
-//     "isAgent": false,
-//     "status": "received",
-//     "dateSubmitted": "2023-04-02T14:02:40.000Z",
-//     "applications": [{
-//             "applicationIndex": 0,
-//             "comments": "dgfdfhgfdgh",
-//             "species": {
-//                 "speciesName": "Agave parviflora",
-//                 "speciesSearchData": "Agave parviflora",
-//                 "kingdom": "Plantae",
-//                 "sourceCode": "W",
-//                 "anotherSourceCodeForI": "",
-//                 "anotherSourceCodeForO": "",
-//                 "enterAReason": "",
-//                 "purposeCode": "B",
-//                 "specimenType": "plantLiving",
-//                 "quantity": "1",
-//                 "unitOfMeasurement": "noOfPiecesOrParts",
-//                 "tradeTermCode": "",
-//                 "isTradeTermCode": false,
-//                 "tradeTermCodeDesc": "",
-//                 "uniqueIdentificationMarkType": "unmarked",
-//                 "uniqueIdentificationMark": "",
-//                 "specimenDescriptionGeneric": "hgdghdfdhgf"
-//             },
-//             "importerExporterDetails": {
-//                 "country": "AF",
-//                 "countryDesc": "AFGHANISTAN",
-//                 "name": "dfhdfgh",
-//                 "addressLine1": "dfgfdg",
-//                 "addressLine2": "dhdgfgdf",
-//                 "addressLine3": "",
-//                 "addressLine4": "",
-//                 "postcode": ""
-//             },
-//             "permitDetails": {
-//                 "isExportOrReexportNotApplicable": true,
-//                 "isCountryOfOriginNotApplicable": true,
-//                 "exportOrReexportPermitIssueDate": {},
-//                 "countryOfOriginPermitIssueDate": {}
-//             }
-//         }, {
-//             "applicationIndex": 1,
-//             "species": {
-//                 "speciesName": "Antilocapra americana",
-//                 "speciesSearchData": "Antilocapra americana",
-//                 "kingdom": "Animalia",
-//                 "sourceCode": "W",
-//                 "anotherSourceCodeForI": "",
-//                 "anotherSourceCodeForO": "",
-//                 "enterAReason": "",
-//                 "purposeCode": "E",
-//                 "specimenType": "animalLiving",
-//                 "createdDate": null,
-//                 "uniqueIdentificationMarkType": "unmarked",
-//                 "uniqueIdentificationMark": "",
-//                 "numberOfUnmarkedSpecimens": "1",
-//                 "specimenDescriptionLivingAnimal": null,
-//                 "specimenDescriptionGeneric": "gdfsdsggdsf",
-//                 "parentDetails": null,
-//                 "sex": null,
-//                 "dateOfBirth": null
-//             },
-//             "importerExporterDetails": {
-//                 "country": "AF",
-//                 "countryDesc": "AFGHANISTAN",
-//                 "name": "ghdsgdssdfg",
-//                 "addressLine1": "sdfgs",
-//                 "addressLine2": "sdfg",
-//                 "addressLine3": "",
-//                 "addressLine4": "",
-//                 "postcode": ""
-//             },
-//             "permitDetails": {
-//                 "exportOrReexportCountry": null,
-//                 "exportOrReexportCountryDesc": null,
-//                 "exportOrReexportPermitNumber": null,
-//                 "exportOrReexportPermitIssueDate": {
-//                     "day": null,
-//                     "month": null,
-//                     "year": null
-//                 },
-//                 "isExportOrReexportNotApplicable": true,
-//                 "countryOfOrigin": null,
-//                 "countryOfOriginDesc": null,
-//                 "countryOfOriginPermitNumber": null,
-//                 "countryOfOriginPermitIssueDate": {
-//                     "day": null,
-//                     "month": null,
-//                     "year": null
-//                 },
-//                 "isCountryOfOriginNotApplicable": true
-//             },
-//             "comments": "sdfgsdfg"
-//         }
-//     ],
-//     "applicant": {
-//         "fullName": "Paul Foster",
-//         "businessName": "",
-//         "email": "bgfoster+Paul@gmail.com",
-//         "candidateAddressData": {
-//             "selectedAddress": {
-//                 "addressLine1": "sdfgsd",
-//                 "addressLine2": "fsdfgsdfg",
-//                 "addressLine3": "",
-//                 "addressLine4": "",
-//                 "postcode": "",
-//                 "country": "AZ",
-//                 "countryDesc": "AZERBAIJAN"
-//             }
-//         },
-//         "address": {
-//             "addressLine1": "sdfgsd",
-//             "addressLine2": "fsdfgsdfg",
-//             "addressLine3": "",
-//             "addressLine4": "",
-//             "postcode": "",
-//             "country": "AZ",
-//             "countryDesc": "AZERBAIJAN"
-//         }
-//     },
-//     "delivery": {
-//         "addressOption": "applicant",
-//         "address": {
-//             "addressLine1": "sdfgsd",
-//             "addressLine2": "fsdfgsdfg",
-//             "addressLine3": "",
-//             "addressLine4": "",
-//             "postcode": "",
-//             "country": "AZ",
-//             "countryDesc": "AZERBAIJAN"
-//         },
-//         "candidateAddressData": {}
-//     },
-//     "submissionRef": "AB1234",
-//     "paymentDetails": {
-//         "costingType": "complex",
-//         "feeAmount": null
-//     }
-// }
-// }
-
-// async function getSubmissions(server, queryUrl, pageSize) {
-//   const submissions = [
-//     { submissionRef: 'AB1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-//     { submissionRef: 'CD5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
-//     { submissionRef: 'EF9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
-//     { submissionRef: 'GH1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
-//     { submissionRef: 'IJ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
-//     { submissionRef: 'KL4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
-//     { submissionRef: 'MN5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
-//     { submissionRef: 'AB1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-//     { submissionRef: 'CD5679', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
-//     { submissionRef: 'EF9019', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-14T22:59:59.000Z', permitType: 'import' },
-//     { submissionRef: 'GH1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
-//     { submissionRef: 'IJ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
-//     { submissionRef: 'KL4549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
-//     { submissionRef: 'MN5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'AB1238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
-//     // { submissionRef: 'CD5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
-//     // { submissionRef: 'EF9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'GH1218', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-09-27T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'IJ2328', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2022-06-25T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'KL4548', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-05-01T22:59:59.000Z', permitType: 'reexport' },
-//     // { submissionRef: 'MN5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'AZ1234', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-//     // { submissionRef: 'CZ5678', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
-//     // { submissionRef: 'EZ9012', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-28T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'GZ1212', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2023-03-27T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'IZ2323', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-03-25T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'KZ4545', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2023-03-01T22:59:59.000Z', permitType: 'reexport' },
-//     // { submissionRef: 'MZ5656', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-02-28T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'AZ1239', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2023-04-02T14:02:40.000Z', permitType: 'import' },
-//     // { submissionRef: 'CZ5679', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2023-04-01T09:35:12.000Z', permitType: 'export' },
-//     // { submissionRef: 'EZ9019', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-14T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'GZ1219', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'refused', dateSubmitted: '2022-03-12T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'IZZ2329', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-03-21T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'KLZ549', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-03-17T22:59:59.000Z', permitType: 'reexport' },
-//     // { submissionRef: 'MNZ5659', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'inProgress', dateSubmitted: '2023-04-17T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'AB1Z238', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'received', dateSubmitted: '2022-08-02T14:02:40.000Z', permitType: 'import' },
-//     // { submissionRef: 'CDZ5677', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingPayment', dateSubmitted: '2022-11-01T09:35:12.000Z', permitType: 'export' },
-//     // { submissionRef: 'EFZ9018', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'cancelled', dateSubmitted: '2022-10-28T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'GHZ1218', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-09-27T22:59:59.000Z', permitType: 'article10' },
-//     // { submissionRef: 'IJZ2328', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'awaitingReply', dateSubmitted: '2022-06-25T22:59:59.000Z', permitType: 'import' },
-//     // { submissionRef: 'KLZ4548', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-05-01T22:59:59.000Z', permitType: 'reexport' },
-//     // { submissionRef: 'MNZ5658', contactId: '9165f3c0-dcc3-ed11-83ff-000d3aa9f90e', status: 'issued', dateSubmitted: '2022-12-28T22:59:59.000Z', permitType: 'article10' }
-//   ]
-
-//   // submissions.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
-
-//   // const filteredSubmissions = submissions.
-//   //   filter(submission => {
-//     //     if (contactId && submission.contactId !== contactId) {
-//       //       return false
-//       //     }
-//       //     if (permitTypes && !permitTypes.includes(submission.permitType)) {
-//         //       return false
-//         //     }
-//         //     if (statuses && !statuses.includes(submission.status)) {
-//           //       return false
-//           //     }
-//           //     if (searchTerm && searchTerm !== submission.submissionId) {
-//             //       return false
-//             //     }
-
-//             //     return true
-//             //   })
-
-//   // const endIndex = startIndex + pageSize;
-//   // const filteredSlicedSubmissions = filteredSubmissions.slice(startIndex, endIndex);
-//   // return { submissions: filteredSlicedSubmissions, totalSubmissions: filteredSubmissions.length };
-//   return { submissions: submissions, totalSubmissions: submissions.length }  
-// }
-
-// async function postSubmission(server, submission) {
-//   return { submissionRef: 'BGF5276',
-//           costingValue: 75,
-//           costingType: 'simple'
-//   }  
-// }
-
-// async function getSubmissionCosting(server, submissionRef, contactId) {
-
-//   return { Cost: 1.23, Type: 'complex' }
-// }
 
 module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission, setSubmissionPayment }

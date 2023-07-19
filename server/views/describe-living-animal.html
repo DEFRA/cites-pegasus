@@ -64,24 +64,81 @@
       </div>
 
       {% if showParentDetails %}
+        {# <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        <div class="govuk-grid-row">
+          <fieldset class="govuk-fieldset">
+            <div class="govuk-grid-column-one-half">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                <h2 class="govuk-fieldset__heading">
+                  Parent details
+                </h2>
+              </legend>
+            </div>
+            <div class="govuk-grid-column-one-half govuk-hint">
+              Enter the unique identification mark and Article 10 certificate number for each parent. For example, ‘Parent A10 number: 10AB010C/01, closed ring number: WEL0072257’
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-grid-row">
+          <fieldset class="govuk-fieldset">
+            <div class="govuk-grid-column-one-half">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
+                <h3 class="govuk-fieldset__heading">{{inputLabelMaleParentDetails}}</h3>
+              </legend>
+            </div>
+            <div class="govuk-grid-column-one-half">
+              {{ govukCharacterCount({
+                    name: "maleParentDetails",
+                    id: "maleParentDetails",
+                    maxlength: 250                    
+                  }) }}
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-grid-row">
+          <fieldset class="govuk-fieldset">
+            <div class="govuk-grid-column-one-half">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--xs">
+                <h2 class="govuk-fieldset__heading">{{inputLabelFemaleParentDetails}}</h2>
+              </legend>
+            </div>
+            <div class="govuk-grid-column-one-half">
+              {{ govukCharacterCount({
+                    name: "femaleParentDetails",
+                    id: "femaleParentDetails",
+                    maxlength: 250                    
+                  }) }}
+            </div>
+          </fieldset>
+        </div> #}
+
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
         <div class="govuk-grid-row">
-          {# <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-s">{{inputLabelParentDetails}}</h2>
-          </div>
-          <div class="govuk-grid-column-one-half">
-            {{govukCharacterCount(inputParentDetails)}}
-          </div> #}
           <fieldset class="govuk-fieldset">
-          <div class="govuk-grid-column-one-half">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-              <h2 class="govuk-fieldset__heading">{{inputLabelParentDetails}}</h2>
-            </legend>
-          </div>
-          <div class="govuk-grid-column-one-half">
-            {{ govukCharacterCount(inputParentDetails) }}
-          </div>
-        </fieldset>
+            <div class="govuk-grid-column-one-half">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                <h2 class="govuk-fieldset__heading">{{inputLabelMaleParentDetails}}</h2>
+              </legend>
+            </div>
+            <div class="govuk-grid-column-one-half">
+              {{ govukCharacterCount(inputMaleParentDetails) }}
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-grid-row">
+          <fieldset class="govuk-fieldset">
+            <div class="govuk-grid-column-one-half">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                <h2 class="govuk-fieldset__heading">{{inputLabelFemaleParentDetails}}</h2>
+              </legend>
+            </div>
+            <div class="govuk-grid-column-one-half">
+              {{ govukCharacterCount(inputFemaleParentDetails) }}
+            </div>
+          </fieldset>
         </div>
       {% endif %}
 
