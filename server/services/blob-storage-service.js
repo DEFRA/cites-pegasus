@@ -100,7 +100,7 @@ async function deleteFileFromContainer(containerName, fileName) {
 }
 
 async function checkFileExists(containerName, fileName) {
-    if (checkContainerExists(containerName)) {
+    if (await checkContainerExists(containerName)) {
         const containerClient = blobServiceClient.getContainerClient(containerName)
         const blockBlobClient = containerClient.getBlockBlobClient(fileName)
         return await blockBlobClient.exists()
@@ -110,7 +110,7 @@ async function checkFileExists(containerName, fileName) {
 
 
 async function getObjectFromContainer(containerName, filename) {
-    if (!checkContainerExists(containerName)) {
+    if (!await checkContainerExists(containerName)) {
         const err = 'Container does not exist'
         console.log(err)
         throw err
