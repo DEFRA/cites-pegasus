@@ -1,3 +1,4 @@
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=bugs&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 
 CITES Application Portal
 
