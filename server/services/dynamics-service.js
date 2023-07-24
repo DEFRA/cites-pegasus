@@ -353,10 +353,6 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
     statuses.push(149900002)
   }
 
-  if (portalStatuses.includes('closed')) {
-    throw "Not implemented yet!"    
-  }
-
   return statuses
 }
 
