@@ -113,7 +113,7 @@ function createModel(errors, data) {
         },
         {
           value: false,
-          text: commonContent.radioOptionNo,
+          text: pageContent.radioOptionNotSure,
           checked: data.isTradeTermCode === false
         }
       ],

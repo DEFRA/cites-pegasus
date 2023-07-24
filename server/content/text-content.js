@@ -470,6 +470,7 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().required(),
     tradeTermCodeSelectDefault: Joi.string().required(),
+    radioOptionNotSure: Joi.string().required(),
     errorMessages: Joi.object({
       "error.isTradeTermCode.any.required": Joi.string().required(),
       "error.tradeTermCode.string.empty": Joi.string().required(),
