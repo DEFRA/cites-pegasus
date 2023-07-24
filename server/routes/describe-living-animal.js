@@ -140,7 +140,7 @@ function createModel(errors, data) {
     inputMaleParentDetails: {
       name: "maleParentDetails",
       id: "maleParentDetails",
-      maxlength: 250,
+      maxlength: 1000,
       hint: {
         text: pageContent.inputHintMaleParentDetails
       },
@@ -150,7 +150,7 @@ function createModel(errors, data) {
     inputFemaleParentDetails: {
       name: "femaleParentDetails",
       id: "femaleParentDetails",
-      maxlength: 250,
+      maxlength: 1000,
       hint: {
         text: pageContent.inputHintFemaleParentDetails
       },
@@ -326,8 +326,8 @@ module.exports = [
         const modifiedFemaleParentDetails = submission.permitType === 'article10' ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         const schema = Joi.object({ 
           description: Joi.string().max(500).optional().allow(null, ""),
-          maleParentDetails: Joi.string().min(3).max(250).optional().allow(null, ""),
-          femaleParentDetails: Joi.string().min(3).max(250).optional().allow(null, "") })
+          maleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, ""),
+          femaleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, "") })
         const result = schema.validate({description: modifiedDescription, maleParentDetails: modifiedMaleParentDetails, femaleParentDetails: modifiedFemaleParentDetails },  { abortEarly: false })
 
         if (result.error) {
