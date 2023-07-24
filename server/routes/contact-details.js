@@ -80,6 +80,9 @@ function createModel(errors, data) {
     const model = {
         backLink: backLink,
         pageHeader: pageHeader,
+        inputLabelBusinessName: pageContent.inputLabelBusinessName,
+        inputHintBusinessName: inputHintBusinessName,
+        businessNameValue: data.businessName,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
@@ -106,7 +109,7 @@ function createModel(errors, data) {
             id: "businessName",
             name: "businessName",
             autocomplete: "on",
-            classes: "govuk-!-width-two-thirds",
+            classes: "govuk-!-width-two-thirds disabled",
             ...(data.businessName ? { value: data.businessName } : {}),
             errorMessage: getFieldError(errorList, '#businessName')
         },
@@ -152,15 +155,16 @@ module.exports = [{
             fullName = submission[request.params.contactType].fullName
             businessName = submission[request.params.contactType].businessName
         } else {
+            const { user } = getYarValue(request, 'CIDMAuth')
+            businessName = user.organisationName
+
             if ((request.params.contactType === 'applicant' && !submission?.isAgent)
                 || (request.params.contactType === 'agent' && submission?.isAgent)) {
 
                 //get applicant details from auth credentials
-                const { user } = getYarValue(request, 'CIDMAuth')
 
                 email = user.email
                 fullName = user.firstName + ' ' + user.lastName
-                businessName = user.organisationName
             }
         }
         const pageData = {
@@ -196,7 +200,7 @@ module.exports = [{
             options: { abortEarly: false },
             payload: Joi.object({
                 fullName: Joi.string().max(150).regex(NAME_REGEX).required(),
-                businessName: Joi.string().max(150).regex(BUSINESSNAME_REGEX).allow(""),
+                //businessName: Joi.string(),//.max(150).regex(BUSINESSNAME_REGEX).allow(""),
                 email: Joi.string().max(150).email().allow("")
             }),
             failAction: (request, h, err) => {
@@ -213,7 +217,18 @@ module.exports = [{
             }
         },
         handler: async (request, h) => {
-            const { fullName, businessName, email } = request.payload
+            const { fullName, email } = request.payload
+            
+            const submission = getSubmission(request)
+            
+            let businessName
+            if (submission[request.params.contactType]) {
+                businessName = submission[request.params.contactType].businessName
+            } else {
+                const { user } = getYarValue(request, 'CIDMAuth')
+                businessName = user.organisationName
+            }
+
             const contactDetails = {
                 [request.params.contactType]: {
                     fullName: fullName.trim(),
