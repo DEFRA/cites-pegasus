@@ -36,25 +36,21 @@ function createModel(errors, data) {
         case 'import':
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
-            inputHintBusinessName = pageContent.inputHintBusinessNameImport
             inputHintEmail = pageContent.inputHintEmailImport
             break;
         case 'export':
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
-            inputHintBusinessName = pageContent.inputHintBusinessNameExport
             inputHintEmail = pageContent.inputHintEmailExport
             break;
         case 'reexport':
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
-            inputHintBusinessName = pageContent.inputHintBusinessNameReexport
             inputHintEmail = pageContent.inputHintEmailReexport
             break;
         case 'article10':
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
-            inputHintBusinessName = pageContent.inputHintBusinessNameArticle10
             inputHintEmail = pageContent.inputHintEmailArticle10
             break;
     }
@@ -81,7 +77,6 @@ function createModel(errors, data) {
         backLink: backLink,
         pageHeader: pageHeader,
         inputLabelBusinessName: pageContent.inputLabelBusinessName,
-        inputHintBusinessName: inputHintBusinessName,
         businessNameValue: data.businessName,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
@@ -99,20 +94,20 @@ function createModel(errors, data) {
             errorMessage: getFieldError(errorList, '#fullName')
         },
 
-        inputBusinessName: {
-            label: {
-                text: pageContent.inputLabelBusinessName,
-            },
-            hint: {
-                text: inputHintBusinessName
-            },
-            id: "businessName",
-            name: "businessName",
-            autocomplete: "on",
-            classes: "govuk-!-width-two-thirds disabled",
-            ...(data.businessName ? { value: data.businessName } : {}),
-            errorMessage: getFieldError(errorList, '#businessName')
-        },
+        // inputBusinessName: {
+        //     label: {
+        //         text: pageContent.inputLabelBusinessName,
+        //     },
+        //     hint: {
+        //         text: inputHintBusinessName
+        //     },
+        //     id: "businessName",
+        //     name: "businessName",
+        //     autocomplete: "on",
+        //     classes: "govuk-!-width-two-thirds disabled",
+        //     ...(data.businessName ? { value: data.businessName } : {}),
+        //     errorMessage: getFieldError(errorList, '#businessName')
+        // },
 
         inputEmail: {
             label: {
@@ -200,16 +195,25 @@ module.exports = [{
             options: { abortEarly: false },
             payload: Joi.object({
                 fullName: Joi.string().max(150).regex(NAME_REGEX).required(),
-                //businessName: Joi.string(),//.max(150).regex(BUSINESSNAME_REGEX).allow(""),
                 email: Joi.string().max(150).email().allow("")
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
+                
+                let businessName
+                if (submission[request.params.contactType]) {
+                    businessName = submission[request.params.contactType].businessName
+                } else {
+                    const { user } = getYarValue(request, 'CIDMAuth')
+                    businessName = user.organisationName
+                }
+
                 const pageData = {
                     backLinkOverride: checkChangeRouteExit(request, true),
                     contactType: request.params.contactType,
                     isAgent: submission?.isAgent,
                     permitType: submission?.permitType,
+                    businessName,
                     ...request.payload
                 }
 
