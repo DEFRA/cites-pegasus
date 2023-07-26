@@ -97,10 +97,10 @@
       "inputLabelFullName": "Full name",
       "inputLabelBusinessName": "Business name",
       "inputLabelEmail": "Email address",
-      "inputHintEmailImport": "This is your email address and will be stored with your submission.",
-      "inputHintEmailExport": "This is your email address and will be stored with your submission.",
-      "inputHintEmailReexport": "This is your email address and will be stored with your submission.",
-      "inputHintEmailArticle10": "This is your email address and will be stored with your submission."
+      "inputHintEmailImport": "This is your email address and will be stored with your submission",
+      "inputHintEmailExport": "This is your email address and will be stored with your submission",
+      "inputHintEmailReexport": "This is your email address and will be stored with your submission",
+      "inputHintEmailArticle10": "This is your email address and will be stored with your submission"
     },
     "applicant": {
       "defaultTitleImport": "Enter your contact details",
@@ -131,10 +131,10 @@
       "inputLabelFullName": "Full name",
       "inputLabelBusinessName": "Business name",
       "inputLabelEmail": "Email address",
-      "inputHintEmailImport": "This is your email address and will be stored with your submission",
-      "inputHintEmailExport": "This is your email address and will be stored with your submission",
-      "inputHintEmailReexport": "This is your email address and will be stored with your submission",
-      "inputHintEmailArticle10": "This is your email address and will be stored with your submission"
+      "inputHintEmailImport": "This is the importer's email address and will be stored with this submission.",
+      "inputHintEmailExport": "This is the exporter's email address and will be stored with this submission.",
+      "inputHintEmailReexport": "This is the re-exporter's email address and will be stored with this submission.",
+      "inputHintEmailArticle10": "This is the applicant's email address and will be stored with this submission."
     },
     "errorMessages": {
       "error.fullName.string.empty": "Full name is required",
