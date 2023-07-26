@@ -468,10 +468,10 @@ const schema = Joi.object().keys({
   tradeTermCode: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBody: Joi.string().required(),
+    pageBody: Joi.string().allow("", null),
     tradeTermCodeSelectDefault: Joi.string().required(),
+    tradeTermCodeUnknown: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.isTradeTermCode.any.required": Joi.string().required(),
       "error.tradeTermCode.string.empty": Joi.string().required(),
       "error.tradeTermCode.string.length": Joi.string().required(),
       "error.tradeTermCode.string.pattern.base": Joi.string().required()
