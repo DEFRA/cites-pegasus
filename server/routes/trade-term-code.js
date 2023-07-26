@@ -59,29 +59,10 @@ function createModel(errors, data) {
     }
   }))
 
-  // const tradeTermCodesList = tradeTermCodes.map(tradeTermCode => {
-  //   return {
-  //     value: tradeTermCode.code,
-  //     text: tradeTermCode.name,
-  //     selected: tradeTermCode.code === (data.tradeTermCode || '')
-  //   }
-  // })
-
-
-  var renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(selectTradeTermCode)}}"
-
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-
   const selectTradeTermCode = {
     id: "tradeTermCode",
     name: "tradeTermCode",
     classes: "govuk-!-width-2",
-    // label: {
-    //   text: pageContent.inputLabelTradeCode
-    // },
-    // hint: {
-    //   text: pageContent.inputLabelTradeCodeHint
-    // },
     items: tradeTermCodes,
     errorMessage: getFieldError(errorList, '#tradeTermCode')
   }
@@ -100,34 +81,7 @@ function createModel(errors, data) {
     captionText: data.speciesName,
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
-    selectTradeTermCode
-    // inputIsTradeTermCode: {
-    //   idPrefix: "isTradeTermCode",
-    //   name: "isTradeTermCode",
-    //   // fieldset: {
-    //   //   legend: {
-    //   //     text: pageContent.pageHeader,
-    //   //     isPageHeading: true,
-    //   //     classes: "govuk-fieldset__legend--l"
-    //   //   }
-    //   // },
-    //   items: [
-    //     {
-    //       value: true,
-    //       text: commonContent.radioOptionYes,
-    //       checked: data.isTradeTermCode,
-    //       conditional: {
-    //         html: tradeTermCodeSelect
-    //       }
-    //     },
-    //     {
-    //       value: false,
-    //       text: pageContent.radioOptionNotSure,
-    //       checked: data.isTradeTermCode === false
-    //     }
-    //   ],
-    //   errorMessage: getFieldError(errorList, "#isTradeTermCode")
-    // }
+    selectTradeTermCode    
   }
   return { ...commonContent, ...model }
 }
@@ -186,16 +140,6 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const species = submission.applications[applicationIndex].species
-
-          // let isTradeTermCode = null
-          // switch (request.payload.isTradeTermCode) {
-          //   case "true":
-          //     isTradeTermCode = true
-          //     break
-          //   case "false":
-          //     isTradeTermCode = false
-          //     break
-          // }
 
           let isTradeTermCode = null
           if(request.payload.tradeTermCode){
