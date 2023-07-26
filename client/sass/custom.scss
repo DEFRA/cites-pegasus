@@ -168,6 +168,14 @@ ul.smaller-indent {
 
 }
 
+input.disabled {
+    background-color: #f0f0f0;
+    color: #555;
+    border: 1px solid #ccc;
+    cursor: not-allowed;
+    
+}
+
 a[data-disabled] {
     pointer-events: none;
     color: gray !important;
