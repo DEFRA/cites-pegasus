@@ -627,13 +627,12 @@
     }
   },
   "tradeTermCode": {
-    "defaultTitle": "Trade term code",
-    "pageHeader": "Trade term code",
-    "pageBody": "If you are not sure, you can either <a target='_blank' href='https://trade.cites.org/cites_trade_guidelines/en-CITES_Trade_Database_Guide.pdf'>find the trade term code</a> (opens in a new tab) or select 'No'",
+    "defaultTitle": "What is the CITES trade term code",
+    "pageHeader": "What is the CITES trade term code",
+    "pageBody": "",
     "tradeTermCodeSelectDefault": "Select a trade term code...",
-    "radioOptionNotSure": "I am not sure which trade term code to use",
+    "tradeTermCodeUnknown": "I don't know",
     "errorMessages": {
-      "error.isTradeTermCode.any.required": "Select yes if you know the trade term code",
       "error.tradeTermCode.string.empty": "Enter the trade term code",
       "error.tradeTermCode.string.length": "Trade term code must be 3 characters",
       "error.tradeTermCode.string.pattern.base": "Enter a trade term code using letters a to z"
