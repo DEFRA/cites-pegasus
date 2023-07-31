@@ -1241,26 +1241,26 @@
       "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts"      
     },
     "importApplications": {
-      "defaultTitle": "Your import application",
-      "pageHeader": "Your import application",
+      "defaultTitle": "Your import applications",
+      "pageHeader": "Your import applications",
       "copyAriaLabel": "Copy this import application",
       "removeAriaLabel": "Remove this import application"
     },
     "exportApplications": {
-      "defaultTitle": "Your export application",
-      "pageHeader": "Your export application",
+      "defaultTitle": "Your export applications",
+      "pageHeader": "Your export applications",
       "copyAriaLabel": "Copy this export application",
       "removeAriaLabel": "Remove this export application"
     },
     "reexportApplications": {
-      "defaultTitle": "Your reexport application",
-      "pageHeader": "Your reexport application",
+      "defaultTitle": "Your reexport applications",
+      "pageHeader": "Your reexport applications",
       "copyAriaLabel": "Copy this reexport application",
       "removeAriaLabel": "Remove this reexport application"
     },
     "article10Applications": {
-      "defaultTitle": "Your article 10 application",
-      "pageHeader": "Your article 10 application",
+      "defaultTitle": "Your article 10 applications",
+      "pageHeader": "Your article 10 applications",
       "copyAriaLabel": "Copy this article 10 application",
       "removeAriaLabel": "Remove this article 10 application"
     },
