@@ -365,19 +365,25 @@ function createApplicationSummaryModel(errors, data) {
       {
         text: pageContent.textBreadcrumbs,
         href: previousPathMySubmissions,
-      },
-      {
-        text: submissionRef,
-        //href: `${previousPathMySubmission}/${data.submissionRef}`,
-        href: submissionLink
-      },
-      {
-        text: applicationRef,
-        //href: summaryType === 'copy-as-new' ? `${currentPath}/view-submitted/${breadcrumbsUrlApplicationIndex}` : "#"
-        href: summaryType === 'copy-as-new' ? applicationLink : "#"
       }
     ]
   }
+
+  if (submissionRef) {
+    breadcrumbs.items.push({
+      text: submissionRef,
+      //href: `${previousPathMySubmission}/${data.submissionRef}`,
+      href: submissionLink
+    })
+  }
+
+  if (applicationRef) {
+    breadcrumbs.items.push({
+      text: applicationRef,
+      href: summaryType === 'copy-as-new' ? applicationLink : "#"
+    })
+  }
+  
   if (summaryType === 'copy-as-new') {
     breadcrumbs.items.push({
       text: pageContent.pageHeaderCopy,
@@ -763,10 +769,10 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { summaryType, applicationIndex } = request.params
-        
+
         if (summaryType === 'view-submitted') {
           const draftSubmissionExists = await checkDraftSubmissionExists(request)
-          if(draftSubmissionExists) {
+          if (draftSubmissionExists) {
             return h.redirect(`${draftSubmissionWarning}/${applicationIndex}`)
           }
           try {
