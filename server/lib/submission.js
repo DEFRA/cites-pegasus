@@ -157,11 +157,22 @@ function deleteApplication(request, applicationIndex) {
     applications.splice(applicationIndex, 1)
 
     // Update the applicationIndex of each remaining application to ensure no gaps
+    reIndexApplications(applications)
+    
+    setYarValue(request, 'submission', submission)
+    return submission
+}
+
+function reIndexApplications(applications) {
     applications.forEach((application, index) => {
         application.applicationIndex = index;
     })
-    setYarValue(request, 'submission', submission)
-    return submission
+}
+
+function moveApplicationToEndOfList(applications, applicationIndex) {
+    const application = applications[applicationIndex]
+    applications.splice(applicationIndex, 1)
+    applications.push(application)
 }
 
 function deleteInProgressApplications(request) {
@@ -404,6 +415,7 @@ function getAppFlow(submission) {
                         appFlow.push(`your-submission/are-you-sure/permit-type`)
                         appFlow.push(`your-submission/are-you-sure/remove`)
                         appFlow.push(`your-submission/create-application`)
+                        appFlow.push(`add-application`)
                         appFlow.push('upload-supporting-documents')
                         appFlow.push('declaration')
                     }
@@ -433,5 +445,7 @@ module.exports = {
     saveDraftSubmission,
     checkDraftSubmissionExists,
     deleteDraftSubmission,
-    loadDraftSubmission
+    loadDraftSubmission,
+    moveApplicationToEndOfList,
+    reIndexApplications
 }

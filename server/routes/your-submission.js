@@ -1,22 +1,22 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission } = require('../lib/submission')
+const { getSubmission, setSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission, moveApplicationToEndOfList, reIndexApplications } = require('../lib/submission')
 const { setYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
 const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
-const nextPathUploadSupportingDocuments = `${urlPrefix}/upload-supporting-documents`
+const nextPathContinue = `${urlPrefix}/add-application`
 const nextPathViewApplication = `${urlPrefix}/application-summary/view`
 const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
 const nextPathSpeciesName = `${urlPrefix}/species-name`
-const areYouSurePath= `are-you-sure`
+const areYouSurePath = `are-you-sure`
 const lodash = require('lodash')
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createSubmitApplicationModel(errors, data) {
   const commonContent = textContent.common
-  
+
   let pageContent = null
   const yourSubmissionText = lodash.cloneDeep(textContent.yourSubmission) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
@@ -25,7 +25,7 @@ function createSubmitApplicationModel(errors, data) {
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications)
       break
     case "export":
-      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.exportApplications) 
+      pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.exportApplications)
       break
     case "reexport":
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.reexportApplications)
@@ -36,13 +36,13 @@ function createSubmitApplicationModel(errors, data) {
   }
 
   const applicationsData = data.applications
-  const applicationsTableData= applicationsData.map(application => {
+  const applicationsTableData = applicationsData.map(application => {
     const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
     if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
       unitsOfMeasurementText = `specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
     } else if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType !== "unmarked") {
-      unitsOfMeasurementText =  `specimen`
+      unitsOfMeasurementText = `specimen`
     } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
       unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
     } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfPiecesOrParts") {
@@ -61,7 +61,7 @@ function createSubmitApplicationModel(errors, data) {
     }
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
     const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
-    return {speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, formActionCopy, formActionRemove}
+    return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, formActionCopy, formActionRemove }
   })
 
   const model = {
@@ -70,10 +70,8 @@ function createSubmitApplicationModel(errors, data) {
     tableHeadScientificName: pageContent.tableHeadScientificName,
     tableHeadQuantity: pageContent.tableHeadQuantity,
     tableHeadUnitOfMeasurement: pageContent.tableHeadUnitOfMeasurement,
-    applicationsData : applicationsTableData,
-    addAnotherSpeciesLinkText: pageContent.addAnotherSpeciesLinkText,
+    applicationsData: applicationsTableData,
     addAnotherSpeciesUrl: `${currentPath}/create-application`,
-    applyForADifferentTypeOfPermitLinkText: pageContent.applyForADifferentTypeOfPermitLinkText,
     copyAriaLabel: pageContent.copyAriaLabel,
     removeAriaLabel: pageContent.removeAriaLabel,
     applyForADifferentTypeOfPermitUrl: `${currentPath}/${areYouSurePath}/permit-type`,
@@ -83,29 +81,29 @@ function createSubmitApplicationModel(errors, data) {
 
 function createAreYouSureModel(errors, data) {
   const commonContent = textContent.common
-  
+
   let pageHeader = null
   let defaultTitle = null
   let formActionPage = null
   let pageBody = null
   let errorMessageRemove = null
-  if(data.confirmType === 'remove') {
+  if (data.confirmType === 'remove') {
     pageContent = textContent.yourSubmission.areYouSureRemove,
-    defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
+      defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`
     pageBody = data.applications.length === 1 ? pageContent.pageBody : ""
-    formActionPage= `${currentPath}/${areYouSurePath}/remove/${data.applicationIndex}`
+    formActionPage = `${currentPath}/${areYouSurePath}/remove/${data.applicationIndex}`
     errorMessageRemove = {
       'error.areYouSure.any.required': `${pageContent.errorMessages['error.areYouSure.part1.any.required']} ${data.speciesName} ${pageContent.errorMessages['error.areYouSure.part2.any.required']}`
-    } 
+    }
   } else {
     pageContent = textContent.yourSubmission.areYouSurePermitType,
-    defaultTitle = pageContent.defaultTitle
-    pageHeader =pageContent.pageHeader
-    pageBody= `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}`
-    formActionPage= `${currentPath}/${areYouSurePath}/permit-type`
+      defaultTitle = pageContent.defaultTitle
+    pageHeader = pageContent.pageHeader
+    pageBody = `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}`
+    formActionPage = `${currentPath}/${areYouSurePath}/permit-type`
   }
-  
+
   let errorList = null
   if (errors) {
     errorList = []
@@ -135,7 +133,7 @@ function createAreYouSureModel(errors, data) {
       : defaultTitle,
     pageHeader: pageHeader,
     pageBody: pageBody,
-  
+
     inputAreYouSure: {
       idPrefix: "areYouSure",
       name: "areYouSure",
@@ -143,7 +141,7 @@ function createAreYouSureModel(errors, data) {
       items: [
         {
           value: true,
-          text: commonContent.radioOptionYes  
+          text: commonContent.radioOptionYes
         },
         {
           value: false,
@@ -173,12 +171,12 @@ module.exports = [
       }
 
       const completeApplications = getCompletedApplications(submission, appStatuses)
-      
+
       setYarValue(request, 'cloneSource', null)
 
       const pageData = {
         permitType: submission.permitType,
-        applications : completeApplications
+        applications: completeApplications
       }
       return h.view(pageId, createSubmitApplicationModel(null, pageData))
     }
@@ -214,12 +212,19 @@ module.exports = [
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
-      }      
-      
+      }
+
       const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
-      
-      if(inProgressAppStatus) {
-        return h.redirect(`${nextPathSpeciesName}/${inProgressAppStatus.applicationIndex}`)
+      if (inProgressAppStatus) {
+        let inProgressApplicationIndex = inProgressAppStatus.applicationIndex
+        if (inProgressAppStatus.applicationIndex < submission.applications.length - 1) { 
+          //The application being worked on should always be the last in the array so that the add-application screen knows which was your last application so that it can offer you the chance to copy it
+          moveApplicationToEndOfList(submission.applications, inProgressAppStatus.applicationIndex)
+          reIndexApplications(submission.applications)
+          setSubmission(request, submission)
+          inProgressApplicationIndex = submission.applications.length - 1
+        }
+        return h.redirect(`${nextPathSpeciesName}/${inProgressApplicationIndex}`)
       }
 
       const applicationIndex = createApplication(request)
@@ -244,7 +249,7 @@ module.exports = [
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
       const applications = submission.applications
-     
+
       try {
         validateSubmission(submission, `${pageId}/${areYouSurePath}/remove`)
       } catch (err) {
@@ -261,7 +266,7 @@ module.exports = [
       return h.view(areYouSurePath, createAreYouSureModel(null, pageData))
     }
   },
- //POST for submit applications page
+  //POST for submit applications page
   {
     method: "POST",
     path: `${currentPath}`,
@@ -274,13 +279,13 @@ module.exports = [
 
           const pageData = {
             permitType: submission.permitType,
-            applications : completeApplications
+            applications: completeApplications
           }
           return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
-        return h.redirect(nextPathUploadSupportingDocuments)
+        return h.redirect(nextPathContinue)
       }
     }
   },
@@ -330,7 +335,7 @@ module.exports = [
       return h.redirect(`${currentPath}/${areYouSurePath}/remove/${applicationIndex}`)
     }
   },
-   //POST for are you page from apply for a different type of permit link
+  //POST for are you page from apply for a different type of permit link
   {
     method: "POST",
     path: `${currentPath}/${areYouSurePath}/permit-type`,
@@ -345,11 +350,11 @@ module.exports = [
           const pageData = {
             confirmType: 'permit-type',
             permitType: submission.permitType,
-           }
+          }
           return h.view(areYouSurePath, createAreYouSureModel(err, pageData)).takeover()
         }
       },
-      handler: async (request, h) => {     
+      handler: async (request, h) => {
         if (request.payload.areYouSure) {
           return h.redirect(`${urlPrefix}/permit-type`)
         } else {
@@ -375,13 +380,13 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const applications = submission.applications
-         
+
           const pageData = {
             applicationIndex: applicationIndex,
             confirmType: "remove",
             applications: applications,
             speciesName: submission.applications[applicationIndex].species.speciesName,
-           }
+          }
           return h.view(areYouSurePath, createAreYouSureModel(err, pageData)).takeover()
         }
       },
@@ -389,7 +394,7 @@ module.exports = [
         const applicationIndex = request.params.applicationIndex;
         const submission = getSubmission(request)
         const applications = submission.applications
-        
+
         if (request.payload.areYouSure) {
           try {
             deleteApplication(request, applicationIndex)
@@ -398,10 +403,10 @@ module.exports = [
             console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
-          if (applications.length === 1 ) {
+          if (applications.length === 1) {
             return h.redirect(`${nextPathSpeciesName}/0`)
           }
-        } 
+        }
         return h.redirect(`${currentPath}`)
       }
     }

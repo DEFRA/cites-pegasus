@@ -910,9 +910,7 @@ const schema = Joi.object().keys({
       tableHeadQuantity: Joi.string(),
       tableHeadUnitOfMeasurement: Joi.string(),
       rowTextUnitsOfMeasurementNoOfSpecimens: Joi.string().required(),
-      rowTextUnitsOfMeasurementNoOfPiecesOrParts: Joi.string().required(),
-      addAnotherSpeciesLinkText: Joi.string(),
-      applyForADifferentTypeOfPermitLinkText: Joi.string()
+      rowTextUnitsOfMeasurementNoOfPiecesOrParts: Joi.string().required()
     }).required(),
     importApplications: yourSubmissionSchema,
     exportApplications: yourSubmissionSchema,
@@ -930,6 +928,16 @@ const schema = Joi.object().keys({
       }).required()
     }).required(),
     areYouSurePermitType: areYouSureSchema
+  }).required(),
+  addApplication: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionCopyPrevious: Joi.string().required(),
+    radioOptionAddNew: Joi.string().required(),
+    radioOptionNo: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.addApplication.any.required": Joi.string().required()
+    }).required()
   }).required(),
   declaration: Joi.object({
     defaultTitle: Joi.string().required(),
