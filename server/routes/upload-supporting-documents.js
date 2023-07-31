@@ -8,7 +8,7 @@ const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
 const assetPath = `${urlPrefix}/assets`
-const previousPath = `${urlPrefix}/your-submission`
+const previousPath = `${urlPrefix}/add-application`
 const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = `${urlPrefix}/`
 const Boom = require('@hapi/boom');
@@ -56,7 +56,7 @@ function createModel(errors, data) {
     assetPath: assetPath,
     clientJSConfig: JSON.stringify(clientJSConfig),
     containerClasses: 'hide-when-loading',
-    backLink: `${previousPath}`,
+    backLink: previousPath,
     formActionPage: `${currentPath}`,
     ...(errorList ? { errorList } : {}),
     supportingDocuments: supportingDocuments,

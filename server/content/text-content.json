@@ -1238,9 +1238,7 @@
       "tableHeadQuantity": "Quantity",
       "tableHeadUnitOfMeasurement": "Unit of measurement",
       "rowTextUnitsOfMeasurementNoOfSpecimens": "Number of specimens",
-      "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts",
-      "addAnotherSpeciesLinkText": "Add another species",
-      "applyForADifferentTypeOfPermitLinkText": "Apply for a different type of permit"
+      "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts"      
     },
     "importApplications": {
       "defaultTitle": "Your import application",
@@ -1338,6 +1336,16 @@
     "notificationHeader": "The fee for this application is £##COST##",
     "notificationContent": "<a class='govuk-notification-banner__link' href='##PAYMENT_LINK##'>Pay now</a> to complete your application.",
     "pendingApplicationsBodyText": "Someone from the team will be in touch shortly if your pending application requires further attention."
+  },
+  "addApplication": {
+    "defaultTitle": "Do you want to add any more applications?",
+    "pageHeader": "Do you want to add any more applications?",
+    "radioOptionCopyPrevious": "Add another application for ##SPECIES_NAME## by copying the last application",
+    "radioOptionAddNew": "Add an application for a new species",
+    "radioOptionNo": "Complete this application and proceed to the upload documents step",
+    "errorMessages": {
+      "error.addApplication.any.required": "Select one of the options to add an application or complete the application process"
+    }
   },
   "payApplication": {
     "defaultTitle": "Pay for your CITES application",

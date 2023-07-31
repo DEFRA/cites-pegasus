@@ -12,6 +12,7 @@ const previousPathComments = `${urlPrefix}/comments`
 const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
+const nextPathAddApplication = `${urlPrefix}/add-application`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/copy-as-new`
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -389,6 +390,7 @@ function createApplicationSummaryModel(errors, data) {
     if (summaryType === 'check') {
       backLink = `${previousPathComments}/${data.applicationIndex}`
     } else {
+      //backLink = data.referer?.endsWith(nextPathAddApplication) ? nextPathAddApplication : nextPathYourSubmission
       backLink = nextPathYourSubmission
     }
   }
@@ -645,7 +647,7 @@ module.exports = [
       clearChangeRoute(request)
 
       const pageData = {
-        //referer: request.headers.referer,
+        referer: request.headers.referer,
         summaryType: summaryType,
         applicationIndex: applicationIndex,
         cloneSource,
@@ -660,7 +662,7 @@ module.exports = [
         species: submission.applications[applicationIndex].species,
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
-        comments: submission.applications[applicationIndex].comments,
+        comments: submission.applications[applicationIndex].comments
       }
       return h.view(pageId, createApplicationSummaryModel(null, pageData))
     }
@@ -743,6 +745,7 @@ module.exports = [
           const { summaryType, applicationIndex } = request.params
           const submission = getSubmission(request)
           const pageData = {
+            referer: request.headers.referer,
             summaryType: summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,

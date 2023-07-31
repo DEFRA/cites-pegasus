@@ -47,7 +47,8 @@ const routes = [].concat(
   require('../routes/cookies'),
   require('../routes/accessibility'),
   require('../routes/species-warning'),
-  require('../routes/draft-submission-warning')
+  require('../routes/draft-submission-warning'),
+  require('../routes/add-application')
 )
 
 module.exports = {
