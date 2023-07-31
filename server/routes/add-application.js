@@ -168,27 +168,9 @@ module.exports = [
             return h.redirect(nextPathAddSpecies)
           case 'no':
             return h.redirect(nextPathContinue)
-        }
-        //species.useCertificateFor = request.payload.useCertificateFor
-
-        // try {
-        //   mergeSubmission(
-        //     request,
-        //     { applications: submission.applications },
-        //     `${pageId}/${applicationIndex}`
-        //   )
-        // } catch (err) {
-        //   console.error(err)
-        //   return h.redirect(invalidSubmissionPath)
-        // }
-
-        // const exitChangeRouteUrl = checkChangeRouteExit(request, false)
-        // if (exitChangeRouteUrl) {
-        //   return h.redirect(exitChangeRouteUrl)
-        // }
-
-        //return h.redirect(`${nextPath}/${applicationIndex}`
-        //)
+          default:
+            throw "unknown add application value"
+        }       
       }
     }
   }
