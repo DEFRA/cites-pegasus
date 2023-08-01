@@ -1,28 +1,28 @@
 const urlPrefix = require("../../config/config").urlPrefix
 const { setYarValue, getYarValue } = require("../lib/session")
 const changeTypes = [
-    'permitType', 
-    'applicantContactDetails', 
-    'agentContactDetails', 
-    'applicantAddress', 
-    'agentAddress', 
-    'deliveryAddress', 
-    'sourceCode', 
-    'speciesName', 
-    'quantity', 
-    'purposeCode', 
+    'permitType',
+    'applicantContactDetails',
+    'agentContactDetails',
+    'applicantAddress',
+    'agentAddress',
+    'deliveryAddress',
+    'sourceCode',
+    'speciesName',
+    'quantity',
+    'purposeCode',
     'tradeTermCode',
-    'describeLivingAnimal', 
-    'useCertificateFor', 
-    'acquiredDate', 
-    'a10CertificateNumber', 
-    'unmarkedSpecimens', 
-    'createdDate', 
-    'specimenType', 
-    'descriptionGeneric', 
-    'importerExporterDetails', 
-    'permitDetails', 
-    'comments', 
+    'describeLivingAnimal',
+    'useCertificateFor',
+    'acquiredDate',
+    'a10CertificateNumber',
+    'unmarkedSpecimens',
+    'createdDate',
+    'specimenType',
+    'descriptionGeneric',
+    'importerExporterDetails',
+    'permitDetails',
+    'comments',
     'uniqueIdentificationMark',
     'everImportedExported']
 
@@ -143,13 +143,8 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
 function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
     const changeData = getYarValue(request, "changeRouteData")
     if (changeData) {
-        // if ((!isBack && request.headers.referer.endsWith(changeData.endUrl))
-        //     || (isBack && request.path.endsWith(changeData.startUrl))) {
-        //     return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
-        // }
-
         const matchesEndUrl = changeData.endUrls.some(endUrl => request.headers.referer?.endsWith(endUrl))
-        
+
         const matchesStartUrl = request.path.endsWith(changeData.startUrl)
 
         if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesStartUrl) || (isBack && !changeData.dataRemoved && matchesStartUrl)) {
@@ -162,8 +157,7 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
 
 function setDataRemoved(request) { //This is used to stop the back button taking a user back to the check your answers page
     const changeRouteData = getChangeRouteData(request)
-    if(!changeRouteData)
-    {
+    if (!changeRouteData) {
         return
     }
     changeRouteData.dataRemoved = true

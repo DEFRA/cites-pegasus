@@ -34,7 +34,7 @@ function createModel(errors, data) {
         defaultBackLink = previousPathSelectDeliveryAddress
     }
     
-    backLink = data.backLinkOverride ? data.backLinkOverride : defaultBackLink
+    const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBackLink
 
     let defaultTitle = ''
     let pageHeader = ''

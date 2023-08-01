@@ -91,7 +91,7 @@ function createModel(errors, data) {
 
 function validateSearchData(searchData) {
     if (!searchData.postcode) {
-        throw "must provide postcode or address search details"
+        throw new Error("must provide postcode or address search details")
     }
 }
 
@@ -199,11 +199,7 @@ module.exports = [{
                 const newSubmission = {
                     [contactType]: {
                         candidateAddressData: {
-                            // addressSearchData: { //TODO COMMENT THIS BIT OUT
-                            //     results: null
-                            // },
                             selectedAddress: {
-                                //addressSummary: request.payload.address,
                                 addressLine1: addressLine1Components.join(", ") || null,
                                 addressLine2: otherAddressLineComponents[0] || null,
                                 addressLine3: otherAddressLineComponents[1] || null,

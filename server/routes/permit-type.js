@@ -137,7 +137,6 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      //mergeSubmission(request, {permitType: request.payload.permitType});
       let submission = getSubmission(request)
 
       if (!submission) {

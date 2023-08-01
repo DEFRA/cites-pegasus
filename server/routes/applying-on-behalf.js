@@ -71,11 +71,6 @@ function createModel(errors, isAgent) {
 
 }
 
-// function validateSubmission(submission) {
-//   if (submission.permitType === null) { throw 'submission error: permitType is null' }
-//   if (submission.permitType === 'other') { throw 'submission error: permitType is "other"' }
-// }
-
 module.exports = [{
   method: 'GET',
   path: currentPath,
@@ -111,7 +106,7 @@ module.exports = [{
       const isAgent = request.payload.isAgent === textContent.common.radioOptionYes;
 
       try {
-        agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
+        const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
 
         mergeSubmission(request, agentData, pageId)        
       }

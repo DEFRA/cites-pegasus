@@ -133,7 +133,7 @@ module.exports = [
       
       const pageData = {
         submissionRef,
-        pageNo: pageNo ? pageNo : 1,
+        pageNo: pageNo || 1,
         applications: slicedApplications,
         startIndex,
         endIndex,

@@ -2,11 +2,7 @@ const openid = require('openid-client');
 const { readSecret } = require('../lib/key-vault')
 const { cidmApiDiscoveryUrl, cidmCallbackUrl } = require('../../config/config');
 
-async function getOpenIdClient() {
-    // if (oidcClient) {
-    //   return oidcClient;
-    // }
-  
+async function getOpenIdClient() {  
     openid.custom.setHttpOptionsDefaults({
       timeout: 10000
     });

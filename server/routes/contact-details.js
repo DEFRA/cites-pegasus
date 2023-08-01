@@ -31,6 +31,7 @@ function createModel(errors, data) {
 
     let defaultTitle = ''
     let pageHeader = ''
+    let inputHintEmail = ''
 
     switch (data.permitType) {
         case 'import':

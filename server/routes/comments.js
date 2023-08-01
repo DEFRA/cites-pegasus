@@ -152,7 +152,7 @@ module.exports = [
         }
 
         const submission = getSubmission(request)
-        submission.applications[applicationIndex].comments = modifiedComments ? modifiedComments : ""
+        submission.applications[applicationIndex].comments = modifiedComments || ""
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)

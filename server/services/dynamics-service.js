@@ -1,11 +1,10 @@
 const MSAL = require('@azure/msal-node');
 const Wreck = require('@hapi/wreck');
 const { getYarValue, setYarValue } = require('../lib/session')
-var moment = require('moment');
+const moment = require('moment');
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 const lodash = require('lodash');
-//const tradeTermCode = require('../routes/trade-term-code');
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
 
 async function getClientCredentialsToken() {
@@ -37,7 +36,7 @@ async function getAccessToken(server) {
 
   if (credentials === null || minsUntilExpiry < 1) {
     try {
-      credentialsResponse = await getClientCredentialsToken()
+      const credentialsResponse = await getClientCredentialsToken()
       server.app.dynamicsClientCredentials = { accessToken: credentialsResponse.accessToken, expiresOn: credentialsResponse.expiresOn }
       return credentialsResponse.accessToken;
     }
@@ -91,11 +90,6 @@ async function postSubmission(server, submission) {
 
     console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
-    // if (payload.cites_species_response) {
-    //   const json = payload.cites_species_response.replace(/(\r\n|\n|\r)/gm, "")
-    //   return JSON.parse(json)
-    // }
-
     return payload
   } catch (err) {
     if (err.data?.payload) {
@@ -107,19 +101,14 @@ async function postSubmission(server, submission) {
 }
 
 function addOdataTypeProperty(obj) {
-  //console.log(Object.keys(obj)[0])
-  //if (typeof obj !== "object" || obj === null || Object.keys(obj)[0] === 'Payload') {
   if (typeof obj !== "object" || obj === null) {
     return;
   }
 
   if (Array.isArray(obj)) {
-    //obj.forEach(addOdataTypeProperty);
     obj.forEach((item, index) => {
       addOdataTypeProperty(item);
     });
-    // const arrayName = Object.keys(obj)[0];
-    // obj[arrayName + "@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)";
   } else {
     obj["@odata.type"] = "#Microsoft.Dynamics.CRM.expando";
     Object.values(obj).forEach(addOdataTypeProperty);
@@ -300,7 +289,7 @@ function getPortalSubmissionStatus(dynamicsStatuscode, dynamicsStatecode) {
 }
 
 function getDynamicsApplicationStatuses(portalStatuses) {
-  var statuses = [];
+  const statuses = [];
 
   if (portalStatuses.includes('received')) {
     statuses.push(1)
@@ -343,7 +332,7 @@ function getDynamicsApplicationStatuses(portalStatuses) {
 }
 
 function getDynamicsSubmissionStatuses(portalStatuses) {
-  var statuses = [];
+  const statuses = [];
 
   if (portalStatuses.includes('awaitingPayment')) {
     statuses.push(1)
@@ -410,9 +399,8 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
     filterParts.push(`(${searchTermParts.join(" or ")})`)
   }
 
-  var filter = `$filter=${filterParts.join(" and ")}`
+  const filter = `$filter=${filterParts.join(" and ")}`
 
-  //var url = `${apiUrl}cites_submissions?${encodeURIComponent(select)}&${encodeURIComponent(expand)}&${encodeURIComponent(orderby)}&${encodeURIComponent(count)}&${encodeURIComponent(filter)}`
   return `${apiUrl}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
 }
 
@@ -441,7 +429,7 @@ async function getSubmissions(server, query, pageSize) {
             //status: reverseMapper(dynamicsStatusMappings, x.statuscode),
             dateSubmitted: x.createdon,
             //permitType: reverseMapper(dynamicsPermitTypesMappings, x.cites_cites_submission_incident_submission[0].cites_permittype)
-            //permitType: 'import'//TODO FIX THIS
+            //permitType: 'import'
           }
         }),
         nextQueryUrl: payload["@odata.nextLink"],
@@ -466,7 +454,7 @@ function getPaymentCalculationType(dynamicsType) {
     case 149900001:
       return "complex"
     default:
-      throw "Unknown Dynamics Payment Calculation Type."
+      throw new Error("Unknown Dynamics Payment Calculation Type.")
   }
 }
 
@@ -492,7 +480,7 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
     `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
   ]
 
-  var filter = `$filter=${filterParts.join(" and ")}`
+  const filter = `$filter=${filterParts.join(" and ")}`
 
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
   //console.log(url)
@@ -506,13 +494,13 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
     const response = await Wreck.get(url, options)
 
 
-    const { res, payload } = response
+    const { payload } = response
 
     if (payload) {
       console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
 
       if (payload.value.length == 0) {
-        throw `Submission not found with reference '${submissionRef}' and contact '${contactId}'`
+        throw new Error(`Submission not found with reference '${submissionRef}' and contact '${contactId}'`)
       }
 
       const submission = payload.value[0]
@@ -528,9 +516,8 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
         feePaid: submission.cites_feehasbeenpaid
       }
 
-      //for (const jsonApplication of jsonContent.applications) {
       jsonContent.applications.forEach(jsonApplication => {
-        dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonApplication.applicationIndex)
+        const dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonApplication.applicationIndex)
         jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference
       })
 
@@ -553,7 +540,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
 
   try {
     if (!submissionId && !submissionRef) {
-      throw 'Unable to identify submission'
+      throw new Error('Unable to identify submission')
     }
     const top = "$top=1"
     const select = "$select=cites_submissionreference"
@@ -581,7 +568,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
       console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
       if (payload.value.length == 0) {
-        throw `Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`
+        throw new Error(`Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`)
       }
     }
   }

@@ -169,7 +169,7 @@ module.exports = [
           case 'no':
             return h.redirect(nextPathContinue)
           default:
-            throw "unknown add application value"
+            throw new Error("unknown add application value")
         }       
       }
     }

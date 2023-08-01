@@ -30,11 +30,6 @@ function createModel(errors, data) {
         previousPath = `${urlPrefix}/select-delivery-address`
     }
 
-
-    // if(!data.addressSearchData){
-    //     previousPath = data.address.uprn ? `${urlPrefix}/select-address` : `${urlPrefix}/enter-address`
-    // }
-
     let defaultTitle = ''
     let pageHeader = ''
 

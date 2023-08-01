@@ -25,14 +25,10 @@ function mergeSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    //console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
-
     const mergedSubmission = lodash.merge(existingSubmission, data)
-    //const mergedSubmission = { ...emptySubmission, ...existingSubmission, ...data }
-
+    
     setYarValue(request, 'submission', mergedSubmission)
-    //console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(mergedSubmission, null, 4))//TODO Remove this
-
+    
     return mergedSubmission
 }
 
@@ -40,10 +36,7 @@ function setSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    //console.log(Color.FgCyan, 'session data before update ' + JSON.stringify(existingSubmission, null, 4))//TODO Remove this
-
-    setYarValue(request, 'submission', data)
-    //console.log(Color.FgGreen, 'session data after update ' + JSON.stringify(data, null, 4))//TODO Remove this
+    setYarValue(request, 'submission', data)    
 }
 
 function clearSubmission(request) {
@@ -52,11 +45,9 @@ function clearSubmission(request) {
 
 function validateSubmission(submission, path) {
     const { appFlow, applicationStatuses } = getAppFlow(submission)
-    //console.table(appFlow)
-    //console.table(applicationStatuses)
     if (path) {
         if (!appFlow.includes(path)) {
-            throw `Invalid navigation to ${path}`
+            throw new Error(`Invalid navigation to ${path}`)
         }
     }
     return applicationStatuses
@@ -223,7 +214,7 @@ function getAppFlow(submission) {
     let appFlow = []
     if (submission) {
         if (submission.submissionRef) {
-            appFlow.push('pay-application')//TODO May need some extra logic around payment status here
+            appFlow.push('pay-application')
             if (submission.paymentDetails) {
                 appFlow.push('application-complete')
                 appFlow.push('govpay')

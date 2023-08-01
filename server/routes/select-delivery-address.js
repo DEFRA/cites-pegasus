@@ -133,7 +133,7 @@ module.exports = [{
                     nextPath = `${urlPrefix}/postcode/delivery`
                     break;
                 default:
-                    throw "Invalid delivery address option"
+                    throw new Error("Invalid delivery address option")
 
             }
 

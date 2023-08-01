@@ -17,6 +17,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.permitDetails
 
+  let heading = ''
   if (data.permitType === "import") {
     heading = pageContent.headingImport
   } else if (
