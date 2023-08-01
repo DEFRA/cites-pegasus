@@ -110,7 +110,7 @@ function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, ra
 }
 
 function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, errorList) {
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
+  const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
   const inputModel = {
     input: {
       id: inputId,

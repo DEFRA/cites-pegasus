@@ -1,6 +1,5 @@
 const config = require('../../config/config')
 const pageId = 'oidc'
-//const Joi = require('joi')
 const { getYarValue, setYarValue, clearYarSession } = require('../lib/session')
 const { getDomain } = require('../lib/helper-functions')
 const { getOpenIdClient } = require('../services/oidc-client')

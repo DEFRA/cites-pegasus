@@ -46,7 +46,7 @@ function createModel(errors, data) {
     }
   })
 
-  clientJSConfig = {
+  const clientJSConfig = {
     fileSizeErrorText: pageContent.errorMessages["error.fileUpload.any.filesize"],
     maxFileSizeBytes: maxFileSizeBytes,
     errorSummaryTitle: commonContent.errorSummaryTitle
@@ -158,7 +158,7 @@ module.exports = [
           payloadSchema = Joi.object({ fileUpload: fileSchema })
         }
 
-        const { error, value } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
+        const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
 
         // If there was an error, return a 400 Bad Request response
         if (error) {

@@ -156,7 +156,6 @@ module.exports = [
 
         species.isEverImportedExported = request.payload.isEverImportedExported
 
-        let permitDetailsRequired = false
         if (isChange) {
           if (species.isEverImportedExported === false) {
             application.permitDetails = null

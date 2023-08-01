@@ -8,7 +8,7 @@ const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 function createModel(previousPath){
   const commonContent = textContent.common;
   const pageContent = textContent.privacy;
-  const backLink = previousPath ? previousPath : previousPathMySubmissions
+  const backLink = previousPath || previousPathMySubmissions
 
   return { ...commonContent, ...pageContent, backLink }
 }

@@ -16,7 +16,7 @@ function isAfterMinDate(day, month, year) {
 }
 
 function isPastDate(date, allowToday = false) {
-    var today = new Date().setHours(0, 0, 0, 0)
+    const today = new Date().setHours(0, 0, 0, 0)
     if (allowToday) {
         return date <= today
     } else {

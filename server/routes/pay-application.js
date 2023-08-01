@@ -14,8 +14,6 @@ function createModel(errors, data) {
   const commonContent = textContent.common;
   const pageContent = textContent.payApplication;
 
-  let payNowRadioVal = null
-
   let errorList = null
   if (errors) {
     errorList = []
@@ -33,7 +31,7 @@ function createModel(errors, data) {
   }
 
   const model = {
-    //backLink: previousPath,
+    
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageHeader: pageContent.pageHeader,
@@ -71,17 +69,12 @@ function createModel(errors, data) {
 
 }
 
-// function validateSubmission(submission) {
-//   if (submission.permitType === null) { throw 'submission error: permitType is null' }
-//   if (submission.permitType === 'other') { throw 'submission error: permitType is "other"' }
-// }
-
 module.exports = [{
   method: 'GET',
   path: currentPath,
   handler: async (request, h) => {
     const submission = getSubmission(request) || null
-    //TODO CHECK APPLICATION STATUS
+    
     let costingValue = null
 
     costingValue = submission.paymentDetails.costingValue

@@ -144,36 +144,11 @@ function createModel(errors, data) {
           value: "closed",
           text: commonContent.statusDescriptionClosed,
           checked: isChecked(data.statuses, "closed")
-        }
-        // {
-        //   value: "received",
-        //   text: commonContent.statusDescriptionReceived,
-        //   checked: isChecked(data.statuses, "received")
-        // },
-        // {
-        //   value: "awaitingReply",
-        //   text: commonContent.statusDescriptionAwaitingReply,
-        //   checked: isChecked(data.statuses, "awaitingReply")
-        // },
-        // {
-        //   value: "issued",
-        //   text: commonContent.statusDescriptionIssued,
-        //   checked: isChecked(data.statuses, "issued")
-        // },
-        // {
-        //   value: "refused",
-        //   text: commonContent.statusDescriptionRefused,
-        //   checked: isChecked(data.statuses, "refused")
-        // },
-        // {
-        //   value: "cancelled",
-        //   text: commonContent.statusDescriptionCancelled,
-        //   checked: isChecked(data.statuses, "cancelled")
-        // },
+        }        
       ],
     },
 
-    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo ? data.pageNo : 1, pageSize, textPagination) : ""
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, pageSize, textPagination) : ""
   }
   return { ...commonContent, ...model }
 }

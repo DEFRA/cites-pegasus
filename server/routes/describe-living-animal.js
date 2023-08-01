@@ -200,22 +200,6 @@ function getDateOfBirthInputGroupItems(components, dateOfBirthErrors) {
   })
 }
 
-// function getUndeterminedSexReason(inputId, undeterminedSexReason, errorList) {
-//   var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
-//   const inputModel = {
-//     input: {
-//       id: inputId,
-//       name: inputId,
-//       classes: "govuk-input govuk-input--width-10",
-//       label: { text: textContent.describeLivingAnimal.inputLabelUndeterminedSexReason },
-//       ...(undeterminedSexReason ? { value: undeterminedSexReason } : {}),
-//       errorMessage: getFieldError(errorList, "#" + inputId)
-//     }
-//   }
-
-//   return nunjucks.renderString(renderString, inputModel)
-// }
-
 function dateOfBirthValidator(value, helpers) {
   const {
     "dateOfBirth-day": day,

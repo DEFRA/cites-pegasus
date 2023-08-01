@@ -82,14 +82,15 @@ function createSubmitApplicationModel(errors, data) {
 function createAreYouSureModel(errors, data) {
   const commonContent = textContent.common
 
+  let pageContent = null
   let pageHeader = null
   let defaultTitle = null
   let formActionPage = null
   let pageBody = null
   let errorMessageRemove = null
   if (data.confirmType === 'remove') {
-    pageContent = textContent.yourSubmission.areYouSureRemove,
-      defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
+    pageContent = textContent.yourSubmission.areYouSureRemove
+    defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`
     pageBody = data.applications.length === 1 ? pageContent.pageBody : ""
     formActionPage = `${currentPath}/${areYouSurePath}/remove/${data.applicationIndex}`
@@ -97,8 +98,8 @@ function createAreYouSureModel(errors, data) {
       'error.areYouSure.any.required': `${pageContent.errorMessages['error.areYouSure.part1.any.required']} ${data.speciesName} ${pageContent.errorMessages['error.areYouSure.part2.any.required']}`
     }
   } else {
-    pageContent = textContent.yourSubmission.areYouSurePermitType,
-      defaultTitle = pageContent.defaultTitle
+    pageContent = textContent.yourSubmission.areYouSurePermitType
+    defaultTitle = pageContent.defaultTitle
     pageHeader = pageContent.pageHeader
     pageBody = `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}`
     formActionPage = `${currentPath}/${areYouSurePath}/permit-type`

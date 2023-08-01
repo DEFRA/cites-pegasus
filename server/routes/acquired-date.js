@@ -74,7 +74,7 @@ function createModel(errors, data) {
     { name: 'year', value: data.acquiredDateYear }
   ]
 
-  var renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
+  const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
@@ -171,47 +171,6 @@ function acquiredDateValidator(value, helpers) {
     if (dateValidatorResponse) {
       return dateValidatorResponse
     }
-
-    // if (!day && !month && !year) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate' });
-    // }
-
-    // if (!day && !month) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-day-month' });
-    // }
-
-    // if (!day && !year) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-day-year' });
-    // }
-
-    // if (!month && !year) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-month-year' });
-    // }
-
-    // if (!day) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-day' });
-    // }
-
-    // if (!month) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-month' });
-    // }
-
-    // if (!year) {
-    //   return helpers.error('any.empty', { customLabel: 'acquiredDate-year' });
-    // }
-
-    // if (!isValidDate(day, month, year)) {
-    //   return helpers.error('any.invalid', { customLabel: 'acquiredDate' });
-    // }
-
-    // if (!isAfterMinDate(day, month, year)) {
-    //   return helpers.error('any.beforeMinDate', { customLabel: 'acquiredDate' });
-    // }
-
-    // const date = new Date(year, month - 1, day);
-    // if (!isPastDate(date, true)) {
-    //   return helpers.error('any.future', { customLabel: 'acquiredDate' });
-    // }
   }
   return value
 }
