@@ -631,7 +631,7 @@
     "pageHeader": "What is the CITES trade term code",
     "pageBody": "",
     "tradeTermCodeSelectDefault": "Select a trade term code...",
-    "tradeTermCodeUnknown": "I don't know",
+    "tradeTermCodeUnknown": "Not known",
     "errorMessages": {
       "error.tradeTermCode.string.empty": "Enter the trade term code",
       "error.tradeTermCode.string.length": "Trade term code must be 3 characters",
