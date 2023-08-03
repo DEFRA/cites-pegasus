@@ -597,6 +597,21 @@
       "error.purposeCode.any.required": "Select the purpose code"
     }
   },
+  "specimenOrigin": {
+    "defaultTitle": "Where did the specimen come from?",
+    "pageHeader": "Where did the specimen come from?",
+    "hintText": "I hereby certify that the specimens described above:",
+    "radioOptionA": "were taken from the wild in accordance with the legislation in force in the United Kingdom",
+    "radioOptionB": "are abandoned or escaped specimens that were recovered in accordance with the legislation in force in the United Kingdom",
+    "radioOptionC": "are captive born-and-bred or artificially propagated specimens",
+    "radioOptionD": "were acquired in or introduced into a Member State in compliance with the provisions of Council Regulation (EC) No 338/97 as it had effect immediately before IP completion day",
+    "radioOptionE": "were acquired in or introduced into a Member State before 1 June 1997 in accordance with Council Regulation (EEC) No 3626/82",
+    "radioOptionF": "were acquired in or introduced into a Member State before 1 January 1984 in compliance with the provisions of CITES",
+    "radioOptionG": "were acquired in or introduced into the United Kingdom before the provisions of Regulations (EC) No 338/97 (as it had effect immediately before IP completion day) or (EEC) No 3626/82 or of CITES became applicable in this territory.",
+    "errorMessages": {
+      "error.specimenOrigin.any.required": "Select where the specimen came from"
+    }
+  },
   "useCertificateFor": {
     "defaultTitle": "What will you use the certificate for?",
     "pageHeader": "What will you use the certificate for?",
@@ -1067,6 +1082,14 @@
     "rowTextMaleParentDetails": "Male parent details",
     "rowTextFemaleParentDetails": "Female parent details",
     "rowTextOtherDescription": "Other description",
+    "rowTextA10SpecimenOrigin": "Article 10 specimen origin",
+    "rowTextSpecimenOriginA": "were taken from the wild in accordance with the legislation in force in the United Kingdom",
+    "rowTextSpecimenOriginB": "are abandoned or escaped specimens that were recovered in accordance with the legislation in force in the United Kingdom",
+    "rowTextSpecimenOriginC": "are captive born-and-bred or artificially propagated specimens",
+    "rowTextSpecimenOriginD": "were acquired in or introduced into a Member State in compliance with the provisions of Council Regulation (EC) No 338/97 as it had effect immediately before IP completion day",
+    "rowTextSpecimenOriginE": "were acquired in or introduced into a Member State before 1 June 1997 in accordance with Council Regulation (EEC) No 3626/82",
+    "rowTextSpecimenOriginF": "were acquired in or introduced into a Member State before 1 January 1984 in compliance with the provisions of CITES",
+    "rowTextSpecimenOriginG": "were acquired in or introduced into the United Kingdom before the provisions of Regulations (EC) No 338/97 (as it had effect immediately before IP completion day) or (EEC) No 3626/82 or of CITES became applicable in this territory.",
     "rowTextA10CertificatePurpose": "Article 10 certificate purpose",
     "rowTextLegallyAcquired": "To prove that you legally acquired a specimen",
     "rowTextCommercialActivities": "To use the specimen for commercial activities",

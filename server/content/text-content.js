@@ -432,6 +432,21 @@ const schema = Joi.object().keys({
       "error.purposeCode.any.required": Joi.string().required()
     }).required()
   }).required(),
+  specimenOrigin: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    hintText: Joi.string().required(),
+    radioOptionA: Joi.string().required(),
+    radioOptionB: Joi.string().required(),
+    radioOptionC: Joi.string().required(),
+    radioOptionD: Joi.string().required(),
+    radioOptionE: Joi.string().required(),
+    radioOptionF: Joi.string().required(),
+    radioOptionG: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.specimenOrigin.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   useCertificateFor: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -832,6 +847,14 @@ const schema = Joi.object().keys({
     rowTextMaleParentDetails: Joi.string().required(),
     rowTextFemaleParentDetails: Joi.string().required(),
     rowTextOtherDescription: Joi.string().required(),
+    rowTextA10SpecimenOrigin: Joi.string().required(),
+    rowTextSpecimenOriginA: Joi.string().required(),
+    rowTextSpecimenOriginB: Joi.string().required(),
+    rowTextSpecimenOriginC: Joi.string().required(),
+    rowTextSpecimenOriginD: Joi.string().required(),
+    rowTextSpecimenOriginE: Joi.string().required(),
+    rowTextSpecimenOriginF: Joi.string().required(),
+    rowTextSpecimenOriginG: Joi.string().required(),
     rowTextA10CertificatePurpose: Joi.string().required(),
     rowTextLegallyAcquired: Joi.string().required(),
     rowTextCommercialActivities: Joi.string().required(),
