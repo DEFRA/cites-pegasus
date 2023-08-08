@@ -32,8 +32,12 @@
       {{draftNotificationHeader}}
     </h3>
     <p class="govuk-body">{{draftNotificationBody}}</p>
-    <p class="govuk-body"><a class="govuk-notification-banner__link" href="{{draftContinuePath}}">{{draftContinue}}</a></p>
-    <p class="govuk-body"><a class="govuk-notification-banner__link" href="{{draftDeletePath}}">{{draftDelete}}</a></p>
+    <p class="govuk-body">
+      <a class="govuk-notification-banner__link" href="{{draftContinuePath}}">{{draftContinue}}</a>
+    </p>
+    <p class="govuk-body">
+      <a class="govuk-notification-banner__link" href="{{draftDeletePath}}">{{draftDelete}}</a>
+    </p>
     {% endset %}
 
     {{ govukNotificationBanner({
@@ -50,6 +54,18 @@
         </h1>
       </div>
     </div>
+    <div class="flex-container">
+      <div>{{ govukButton({
+                      text: buttonStartNewApplication,
+                      type: "submit",
+                      attributes: {
+                        formAction: formActionStartNewApplication
+                      }
+                    }) }}</div>
+      <div class="govuk-body button-text-inline">{{pageBodyNewApplicationFromPrevious}}</div>
+
+    </div>
+
     <div class="govuk-grid-row" style="display: flex; align-content: center">
       <div class="govuk-grid-column-one-half search-container">
         <div class="govuk-grid-column-full search-input">
@@ -72,15 +88,7 @@
           <a href="{{currentPath}}">{{clearSearchLinkText}}</a>
         </p>
       </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-top-5 landingpage-row-wrapper">
-        {{ govukButton({
-                      text: buttonStartNewApplication,
-                      type: "submit",
-                      attributes: {
-                        formAction: formActionStartNewApplication
-                      }
-                    }) }}
-      </div>
+      
     </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
