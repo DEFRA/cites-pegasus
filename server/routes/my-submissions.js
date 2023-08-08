@@ -3,9 +3,8 @@ const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { getSubmission, mergeSubmission, validateSubmission, createSubmission, checkDraftSubmissionExists, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
+const { createSubmission, checkDraftSubmissionExists, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
-const nunjucks = require("nunjucks")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
 const currentPath = `${urlPrefix}/${pageId}`
@@ -16,7 +15,7 @@ const draftDeletePath = `${currentPath}/draft-delete`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
 const permitTypes = ['import', 'export', 'reexport', 'article10']
-const statuses = ['awaitingPayment', 'inProgress', 'closed']//['received', 'awaitingPayment', 'awaitingReply', 'inProcess', 'inProgress', 'issued', 'refused', 'cancelled']
+const statuses = ['awaitingPayment', 'inProgress', 'closed']
 
 const pageSize = 15
 
@@ -74,6 +73,7 @@ function createModel(errors, data) {
     clearSearchLinkText: pageContent.linkTextClearSearch,
     currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
+    pageBodyNewApplicationFromPrevious: pageContent.pageBodyNewApplicationFromPrevious,
     headerFilters: pageContent.heading1,
     pageBodyPermitType: pageContent.pageBodyPermitType,
     pageBodyStatus: pageContent.pageBodyStatus,

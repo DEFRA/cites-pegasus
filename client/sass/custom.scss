@@ -134,7 +134,7 @@ ul.smaller-indent {
 
 
 .referencenumber-link {
-   text-decoration: none;
+    text-decoration: none;
 }
 
 @-webkit-keyframes bounce {
@@ -173,7 +173,7 @@ input.disabled {
     color: #555;
     border: 1px solid #ccc;
     cursor: not-allowed;
-    
+
 }
 
 a[data-disabled] {
@@ -208,7 +208,7 @@ div:has(a[data-disabled]:hover) {
 .govuk-button--search {
     background-color: #1d70b8;
     box-shadow: 0 0 0 #1d70b8;
-    margin:0;
+    margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
@@ -221,7 +221,11 @@ div:has(a[data-disabled]:hover) {
 }
 
 
+.flex-container {
+    display: flex;
+}
 
-
-
-
+.button-text-inline {
+    margin-left: 10px;
+    margin-top: 7px;
+}
