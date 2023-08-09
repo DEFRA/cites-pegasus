@@ -184,7 +184,8 @@ module.exports = [
           species.numberOfUnmarkedSpecimens = null
           species.specimenDescriptionLivingAnimal = null
           species.specimenDescriptionGeneric = null
-          species.parentDetails = null
+          species.maleParentDetails = null
+          species.femaleParentDetails = null
           species.sex = null
           species.dateOfBirth = null
         }
