@@ -58,6 +58,7 @@ function createModel(errors, data) {
     pageBodyNewApplicationFromPrevious = null
   } else if ((data.noApplicationFound || data.noMatchingApplication) && submissionsData.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
+    pageBodyNewApplicationFromPrevious = null
   }
 
   const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
