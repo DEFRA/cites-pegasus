@@ -52,8 +52,10 @@ function createModel(errors, data) {
   const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
   let pagebodyNoApplicationsFound = null
+  let pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
   if (data.noApplicationMadeBefore && submissionsData.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
+    pageBodyNewApplicationFromPrevious = null
   } else if ((data.noApplicationFound || data.noMatchingApplication) && submissionsData.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
   }
@@ -73,7 +75,7 @@ function createModel(errors, data) {
     clearSearchLinkText: pageContent.linkTextClearSearch,
     currentPath: currentPath,
     buttonStartNewApplication: pageContent.buttonStartNewApplication,
-    pageBodyNewApplicationFromPrevious: pageContent.pageBodyNewApplicationFromPrevious,
+    pageBodyNewApplicationFromPrevious,
     headerFilters: pageContent.heading1,
     pageBodyPermitType: pageContent.pageBodyPermitType,
     pageBodyStatus: pageContent.pageBodyStatus,
