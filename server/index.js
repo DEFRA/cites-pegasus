@@ -33,6 +33,13 @@ async function createServer() {
       // auth: {
       //   mode: 'optional' //UNCOMMENT THIS TO DISABLE SECURITY
       // },
+      security: {
+        hsts: { //Adds the HSTS header to all responses.
+          includeSubDomains: true,
+          preload: true,
+          maxAge: 15768000
+        }
+      },
       validate: {
         options: {
           abortEarly: false
