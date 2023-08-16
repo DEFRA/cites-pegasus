@@ -7,7 +7,6 @@ const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
-const nextPathArticle10 = `${urlPrefix}/use-certificate-for`
 const nextPathSpecimenType = `${urlPrefix}/specimen-type`
 const invalidSubmissionPath = `${urlPrefix}/`
 

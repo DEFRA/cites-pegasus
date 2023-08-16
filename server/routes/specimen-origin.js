@@ -4,15 +4,15 @@ const { findErrorList, getFieldError, isChecked } = require("../lib/helper-funct
 const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
-const pageId = "use-certificate-for"
+const pageId = "specimen-origin"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/specimen-origin`
-const nextPath = `${urlPrefix}/specimen-type`
+const previousPath = `${urlPrefix}/source-code`
+const nextPath = `${urlPrefix}/use-certificate-for`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.useCertificateFor
+  const pageContent = textContent.specimenOrigin
 
   let errorList = null
   if (errors) {
@@ -21,7 +21,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["useCertificateFor"]
+    const fields = ["specimenOrigin"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -44,9 +44,9 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
 
-    inputUseCertificateFor: {
-      idPrefix: "useCertificateFor",
-      name: "useCertificateFor",
+    inputSpecimenOrigin: {
+      idPrefix: "specimenOrigin",
+      name: "specimenOrigin",
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
@@ -54,49 +54,68 @@ function createModel(errors, data) {
           classes: "govuk-fieldset__legend--l"
         }
       },
+      hint: {
+        text: pageContent.hintText
+      },
       items: [
         {
-          value: "legallyAcquired",
-          text: pageContent.radioOptionLegallyAcquired,
+          value: "a",
+          text: pageContent.radioOptionA,
           checked: isChecked(
-            data.useCertificateFor,
-            "legallyAcquired"
+            data.specimenOrigin,
+            "a"
           )
         },
         {
-          value: "commercialActivities",
-          text: pageContent.radioOptionCommercialActivities,
+          value: "b",
+          text: pageContent.radioOptionB,
           checked: isChecked(
-            data.useCertificateFor,
-            "commercialActivities"
+            data.specimenOrigin,
+            "b"
           )
         },
         {
-          value: "displayWithoutSale",
-          text: pageContent.radioOptionDisplayWithoutSale,
+          value: "c",
+          text: pageContent.radioOptionC,
           checked: isChecked(
-            data.useCertificateFor,
-            "displayWithoutSale"
+            data.specimenOrigin,
+            "c"
           )
         },
         {
-          value: "nonDetrimentalPurposes",
-          text: pageContent.radioOptionNonDetrimentalPurposes,
+          value: "d",
+          text: pageContent.radioOptionD,
           checked: isChecked(
-            data.useCertificateFor,
-            "nonDetrimentalPurposes"
+            data.specimenOrigin,
+            "d"
           )
         },
         {
-          value: "moveALiveSpecimen",
-          text: pageContent.radioOptionMoveALiveSpecimen,
+          value: "e",
+          text: pageContent.radioOptionE,
           checked: isChecked(
-            data.useCertificateFor,
-            "moveALiveSpecimen"
+            data.specimenOrigin,
+            "e"
+          )
+        },
+        {
+          value: "f",
+          text: pageContent.radioOptionF,
+          checked: isChecked(
+            data.specimenOrigin,
+            "f"
+          )
+        },
+        {
+          value: "g",
+          text: pageContent.radioOptionG,
+          checked: isChecked(
+            data.specimenOrigin,
+            "g"
           )
         }
       ],
-      errorMessage: getFieldError(errorList, "#useCertificateFor")
+      errorMessage: getFieldError(errorList, "#specimenOrigin")
     }
   }
   return { ...commonContent, ...model }
@@ -127,7 +146,7 @@ module.exports = [
       const pageData = {
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
-        useCertificateFor: submission.applications[applicationIndex].species.useCertificateFor
+        specimenOrigin: submission.applications[applicationIndex].species.specimenOrigin
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -144,7 +163,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "nonDetrimentalPurposes", "displayWithoutSale", "moveALiveSpecimen").required()
+          specimenOrigin: Joi.string().valid("a", "b", "c", "d", "e", "f", "g").required()
         }),
         failAction: (request, h, err) => {
           const pageData = {
@@ -160,7 +179,7 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
         
-        species.useCertificateFor = request.payload.useCertificateFor
+        species.specimenOrigin = request.payload.specimenOrigin
 
         try {
           mergeSubmission(

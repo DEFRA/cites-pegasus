@@ -48,7 +48,8 @@ const routes = [].concat(
   require('../routes/accessibility'),
   require('../routes/species-warning'),
   require('../routes/draft-submission-warning'),
-  require('../routes/add-application')
+  require('../routes/add-application'),
+  require('../routes/specimen-origin')
 )
 
 module.exports = {

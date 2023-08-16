@@ -141,6 +141,16 @@ function createApplicationSummaryModel(errors, data) {
     plantWorked: pageContent.rowTextSpecimenTypePlantWorked,
   }
 
+  const a10SpecimenOriginValue = {
+    a: pageContent.rowTextSpecimenOriginA,
+    b: pageContent.rowTextSpecimenOriginB,
+    c: pageContent.rowTextSpecimenOriginC,
+    d: pageContent.rowTextSpecimenOriginD,
+    e: pageContent.rowTextSpecimenOriginE,
+    f: pageContent.rowTextSpecimenOriginF,
+    g: pageContent.rowTextSpecimenOriginG
+  }
+
   const a10CertificatePurposeValue = {
     legallyAcquired: pageContent.rowTextLegallyAcquired,
     commercialActivities: pageContent.rowTextCommercialActivities,
@@ -298,6 +308,7 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode} ${data.species.tradeTermCodeDesc}` : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code", summaryType))
   }
   if (data.permitType === "article10") {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10SpecimenOrigin, a10SpecimenOriginValue[data.species.specimenOrigin], hrefPrefix + "/specimenOrigin", "specimen origin", summaryType))
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue[data.species.useCertificateFor], hrefPrefix + "/useCertificateFor", "use certificate for", summaryType))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMark ? data.species.uniqueIdentificationMark : pageContent.rowTextSpecimenIsNotMarked, hrefPrefix + "/uniqueIdentificationMark", "unique identification mark", summaryType))
