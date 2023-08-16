@@ -150,7 +150,8 @@ module.exports = [
         species.specimenDescriptionGeneric = modifiedDescription
         species.specimenDescriptionLivingAnimal = null
         species.sex = null
-        species.parentDetails = null
+        species.maleParentDetails = null
+        species.femaleParentDetails = null
         species.dateOfBirth = null
 
         try {

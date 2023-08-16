@@ -986,6 +986,7 @@ const schema = Joi.object().keys({
     inputLabelSearch: Joi.string().required(),
     linkTextClearSearch: Joi.string().required(),
     buttonStartNewApplication: Joi.string().required(),
+    pageBodyNewApplicationFromPrevious: Joi.string().required(),
     heading1: Joi.string().required(),
     pageBodyPermitType: Joi.string().required(),
     pageBodyStatus: Joi.string().required(),
