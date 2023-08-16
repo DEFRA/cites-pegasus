@@ -290,7 +290,10 @@ function getAppFlow(submission) {
                         const species = application.species
                         if (species.sourceCode) {
                             if (submission.permitType === "article10") {
-                                appFlow.push(`use-certificate-for/${applicationIndex}`)
+                                appFlow.push(`specimen-origin/${applicationIndex}`)
+                                if(species.specimenOrigin) {
+                                    appFlow.push(`use-certificate-for/${applicationIndex}`)
+                                }
                             } else {
                                 appFlow.push(`purpose-code/${applicationIndex}`)
                             }

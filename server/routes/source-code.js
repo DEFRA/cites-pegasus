@@ -13,7 +13,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpeciesName = `${urlPrefix}/species-name`
 const previousPathSpeciesWarning = `${urlPrefix}/species-warning`
 const nextPathPurposeCode = `${urlPrefix}/purpose-code`
-const nextPathUseCertFor = `${urlPrefix}/use-certificate-for`
+const nextPathSpecimenOrigin = `${urlPrefix}/specimen-origin`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -373,7 +373,7 @@ module.exports = [
         }
 
         if (submission.permitType === 'article10') {
-          return h.redirect(`${nextPathUseCertFor}/${applicationIndex}`)
+          return h.redirect(`${nextPathSpecimenOrigin}/${applicationIndex}`)
         } else {
           return h.redirect(`${nextPathPurposeCode}/${applicationIndex}`)
         }

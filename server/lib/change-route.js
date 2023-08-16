@@ -24,7 +24,8 @@ const changeTypes = [
     'permitDetails',
     'comments',
     'uniqueIdentificationMark',
-    'everImportedExported']
+    'everImportedExported',
+    'specimenOrigin']
 
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
@@ -39,41 +40,41 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
             endUrls.push(`${urlPrefix}/comments/${applicationIndex}`)//You must go all the way through the flow                        
             confirm = true
             break
-        case "applicantContactDetails"://DONE
+        case "applicantContactDetails":
             startUrl = `${urlPrefix}/contact-details/applicant`
             confirm = true
             break
-        case "applicantAddress"://DONE      //Change flow
+        case "applicantAddress":      //Change flow
             startUrl = `${urlPrefix}/postcode/applicant`
             endUrls.push(`${urlPrefix}/confirm-address/applicant`)
             confirm = true
             break
-        case "deliveryAddress"://DONE       //Change flow
+        case "deliveryAddress":       //Change flow
             startUrl = `${urlPrefix}/postcode/delivery`
             endUrls.push(`${urlPrefix}/confirm-address/delivery`)
             confirm = true
             break
-        case "speciesName"://DONE           //Change flow
+        case "speciesName":           //Change flow
             startUrl = `${urlPrefix}/species-name/${applicationIndex}`
             endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             confirm = true
             break
-        case "quantity"://DONE
+        case "quantity":
             startUrl = `${urlPrefix}/quantity/${applicationIndex}`
             break
-        case "sourceCode"://DONE
+        case "sourceCode":
             startUrl = `${urlPrefix}/source-code/${applicationIndex}`
             break
-        case "purposeCode"://DONE
+        case "purposeCode":
             startUrl = `${urlPrefix}/purpose-code/${applicationIndex}`
             break
-        case "specimenType"://Change flow   //DONE
+        case "specimenType"://Change flow   
             startUrl = `${urlPrefix}/specimen-type/${applicationIndex}`
             endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             break
-        case "tradeTermCode"://DONE
+        case "tradeTermCode":
             startUrl = `${urlPrefix}/trade-term-code/${applicationIndex}`
             break
         case "uniqueIdentificationMark"://Change flow   //DDNE
@@ -81,25 +82,28 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
             endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             break
-        case "useCertificateFor"://DONE
+        case "specimenOrigin":
+            startUrl = `${urlPrefix}/specimen-origin/${applicationIndex}`
+            break
+        case "useCertificateFor":
             startUrl = `${urlPrefix}/use-certificate-for/${applicationIndex}`
             break
-        case "describeLivingAnimal"://DONE
+        case "describeLivingAnimal":
             startUrl = `${urlPrefix}/describe-living-animal/${applicationIndex}`
             break
-        case "acquiredDate"://DONE
+        case "acquiredDate":
             startUrl = `${urlPrefix}/acquired-date/${applicationIndex}`
             break
-        case "a10CertificateNumber"://DONE
+        case "a10CertificateNumber":
             startUrl = `${urlPrefix}/already-have-a10/${applicationIndex}`
             break
-        case "unmarkedSpecimens"://DONE
+        case "unmarkedSpecimens":
             startUrl = `${urlPrefix}/unmarked-specimens/${applicationIndex}`
             break
-        case "createdDate"://DONE
+        case "createdDate":
             startUrl = `${urlPrefix}/created-date/${applicationIndex}`
             break
-        case "descriptionGeneric"://DONE
+        case "descriptionGeneric":
             startUrl = `${urlPrefix}/describe-specimen/${applicationIndex}`
             break
         case "everImportedExported"://CHANGE FLOW
@@ -107,13 +111,13 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
             endUrls.push(`${urlPrefix}/ever-imported-exported/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/permit-details/${applicationIndex}`)
             break
-        case "importerExporterDetails"://DONE
+        case "importerExporterDetails":
             startUrl = `${urlPrefix}/importer-exporter/${applicationIndex}`
             break
-        case "permitDetails"://DONE
+        case "permitDetails":
             startUrl = `${urlPrefix}/permit-details/${applicationIndex}`
             break
-        case "comments"://DONE
+        case "comments":
             startUrl = `${urlPrefix}/comments/${applicationIndex}`
             break
         default:
