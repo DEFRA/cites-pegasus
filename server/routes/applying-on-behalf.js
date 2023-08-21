@@ -1,13 +1,13 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
-const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
+const { mergeSubmission, getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 
 const textContent = require('../content/text-content')
 const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
-const nextPath = `${urlPrefix}/contact-details/`
+const nextPath = `${urlPrefix}/contact-details/applicant`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, isAgent) {
@@ -115,8 +115,8 @@ module.exports = [{
         return h.redirect(invalidSubmissionPath)
       }
       
-      
-      return h.redirect(nextPath + 'applicant');
+      saveDraftSubmission(request, nextPath)
+      return h.redirect(nextPath)      
     }
   },
 }]

@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { POSTCODE_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -188,7 +188,10 @@ module.exports = [{
                 return h.redirect(invalidSubmissionPath)
             }
 
-            return h.redirect(`${nextPath}/${contactType}`)
+            const redirectTo = `${nextPath}/${contactType}`
+            saveDraftSubmission(request, redirectTo)
+            return h.redirect(redirectTo)      
+
         }
     },
 }]

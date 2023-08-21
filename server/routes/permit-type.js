@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, setSubmission, createSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
@@ -165,10 +165,14 @@ module.exports = [{
 
       const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
       if (exitChangeRouteUrl) {
+        saveDraftSubmission(request, exitChangeRouteUrl)
         return h.redirect(exitChangeRouteUrl)
       }
 
-      return request.payload.permitType === 'other' ? h.redirect(cannotUseServicePath) : h.redirect(nextPath);
+      const redirectTo =  request.payload.permitType === 'other' ? cannotUseServicePath : nextPath
+
+      saveDraftSubmission(request, redirectTo)
+      return h.redirect(redirectTo)
     }
   },
 }]

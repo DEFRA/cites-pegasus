@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const pageId = 'select-delivery-address'
@@ -158,7 +158,8 @@ module.exports = [{
                 return h.redirect(`${invalidSubmissionPath} / `)
             }
 
-            return h.redirect(nextPath)
+            saveDraftSubmission(request, nextPath)
+            return h.redirect(nextPath)            
         }
     }
 }]
