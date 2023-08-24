@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const lodash = require('lodash')
 const textContent = require('../content/text-content')
@@ -244,18 +244,22 @@ module.exports = [
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false, isMinorChange)
         if (exitChangeRouteUrl) {
+          saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
 
+        let redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
         if (species.specimenType === 'animalLiving') {
           if (request.payload.uniqueIdentificationMarkType === 'unmarked') {
-            return h.redirect(`${nextPathUnmarkedSpecimens}/${applicationIndex}`)
+            redirectTo = `${nextPathUnmarkedSpecimens}/${applicationIndex}`
           } else {
-            return h.redirect(`${nextPathDescLivingAnimal}/${applicationIndex}`)
+            redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
           }
-        } else {
-          return h.redirect(`${nextPathDescGeneric}/${applicationIndex}`)
         }
+        
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)
+
       }
     }
   }

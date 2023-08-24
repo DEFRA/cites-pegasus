@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -257,14 +257,15 @@ module.exports = [
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
+          saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
 
-        if (submission.permitType === 'export') {
-          return h.redirect(`${nextPathComments}/${applicationIndex}`)
-        } else {
-          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
-        }
+        const redirectTo = submission.permitType === 'export' ? `${nextPathComments}/${applicationIndex}` : `${nextPathPermitDetails}/${applicationIndex}`
+
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)
+
       }
     }
   }
