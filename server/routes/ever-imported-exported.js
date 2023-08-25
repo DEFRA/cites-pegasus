@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "ever-imported-exported"
@@ -182,15 +182,15 @@ module.exports = [
           const changeData = getChangeRouteData(request)
           
           if (species.isEverImportedExported !== true || !changeData.dataRemoved ) {
+            saveDraftSubmission(request, exitChangeRouteUrl)
             return h.redirect(exitChangeRouteUrl)
           }
         }
 
-        if (request.payload.isEverImportedExported && submission.permitType !== 'export') {
-          return h.redirect(`${nextPathPermitDetails}/${applicationIndex}`)
-        } else {
-          return h.redirect(`${nextPathComments}/${applicationIndex}`)
-        }
+        const redirectTo = request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathPermitDetails}/${applicationIndex}` : `${nextPathComments}/${applicationIndex}`
+        
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)
       }
     }
   }

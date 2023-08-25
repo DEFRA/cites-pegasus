@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const pageId = "purpose-code"
@@ -250,10 +250,14 @@ module.exports = [
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
+          saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
 
-        return h.redirect(`${nextPathSpecimenType}/${applicationIndex}`)        
+        const redirectTo = `${nextPathSpecimenType}/${applicationIndex}`
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)
+
       }
     }
   }

@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -186,17 +186,15 @@ module.exports = [
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
+          saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
         
-        if (
-          species.specimenType === "animalWorked" ||
-          species.specimenType === "plantWorked"
-        ) {
-          return h.redirect(`${nextPathCreatedDate}/${applicationIndex}`)
-        } else {
-          return h.redirect(`${nextPathTradeTermCode}/${applicationIndex}`)
-        }
+        const redirectTo = (species.specimenType === "animalWorked" ||species.specimenType === "plantWorked") ? `${nextPathCreatedDate}/${applicationIndex}` : `${nextPathTradeTermCode}/${applicationIndex}`
+                
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)
+
       }
     }
   }

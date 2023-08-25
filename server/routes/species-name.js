@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const urlPrefix = require("../../config/config").urlPrefix
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, mergeSubmission, validateSubmission } = require("../lib/submission")
+const { getSubmission, setSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { getSpecies } = require("../services/dynamics-service")
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -203,18 +203,19 @@ module.exports = [
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
         if (exitChangeRouteUrl) {
+          saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
 
+        let redirectTo = `${nextPathSourceCode}/${applicationIndex}`
         if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
-          return h.redirect(`${unknownSpeciesPath}/${applicationIndex}`)
+          redirectTo = `${unknownSpeciesPath}/${applicationIndex}`
+        } else if (species.hasRestriction) {
+          redirectTo = `${nextPathSpeciesWarning}/${applicationIndex}`
         }
-
-        if (species.hasRestriction) {
-          return h.redirect(`${nextPathSpeciesWarning}/${applicationIndex}`)
-        }
-
-        return h.redirect(`${nextPathSourceCode}/${applicationIndex}`)
+        
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)    
       }
     }
   }

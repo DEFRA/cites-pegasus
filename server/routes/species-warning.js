@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const urlPrefix = require('../../config/config').urlPrefix
-const { getSubmission, validateSubmission } = require('../lib/submission')
+const { getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'species-warning'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -29,29 +29,29 @@ function createModel(errors, data) {
 module.exports = [{
   method: 'GET',
   path: `${currentPath}/{applicationIndex}`,
-    options: {
-      validate: {
-        params: Joi.object({
-          applicationIndex: Joi.number().required()
-        })
-      }
-    },
+  options: {
+    validate: {
+      params: Joi.object({
+        applicationIndex: Joi.number().required()
+      })
+    }
+  },
   handler: async (request, h) => {
     const { applicationIndex } = request.params
     const submission = getSubmission(request)
 
     try {
-        validateSubmission(submission, `${pageId}/${applicationIndex}`)
-      } catch (err) {
-        console.error(err)
-        return h.redirect(invalidSubmissionPath)
-      }
+      validateSubmission(submission, `${pageId}/${applicationIndex}`)
+    } catch (err) {
+      console.error(err)
+      return h.redirect(invalidSubmissionPath)
+    }
 
     const species = submission.applications[applicationIndex].species
 
     const pageData = {
-        applicationIndex: applicationIndex,
-        warningMessage: species.warningMessage
+      applicationIndex: applicationIndex,
+      warningMessage: species.warningMessage
     }
 
     return h.view(pageId, createModel(null, pageData));
@@ -69,16 +69,19 @@ module.exports = [{
   },
   handler: async (request, h) => {
     const { applicationIndex } = request.params
-      const submission = getSubmission(request)
+    const submission = getSubmission(request)
 
-      try {
-        validateSubmission(submission, `${pageId}/${applicationIndex}`)
-      } catch (err) {
-        console.error(err)
-        return h.redirect(invalidSubmissionPath)
-      }
+    try {
+      validateSubmission(submission, `${pageId}/${applicationIndex}`)
+    } catch (err) {
+      console.error(err)
+      return h.redirect(invalidSubmissionPath)
+    }
 
-    return h.redirect(`${nextPath}/${applicationIndex}`)
+    const redirectTo = `${nextPath}/${applicationIndex}`
+    saveDraftSubmission(request, redirectTo)
+    return h.redirect(redirectTo)
+
   },
 }
 ]

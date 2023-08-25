@@ -321,7 +321,9 @@ module.exports = [
             return h.redirect(invalidSubmissionPath)
           }
         }
-        return h.redirect(nextPath)
+        const redirectTo = nextPath
+        saveDraftSubmission(request, redirectTo)
+        return h.redirect(redirectTo)
       }
     }
   },
