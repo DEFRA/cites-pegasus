@@ -67,13 +67,7 @@ async function checkDraftSubmissionExists(request) {
     return await checkFileExists(containerName, submissionFileName)
 }
 
-function delay(ms) {//TODO Remove this
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
 async function saveDraftSubmission(request, savePointUrl) {
-    console.log('Saving draft at point: ' + savePointUrl)  //TODO Remove this
-    await delay(1000);//TODO Remove this
     if (!config.enableDraftSubmission){
         return
     }
@@ -87,7 +81,6 @@ async function saveDraftSubmission(request, savePointUrl) {
         await createContainer(containerName)
     }
     await saveObjectToContainer(containerName, submissionFileName, submission)
-    console.log('Draft saved')//TODO Remove this
 }
 
 async function loadDraftSubmission(request) {
