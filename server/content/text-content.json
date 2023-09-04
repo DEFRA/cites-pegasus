@@ -44,13 +44,13 @@
     "defaultTitle": "What type of permit or certificate are you applying for?",
     "pageHeader": "What type of permit or certificate are you applying for?",
     "radioOptionImport": "Import",
-    "radioOptionImportHint": "To move a species to or within the United Kingdom",
+    "radioOptionImportHint": "To move a specimen to the United Kingdom (or between Great Britain and Northern Ireland)",
     "radioOptionExport": "Export",
-    "radioOptionExportHint": "To move a species out of or within the United Kingdom.",
+    "radioOptionExportHint": "To move a specimen out of the United Kingdom (or between Great Britain and Northern Ireland)",
     "radioOptionReexport": "Re-export",
-    "radioOptionReexportHint": "To move a species that has been imported into the United Kingdom, out of or within the United Kingdom.",
+    "radioOptionReexportHint": "To move a previously imported specimen out of the United Kingdom (or between Great Britain and Northern Ireland)",
     "radioOptionArticle10": "Article 10",
-    "radioOptionArticle10Hint": "To use any CITES annex A specimen for commercial purposes within Great Britain.",
+    "radioOptionArticle10Hint": "To use any specimen of an GB/EU Annex A species for commercial purposes within the United Kingdom",
     "radioOptionOther": "Other",
     "errorMessages": {
       "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
@@ -437,7 +437,7 @@
   "speciesName": {
     "defaultTitle": "What is the scientific name of the species?",
     "pageHeader": "What is the scientific name of the species?",
-    "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on species+</a> (opens in a new tab).",
+    "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
     "bodyText2": "If you are applying for a hybrid species that is not listed, please enter 'Plant Hybrid' or 'Animal Hybrid'.",
     "bodyText3": "Applications made using this selection will be rejected if the species name is listed.",
     "inputLabelSpeciesName": "Scientific name",
@@ -449,7 +449,7 @@
     "pageTitle": "We could not confirm the scientific name",
     "pageHeader": "We could not confirm the scientific name",
     "bodyText1": "We have been unable to confirm your scientific name, please check your spelling is correct. If you are unable to find its name and it is a hybrid then please enter 'Plant Hybrid' or 'Animal Hybrid'.",
-    "bodyText2": "You can <a target='_blank' href='https://speciesplus.net/'>check scientific names on species+ (opens in a new tab)</a>",
+    "bodyText2": "You can <a target='_blank' href='https://speciesplus.net/'>check scientific names on Species+ (opens in a new tab)</a>",
     "searchAgainButton": "Search again"
   },
   "sourceCode": {
@@ -471,7 +471,7 @@
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
       "radioOptionX": "X",
-      "radioOptionXHint": "Taken from the marine environment",
+      "radioOptionXHint": "Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
@@ -499,7 +499,7 @@
           "value": "F"
         },
         {
-          "text": "X - Taken from the marine environment",
+          "text": "X - Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
           "value": "X"
         }
       ],
@@ -526,7 +526,7 @@
       "radioOptionO": "O",
       "radioOptionOHint": "Pre-convention",
       "radioOptionX": "X",
-      "radioOptionXHint": "Taken from the marine environment",
+      "radioOptionXHint": "Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
       "radioOptionY": "Y",
       "radioOptionYHint": "Plants that meet the definition for <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-11-11-R18_0.pdf'>assisted production</a> (opens in a new tab)",
       "radioOptionU": "U",
@@ -548,7 +548,7 @@
           "value": "A"
         },
         {
-          "text": "X - Taken from the marine environment",
+          "text": "X - Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
           "value": "X"
         },
         {
@@ -644,7 +644,7 @@
   "tradeTermCode": {
     "defaultTitle": "What is the CITES trade term code",
     "pageHeader": "What is the CITES trade term code",
-    "pageBody": "",
+    "pageBody": "You can find more information on each trade term code ​in <a target='_blank' href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/968365/guid-fed0172.pdf'>Annex A of the guidance</a> (opens in a new tab)",
     "tradeTermCodeSelectDefault": "Select a trade term code...",
     "tradeTermCodeUnknown": "Not known",
     "errorMessages": {
@@ -872,9 +872,9 @@
     }
   },
   "quantity": {
-    "defaultTitle": "Enter quantity or net mass",
-    "pageHeader": "Enter quantity or net mass",
-    "inputLabelQuantity": "Quantity or net mass",
+    "defaultTitle": "Enter quantity",
+    "pageHeader": "Enter quantity",
+    "inputLabelQuantity": "Quantity",
     "selectLabelUnitOfMeasurement": "Unit of measurement",
     "unitOfMeasurementPrompt": "Choose unit of measurement",
     "unitsOfMeasurement": [
@@ -1068,7 +1068,7 @@
     "headerDeliveryAddress": "Delivery address",
     "headerSpecimenDetails": "Specimen details",
     "rowTextScientificName": "Scientific name",
-    "rowTextQuantity": "Quantity or net mass",
+    "rowTextQuantity": "Quantity",
     "rowTextUnitOfMeasurement": "Unit of measurement",
     "rowTextUnitsOfMeasurementNoOfSpecimens": "Number of specimens",
     "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts",
@@ -1119,7 +1119,7 @@
     "rowTextSourceCodeA": "Plants artificially propagated for non-commercial purposes",
     "rowTextSourceCodeI": "Confiscated or seized",
     "rowTextSourceCodeO": "Pre-convention",
-    "rowTextSourceCodeX": "Taken from the marine environment",
+    "rowTextSourceCodeX": "Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
     "rowTextSourceCodeY": "Plants that meet the definition for assisted production",
     "rowTextPurposeCodeB": "Breeding in captivity or artificial propagation",
     "rowTextPurposeCodeE": "Educational",
@@ -1540,8 +1540,8 @@
     "pageBodyText10": "This statement was prepared on 15 May 2023."
   },
   "speciesWarning": {
-    "defaultTitle": "This species has exemptions and restrictions",
-    "pageHeader": "This species has exemptions and restrictions"
+    "defaultTitle": "This species is covered by exemptions or restrictions",
+    "pageHeader": "This species is covered by exemptions or restrictions"
   },
   "draftSubmissionWarning": {
     "defaultTitle": "Are you sure you want to start a new application?",
