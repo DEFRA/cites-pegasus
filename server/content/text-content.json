@@ -872,9 +872,9 @@
     }
   },
   "quantity": {
-    "defaultTitle": "Enter quantity",
-    "pageHeader": "Enter quantity",
-    "inputLabelQuantity": "Quantity",
+    "defaultTitle": "Enter quantity or amount",
+    "pageHeader": "Enter quantity or amount",
+    "inputLabelQuantity": "Quantity or amount",
     "selectLabelUnitOfMeasurement": "Unit of measurement",
     "unitOfMeasurementPrompt": "Choose unit of measurement",
     "unitsOfMeasurement": [
@@ -925,11 +925,11 @@
     ],
     "errorMessages": {
       "error.unitOfMeasurement.any.only": "Select a unit of measurement",
-      "error.quantity.any.empty": "Enter the quantity",
-      "error.quantity.number.base": "Quantity must only include numbers 0 to 9, and special characters such as full stops",
-      "error.quantity.number.min": "Quantity must be more than 0.0001",
-      "error.quantity.number.max": "Quantity must be less than 1000000",
-      "error.quantity.number.unsafe": "Quantity must be less than 1000000"
+      "error.quantity.any.empty": "Enter the quantity or amount",
+      "error.quantity.number.base": "Quantity or amount must only include numbers 0 to 9, and special characters such as full stops",
+      "error.quantity.number.min": "Quantity or amount must be more than 0.0001",
+      "error.quantity.number.max": "Quantity or amount must be less than 1000000",
+      "error.quantity.number.unsafe": "Quantity or amount must be less than 1000000"
     }
   },
   "permitDetails": {
@@ -1068,7 +1068,7 @@
     "headerDeliveryAddress": "Delivery address",
     "headerSpecimenDetails": "Specimen details",
     "rowTextScientificName": "Scientific name",
-    "rowTextQuantity": "Quantity",
+    "rowTextQuantity": "Quantity or amount",
     "rowTextUnitOfMeasurement": "Unit of measurement",
     "rowTextUnitsOfMeasurementNoOfSpecimens": "Number of specimens",
     "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts",
