@@ -3,6 +3,7 @@ const { urlPrefix } = require('../../config/config')
 const config = require('../../config/config')
 const { createPayment } = require('../services/govpay-service')
 const { setSubmissionPayment } = require('../services/dynamics-service')
+const user = require('../lib/user')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
 const { setYarValue, getYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
@@ -116,7 +117,12 @@ module.exports = [
 
       const { user: { contactId, organisationId } } = getYarValue(request, 'CIDMAuth')  
 
-      await setSubmissionPayment(request.server, contactId, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100)      
+      let contactIdFilter = contactId
+      if(user.hasOrganisationWideAccess(request)) {
+        contactIdFilter = null
+      }
+
+      await setSubmissionPayment(request.server, contactIdFilter, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100)      
       
       if(paymentRoute === 'new-application') {
         return h.redirect(nextPathSuccessNewApplication)

@@ -3,6 +3,7 @@ const urlPrefix = require('../../config/config').urlPrefix
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { setYarValue, getYarValue } = require('../lib/session')
 const dynamics = require("../services/dynamics-service")
+const user = require('../lib/user')
 const textContent = require('../content/text-content')
 const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -113,7 +114,11 @@ module.exports = [
       const pageNo = request.params.pageNo
       const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')  
 
-      const submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, submissionRef)
+      let contactId = request.auth.credentials.contactId
+      if(user.hasOrganisationWideAccess(request)) {
+        contactId = null
+      }
+      const submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef)
       const applications = submission.applications
      
       let startIndex =  null

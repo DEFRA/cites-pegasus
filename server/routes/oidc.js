@@ -9,6 +9,9 @@ const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
 const landingPage = '/my-submissions'
 function getRelationshipDetails(user) {
+const userstring = JSON.stringify(user)
+console.log(userstring)
+
   const relationshipDetails = {    
     organisationId: null,
     organisationName: null,

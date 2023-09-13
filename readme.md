@@ -28,6 +28,7 @@ CITES Application Portal
 | SESSION_CACHE_TTL                        | Session timeout in milliseconds                        |    yes   |         |                                  |       |
 | ENABLE_SPECIES_WARNING                   | Enable species warning message on scientific name page |    no    | false   |                                  |       |
 | ENABLE_DRAFT_SUBMISSION                  | Enable the save and retrieve of draft sumbissions      |    no    | false   |                                  |       |
+| ENABLE_FILTER_SUBMITTED_BY             | Enable the filter to allow the user to view submissions from all users | no | false |                          |       |
 
 
 

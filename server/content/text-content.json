@@ -1336,6 +1336,8 @@
     "heading1": "Filters",
     "pageBodyPermitType": "Permit type",
     "pageBodyStatus": "Status",
+    "pageBodySubmittedBy": "Submitted By",
+    "submittedByDescriptionMe": "Me",
     "buttonApplyFilters": "Apply filters",
     "linkTextClearFilters": "Clear filters",
     "rowTextReferenceNumber": "Reference number",

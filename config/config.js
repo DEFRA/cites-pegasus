@@ -17,8 +17,9 @@ const schema = Joi.object().keys({
   cidmPostLogoutRedirectUrl: Joi.string().allow("", null),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
-  enableSpeciesWarning: Joi.boolean().required(),
-  enableDraftSubmission: Joi.boolean().required(),
+  enableSpeciesWarning: Joi.boolean(),
+  enableDraftSubmission: Joi.boolean(),
+  enableFilterSubmittedBy: Joi.boolean(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -52,6 +53,7 @@ const config = {
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
   enableSpeciesWarning: process.env.ENABLE_SPECIES_WARNING || false,
   enableDraftSubmission: process.env.ENABLE_DRAFT_SUBMISSION || false,
+  enableFilterSubmittedBy: process.env.ENABLE_FILTER_SUBMITTED_BY || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',
