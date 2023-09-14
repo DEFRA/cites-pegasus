@@ -7,7 +7,7 @@ const textContent = require('../content/text-content')
 const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathContinue = `${urlPrefix}/add-application`
-const nextPathViewApplication = `${urlPrefix}/application-summary/view`
+const nextPathCheckApplication = `${urlPrefix}/application-summary/check`
 const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
 const nextPathSpeciesName = `${urlPrefix}/species-name`
 const areYouSurePath = `are-you-sure`
@@ -37,7 +37,7 @@ function createSubmitApplicationModel(errors, data) {
 
   const applicationsData = data.applications
   const applicationsTableData = applicationsData.map(application => {
-    const speciesNameUrl = `${nextPathViewApplication}/${application.applicationIndex}`
+    const speciesNameUrl = `${nextPathCheckApplication}/${application.applicationIndex}`
     let unitsOfMeasurementText = null
     if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
       unitsOfMeasurementText = `specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`

@@ -405,24 +405,11 @@ function createApplicationSummaryModel(errors, data) {
   let backLink = null;
   if (summaryType !== 'view-submitted' && summaryType !== 'copy-as-new') {
     if (summaryType === 'check') {
-      backLink = `${previousPathComments}/${data.applicationIndex}`
+      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathComments}/${data.applicationIndex}`
     } else {
-      //backLink = data.referer?.endsWith(nextPathAddApplication) ? nextPathAddApplication : nextPathYourSubmission
       backLink = nextPathYourSubmission
     }
   }
-
-  // if (summaryType !== 'view-submitted') {
-  //   if (summaryType === 'check') {
-  //     backLink = `${previousPathComments}/${data.applicationIndex}`
-  //   } else {
-  //     if (data.referer && data.referer.includes('/application-summary/view-submitted/')) {
-  //       backLink = previousPathMySubmissions
-  //     } else {
-  //       backLink = nextPathYourSubmission
-  //     }
-  //   }    
-  // }
 
   const model = {
     backLink: backLink,
