@@ -33,6 +33,7 @@ function createApplicationSummaryModel(errors, data) {
   let pageTitle = null
   let pageHeader = null
   let buttonText = null
+  let showButton = true
 
   switch (summaryType) {
     case "check":
@@ -55,6 +56,7 @@ function createApplicationSummaryModel(errors, data) {
       pageTitle = applicationRef
       pageHeader = applicationRef
       buttonText = commonContent.copyAsNewApplicationButton
+      showButton = data.isCurrentUsersApplication
       break
   }
 
@@ -425,11 +427,12 @@ function createApplicationSummaryModel(errors, data) {
   // }
 
   const model = {
-    backLink: backLink,
+    backLink,
     breadcrumbs: summaryType === 'view-submitted' || summaryType === 'copy-as-new' ? breadcrumbs : "",
-    pageHeader: pageHeader,
-    pageTitle: pageTitle,
-    buttonText: buttonText,
+    pageHeader,
+    pageTitle,
+    buttonText,
+    showButton,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     headerPermit: pageContent.headerPermit,
     headerContactDetails: headerContactDetails,
@@ -679,7 +682,8 @@ module.exports = [
         species: submission.applications[applicationIndex].species,
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
-        comments: submission.applications[applicationIndex].comments
+        comments: submission.applications[applicationIndex].comments,
+        isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId
       }
       return h.view(pageId, createApplicationSummaryModel(null, pageData))
     }
@@ -774,6 +778,7 @@ module.exports = [
             importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
             permitDetails: submission.applications[applicationIndex].permitDetails,
             comments: submission.applications[applicationIndex].comments,
+            isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId
           }
           return h.view(pageId, createApplicationSummaryModel(err, pageData)).takeover()
         }
