@@ -51,13 +51,13 @@ steps:
     artifactName: npm
   displayName: 'Publish npm artifact'
 
-- task: GitHubRelease@1
-  inputs:
-    gitHubConnection: 'CITES-Pegasus-Public-Repo'
-    repositoryName: 'DEFRA/cites-pegasus'
-    action: 'create'
-    target: '$(Build.SourceVersion)'
-    tagSource: 'gitTag'
-    tagPattern: 'release*'
-    changeLogCompareToRelease: 'lastFullRelease'
-    changeLogType: 'commitBased'
+# - task: GitHubRelease@1
+#   inputs:
+#     gitHubConnection: 'CITES-Pegasus-Public-Repo'
+#     repositoryName: 'DEFRA/cites-pegasus'
+#     action: 'create'
+#     target: '$(Build.SourceVersion)'
+#     tagSource: 'gitTag'
+#     tagPattern: 'release*'
+#     changeLogCompareToRelease: 'lastFullRelease'
+#     changeLogType: 'commitBased'
