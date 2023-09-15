@@ -392,9 +392,9 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
       `cites_submissionreference eq '${searchTerm}'`,
       `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${searchTerm}'))`,
       `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_name eq '${searchTerm}'))`,
-      `cites_cites_submission_incident_submission/any(o4:(o4/cites_deliveryaddresspostcode eq '${searchTerm}'))`,
-      `cites_cites_submission_incident_submission/any(o5:(o5/cites_partyaddresspostcode eq '${searchTerm}'))`,
-      `cites_applicantfullname eq '${searchTerm}'`,
+      `cites_cites_submission_incident_submission/any(o4:(contains(o4/cites_deliveryaddresspostcode, '${searchTerm}')))`,
+      `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${searchTerm}')))`,
+      `contains(cites_applicantfullname,'${searchTerm}')`,
     ];
     filterParts.push(`(${searchTermParts.join(" or ")})`)
   }
