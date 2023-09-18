@@ -1,8 +1,9 @@
 const Joi = require("joi")
-const urlPrefix = require("../../config/config").urlPrefix
+const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
+const user = require('../lib/user')
 const { createSubmission, checkDraftSubmissionExists, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
@@ -80,6 +81,7 @@ function createModel(errors, data) {
     headerFilters: pageContent.heading1,
     pageBodyPermitType: pageContent.pageBodyPermitType,
     pageBodyStatus: pageContent.pageBodyStatus,
+    pageBodySubmittedBy: pageContent.pageBodySubmittedBy,
     buttonApplyFilters: pageContent.buttonApplyFilters,
     draftSubmissionExists: data.draftSubmissionExists,
     submissionsData: submissionsTableData,
@@ -128,7 +130,6 @@ function createModel(errors, data) {
         }
       ],
     },
-
     checkboxStatus: {
       idPrefix: "statuses",
       name: "statuses",
@@ -149,8 +150,19 @@ function createModel(errors, data) {
           checked: isChecked(data.statuses, "closed")
         }        
       ],
+    },   
+    checkboxSubmittedBy: {
+      idPrefix: "submittedBy",
+      name: "submittedBy",
+      items: [
+        {
+          value: "me",
+          text: pageContent.submittedByDescriptionMe,
+          checked: isChecked(data.submittedBy, "me")
+        }        
+      ],
     },
-
+    showCheckboxSubmittedBy: data.submittedByFilterEnabled,
     inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, pageSize, textPagination) : ""
   }
   return { ...commonContent, ...model }
@@ -256,11 +268,13 @@ async function getSubmissionsData(request, pageNo, filterData) {
   if (!queryUrls) {
     const searchTerm = filterData?.searchTerm ? filterData?.searchTerm.toUpperCase() : ''
 
-    const queryUrl = await dynamics.getNewSubmissionsQueryUrl(request.auth.credentials.contactId, organisationId, filterData?.permitTypes, filterData?.statuses, searchTerm)
+    const submittedByFilterEnabled = user.hasOrganisationWideAccess(request)
+    const queryUrl = await dynamics.getNewSubmissionsQueryUrl(request.auth.credentials.contactId, organisationId, filterData?.permitTypes, filterData?.statuses, filterData?.submittedBy, submittedByFilterEnabled, searchTerm)
     queryUrls = [queryUrl]
   }
 
-  if (pageNo > queryUrls.length || pageNo < 1) {
+  if (pageNo > queryUrls.
+    length || pageNo < 1) {
     console.log("Invalid page number")
     return h.redirect('/404')
   }
@@ -283,7 +297,7 @@ module.exports = [
     method: 'GET',
     path: `${urlPrefix}/`,
     handler: (request, h) => {
-      return h.redirect(currentPath)// view(pageId, createModel()); 
+      return h.redirect(currentPath)
     }
   },
   //GET for my applications page
@@ -308,13 +322,18 @@ module.exports = [
         return h.redirect(`${currentPath}/1`)
       }
 
-      const filterData = getYarValue(request, 'mySubmissions-filterData')
+      let filterData = getYarValue(request, 'mySubmissions-filterData')
+
+      if (!filterData) {
+        filterData = { submittedBy: "me" }
+      }
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
 
       const cidmAuth = getYarValue(request, 'CIDMAuth')
 
       const draftSubmissionExists = await checkDraftSubmissionExists(request)
+      const submittedByFilterEnabled = user.hasOrganisationWideAccess(request)
 
       const pageData = {
         pageNo: pageNo,
@@ -325,8 +344,10 @@ module.exports = [
         permitTypes: filterData?.permitTypes,
         statuses: filterData?.statuses,
         searchTerm: filterData?.searchTerm,
+        submittedBy: filterData?.submittedBy,
         organisationName: cidmAuth.user.organisationName,
-        draftSubmissionExists: draftSubmissionExists
+        draftSubmissionExists,
+        submittedByFilterEnabled
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -371,6 +392,7 @@ module.exports = [
               Joi.string(),
               Joi.array().items(Joi.string().valid(...statuses))
             ),
+          submittedBy: Joi.string().allow(''),
         }),
         failAction: (request, h, error) => {
           console.log(error)
@@ -393,7 +415,8 @@ module.exports = [
         const filterData = {
           permitTypes: permitTypes,
           statuses: request.payload.statuses,
-          searchTerm: request.payload.searchTerm
+          searchTerm: request.payload.searchTerm,
+          submittedBy: request.payload.submittedBy
         }
 
         try {
@@ -407,6 +430,7 @@ module.exports = [
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
         const cidmAuth = getYarValue(request, 'CIDMAuth')
         const draftSubmissionExists = await checkDraftSubmissionExists(request)
+        const submittedByFilterEnabled = user.hasOrganisationWideAccess(request)
 
         const pageData = {
           pageNo: pageNo,
@@ -416,9 +440,11 @@ module.exports = [
           permitTypes: filterData.permitTypes,
           statuses: filterData.statuses,
           searchTerm: filterData.searchTerm,
+          submittedBy: filterData.submittedBy,
           noApplicationFound: submissions.length === 0,
           organisationName: cidmAuth.user.organisationName,
-          draftSubmissionExists: draftSubmissionExists
+          draftSubmissionExists,
+          submittedByFilterEnabled
         }
 
         return h.view(pageId, createModel(null, pageData))

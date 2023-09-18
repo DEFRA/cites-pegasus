@@ -6,7 +6,6 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 
-
 {% block beforeContent %}
   {% if backLink %}
     {{ govukBackLink({
@@ -19,7 +18,7 @@
   {% if breadcrumbs %}
     {{ govukBreadcrumbs(breadcrumbs) }}
   {% endif %}
-  
+
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -61,22 +60,21 @@
 
         <h2 class="govuk-heading-m">{{headerRemarks}}</h2>
         {{ govukSummaryList (summaryListRemarks) }}
-       
-        {{ govukButton({
-        text: buttonText,
-        type: "submit"
-      }) }}
 
-      {% if returnToYourApplicationsLinkText %}
+        {% if showButton %}
+          {{ govukButton({
+              text: buttonText,
+              type: "submit"
+              }) }}
+        {% endif %}
+
+        {% if returnToYourApplicationsLinkText %}
           <p class="govuk-body">
             <a href="{{returnToYourApplicationsLinkUrl}}">{{returnToYourApplicationsLinkText}}</a>
           </p>
-      {% endif %}
+        {% endif %}
 
       </form>
     </div>
   </div>
 {% endblock %}
-
-
-

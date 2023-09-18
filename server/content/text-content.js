@@ -990,6 +990,8 @@ const schema = Joi.object().keys({
     heading1: Joi.string().required(),
     pageBodyPermitType: Joi.string().required(),
     pageBodyStatus: Joi.string().required(),
+    pageBodySubmittedBy: Joi.string().required(),
+    submittedByDescriptionMe: Joi.string().required(),
     buttonApplyFilters: Joi.string().required(),
     linkTextClearFilters: Joi.string().required(),
     rowTextReferenceNumber: Joi.string().required(),

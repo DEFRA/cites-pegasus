@@ -357,17 +357,20 @@ function reverseMapper(mapping, value) {
   return match ? match[0] : value.toString()
 }
 
-async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes, statuses, searchTerm) {
+async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes, statuses, submittedBy, submittedByFilterEnabled, searchTerm) {
   const select = "$select=cites_submissionreference,cites_submissionmethod,statuscode,statecode,createdon"//,cites_permittype"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
   const filterParts = [
-    `_cites_submissionagent_value eq '${contactId}'`,
     `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`,
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]
+  
+  if(!submittedByFilterEnabled || submittedBy === 'me') {
+    filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
+  }
 
   if (statuses && statuses.length > 0) {
     const statusMappedList = getDynamicsSubmissionStatuses(statuses).map(x => `'${x}'`).join(",")
@@ -475,10 +478,13 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
 
   const filterParts = [
-    `cites_submissionreference eq '${submissionRef}'`,
-    `_cites_submissionagent_value eq '${contactId}'`,
+    `cites_submissionreference eq '${submissionRef}'`,    
     `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
   ]
+
+  if(contactId) {
+    filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
+  }
 
   const filter = `$filter=${filterParts.join(" and ")}`
 
@@ -545,9 +551,12 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     const top = "$top=1"
     const select = "$select=cites_submissionreference"
     const filterParts = [
-      `$filter=_cites_submissionagent_value eq '${contactId}'`,
-      `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
+      `$filter=_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
     ]
+
+    if(contactId) {
+      filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
+    }
 
     if (submissionRef) {
       filterParts.push(`cites_submissionreference eq '${submissionRef}'`)

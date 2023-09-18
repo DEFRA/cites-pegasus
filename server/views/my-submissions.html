@@ -88,7 +88,7 @@
           <a href="{{currentPath}}">{{clearSearchLinkText}}</a>
         </p>
       </div>
-      
+
     </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
@@ -112,9 +112,22 @@
             isPageHeading: true
           }
         }) %}
-        {# <p class="govuk-body govuk-!-font-weight-bold">{{ pageBodyStatus}}</p> #}
+
         {{ govukCheckboxes(checkboxStatus) }}
         {% endcall %}
+        {% if showCheckboxSubmittedBy %}
+          {% call govukFieldset({
+          legend: {
+            text: pageBodySubmittedBy,
+            classes: "govuk-fieldset__legend--s",
+            isPageHeading: true
+          }
+        }) %}
+
+          {{ govukCheckboxes(checkboxSubmittedBy) }}
+          {% endcall %}
+        {% endif %}
+        
         {{ govukButton({
                     text: buttonApplyFilters,
                     classes: "govuk-button--secondary",
