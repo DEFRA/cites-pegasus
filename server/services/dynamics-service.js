@@ -4,6 +4,7 @@ const { getYarValue, setYarValue } = require('../lib/session')
 const moment = require('moment');
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
+//const { log } = require('../lib/logger')
 const lodash = require('lodash');
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
 
@@ -416,13 +417,16 @@ async function getSubmissions(server, query, pageSize) {
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}`, 'Prefer': `odata.maxpagesize=${pageSize}` } }
 
     console.log(`HTTP Request Verb: GET Url: ${query}`)
+    //log('HTTP Request - Verb: GET', { Url: query } )
 
     const response = await Wreck.get(query, options)
 
     const { payload } = response
 
+
     if (payload) {
       console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
+      //log('HTTP Response Payload', payload)
       return {
         submissions: payload.value.map(x => {
 
