@@ -1398,9 +1398,18 @@
       "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications."
     },
     "notPaid": {
-      "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
-      "pageBody2": "They will contact you to confirm the amount you need to pay.",
-      "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+      "simple": {
+        "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
+        "pageBody2": "Your application will not be processed until payment has been received",
+        "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications.",
+        "pageBody4": ""
+      },
+      "complex": {
+        "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
+        "pageBody2": "They will contact you to confirm the amount you need to pay.",
+        "pageBody3": "Your application will not be processed until payment has been received.",
+        "pageBody4": "To view the status of your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+      }
     }
   },
   "paymentProblem": {
