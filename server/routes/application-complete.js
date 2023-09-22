@@ -11,7 +11,15 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationComplete
-  const costingTypeContent = data.paid ? pageContent.paid : pageContent.notPaid
+  let pageBodyContent
+  
+  if(data.paid) {
+    pageBodyContent = pageContent.paid
+   } else {
+    pageBodyContent = data.costingType === 'simple' ? pageContent.notPaid.simple : pageContent.notPaid.complex
+   }
+
+
 
   const panelContent = {
     titleText: pageContent.panelHeading,
@@ -25,9 +33,10 @@ function createModel(errors, data) {
     pageTitle: pageContent.defaultTitle,
     panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
-    pageBody1: costingTypeContent.pageBody1,
-    pageBody2: costingTypeContent.pageBody2,
-    pageBody3: costingTypeContent.pageBody3
+    pageBody1: pageBodyContent.pageBody1,
+    pageBody2: pageBodyContent.pageBody2,
+    pageBody3: pageBodyContent.pageBody3,
+    pageBody4: pageBodyContent.pageBody4
   }
 
   return { ...commonContent, ...model }
@@ -48,7 +57,8 @@ module.exports = [{
       costingType: submission.paymentDetails.costingType,
       //email,
       costingValue: submission.paymentDetails.costingValue,
-      paid: submission.paymentDetails.paymentStatus?.status === 'success'
+      paid: submission.paymentDetails.paymentStatus?.status === 'success',
+      costingType: submission.paymentDetails.costingType
     }
 
     return h.view(pageId, createModel(null, pageData));

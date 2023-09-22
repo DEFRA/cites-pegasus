@@ -1034,9 +1034,18 @@ const schema = Joi.object().keys({
       pageBody3: Joi.string().required()
     }).required(),
     notPaid: Joi.object({
-      pageBody1: Joi.string().required(),
-      pageBody2: Joi.string().required(),
-      pageBody3: Joi.string().required()
+      simple: Joi.object({
+        pageBody1: Joi.string().required(),
+        pageBody2: Joi.string().allow("", null),
+        pageBody3: Joi.string().allow("", null),
+        pageBody4: Joi.string().allow("", null)
+      }).required(),
+      complex: Joi.object({
+        pageBody1: Joi.string().required(),
+        pageBody2: Joi.string().allow("", null),
+        pageBody3: Joi.string().allow("", null),
+        pageBody4: Joi.string().allow("", null)
+      }).required(),
     }).required()
   }).required(),
   paymentProblem: Joi.object({
