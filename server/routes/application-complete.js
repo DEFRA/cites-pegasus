@@ -57,8 +57,7 @@ module.exports = [{
       costingType: submission.paymentDetails.costingType,
       //email,
       costingValue: submission.paymentDetails.costingValue,
-      paid: submission.paymentDetails.paymentStatus?.status === 'success',
-      costingType: submission.paymentDetails.costingType
+      paid: submission.paymentDetails.paymentStatus?.status === 'success'
     }
 
     return h.view(pageId, createModel(null, pageData));

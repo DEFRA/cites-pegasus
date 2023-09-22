@@ -4,7 +4,6 @@ const { getYarValue, setYarValue } = require('../lib/session')
 const moment = require('moment');
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
-//const { log } = require('../lib/logger')
 const lodash = require('lodash');
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
 
