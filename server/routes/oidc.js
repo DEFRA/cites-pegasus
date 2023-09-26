@@ -9,8 +9,6 @@ const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
 const landingPage = '/my-submissions'
 function getRelationshipDetails(user) {
-const userstring = JSON.stringify(user)
-console.log(userstring)
 
   const relationshipDetails = {    
     organisationId: null,
@@ -29,6 +27,21 @@ console.log(userstring)
   
   return relationshipDetails
 }
+
+function getRoleDetails(user) {
+    const roleDetails = {    
+      serviceRole: null
+    }
+  
+    if (user.roles && user.roles.length === 1) {
+      const parts = user.roles[0].split(':')
+      if (parts.length >= 3) {
+        roleDetails.serviceRole = parts[1]
+      }
+    }
+    
+    return roleDetails
+  }
 
 module.exports = [
   {
@@ -60,8 +73,14 @@ module.exports = [
         clearYarSession(request)
       }
 
+      const userstring = JSON.stringify(user)
+      console.log('User details:')
+      console.log(userstring)
+
       const relationshipDetails = getRelationshipDetails(user)
-      setYarValue(request, 'CIDMAuth', { idToken: tokenSet.id_token, user: { ...user, ...relationshipDetails } })
+      const roleDetails = getRoleDetails(user)
+
+      setYarValue(request, 'CIDMAuth', { idToken: tokenSet.id_token, user: { ...user, ...relationshipDetails, ...roleDetails } })
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
       const token = jwt.sign({ contactId: user.contactId }, secret, { algorithm: 'HS256' })
