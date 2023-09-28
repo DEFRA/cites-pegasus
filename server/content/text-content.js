@@ -226,6 +226,8 @@ const schema = Joi.object().keys({
     footerLinkTextPrivacy: Joi.string().required(),
     footerLinkTextAccessibilityStatement: Joi.string().required(),
     footerLinkTextCookies: Joi.string().required(),
+    footerLinkTextContactUs: Joi.string().required(),
+    footerLinkUrlContactUs: Joi.string().required(),
     permitTypeDescriptionImport: Joi.string().required(),
     permitTypeDescriptionExport: Joi.string().required(),
     permitTypeDescriptionReexport: Joi.string().required(),
