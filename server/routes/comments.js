@@ -72,6 +72,23 @@ function createModel(errors, data) {
       },
       ...(data.comments ? { value: data.comments } : {}),
       errorMessage: getFieldError(errorList, "#comments")
+    },
+    inputInternalReference: {
+      label: {
+        text: "Internal reference",
+        classes: "govuk-label--m"
+      },
+      hint: {
+        text: "You can add your own reference here"
+      },
+      id: "internalReference",
+      name: "internalReference",
+      classes: "govuk-input govuk-input--width-20",
+      autocomplete: "on",
+      ...(data.exportOrReexportPermitNumber
+        ? { value: data.exportOrReexportPermitNumber }
+        : {}),
+      errorMessage: getFieldError(errorList, "#exportOrReexportPermitNumber")
     }
   }
   return { ...commonContent, ...model }

@@ -2,6 +2,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block beforeContent %}
@@ -31,7 +32,7 @@
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
         {# <span class="govuk-caption-l"> {{captionText}} </span> #}
         {{ govukCharacterCount (inputComments) }}
-        
+        {{ govukInput(inputInternalReference) }}
 
         {{ govukButton({
         text: saveAndContinueButton,
