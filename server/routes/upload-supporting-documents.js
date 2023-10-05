@@ -52,11 +52,14 @@ function createModel(errors, data) {
     errorSummaryTitle: commonContent.errorSummaryTitle
   }
 
+  const maxDocsCount = getMaxDocs(data.applicationsCount)
+
   const model = {
     assetPath: assetPath,
     clientJSConfig: JSON.stringify(clientJSConfig),
     containerClasses: 'hide-when-loading',
     backLink: previousPath,
+    maxDocsCount,
     formActionPage: `${currentPath}`,
     ...(errorList ? { errorList } : {}),
     supportingDocuments: supportingDocuments,
@@ -90,10 +93,15 @@ function failAction(request, h, err) {
 
   const pageData = {
     isAgent: submission.isAgent,
+    applicationsCount: submission.applications.length,
     files: submission.supportingDocuments?.files || []
   }
 
   return h.view(pageId, createModel(err, pageData)).takeover()
+}
+
+function getMaxDocs(applicationsCount) {
+  return Math.min(5 + (applicationsCount * 5), 2)
 }
 
 module.exports = [
@@ -120,6 +128,7 @@ module.exports = [
 
       const pageData = {
         isAgent: submission.isAgent,
+        applicationsCount: submission.applications.length,
         files: submission.supportingDocuments?.files || []
       }
 
@@ -173,8 +182,19 @@ module.exports = [
 
         const docs = submission.supportingDocuments
 
-        if (docs.files.length >= 10) {
-          throw new Error('Maximum number of supporting documents reached')
+        const maxDocs = getMaxDocs(submission.applications.length)
+
+        if (docs.files.length >= maxDocs) {
+          const error = {
+            details: [
+              {
+                path: ['fileUpload'],
+                type: 'any.maxfiles',
+                context: { label: 'fileUpload', key: 'fileUpload' }
+              }
+            ]
+          }
+          return failAction(request, h, error)
         }
 
 
@@ -183,9 +203,8 @@ module.exports = [
           const error = {
             details: [
               {
-                message: 'A file with this name already exists',
                 path: ['fileUpload'],
-                type: 'any.custom',
+                type: 'any.existing',
                 context: { label: 'fileUpload', key: 'fileUpload' }
               }
             ]
@@ -234,6 +253,7 @@ module.exports = [
 
         const pageData = {
           isAgent: submission.isAgent,
+          applicationsCount: submission.applications.length,
           files: docs.files
         }
 
@@ -293,6 +313,7 @@ module.exports = [
 
         const pageData = {
           isAgent: submission.isAgent,
+          applicationsCount: submission.applications.length,
           files: docs.files
         }
 
