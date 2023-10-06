@@ -2,7 +2,6 @@ const Joi = require('joi')
 const { urlPrefix, documentUploadMaxFilesLimit } = require('../../config/config')
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
-const config = require('../../config/config')
 const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists } = require("../services/blob-storage-service");
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
@@ -13,6 +12,7 @@ const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = `${urlPrefix}/`
 const Boom = require('@hapi/boom');
 const maxFileSizeBytes = 10485760
+const pageSize = 15
 
 function createModel(errors, data) {
 
@@ -39,12 +39,20 @@ function createModel(errors, data) {
     })
   }
 
-  const supportingDocuments = data.files?.map((file) => {
+  const documents = data.files?.map((file) => {
     return {
       ...file,
       formActionDelete: `${currentPath}/delete/${encodeURIComponent(file.fileName)}`
     }
   })
+
+  const sortedDocuments = documents.sort((a, b) => (b.uploadTimestamp || 1) - (a.uploadTimestamp || 1))
+  
+  const pagination = getPaginationControl(sortedDocuments.length, data.pageNo || 1, pageSize, currentPath)
+  
+  const startIndex = (data.pageNo - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const paginatedDocuments = sortedDocuments.slice(startIndex, endIndex)
 
   const clientJSConfig = {
     fileSizeErrorText: pageContent.errorMessages["error.fileUpload.any.filesize"],
@@ -62,7 +70,7 @@ function createModel(errors, data) {
     maxFilesCount,
     formActionPage: `${currentPath}`,
     ...(errorList ? { errorList } : {}),
-    supportingDocuments: supportingDocuments.sort((a, b) => (b.uploadTimestamp || 1) - (a.uploadTimestamp || 1)),
+    supportingDocuments: paginatedDocuments,
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     isAgent: data.isAgent,
     inputFile: {
@@ -72,26 +80,47 @@ function createModel(errors, data) {
       attributes: {
         accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
       }
-    }
+    },
+    pagination: pagination
   }
   return { ...commonContent, ...pageContent, ...model }
 }
 
-function extractUnixTimestamp(url) {
-  // Regular expression to match Unix timestamps
-  const unixTimestampRegex = /(\d{10})/;
-
-  // Use the regex to find matches in the URL
-  const matches = url.match(unixTimestampRegex);
-
-  if (matches && matches.length > 0) {
-    // The first match in the array will be the Unix timestamp
-    const unixTimestamp = matches[0];
-    return parseInt(unixTimestamp, 10);
-  } else {
-    // If no Unix timestamp is found, return null or handle the case accordingly
-    return null;
+function getPaginationControl(totalItems, pageNo, pageSize, url) {
+  if (totalItems <= pageSize) {
+    return ""
   }
+
+  const startIndex = (pageNo - 1) * pageSize
+  const endIndex = totalItems <= startIndex + pageSize ? totalItems : startIndex + pageSize
+
+  const paginationText = `${startIndex + 1} to ${endIndex} of ${totalItems}`
+  
+  const totalPages = Math.ceil(totalItems / pageSize)
+
+  const prevAttr = pageNo === 1 ? { 'data-disabled': '' } : null
+  const nextAttr = pageNo === totalPages ? { 'data-disabled': '' } : null
+
+
+  const pagination = {
+    id: "pagination",
+    name: "pagination",
+    previous: {
+      href: pageNo === 1 ? "#" : `${url}/${pageNo - 1}`,
+      text: "Previous",
+      attributes: prevAttr
+    },
+    next: {
+      href: pageNo === totalPages ? "#" : `${url}/${pageNo + 1}`,
+      text: "Next",
+      attributes: nextAttr
+    },
+    items: [{
+      number: paginationText
+    }],
+  }
+
+  return pagination
 }
 
 const fileSchema = Joi.object({
@@ -109,6 +138,7 @@ function failAction(request, h, err) {
   const submission = getSubmission(request)
 
   const pageData = {
+    pageNo: 1,
     isAgent: submission.isAgent,
     applicationsCount: submission.applications.length,
     files: submission.supportingDocuments?.files || []
@@ -124,7 +154,14 @@ function getMaxDocs(applicationsCount) {
 module.exports = [
   {
     method: "GET",
-    path: `${currentPath}`,
+    path: `${currentPath}/{pageNo?}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          pageNo: Joi.number().allow('').default(1)
+        }),
+      }
+    },
     handler: async (request, h) => {
       const submission = getSubmission(request)
 
@@ -144,6 +181,7 @@ module.exports = [
       }
 
       const pageData = {
+        pageNo: request.params.pageNo,
         isAgent: submission.isAgent,
         applicationsCount: submission.applications.length,
         files: submission.supportingDocuments?.files || []
@@ -174,7 +212,7 @@ module.exports = [
               }
             ]
           }
-          return failAction(request, h, error)          
+          return failAction(request, h, error)
         }
 
         let payloadSchema = null
@@ -269,6 +307,7 @@ module.exports = [
         }
 
         const pageData = {
+          pageNo: 1,
           isAgent: submission.isAgent,
           applicationsCount: submission.applications.length,
           files: docs.files
@@ -287,7 +326,6 @@ module.exports = [
         multipart: true
       },
       handler: async (request, h) => {
-
         const submission = getSubmission(request)
 
         if (submission.supportingDocuments === undefined) {
@@ -329,6 +367,7 @@ module.exports = [
         }
 
         const pageData = {
+          pageNo: 1,
           isAgent: submission.isAgent,
           applicationsCount: submission.applications.length,
           files: docs.files
