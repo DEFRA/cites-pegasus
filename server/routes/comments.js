@@ -79,7 +79,7 @@ function createModel(errors, data) {
         classes: "govuk-label--m"
       },
       hint: {
-        text: "You can add your own reference here"
+        text: "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes. (Optional)"
       },
       id: "internalReference",
       name: "internalReference",
