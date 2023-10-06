@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix, documentUploadMaxFilesLimit } = require('../../config/config')
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
 const config = require('../../config/config')
@@ -52,17 +52,17 @@ function createModel(errors, data) {
     errorSummaryTitle: commonContent.errorSummaryTitle
   }
 
-  const maxDocsCount = getMaxDocs(data.applicationsCount)
+  const maxFilesCount = getMaxDocs(data.applicationsCount)
 
   const model = {
     assetPath: assetPath,
     clientJSConfig: JSON.stringify(clientJSConfig),
     containerClasses: 'hide-when-loading',
     backLink: previousPath,
-    maxDocsCount,
+    maxFilesCount,
     formActionPage: `${currentPath}`,
     ...(errorList ? { errorList } : {}),
-    supportingDocuments: supportingDocuments,
+    supportingDocuments: supportingDocuments.sort((a, b) => (b.uploadTimestamp || 1) - (a.uploadTimestamp || 1)),
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     isAgent: data.isAgent,
     inputFile: {
@@ -75,6 +75,23 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...pageContent, ...model }
+}
+
+function extractUnixTimestamp(url) {
+  // Regular expression to match Unix timestamps
+  const unixTimestampRegex = /(\d{10})/;
+
+  // Use the regex to find matches in the URL
+  const matches = url.match(unixTimestampRegex);
+
+  if (matches && matches.length > 0) {
+    // The first match in the array will be the Unix timestamp
+    const unixTimestamp = matches[0];
+    return parseInt(unixTimestamp, 10);
+  } else {
+    // If no Unix timestamp is found, return null or handle the case accordingly
+    return null;
+  }
 }
 
 const fileSchema = Joi.object({
@@ -101,7 +118,7 @@ function failAction(request, h, err) {
 }
 
 function getMaxDocs(applicationsCount) {
-  return Math.min(5 + (applicationsCount * 5), 2)
+  return Math.min(5 + (applicationsCount * 5), documentUploadMaxFilesLimit)
 }
 
 module.exports = [
@@ -182,9 +199,9 @@ module.exports = [
 
         const docs = submission.supportingDocuments
 
-        const maxDocs = getMaxDocs(submission.applications.length)
+        const maxFilesCount = getMaxDocs(submission.applications.length)
 
-        if (docs.files.length >= maxDocs) {
+        if (docs.files.length >= maxFilesCount) {
           const error = {
             details: [
               {
@@ -227,7 +244,7 @@ module.exports = [
 
           const blobUrl = await saveFileToContainer(docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
           console.log(`File added to blob container with url ${blobUrl}`)
-          docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl })
+          docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl, uploadTimestamp: Date.now() })
 
           try {
             mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
