@@ -175,7 +175,7 @@ module.exports = [
 
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
-          saveDraftSubmission(exitChangeRouteUrl)
+          saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
         
