@@ -382,6 +382,16 @@ const schema = Joi.object().keys({
       "error.deliveryAddressOption.any.only": Joi.string().required()
     }).required()
   }).required(),
+  deliveryType: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    hintText: Joi.string().required(),
+    radioOptionStandardDelivery: Joi.string().required(),
+    radioOptionSpecialDelivery: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.deliveryType.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
