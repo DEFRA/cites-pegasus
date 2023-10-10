@@ -1023,7 +1023,8 @@
     ],
     "agentBulletListItem": "permission to act on the applicant’s behalf",
     "heading1": "Upload files",
-    "pageBody2": "You can upload a total of 10 files. Files must be smaller than 10MB and either:",
+    "pageBody2a": "You can upload a total of ",
+    "pageBody2b": " files. Files must be smaller than 10MB and either:",
     "bulletList2Items": [
       {
         "bulletListItem": "a PDF"
@@ -1042,7 +1043,8 @@
     "errorMessages": {
       "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
       "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
-      "error.fileUpload.any.custom": "A file with this name has already been uploaded",
+      "error.fileUpload.any.existing": "A file with this name has already been uploaded",
+      "error.fileUpload.any.maxfiles": "Maximum number of supporting documents reached",
       "error.fileUpload.upload.exception": "The selected file could not be uploaded – try again",
       "error.file.delete.exception": "The selected file could not be removed – try again",
       "error.fileUpload.any.filesize": "The selected file must be smaller than 10MB"
