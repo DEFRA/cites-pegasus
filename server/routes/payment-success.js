@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const textContent = require('../content/text-content')
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix } = require("../../config/config")
 const pageId = 'payment-success'
 const currentPath = `${urlPrefix}/${pageId}`
 const returnToYourApplicationsUrl = `${urlPrefix}/`

@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix } = require("../../config/config")
 const { getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'species-warning'

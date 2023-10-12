@@ -1,4 +1,4 @@
-const urlPrefix = require("../../config/config").urlPrefix
+const { urlPrefix } = require("../../config/config")
 const { setYarValue, getYarValue } = require("../lib/session")
 const changeTypes = [
     'permitType',

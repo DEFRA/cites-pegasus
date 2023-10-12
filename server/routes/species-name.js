@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const urlPrefix = require("../../config/config").urlPrefix
+const { urlPrefix, enableDeliveryType } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { getSpecies } = require("../services/dynamics-service")
@@ -12,14 +12,13 @@ const nextPathSourceCode = `${urlPrefix}/source-code`
 const nextPathSpeciesWarning = `${urlPrefix}/species-warning`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
-const yourSubmission = `${urlPrefix}/your-submission`
+const addApplication = `${urlPrefix}/add-application`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.speciesName
 
-  const previousPath = data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`
-
+  
   let errorList = null
   if (errors) {
     errorList = []
@@ -36,9 +35,11 @@ function createModel(errors, data) {
           href: `#${field}`
         })
       }
-    })
+    })  
   }
-  const defaultBacklink = data.applicationIndex === 0 ? previousPath : yourSubmission
+
+  const previousPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : (data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`)
+  const defaultBacklink = data.applicationIndex === 0 ? previousPath : addApplication
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {

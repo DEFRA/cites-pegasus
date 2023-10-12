@@ -1,4 +1,4 @@
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix } = require("../../config/config")
 const pageId = 'test'
 const Joi = require('joi')
 const { whoAmI } = require('../services/dynamics-service')
