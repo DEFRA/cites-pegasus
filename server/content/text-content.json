@@ -1023,8 +1023,8 @@
     ],
     "agentBulletListItem": "permission to act on the applicant’s behalf",
     "heading1": "Upload files",
-    "pageBody2a": "You can upload a total of ",
-    "pageBody2b": " files. Files must be smaller than 10MB and either:",
+    "pageBody2a": "You are allowed to upload up to ",
+    "pageBody2b": " files, provided that each file is less than 10MB in size and meets one of the following criteria",
     "bulletList2Items": [
       {
         "bulletListItem": "a PDF"
