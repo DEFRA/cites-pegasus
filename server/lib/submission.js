@@ -26,9 +26,9 @@ function mergeSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     const mergedSubmission = lodash.merge(existingSubmission, data)
-    
+
     setYarValue(request, 'submission', mergedSubmission)
-    
+
     return mergedSubmission
 }
 
@@ -36,7 +36,7 @@ function setSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    setYarValue(request, 'submission', data)    
+    setYarValue(request, 'submission', data)
 }
 
 function clearSubmission(request) {
@@ -60,7 +60,7 @@ function getContainerName(request) {
 }
 
 async function checkDraftSubmissionExists(request) {
-    if (!config.enableDraftSubmission){
+    if (!config.enableDraftSubmission) {
         return false
     }
     const containerName = getContainerName(request)
@@ -68,10 +68,10 @@ async function checkDraftSubmissionExists(request) {
 }
 
 async function saveDraftSubmission(request, savePointUrl) {
-    if (!config.enableDraftSubmission){
+    if (!config.enableDraftSubmission) {
         return
     }
-    
+
     const submission = getSubmission(request)
     submission.savePointUrl = savePointUrl
     submission.savePointDate = new Date()
@@ -97,7 +97,7 @@ async function loadDraftSubmission(request) {
 }
 
 async function deleteDraftSubmission(request) {
-    if (!config.enableDraftSubmission){
+    if (!config.enableDraftSubmission) {
         return
     }
     const containerName = getContainerName(request)
@@ -118,6 +118,9 @@ function cloneSubmission(request, applicationIndex) {
 
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
+    if (config.enableDeliveryType && !submission.delivery.deliveryType) {
+        submission.delivery.deliveryType = 'standardDelivery'
+    }
 
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
@@ -149,7 +152,7 @@ function deleteApplication(request, applicationIndex) {
 
     // Update the applicationIndex of each remaining application to ensure no gaps
     reIndexApplications(applications)
-    
+
     setYarValue(request, 'submission', submission)
     return submission
 }
@@ -266,7 +269,15 @@ function getAppFlow(submission) {
                 }
 
                 if (submission.delivery?.address) {
-                    appFlow.push('species-name/0')
+                    if (config.enableDeliveryType) {
+                        appFlow.push('delivery-type')
+                        if (submission.delivery?.deliveryType) {
+                            appFlow.push('species-name/0')
+                        }
+                    }
+                    else {
+                        appFlow.push('species-name/0')
+                    }
                 } else {
                     return { appFlow, applicationStatuses }
                 }
@@ -291,7 +302,7 @@ function getAppFlow(submission) {
                         if (species.sourceCode) {
                             if (submission.permitType === "article10") {
                                 appFlow.push(`specimen-origin/${applicationIndex}`)
-                                if(species.specimenOrigin) {
+                                if (species.specimenOrigin) {
                                     appFlow.push(`use-certificate-for/${applicationIndex}`)
                                 }
                             } else {

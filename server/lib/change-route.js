@@ -1,4 +1,4 @@
-const urlPrefix = require("../../config/config").urlPrefix
+const { urlPrefix } = require("../../config/config")
 const { setYarValue, getYarValue } = require("../lib/session")
 const changeTypes = [
     'permitType',
@@ -7,6 +7,7 @@ const changeTypes = [
     'applicantAddress',
     'agentAddress',
     'deliveryAddress',
+    'deliveryType',
     'sourceCode',
     'speciesName',
     'quantity',
@@ -53,6 +54,9 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
             startUrl = `${urlPrefix}/postcode/delivery`
             endUrls.push(`${urlPrefix}/confirm-address/delivery`)
             confirm = true
+            break
+        case "deliveryType":       //Change flow
+            startUrl = `${urlPrefix}/delivery-type`
             break
         case "speciesName":           //Change flow
             startUrl = `${urlPrefix}/species-name/${applicationIndex}`

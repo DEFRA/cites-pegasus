@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")

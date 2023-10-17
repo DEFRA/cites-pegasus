@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix, enableDeliveryType } = require('../../config/config')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -159,7 +159,7 @@ module.exports = [{
             } else {
                 const appStatuses = validateSubmission(submission, null)            
                 const applicationIndex = getApplicationIndex(submission, appStatuses)
-                nextPath = `${urlPrefix}/species-name/${applicationIndex}`
+                nextPath = enableDeliveryType ?  `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`                
             }
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)

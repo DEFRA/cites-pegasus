@@ -1,11 +1,12 @@
 const Joi = require("joi")
-const urlPrefix = require("../../config/config").urlPrefix
+const { urlPrefix, enableDeliveryType } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
+const { config } = require("dotenv")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathComments = `${urlPrefix}/comments`
@@ -220,6 +221,18 @@ function createApplicationSummaryModel(errors, data) {
 
   const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.countryDesc} ${deliveryAddressData.postcode}`
 
+  let deliveryTypeDataValue = ""
+
+  if (enableDeliveryType) {
+    switch (data.delivery.deliveryType) {
+      case 'specialDelivery':
+        deliveryTypeDataValue = pageContent.rowTextSpecialDelivery
+        break
+      case 'standardDelivery':
+        deliveryTypeDataValue = pageContent.rowTextStandardDelivery
+    }
+  }
+
   const exportOrReexportPermitDetailData = {
     notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
     country: data.permitDetails?.exportOrReexportCountry,
@@ -260,6 +273,7 @@ function createApplicationSummaryModel(errors, data) {
 
   const importerExporterAddressValue = `${importerExporterDetailsData.address.addressLine1} ${importerExporterDetailsData.address.addressLine2} ${importerExporterDetailsData.address.addressLine3} ${importerExporterDetailsData.address.addressLine4} ${importerExporterDetailsData.address.postcode}`
 
+
   const summaryListAboutThePermit = {
     id: "permitType",
     name: "permitType",
@@ -274,9 +288,14 @@ function createApplicationSummaryModel(errors, data) {
     name: "deliveryAddress",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      createSummaryListRow("govuk-summary-list__row border-top", pageContent.rowTextAddress, deliveryAddressDataValue, hrefPrefix + "/deliveryAddress", "delivery address", summaryType),
+      createSummaryListRow(deliveryTypeDataValue ? "govuk-summary-list__row--no-border border-top" : "border-top", pageContent.rowTextAddress, deliveryAddressDataValue, hrefPrefix + "/deliveryAddress", "delivery address", summaryType)
     ]
   }
+
+  if (deliveryTypeDataValue) {
+    summaryListDeliveryAddress.rows.push(createSummaryListRow("govuk-summary-list__row", pageContent.rowTextDeliveryType, deliveryTypeDataValue, hrefPrefix + "/deliveryType", "delivery type", summaryType))
+  }
+
 
   let quantityHref
   if (data.species.specimenType === "animalLiving") {
@@ -396,7 +415,7 @@ function createApplicationSummaryModel(errors, data) {
       href: summaryType === 'copy-as-new' ? applicationLink : "#"
     })
   }
-  
+
   if (summaryType === 'copy-as-new') {
     breadcrumbs.items.push({
       text: pageContent.pageHeaderCopy,
