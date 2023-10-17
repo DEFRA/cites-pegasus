@@ -3,6 +3,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -39,7 +40,7 @@
           {% endif %}
         </ul>
         <h2 class="govuk-heading-m">{{heading1}}</h2>
-        <p>{{pageBody2}}</p>
+        <p>{{pageBody2a}}{{maxFilesCount}}{{pageBody2b}}</p>
         <ul class="govuk-list govuk-list--bullet">
           {% for item in bulletList2Items %}
             <li>{{item.bulletListItem}}</li>
@@ -83,6 +84,9 @@
             </li>
           {% endfor %}
         </ul>
+        <div class="flex-end">
+          {{ govukPagination(pagination) }}
+        </div>
         <hr class="hr-light"/>
 
         {{ govukButton({
