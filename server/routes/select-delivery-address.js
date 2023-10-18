@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix, enableDeliveryType } = require('../../config/config')
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
 const { getAddressSummary } = require('../lib/helper-functions')
@@ -122,7 +122,7 @@ module.exports = [{
             const appStatuses = validateSubmission(submission, pageId)            
             const applicationIndex = getApplicationIndex(submission, appStatuses)
 
-            let nextPath = `${urlPrefix}/species-name/${applicationIndex}`
+            let nextPath = enableDeliveryType ?  `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
 
             switch (deliveryAddressOption) {
                 case 'applicant':

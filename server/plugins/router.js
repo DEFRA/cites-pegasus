@@ -35,7 +35,7 @@ const routes = [].concat(
   require('../routes/my-submissions'),
   require('../routes/my-submission'),
   require('../routes/public'),
-  //require('../routes/test'),
+  require('../routes/test'),
   require('../routes/oidc'),
   require('../routes/govpay'),
   require('../routes/payment-problem'),
@@ -49,7 +49,8 @@ const routes = [].concat(
   require('../routes/species-warning'),
   require('../routes/draft-submission-warning'),
   require('../routes/add-application'),
-  require('../routes/specimen-origin')
+  require('../routes/specimen-origin'),
+  require('../routes/delivery-type')
 )
 
 module.exports = {

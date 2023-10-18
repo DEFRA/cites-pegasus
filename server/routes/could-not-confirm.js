@@ -2,7 +2,7 @@ const Joi = require("joi")
 const textContent = require('../content/text-content')
 const { getSubmission } = require('../lib/submission')
 const { getYarValue } = require("../lib/session")
-const urlPrefix = require('../../config/config').urlPrefix
+const { urlPrefix } = require("../../config/config")
 const pageId = 'could-not-confirm'
 const currentPath = `${urlPrefix}/${pageId}`
 

@@ -382,6 +382,16 @@ const schema = Joi.object().keys({
       "error.deliveryAddressOption.any.only": Joi.string().required()
     }).required()
   }).required(),
+  deliveryType: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    hintText: Joi.string().required(),
+    radioOptionStandardDelivery: Joi.string().required(),
+    radioOptionSpecialDelivery: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.deliveryType.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -784,7 +794,8 @@ const schema = Joi.object().keys({
     ),
     agentBulletListItem: Joi.string().required(),
     heading1: Joi.string().required(),
-    pageBody2: Joi.string().required(),
+    pageBody2a: Joi.string().required(),
+    pageBody2b: Joi.string().required(),
     bulletList2Items: Joi.array().items(
       Joi.object().keys({ bulletListItem: Joi.string().required() })
     ),
@@ -796,7 +807,8 @@ const schema = Joi.object().keys({
       "error.fileUpload.hapi.filename.string.empty": Joi.string().required(),
       "error.fileUpload.hapi.headers.content-type.any.only":
         Joi.string().required(),
-      "error.fileUpload.any.custom": Joi.string().required(),
+      "error.fileUpload.any.existing": Joi.string().required(),
+      "error.fileUpload.any.maxfiles": Joi.string().required(),
       "error.fileUpload.upload.exception": Joi.string().required(),
       "error.file.delete.exception": Joi.string().required(),
       "error.fileUpload.any.filesize": Joi.string().required()
@@ -835,6 +847,9 @@ const schema = Joi.object().keys({
     rowTextBusinessName: Joi.string().required(),
     rowTextEmailAddress: Joi.string().required(),
     rowTextAddress: Joi.string().required(),
+    rowTextDeliveryType: Joi.string().required(),
+    rowTextStandardDelivery: Joi.string().required(),
+    rowTextSpecialDelivery: Joi.string().required(),
     headerDeliveryAddress: Joi.string().required(),
     headerSpecimenDetails: Joi.string().required(),
     rowTextScientificName: Joi.string().required(),

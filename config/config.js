@@ -20,9 +20,11 @@ const schema = Joi.object().keys({
   addressLookupAPICertName: Joi.string().required(),
   appInsightsInstrumentationKey: Joi.string().allow("", null),
   appInsightsInstrumentationCloudRole: Joi.string().allow("", null),
+  documentUploadMaxFilesLimit: Joi.number().default(50),
   enableSpeciesWarning: Joi.boolean(),
   enableDraftSubmission: Joi.boolean(),
   enableFilterSubmittedBy: Joi.boolean(),
+  enableDeliveryType: Joi.boolean(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -57,9 +59,11 @@ const config = {
   addressLookupAPICertName: process.env.ADDRESS_LOOKUP_API_CERT_NAME,
   appInsightsInstrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEY,
   appInsightsInstrumentationCloudRole: process.env.APP_INSIGHTS_INSTRUMENTATION_CLOUD_ROLE,
+  documentUploadMaxFilesLimit: process.env.DOCUMENT_UPLOAD_MAX_FILES_LIMIT,
   enableSpeciesWarning: process.env.ENABLE_SPECIES_WARNING || false,
   enableDraftSubmission: process.env.ENABLE_DRAFT_SUBMISSION || false,
   enableFilterSubmittedBy: process.env.ENABLE_FILTER_SUBMITTED_BY || false,
+  enableDeliveryType: process.env.ENABLE_DELIVERY_TYPE || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',
