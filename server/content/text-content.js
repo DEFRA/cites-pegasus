@@ -808,7 +808,9 @@ const schema = Joi.object().keys({
     inputHintAddRemarks: Joi.string().required(),
     errorMessages: Joi.object({
       "error.comments.string.max": Joi.string().required(),
-      "error.comments.string.pattern.base": Joi.string().required()
+      "error.comments.string.pattern.base": Joi.string().required(),
+      "error.internalReference.string.max": Joi.string().required(),
+      "error.internalReference.string.pattern.base": Joi.string().required(),
     }).required()
   }).required(),
   applicationSummary: Joi.object({

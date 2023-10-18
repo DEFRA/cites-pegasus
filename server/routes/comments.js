@@ -25,7 +25,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["comments"]
+    const fields = ["comments", "internalReference"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -85,10 +85,8 @@ function createModel(errors, data) {
       name: "internalReference",
       classes: "govuk-input govuk-input--width-20",
       autocomplete: "on",
-      ...(data.exportOrReexportPermitNumber
-        ? { value: data.exportOrReexportPermitNumber }
-        : {}),
-      errorMessage: getFieldError(errorList, "#exportOrReexportPermitNumber")
+      ...(data.internalReference ? { value: data.internalReference } : {}),
+      errorMessage: getFieldError(errorList, "#internalReference")
     }
   }
   return { ...commonContent, ...model }
@@ -137,7 +135,8 @@ module.exports = [
         permitType: submission.permitType,
         permitDetails: submission.applications[applicationIndex]?.permitDetails,
         isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
-        comments: submission.applications[applicationIndex].comments
+        comments: submission.applications[applicationIndex].comments,
+        internalReference: submission.applications[applicationIndex].internalReference
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -154,6 +153,7 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
             comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
+            internalReference: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, "").max(30),
         }),
         failAction: failAction
       },
@@ -170,6 +170,7 @@ module.exports = [
 
         const submission = getSubmission(request)
         submission.applications[applicationIndex].comments = modifiedComments || ""
+        submission.applications[applicationIndex].internalReference = request.payload.internalReference
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
