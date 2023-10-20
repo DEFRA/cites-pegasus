@@ -817,7 +817,10 @@ const schema = Joi.object().keys({
   comments: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    inputHintAddRemarks: Joi.string().required(),
+    headingRemarks: Joi.string().required(),
+    inputHintRemarks: Joi.string().required(),
+    headingInternalReference: Joi.string().required(),
+    inputHintInternalReference: Joi.string().required(),
     errorMessages: Joi.object({
       "error.comments.string.max": Joi.string().required(),
       "error.comments.string.pattern.base": Joi.string().required(),
@@ -893,7 +896,9 @@ const schema = Joi.object().keys({
     rowTextPermitIssueDate: Joi.string().required(),
     headerCountryOfOriginPermitDetails: Joi.string().required(),
     rowTextNotApplicable: Joi.string().required(),
-    headerRemarks: Joi.string().required(),
+    headerAdditionalInformation: Joi.string().required(),
+    rowTextRemarks: Joi.string().required(),
+    rowTextInternalReference: Joi.string().required(),
     rowTextSourceCodeW: Joi.string().required(),
     rowTextSourceCodeR: Joi.string().required(),
     rowTextSourceCodeDAnimal: Joi.string().required(),

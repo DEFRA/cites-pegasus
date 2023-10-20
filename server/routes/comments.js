@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableInternalReference } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -56,30 +56,31 @@ function createModel(errors, data) {
     pageTitle: errorList
     ? commonContent.errorSummaryTitlePrefix + errorList[0].text
     : `${pageContent.defaultTitle}`,
-
+    enableInternalReference,
+    pageHeader: pageContent.pageHeader,
     inputComments: {
       id: "comments",
       name: "comments",
       maxlength: 500,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
-        text: pageContent.pageHeader,
+        text: pageContent.headingRemarks,
         isPageHeading: true,
-        classes: "govuk-label--l"
+        classes: "govuk-label--m"
       },
       hint: {
-        text: pageContent.inputHintAddRemarks
+        text: pageContent.inputHintRemarks
       },
       ...(data.comments ? { value: data.comments } : {}),
       errorMessage: getFieldError(errorList, "#comments")
     },
     inputInternalReference: {
       label: {
-        text: "Internal reference",
+        text: pageContent.headingInternalReference,
         classes: "govuk-label--m"
       },
       hint: {
-        text: "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes. (Optional)"
+        text: pageContent.inputHintInternalReference
       },
       id: "internalReference",
       name: "internalReference",
