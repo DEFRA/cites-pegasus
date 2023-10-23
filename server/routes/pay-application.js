@@ -37,6 +37,7 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageHeader2: pageContent.pageHeader2,
     pageBody: pageContent.pageBody,
+    pageBody2: pageContent.pageBody2,
     headingPaymentAmount: pageContent.headingPaymentAmount,
     costingValue: `£${data}`,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,

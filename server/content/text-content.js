@@ -1023,6 +1023,7 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().required(),
+    pageBody2: Joi.string().required(),
     pageHeader2: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
     radioOptionNo: Joi.string().required(),
