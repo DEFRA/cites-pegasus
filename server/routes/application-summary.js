@@ -9,7 +9,7 @@ const textContent = require("../content/text-content")
 const { config } = require("dotenv")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathComments = `${urlPrefix}/comments`
+const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
 const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
@@ -379,12 +379,12 @@ function createApplicationSummaryModel(errors, data) {
     name: "remarks",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      createSummaryListRow(enableInternalReference ? "govuk-summary-list__row--no-border border-top" : "border-top", pageContent.rowTextRemarks, data.comments, hrefPrefix + "/comments", "remarks", summaryType),
+      createSummaryListRow(enableInternalReference ? "govuk-summary-list__row--no-border border-top" : "border-top", pageContent.rowTextRemarks, data.comments, hrefPrefix + "/additionalInfo", "remarks", summaryType),
     ]
   }
 
   if (enableInternalReference) {
-    summaryListRemarks.rows.push(createSummaryListRow("govuk-summary-list__row", pageContent.rowTextInternalReference, data.internalReference, hrefPrefix + "/comments", "internal reference", summaryType))
+    summaryListRemarks.rows.push(createSummaryListRow("govuk-summary-list__row", pageContent.rowTextInternalReference, data.internalReference, hrefPrefix + "/additionalInfo", "internal reference", summaryType))
   }
 
   const summaryListApplicantContactDetails = getContactDetails(pageContent, applicantContactDetailsData, hrefPrefix, summaryType)
@@ -429,7 +429,7 @@ function createApplicationSummaryModel(errors, data) {
   let backLink = null;
   if (summaryType !== 'view-submitted' && summaryType !== 'copy-as-new') {
     if (summaryType === 'check') {
-      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathComments}/${data.applicationIndex}`
+      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
     } else {
       backLink = nextPathYourSubmission
     }

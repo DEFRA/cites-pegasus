@@ -1050,7 +1050,7 @@
       "error.fileUpload.any.filesize": "The selected file must be smaller than 10MB"
     }
   },
-  "comments": {
+  "additionalInfo": {
     "defaultTitle": "Additional information",
     "pageHeader": "Additional information",
     "headingRemarks":  "Remarks",

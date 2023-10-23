@@ -5,8 +5,9 @@ const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission 
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
-const pageId = "comments"
+const pageId = "additional-info"
 const currentPath = `${urlPrefix}/${pageId}`
+const oldPath = `${urlPrefix}/comments`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
@@ -16,7 +17,7 @@ const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
   const commonContent = textContent.common
-  const pageContent = textContent.comments
+  const pageContent = textContent.additionalInfo
 
   let errorList = null
   if (errors) {
@@ -111,6 +112,21 @@ function failAction(request, h, err) {
 module.exports = [
   {
     method: "GET",
+    path: `${oldPath}/{applicationIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required()
+        })
+      }
+    },
+    handler: async (request, h) => {
+      const { applicationIndex } = request.params
+      return h.redirect(`/${pageId}/${applicationIndex}`)
+    }
+  },
+  {
+    method: "GET",
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -154,7 +170,7 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
             comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
-            internalReference: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, "").max(30),
+            internalReference: Joi.string().optional().allow(null, "").max(30),
         }),
         failAction: failAction
       },

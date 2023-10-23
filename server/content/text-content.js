@@ -814,7 +814,7 @@ const schema = Joi.object().keys({
       "error.fileUpload.any.filesize": Joi.string().required()
     }).required()
   }).required(),
-  comments: Joi.object({
+  additionalInfo: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     headingRemarks: Joi.string().required(),
