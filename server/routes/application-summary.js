@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix, enableDeliveryType } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
+const { deliveryType: dt } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
@@ -225,10 +226,10 @@ function createApplicationSummaryModel(errors, data) {
 
   if (enableDeliveryType) {
     switch (data.delivery.deliveryType) {
-      case 'specialDelivery':
+      case dt.specialDelivery:
         deliveryTypeDataValue = pageContent.rowTextSpecialDelivery
         break
-      case 'standardDelivery':
+      case dt.standardDelivery:
         deliveryTypeDataValue = pageContent.rowTextStandardDelivery
     }
   }
