@@ -5,7 +5,7 @@ const Wreck = require('@hapi/wreck');
 async function createPayment(costingValue, submissionRef, email, name, description) {
 
     const requestPayload = {
-        "amount": costingValue * 100,
+        "amount": Math.round(costingValue * 100),
         "reference": submissionRef,
         "description": description,
         "return_url": `${govpayCallbackURL}/${submissionRef}`,

@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { deliveryType: dt } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -61,19 +62,19 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: "standardDelivery",
+          value: dt.standardDelivery,
           text: pageContent.radioOptionStandardDelivery,
           checked: isChecked(
             data.deliveryType,
-            "standardDelivery"
+            dt.standardDelivery
           )
         },
         {
-          value: "specialDelivery",
+          value: dt.specialDelivery,
           text: pageContent.radioOptionSpecialDelivery,
           checked: isChecked(
             data.deliveryType,
-            "specialDelivery"
+            dt.specialDelivery
           )
         }
       ],
@@ -114,7 +115,7 @@ module.exports = [
       validate: {
         options: { abortEarly: false },
         payload: Joi.object({
-          deliveryType: Joi.string().valid("standardDelivery", "specialDelivery").required()
+          deliveryType: Joi.string().valid(dt.standardDelivery, dt.specialDelivery).required()
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)   
