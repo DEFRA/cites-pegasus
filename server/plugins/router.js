@@ -2,6 +2,7 @@ const routes = [].concat(
   //require('../routes/home'),
   require('../routes/cannot-use-service'),
   require('../routes/permit-type'),
+  require('../routes/other-permit-type'),
   require('../routes/applying-on-behalf'),
   require('../routes/contact-details'),
   require('../routes/postcode'),

@@ -56,8 +56,22 @@
     "radioOptionArticle10Hint": "To use any specimen of an GB/EU Annex A species for commercial purposes within the United Kingdom",
     "radioOptionOther": "Other",
     "errorMessages": {
-      "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
-      "error.permitType.any.only": "Select the type of permit or certificate that you are applying for"
+      "error.permitTypeOption.any.required": "Select the type of permit or certificate that you are applying for",
+      "error.permitTypeOption.any.only": "Select the type of permit or certificate that you are applying for"
+    }
+  },
+  "otherPermitType": {
+    "defaultTitle": "What other type of permit or certificate are you applying for?",
+    "pageHeader": "What other type of permit or certificate are you applying for?",
+    "radioOptionMIC": "Musical instrument certificate",
+    "radioOptionTEC": "Travelling exhibition certificate",
+    "radioOptionPOC": "Personal ownership certificate",
+    "radioOptionSemiComplete": "Semi-complete permits",
+    "radioOptionDraft": "Draft import permit",
+    "radioOptionOther": "Other",
+    "errorMessages": {
+      "error.otherPermitTypeOption.any.required": "Select the type of permit or certificate that you are applying for",
+      "error.otherPermitTypeOption.any.only": "Select the type of permit or certificate that you are applying for"
     }
   },
   "cannotUseService": {

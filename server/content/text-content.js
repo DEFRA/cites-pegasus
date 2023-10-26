@@ -255,8 +255,22 @@ const schema = Joi.object().keys({
     radioOptionArticle10Hint: Joi.string().required(),
     radioOptionOther: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.permitType.any.required": Joi.string().required(),
-      "error.permitType.any.only": Joi.string().required()
+      "error.permitTypeOption.any.required": Joi.string().required(),
+      "error.permitTypeOption.any.only": Joi.string().required()
+    })
+  }).required(),
+  otherPermitType: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionMIC: Joi.string().required(),
+    radioOptionTEC: Joi.string().required(),
+    radioOptionPOC: Joi.string().required(),
+    radioOptionSemiComplete: Joi.string().required(),
+    radioOptionDraft: Joi.string().required(),
+    radioOptionOther: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.otherPermitTypeOption.any.required": Joi.string().required(),
+      "error.otherPermitTypeOption.any.only": Joi.string().required()
     })
   }).required(),
   cannotUseService: Joi.object({

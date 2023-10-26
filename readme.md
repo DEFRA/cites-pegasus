@@ -30,8 +30,9 @@ CITES Application Portal
 | ENABLE_SPECIES_WARNING                   | Enable species warning message on scientific name page |    no    | false   |                                  |       |
 | ENABLE_DRAFT_SUBMISSION                  | Enable the save and retrieve of draft sumbissions      |    no    | false   |                                  |       |
 | ENABLE_FILTER_SUBMITTED_BY               | Enable the filter to allow the user to view submissions from all users | no | false |                          |       |
-| DOCUMENT_UPLOAD_MAX_FILES_LIMIT          | Upper limit of number of files that can be uploaded    |   no     | 50      |                                  |       | 
+| DOCUMENT_UPLOAD_MAX_FILES_LIMIT          | Upper limit of number of files that can be uploaded    |    n     | 50      |                                  |       | 
 | ENABLE_DELIVERY_TYPE                     | Enable the delivery type page for special delivery     |    no    | false   |                                  |       |
+| ENABLE_OTHER_PERMIT_TYPES                | Enable the additional non standard permit types        |    no    | false   |                                  |       |
 
 
 

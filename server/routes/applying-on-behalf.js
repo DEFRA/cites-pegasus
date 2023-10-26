@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableOtherPermitType } = require("../../config/config")
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 
@@ -10,7 +10,7 @@ const previousPath = `${urlPrefix}/permit-type`
 const nextPath = `${urlPrefix}/contact-details/applicant`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, isAgent) {
+function createModel(errors, isAgent, permitType) {
   const commonContent = textContent.common;
   const pageContent = textContent.applyingOnBehalf;
 
@@ -39,6 +39,8 @@ function createModel(errors, isAgent) {
           }
       })
   }
+
+  let backLink = enableOtherPermitType && permitType
 
   const model = {
     backLink: previousPath,
@@ -86,7 +88,7 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
 
-    return h.view(pageId, createModel(null, submission?.isAgent));
+    return h.view(pageId, createModel(null, submission?.isAgent, submission?.permitType));
   }
 },
 {
@@ -99,7 +101,8 @@ module.exports = [{
         isAgent: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo)
       }),
       failAction: (request, h, err) => {
-        return h.view(pageId, createModel(err, request.payload.isAgent)).takeover()
+        const submission = getSubmission(request)
+        return h.view(pageId, createModel(err, request.payload.isAgent, submission?.permitType)).takeover()
       }
     },
     handler: async (request, h) => {

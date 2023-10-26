@@ -230,6 +230,9 @@ function getAppFlow(submission) {
             }
         } else {
             appFlow.push('permit-type')
+            if(config.enableOtherPermitTypes && submission.permitTypeOption === 'other'){
+                appFlow.push('other-permit-type')
+            }
             if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
 
             if (submission.permitType && submission.permitType !== 'other') {
