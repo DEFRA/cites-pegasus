@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { permitType: pt } = require('../lib/constants')
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
 const user = require('../lib/user')
@@ -15,7 +16,7 @@ const draftContinuePath = `${currentPath}/draft-continue`
 const draftDeletePath = `${currentPath}/draft-delete`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
-const permitTypes = ['import', 'export', 'reexport', 'article10']
+const permitTypes = [pt.import, pt.export, pt.reexport, pt.article10]
 const statuses = ['awaitingPayment', 'inProgress', 'closed']
 
 const pageSize = 15
@@ -109,24 +110,24 @@ function createModel(errors, data) {
       name: "permitTypes",
       items: [
         {
-          value: "import",
+          value: pt.import,
           text: commonContent.permitTypeDescriptionImport,
-          checked: isChecked(data.permitTypes, "import")
+          checked: isChecked(data.permitTypes, pt.import)
         },
         {
-          value: "export",
+          value: pt.export,
           text: commonContent.permitTypeDescriptionExport,
-          checked: isChecked(data.permitTypes, "export")
+          checked: isChecked(data.permitTypes, pt.export)
         },
         {
-          value: "reexport",
+          value: pt.reexport,
           text: commonContent.permitTypeDescriptionReexport,
-          checked: isChecked(data.permitTypes, "reexport")
+          checked: isChecked(data.permitTypes, pt.reexport)
         },
         {
-          value: "article10",
+          value: pt.article10,
           text: commonContent.permitTypeDescriptionArticle10,
-          checked: isChecked(data.permitTypes, "article10")
+          checked: isChecked(data.permitTypes, pt.article10)
         }
       ],
     },

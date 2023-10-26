@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { permitType: pt } = require('../lib/constants')
 const { getYarValue, setYarValue } = require('../lib/session')
 const { deliveryType: dt } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")

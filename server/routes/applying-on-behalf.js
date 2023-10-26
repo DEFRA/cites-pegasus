@@ -1,21 +1,22 @@
 const Joi = require('joi')
-const { urlPrefix, enableOtherPermitType } = require("../../config/config")
+const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 
 const textContent = require('../content/text-content')
 const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/permit-type`
+const previousPathPermitType = `${urlPrefix}/permit-type`
+const previousPathOtherPermitType = `${urlPrefix}/other-permit-type`
 const nextPath = `${urlPrefix}/contact-details/applicant`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, isAgent, permitType) {
+function createModel(errors, data) {
   const commonContent = textContent.common;
   const pageContent = textContent.applyingOnBehalf;
 
   let isAgentRadioVal = null
-  switch (isAgent) {
+  switch (data.isAgent) {
     case true:
       isAgentRadioVal = commonContent.radioOptionYes
       break;
@@ -40,10 +41,10 @@ function createModel(errors, isAgent, permitType) {
       })
   }
 
-  let backLink = enableOtherPermitType && permitType
+  let backLink = enableOtherPermitTypes && data.otherPermitTypeOption ? previousPathOtherPermitType : previousPathPermitType
 
   const model = {
-    backLink: previousPath,
+    backLink,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageHeader: pageContent.pageHeader,
@@ -88,7 +89,12 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
 
-    return h.view(pageId, createModel(null, submission?.isAgent, submission?.permitType));
+    const pageData = {
+      isAgent: submission.isAgent,
+      otherPermitTypeOption: submission.otherPermitTypeOption
+    }
+
+    return h.view(pageId, createModel(null, pageData));
   }
 },
 {
@@ -102,7 +108,11 @@ module.exports = [{
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
-        return h.view(pageId, createModel(err, request.payload.isAgent, submission?.permitType)).takeover()
+        const pageData = {
+          isAgent: submission.isAgent,
+          otherPermitTypeOption: submission.otherPermitTypeOption
+        }
+        return h.view(pageId, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {

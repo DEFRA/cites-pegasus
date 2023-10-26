@@ -8,7 +8,8 @@ module.exports = {
         tec: 'tec',
         poc: 'poc',
         semiComplete: 'semiComplete',
-        draft: 'draft'
+        draft: 'draft',
+        other: 'other'
     },
     deliveryType: {
         standardDelivery: 'standardDelivery',
