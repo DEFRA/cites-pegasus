@@ -1189,6 +1189,11 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required()
   }).required(),
+  guidanceCompletion: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    warningMessage: Joi.string().required()
+  }).required(),
   draftSubmissionWarning: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

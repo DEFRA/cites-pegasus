@@ -1,6 +1,7 @@
 const routes = [].concat(
   //require('../routes/home'),
   require('../routes/cannot-use-service'),
+  require('../routes/guidance-completion'),
   require('../routes/permit-type'),
   require('../routes/other-permit-type'),
   require('../routes/applying-on-behalf'),

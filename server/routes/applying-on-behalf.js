@@ -2,12 +2,13 @@ const Joi = require('joi')
 const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-
+const { permitType: pt } = require('../lib/constants')
 const textContent = require('../content/text-content')
 const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPermitType = `${urlPrefix}/permit-type`
 const previousPathOtherPermitType = `${urlPrefix}/other-permit-type`
+const previousPathGuidanceCompletion = `${urlPrefix}/guidance-completion`
 const nextPath = `${urlPrefix}/contact-details/applicant`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -41,7 +42,16 @@ function createModel(errors, data) {
       })
   }
 
-  let backLink = enableOtherPermitTypes && data.otherPermitTypeOption ? previousPathOtherPermitType : previousPathPermitType
+  let backLink = null
+  if (enableOtherPermitTypes && data.otherPermitTypeOption){
+    if ([pt.mic, pt.tec, pt.poc].includes(data.otherPermitTypeOption)) {
+      backLink = previousPathGuidanceCompletion
+    } else {
+      backLink = previousPathOtherPermitType
+    }
+   } else {
+    backLink = previousPathPermitType
+   } 
 
   const model = {
     backLink,

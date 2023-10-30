@@ -9,10 +9,11 @@ const pageId = 'other-permit-type'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPathApplyingOnBehalf = `${urlPrefix}/applying-on-behalf`
+const nextPathGuidanceCompletion = `${urlPrefix}/guidance-completion`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 const invalidSubmissionPath = `${urlPrefix}/`
 const previousPathYourSubmission = `${urlPrefix}/your-submission`
-const otherOption = 'other'
+
 
 function createModel(errors, data) {
   const commonContent = textContent.common;
@@ -82,9 +83,9 @@ function createModel(errors, data) {
           checked: isChecked(data.otherPermitTypeOption, pt.draft)
         },
         {
-          value: otherOption,
+          value: pt.other,
           text: pageContent.radioOptionOther,
-          checked: isChecked(data.otherPermitTypeOption, otherOption)
+          checked: isChecked(data.otherPermitTypeOption, pt.other)
         }
       ],
       errorMessage: getFieldError(errorList, '#otherPermitTypeOption')
@@ -125,7 +126,7 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        otherPermitTypeOption: Joi.string().required().valid(pt.mic, pt.tec, pt.poc, pt.semiComplete, pt.draft, otherOption)
+        otherPermitTypeOption: Joi.string().required().valid(pt.mic, pt.tec, pt.poc, pt.semiComplete, pt.draft, pt.other)
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
@@ -148,7 +149,7 @@ module.exports = [{
       if (isChange) {
         //Clear the whole submission if the permit type has changed
         submission = createSubmission(request)
-        submission.permitTypeOption = otherOption
+        submission.permitTypeOption = pt.other
       }
 
       submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
@@ -168,9 +169,9 @@ module.exports = [{
         case pt.draft:
           submission.permitType = pt.import
           submission.permitSubType = pt.draft
-          break        
+          break
       }
-      
+
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -188,8 +189,21 @@ module.exports = [{
         return h.redirect(exitChangeRouteUrl)
       }
 
-      const redirectTo = request.payload.otherPermitTypeOption === otherOption ? cannotUseServicePath : nextPathApplyingOnBehalf
-
+      let redirectTo
+      switch (request.payload.otherPermitTypeOption) {
+        case pt.mic:
+        case pt.tec:
+        case pt.poc:
+          redirectTo = nextPathGuidanceCompletion;
+          break;
+        case pt.semiComplete:
+        case pt.draft:
+          redirectTo = nextPathApplyingOnBehalf;
+          break;
+        case pt.other:
+          redirectTo = cannotUseServicePath;
+          break;
+      }
       saveDraftSubmission(request, redirectTo)
       return h.redirect(redirectTo)
     }

@@ -237,8 +237,8 @@ function getAppFlow(submission) {
             if (submission.permitType === pt.other) { appFlow.push('cannot-use-service') }
 
             if (submission.permitType && submission.permitType !== pt.other) {
+                appFlow.push('guidance-completion')
                 appFlow.push('applying-on-behalf')
-
 
                 if (typeof submission.isAgent === 'boolean') {
 
