@@ -8,7 +8,7 @@ const pageId = "ever-imported-exported"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/already-have-a10`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
-const nextPathComments = `${urlPrefix}/comments`
+const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -187,7 +187,7 @@ module.exports = [
           }
         }
 
-        const redirectTo = request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathPermitDetails}/${applicationIndex}` : `${nextPathComments}/${applicationIndex}`
+        const redirectTo = request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
         
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

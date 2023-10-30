@@ -1,7 +1,8 @@
 const Joi = require("joi")
-const { urlPrefix, enableDeliveryType } = require("../../config/config")
+const { urlPrefix, enableDeliveryType, enableInternalReference } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
+const { deliveryType: dt } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
@@ -9,7 +10,7 @@ const textContent = require("../content/text-content")
 const { config } = require("dotenv")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathComments = `${urlPrefix}/comments`
+const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
 const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
@@ -222,13 +223,12 @@ function createApplicationSummaryModel(errors, data) {
   const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.countryDesc} ${deliveryAddressData.postcode}`
 
   let deliveryTypeDataValue = ""
-
   if (enableDeliveryType) {
     switch (data.delivery.deliveryType) {
-      case 'specialDelivery':
+      case dt.specialDelivery:
         deliveryTypeDataValue = pageContent.rowTextSpecialDelivery
         break
-      case 'standardDelivery':
+      case dt.standardDelivery:
         deliveryTypeDataValue = pageContent.rowTextStandardDelivery
     }
   }
@@ -380,8 +380,12 @@ function createApplicationSummaryModel(errors, data) {
     name: "remarks",
     classes: "govuk-!-margin-bottom-9",
     rows: [
-      createSummaryListRow("govuk-summary-list__row border-top", pageContent.headerRemarks, data.comments, hrefPrefix + "/comments", "remarks", summaryType),
+      createSummaryListRow(enableInternalReference ? "govuk-summary-list__row--no-border border-top" : "border-top", pageContent.rowTextRemarks, data.comments, hrefPrefix + "/additionalInfo", "remarks", summaryType),
     ]
+  }
+
+  if (enableInternalReference) {
+    summaryListRemarks.rows.push(createSummaryListRow("govuk-summary-list__row", pageContent.rowTextInternalReference, data.internalReference, hrefPrefix + "/additionalInfo", "internal reference", summaryType))
   }
 
   const summaryListApplicantContactDetails = getContactDetails(pageContent, applicantContactDetailsData, hrefPrefix, summaryType)
@@ -426,7 +430,7 @@ function createApplicationSummaryModel(errors, data) {
   let backLink = null;
   if (summaryType !== 'view-submitted' && summaryType !== 'copy-as-new') {
     if (summaryType === 'check') {
-      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathComments}/${data.applicationIndex}`
+      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
     } else {
       backLink = nextPathYourSubmission
     }
@@ -447,7 +451,7 @@ function createApplicationSummaryModel(errors, data) {
     headingImporterExporterDetails: headingImporterExporterDetails,
     headingPermitDetails: data.permitDetails && headingPermitDetails,
     headerCountryOfOriginPermitDetails: data.permitDetails && pageContent.headerCountryOfOriginPermitDetails,
-    headerRemarks: pageContent.headerRemarks,
+    headerAdditionalInformation: pageContent.headerAdditionalInformation,
     returnToYourApplicationsLinkText: summaryType === 'view-submitted' ? pageContent.returnToYourApplicationsLinkText : "",
     returnToYourApplicationsLinkUrl: summaryType === 'view-submitted' ? `${urlPrefix}/my-submissions` : "",
 
@@ -689,6 +693,7 @@ module.exports = [
         importerExporterDetails: submission.applications[applicationIndex]?.importerExporterDetails,
         permitDetails: submission.applications[applicationIndex].permitDetails,
         comments: submission.applications[applicationIndex].comments,
+        internalReference: submission.applications[applicationIndex].internalReference,
         isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId
       }
       return h.view(pageId, createApplicationSummaryModel(null, pageData))

@@ -1053,13 +1053,18 @@
       "error.fileUpload.any.filesize": "The selected file must be smaller than 10MB"
     }
   },
-  "comments": {
-    "defaultTitle": "Add remarks",
-    "pageHeader": "Add remarks",
-    "inputHintAddRemarks": "Include any other comments that may support your application (optional).",
+  "additionalInfo": {
+    "defaultTitle": "Additional information",
+    "pageHeader": "Additional information",
+    "headingRemarks":  "Remarks",
+    "inputHintRemarks": "Include any other comments that may support your application (optional).",
+    "headingInternalReference": "Internal reference",
+    "inputHintInternalReference": "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes. (Optional)",
     "errorMessages": {
       "error.comments.string.max": "Comments must be 500 characters or less",
-      "error.comments.string.pattern.base": "Comments must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
+      "error.comments.string.pattern.base": "Comments must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+      "error.internalReference.string.max": "Internal reference must be 30 characters or less",
+      "error.internalReference.string.pattern.base": "Internal reference must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
     }
   },
   "applicationSummary": {
@@ -1130,7 +1135,9 @@
     "rowTextPermitIssueDate": "Permit issue date",
     "headerCountryOfOriginPermitDetails": "Country of origin permit details",
     "rowTextNotApplicable": "Not applicable",
-    "headerRemarks": "Remarks",
+    "headerAdditionalInformation": "Additional information",
+    "rowTextRemarks": "Remarks",
+    "rowTextInternalReference": "Internal reference",
     "rowTextSourceCodeW": "From the wild",
     "rowTextSourceCodeR": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
     "rowTextSourceCodeDAnimal": "Animals bred in captivity by a CITES registered breeder",
