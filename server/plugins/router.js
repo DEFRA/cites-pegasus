@@ -27,7 +27,7 @@ const routes = [].concat(
   require('../routes/unmarked-specimens'),
   require('../routes/quantity'),
   require('../routes/permit-details'),
-  require('../routes/comments'),
+  require('../routes/additional-info'),
   require('../routes/application-summary'),
   require('../routes/your-submission'),
   require('../routes/upload-supporting-documents'),

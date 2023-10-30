@@ -23,7 +23,7 @@ const changeTypes = [
     'descriptionGeneric',
     'importerExporterDetails',
     'permitDetails',
-    'comments',
+    'additionalInfo',
     'uniqueIdentificationMark',
     'everImportedExported',
     'specimenOrigin']
@@ -38,7 +38,7 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
     switch (changeType) {
         case "permitType"://Change flow
             startUrl = `${urlPrefix}/permit-type`
-            endUrls.push(`${urlPrefix}/comments/${applicationIndex}`)//You must go all the way through the flow                        
+            endUrls.push(`${urlPrefix}/additional-info/${applicationIndex}`)//You must go all the way through the flow                        
             confirm = true
             break
         case "applicantContactDetails":
@@ -121,8 +121,8 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl) {
         case "permitDetails":
             startUrl = `${urlPrefix}/permit-details/${applicationIndex}`
             break
-        case "comments":
-            startUrl = `${urlPrefix}/comments/${applicationIndex}`
+        case "additionalInfo":
+            startUrl = `${urlPrefix}/additional-info/${applicationIndex}`
             break
         default:
             throw new Error(`Invalid change type: ${changeType}`)
