@@ -1019,6 +1019,9 @@
       },
       {
         "bulletListItem": "the specimen’s proof of identity"
+      },
+      {
+        "bulletListItem": "valid fee waiver"
       }
     ],
     "agentBulletListItem": "permission to act on the applicant’s behalf",
@@ -1402,6 +1405,7 @@
     "defaultTitle": "Pay for your CITES application",
     "pageHeader": "Pay for your CITES application",
     "pageBody": "You must pay for your application before we can start processing it.",
+    "pageBody2": "Please select pay later if you have a valid Fee Waiver. For more information relating to Fee Waivers see: <a target='_blank' href='https://www.gov.uk/government/publications/endangered-species-application-for-a-waiver-from-paying-permit-fees'>Endangered species: apply for a waiver from paying permit fees - GOV.UK (www.gov.uk)</a>",
     "pageHeader2": "Do you want to pay for your application now?",
     "headingPaymentAmount": "Payment amount",
     "radioOptionYes": "Yes",
