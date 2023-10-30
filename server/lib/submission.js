@@ -397,7 +397,7 @@ function getAppFlow(submission) {
                             }
 
                             if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
-                                appFlow.push(`comments/${applicationIndex}`)
+                                appFlow.push(`additional-info/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)
                                 appFlow.push(`application-summary/view/${applicationIndex}`)
