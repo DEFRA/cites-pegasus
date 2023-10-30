@@ -26,6 +26,7 @@ const schema = Joi.object().keys({
   enableFilterSubmittedBy: Joi.boolean(),
   enableDeliveryType: Joi.boolean(),
   enableOtherPermitTypes: Joi.boolean(),
+  enableInternalReference: Joi.boolean(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -65,7 +66,6 @@ const config = {
   enableDraftSubmission: process.env.ENABLE_DRAFT_SUBMISSION || false,
   enableFilterSubmittedBy: process.env.ENABLE_FILTER_SUBMITTED_BY || false,
   enableDeliveryType: process.env.ENABLE_DELIVERY_TYPE || false,
-  enableOtherPermitTypes: process.env.ENABLE_OTHER_PERMIT_TYPES || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',

@@ -10,7 +10,7 @@ const pageId = "permit-details"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
-const nextPath = `${urlPrefix}/comments`
+const nextPath = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
