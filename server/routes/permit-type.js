@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { permitType: pt } = require('../lib/constants')
+const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -13,7 +13,6 @@ const nextPathOtherPermitType = `${urlPrefix}/other-permit-type`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 const invalidSubmissionPath = `${urlPrefix}/`
 const previousPathYourSubmission = `${urlPrefix}/your-submission`
-const otherOption = 'other'
 
 function createModel(errors, data) {
   const commonContent = textContent.common;
@@ -58,33 +57,33 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: pt.import,
+          value: pto.import,
           text: pageContent.radioOptionImport,
           hint: { text: pageContent.radioOptionImportHint },
-          checked: isChecked(data.permitTypeOption, pt.import)
+          checked: isChecked(data.permitTypeOption, pto.import)
         },
         {
-          value: pt.export,
+          value: pto.export,
           text: pageContent.radioOptionExport,
           hint: { text: pageContent.radioOptionExportHint },
-          checked: isChecked(data.permitTypeOption, pt.export)
+          checked: isChecked(data.permitTypeOption, pto.export)
         },
         {
-          value: pt.reexport,
+          value: pto.reexport,
           text: pageContent.radioOptionReexport,
           hint: { text: pageContent.radioOptionReexportHint },
-          checked: isChecked(data.permitTypeOption, pt.reexport)
+          checked: isChecked(data.permitTypeOption, pto.reexport)
         },
         {
-          value: pt.article10,
+          value: pto.article10,
           text: pageContent.radioOptionArticle10,
           hint: { text: pageContent.radioOptionArticle10Hint },
-          checked: isChecked(data.permitTypeOption, pt.article10)
+          checked: isChecked(data.permitTypeOption, pto.article10)
         },
         {
-          value: otherOption,
+          value: pto.other,
           text: pageContent.radioOptionOther,
-          checked: isChecked(data.permitTypeOption, otherOption)
+          checked: isChecked(data.permitTypeOption, pto.other)
         }
       ],
       errorMessage: getFieldError(errorList, '#permitTypeOption')
@@ -125,7 +124,7 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        permitTypeOption: Joi.string().required().valid(pt.import, pt.export, pt.reexport, pt.article10, otherOption)
+        permitTypeOption: Joi.string().required().valid(pto.import, pto.export, pto.reexport, pto.article10, pto.other)
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
@@ -159,15 +158,7 @@ module.exports = [{
       }
 
       submission.permitTypeOption = request.payload.permitTypeOption
-      if(enableOtherPermitTypes){
-        if(request.payload.permitTypeOption !== otherOption){
-          submission.permitType = request.payload.permitTypeOption
-          submission.permitSubType = null
-        }
-      } else {
-        submission.permitType = request.payload.permitTypeOption
-        delete submission.permitSubType
-      }
+      submission.permitType = getPermit(request.payload.permitTypeOption).permitType        
       
       try {
         setSubmission(request, submission, pageId)
@@ -188,7 +179,7 @@ module.exports = [{
 
       let redirectTo
 
-      if(request.payload.permitTypeOption === otherOption){
+      if(request.payload.permitTypeOption === pto.other){
         redirectTo = enableOtherPermitTypes ? nextPathOtherPermitType : cannotUseServicePath
       } else {
         redirectTo = nextPathApplyingOnBehalf

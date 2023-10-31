@@ -1,6 +1,6 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
-const { permitType: pt } = require('../lib/constants')
+const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -38,6 +38,7 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
+    console.log(data)
 }
 
 function clearSubmission(request) {
@@ -231,12 +232,12 @@ function getAppFlow(submission) {
             }
         } else {
             appFlow.push('permit-type')
-            if(config.enableOtherPermitTypes && submission.permitTypeOption === pt.other){
+            if(config.enableOtherPermitTypes && submission.permitTypeOption === pto.other){
                 appFlow.push('other-permit-type')
             }
-            if (submission.permitType === pt.other) { appFlow.push('cannot-use-service') }
+            if (submission.otherPermitTypeOption === pto.other) { appFlow.push('cannot-use-service') }
 
-            if (submission.permitType && submission.permitType !== pt.other) {
+            if (submission.permitType && submission.otherPermitTypeOption !== pto.other) {
                 appFlow.push('guidance-completion')
                 appFlow.push('applying-on-behalf')
 

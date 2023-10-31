@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { permitType: pt } = require('../lib/constants')
+const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -58,34 +58,34 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: pt.mic,
+          value: pto.mic,
           text: pageContent.radioOptionMIC,
-          checked: isChecked(data.otherPermitTypeOption, pt.mic)
+          checked: isChecked(data.otherPermitTypeOption, pto.mic)
         },
         {
-          value: pt.tec,
+          value: pto.tec,
           text: pageContent.radioOptionTEC,
-          checked: isChecked(data.otherPermitTypeOption, pt.tec)
+          checked: isChecked(data.otherPermitTypeOption, pto.tec)
         },
         {
-          value: pt.poc,
+          value: pto.poc,
           text: pageContent.radioOptionPOC,
-          checked: isChecked(data.otherPermitTypeOption, pt.poc)
+          checked: isChecked(data.otherPermitTypeOption, pto.poc)
         },
         {
-          value: pt.semiComplete,
+          value: pto.semiComplete,
           text: pageContent.radioOptionSemiComplete,
-          checked: isChecked(data.otherPermitTypeOption, pt.semiComplete)
+          checked: isChecked(data.otherPermitTypeOption, pto.semiComplete)
         },
         {
-          value: pt.draft,
+          value: pto.draft,
           text: pageContent.radioOptionDraft,
-          checked: isChecked(data.otherPermitTypeOption, pt.draft)
+          checked: isChecked(data.otherPermitTypeOption, pto.draft)
         },
         {
-          value: pt.other,
+          value: pto.other,
           text: pageContent.radioOptionOther,
-          checked: isChecked(data.otherPermitTypeOption, pt.other)
+          checked: isChecked(data.otherPermitTypeOption, pto.other)
         }
       ],
       errorMessage: getFieldError(errorList, '#otherPermitTypeOption')
@@ -126,7 +126,7 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        otherPermitTypeOption: Joi.string().required().valid(pt.mic, pt.tec, pt.poc, pt.semiComplete, pt.draft, pt.other)
+        otherPermitTypeOption: Joi.string().required().valid(pto.mic, pto.tec, pto.poc, pto.semiComplete, pto.draft, pto.other)
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
@@ -149,28 +149,27 @@ module.exports = [{
       if (isChange) {
         //Clear the whole submission if the permit type has changed
         submission = createSubmission(request)
-        submission.permitTypeOption = pt.other
+        submission.permitTypeOption = pto.other
       }
 
       submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
 
-      switch (request.payload.otherPermitTypeOption) {
-        case pt.mic:
-        case pt.poc:
-        case pt.tec:
-        case pt.other:
-          submission.permitType = request.payload.otherPermitTypeOption
-          submission.permitSubType = null
-          break
-        case pt.semiComplete:
-          submission.permitType = pt.reexport
-          submission.permitSubType = pt.semiComplete
-          break
-        case pt.draft:
-          submission.permitType = pt.import
-          submission.permitSubType = pt.draft
-          break
-      }
+      submission.permitType = getPermit(request.payload.otherPermitTypeOption).permitType
+      // switch (request.payload.otherPermitTypeOption) {
+      //   case pt.mic:
+      //   case pt.poc:
+      //   case pt.tec:
+      //   case pt.other:
+      //     submission.permitType = request.payload.otherPermitTypeOption
+      //     submission.permitSubType = null
+      //     break
+      //   case pt.semiComplete:
+      //     submission.permitType = pt.reexport
+      //     break
+      //   case pt.draft:
+      //     submission.permitType = pt.import          
+      //     break
+      // }
 
       try {
         setSubmission(request, submission, pageId)
@@ -191,18 +190,18 @@ module.exports = [{
 
       let redirectTo
       switch (request.payload.otherPermitTypeOption) {
-        case pt.mic:
-        case pt.tec:
-        case pt.poc:
-          redirectTo = nextPathGuidanceCompletion;
-          break;
-        case pt.semiComplete:
-        case pt.draft:
-          redirectTo = nextPathApplyingOnBehalf;
-          break;
-        case pt.other:
-          redirectTo = cannotUseServicePath;
-          break;
+        case pto.mic:
+        case pto.tec:
+        case pto.poc:
+          redirectTo = nextPathGuidanceCompletion
+          break
+        case pto.semiComplete:
+        case pto.draft:
+          redirectTo = nextPathApplyingOnBehalf
+          break
+        case pto.other:
+          redirectTo = cannotUseServicePath
+          break
       }
       saveDraftSubmission(request, redirectTo)
       return h.redirect(redirectTo)

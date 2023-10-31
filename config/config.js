@@ -66,6 +66,7 @@ const config = {
   enableDraftSubmission: process.env.ENABLE_DRAFT_SUBMISSION || false,
   enableFilterSubmittedBy: process.env.ENABLE_FILTER_SUBMITTED_BY || false,
   enableDeliveryType: process.env.ENABLE_DELIVERY_TYPE || false,
+  enableOtherPermitTypes: process.env.ENABLE_OTHER_PERMIT_TYPES || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',

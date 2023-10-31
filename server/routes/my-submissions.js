@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { permitType: pt } = require('../lib/constants')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
 const user = require('../lib/user')
