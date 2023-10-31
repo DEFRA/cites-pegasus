@@ -1,5 +1,6 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
+const { deliveryType: dt } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
@@ -121,7 +122,7 @@ function cloneSubmission(request, applicationIndex) {
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
     if (config.enableDeliveryType && !submission.delivery.deliveryType) {
-        submission.delivery.deliveryType = 'standardDelivery'
+        submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
     submission.applications = [newApplication]
@@ -232,12 +233,12 @@ function getAppFlow(submission) {
             }
         } else {
             appFlow.push('permit-type')
-            if(config.enableOtherPermitTypes && submission.permitTypeOption === pto.other){
+            if(config.enableOtherPermitTypes && submission.permitTypeOption === pto.OTHER){
                 appFlow.push('other-permit-type')
             }
-            if (submission.otherPermitTypeOption === pto.other) { appFlow.push('cannot-use-service') }
+            if (submission.otherPermitTypeOption === pto.OTHER) { appFlow.push('cannot-use-service') }
 
-            if (submission.permitType && submission.otherPermitTypeOption !== pto.other) {
+            if (submission.permitType && submission.otherPermitTypeOption !== pto.OTHER) {
                 appFlow.push('guidance-completion')
                 appFlow.push('applying-on-behalf')
 
@@ -305,7 +306,7 @@ function getAppFlow(submission) {
 
                         const species = application.species
                         if (species.sourceCode) {
-                            if (submission.permitType === pt.article10) {
+                            if (submission.permitType === pt.ARTICLE_10) {
                                 appFlow.push(`specimen-origin/${applicationIndex}`)
                                 if (species.specimenOrigin) {
                                     appFlow.push(`use-certificate-for/${applicationIndex}`)
@@ -379,7 +380,7 @@ function getAppFlow(submission) {
                         }
 
                         if (species.specimenDescriptionGeneric || species.sex) {
-                            if (submission.permitType === pt.article10) { //Article 10 flow
+                            if (submission.permitType === pt.ARTICLE_10) { 
                                 appFlow.push(`acquired-date/${applicationIndex}`)
 
                                 if (species.acquiredDate) {
@@ -397,11 +398,11 @@ function getAppFlow(submission) {
                                 appFlow.push(`importer-exporter/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType !== pt.export) || species.isEverImportedExported === true || species.isEverImportedExported === false) {
+                            if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT) || species.isEverImportedExported === true || species.isEverImportedExported === false) {
                                 appFlow.push(`permit-details/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType === pt.export) || (!species.isEverImportedExported && submission.permitType === pt.article10) || application.permitDetails) {
+                            if ((application.importerExporterDetails && submission.permitType === pt.EXPORT) || (!species.isEverImportedExported && submission.permitType === pt.ARTICLE_10) || application.permitDetails) {
                                 appFlow.push(`additional-info/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)

@@ -1,6 +1,6 @@
 module.exports = {    
     deliveryType: {
-        standardDelivery: 'standardDelivery',
-        specialDelivery: 'specialDelivery'
+        STANDARD_DELIVERY: 'standardDelivery',
+        SPECIAL_DELIVERY: 'specialDelivery'
     }
 }

@@ -27,31 +27,31 @@ function createModel(errors, data) {
   }
 
   let errorList = null
-  if(errors){
-      errorList = []
-      const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-      const fields = ['isAgent']
-      fields.forEach(field => {
-          const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-          if (fieldError) {
-              errorList.push({
-                  text: fieldError,
-                  href: `#${field}`
-              })
-          }
-      })
+  if (errors) {
+    errorList = []
+    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+    const fields = ['isAgent']
+    fields.forEach(field => {
+      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+      if (fieldError) {
+        errorList.push({
+          text: fieldError,
+          href: `#${field}`
+        })
+      }
+    })
   }
 
   let backLink = null
-  if (enableOtherPermitTypes && data.otherPermitTypeOption){
-    if ([pto.mic, pto.tec, pto.poc].includes(data.otherPermitTypeOption)) {
+  if (enableOtherPermitTypes && data.otherPermitTypeOption) {
+    if ([pto.MIC, pto.TEC, pto.POC].includes(data.otherPermitTypeOption)) {
       backLink = previousPathGuidanceCompletion
     } else {
       backLink = previousPathOtherPermitType
     }
-   } else {
+  } else {
     backLink = previousPathPermitType
-   } 
+  }
 
   const model = {
     backLink,
@@ -92,7 +92,7 @@ module.exports = [{
 
     try {
       validateSubmission(submission, pageId)
-      
+
     }
     catch (err) {
       console.error(err);
@@ -129,17 +129,17 @@ module.exports = [{
       const isAgent = request.payload.isAgent === textContent.common.radioOptionYes;
 
       try {
-        const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
+        const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null }
 
-        mergeSubmission(request, agentData, pageId)        
+        mergeSubmission(request, agentData, pageId)
       }
-      catch (err){
+      catch (err) {
         console.error(err);
         return h.redirect(invalidSubmissionPath)
       }
-      
+
       saveDraftSubmission(request, nextPath)
-      return h.redirect(nextPath)      
+      return h.redirect(nextPath)
     }
   },
 }]

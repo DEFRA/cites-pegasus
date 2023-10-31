@@ -58,34 +58,34 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: pto.mic,
+          value: pto.MIC,
           text: pageContent.radioOptionMIC,
-          checked: isChecked(data.otherPermitTypeOption, pto.mic)
+          checked: isChecked(data.otherPermitTypeOption, pto.MIC)
         },
         {
-          value: pto.tec,
+          value: pto.TEC,
           text: pageContent.radioOptionTEC,
-          checked: isChecked(data.otherPermitTypeOption, pto.tec)
+          checked: isChecked(data.otherPermitTypeOption, pto.TEC)
         },
         {
-          value: pto.poc,
+          value: pto.POC,
           text: pageContent.radioOptionPOC,
-          checked: isChecked(data.otherPermitTypeOption, pto.poc)
+          checked: isChecked(data.otherPermitTypeOption, pto.POC)
         },
         {
-          value: pto.semiComplete,
+          value: pto.SEMI_COMPLETE,
           text: pageContent.radioOptionSemiComplete,
-          checked: isChecked(data.otherPermitTypeOption, pto.semiComplete)
+          checked: isChecked(data.otherPermitTypeOption, pto.SEMI_COMPLETE)
         },
         {
-          value: pto.draft,
+          value: pto.DRAFT,
           text: pageContent.radioOptionDraft,
-          checked: isChecked(data.otherPermitTypeOption, pto.draft)
+          checked: isChecked(data.otherPermitTypeOption, pto.DRAFT)
         },
         {
-          value: pto.other,
+          value: pto.OTHER,
           text: pageContent.radioOptionOther,
-          checked: isChecked(data.otherPermitTypeOption, pto.other)
+          checked: isChecked(data.otherPermitTypeOption, pto.OTHER)
         }
       ],
       errorMessage: getFieldError(errorList, '#otherPermitTypeOption')
@@ -126,7 +126,7 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        otherPermitTypeOption: Joi.string().required().valid(pto.mic, pto.tec, pto.poc, pto.semiComplete, pto.draft, pto.other)
+        otherPermitTypeOption: Joi.string().required().valid(pto.MIC, pto.TEC, pto.POC, pto.SEMI_COMPLETE, pto.DRAFT, pto.OTHER)
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
@@ -149,28 +149,13 @@ module.exports = [{
       if (isChange) {
         //Clear the whole submission if the permit type has changed
         submission = createSubmission(request)
-        submission.permitTypeOption = pto.other
+        submission.permitTypeOption = pto.OTHER
       }
 
       submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
 
       submission.permitType = getPermit(request.payload.otherPermitTypeOption).permitType
-      // switch (request.payload.otherPermitTypeOption) {
-      //   case pt.mic:
-      //   case pt.poc:
-      //   case pt.tec:
-      //   case pt.other:
-      //     submission.permitType = request.payload.otherPermitTypeOption
-      //     submission.permitSubType = null
-      //     break
-      //   case pt.semiComplete:
-      //     submission.permitType = pt.reexport
-      //     break
-      //   case pt.draft:
-      //     submission.permitType = pt.import          
-      //     break
-      // }
-
+      
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -190,16 +175,16 @@ module.exports = [{
 
       let redirectTo
       switch (request.payload.otherPermitTypeOption) {
-        case pto.mic:
-        case pto.tec:
-        case pto.poc:
+        case pto.MIC:
+        case pto.TEC:
+        case pto.POC:
           redirectTo = nextPathGuidanceCompletion
           break
-        case pto.semiComplete:
-        case pto.draft:
+        case pto.SEMI_COMPLETE:
+        case pto.DRAFT:
           redirectTo = nextPathApplyingOnBehalf
           break
-        case pto.other:
+        case pto.OTHER:
           redirectTo = cannotUseServicePath
           break
       }

@@ -16,7 +16,7 @@ const draftContinuePath = `${currentPath}/draft-continue`
 const draftDeletePath = `${currentPath}/draft-delete`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
-const permitTypes = [pt.import, pt.export, pt.reexport, pt.article10]
+const permitTypes = [pt.IMPORT, pt.EXPORT, pt.REEXPORT, pt.ARTICLE_10]
 const statuses = ['awaitingPayment', 'inProgress', 'closed']
 
 const pageSize = 15
@@ -110,24 +110,24 @@ function createModel(errors, data) {
       name: "permitTypes",
       items: [
         {
-          value: pt.import,
+          value: pt.IMPORT,
           text: commonContent.permitTypeDescriptionImport,
-          checked: isChecked(data.permitTypes, pt.import)
+          checked: isChecked(data.permitTypes, pt.IMPORT)
         },
         {
-          value: pt.export,
+          value: pt.EXPORT,
           text: commonContent.permitTypeDescriptionExport,
-          checked: isChecked(data.permitTypes, pt.export)
+          checked: isChecked(data.permitTypes, pt.EXPORT)
         },
         {
-          value: pt.reexport,
+          value: pt.REEXPORT,
           text: commonContent.permitTypeDescriptionReexport,
-          checked: isChecked(data.permitTypes, pt.reexport)
+          checked: isChecked(data.permitTypes, pt.REEXPORT)
         },
         {
-          value: pt.article10,
+          value: pt.ARTICLE_10,
           text: commonContent.permitTypeDescriptionArticle10,
-          checked: isChecked(data.permitTypes, pt.article10)
+          checked: isChecked(data.permitTypes, pt.ARTICLE_10)
         }
       ],
     },

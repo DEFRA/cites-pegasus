@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableInternalReference } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { permitType: pt } = require('../lib/constants')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { getYarValue, setYarValue } = require('../lib/session')
 const { deliveryType: dt } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
@@ -226,10 +226,10 @@ function createApplicationSummaryModel(errors, data) {
   let deliveryTypeDataValue = ""
   if (enableDeliveryType) {
     switch (data.delivery.deliveryType) {
-      case dt.specialDelivery:
+      case dt.SPECIAL_DELIVERY:
         deliveryTypeDataValue = pageContent.rowTextSpecialDelivery
         break
-      case dt.standardDelivery:
+      case dt.STANDARD_DELIVERY:
         deliveryTypeDataValue = pageContent.rowTextStandardDelivery
     }
   }

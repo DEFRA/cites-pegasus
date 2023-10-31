@@ -57,33 +57,33 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: pto.import,
+          value: pto.IMPORT,
           text: pageContent.radioOptionImport,
           hint: { text: pageContent.radioOptionImportHint },
-          checked: isChecked(data.permitTypeOption, pto.import)
+          checked: isChecked(data.permitTypeOption, pto.IMPORT)
         },
         {
-          value: pto.export,
+          value: pto.EXPORT,
           text: pageContent.radioOptionExport,
           hint: { text: pageContent.radioOptionExportHint },
-          checked: isChecked(data.permitTypeOption, pto.export)
+          checked: isChecked(data.permitTypeOption, pto.EXPORT)
         },
         {
-          value: pto.reexport,
+          value: pto.REEXPORT,
           text: pageContent.radioOptionReexport,
           hint: { text: pageContent.radioOptionReexportHint },
-          checked: isChecked(data.permitTypeOption, pto.reexport)
+          checked: isChecked(data.permitTypeOption, pto.REEXPORT)
         },
         {
-          value: pto.article10,
+          value: pto.ARTICLE_10,
           text: pageContent.radioOptionArticle10,
           hint: { text: pageContent.radioOptionArticle10Hint },
-          checked: isChecked(data.permitTypeOption, pto.article10)
+          checked: isChecked(data.permitTypeOption, pto.ARTICLE_10)
         },
         {
-          value: pto.other,
+          value: pto.OTHER,
           text: pageContent.radioOptionOther,
-          checked: isChecked(data.permitTypeOption, pto.other)
+          checked: isChecked(data.permitTypeOption, pto.OTHER)
         }
       ],
       errorMessage: getFieldError(errorList, '#permitTypeOption')
@@ -124,7 +124,7 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        permitTypeOption: Joi.string().required().valid(pto.import, pto.export, pto.reexport, pto.article10, pto.other)
+        permitTypeOption: Joi.string().required().valid(pto.IMPORT, pto.EXPORT, pto.REEXPORT, pto.ARTICLE_10, pto.OTHER)
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
@@ -179,7 +179,7 @@ module.exports = [{
 
       let redirectTo
 
-      if(request.payload.permitTypeOption === pto.other){
+      if(request.payload.permitTypeOption === pto.OTHER){
         redirectTo = enableOtherPermitTypes ? nextPathOtherPermitType : cannotUseServicePath
       } else {
         redirectTo = nextPathApplyingOnBehalf

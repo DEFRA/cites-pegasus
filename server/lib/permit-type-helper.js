@@ -1,30 +1,30 @@
 const constants = {
     permitTypeOption: {
-        import: 'import',
-        export: 'export',
-        reexport: 'reexport',
-        article10: 'article10',
-        mic: 'mic',
-        tec: 'tec',
-        poc: 'poc',
-        semiComplete: 'semiComplete',
-        draft: 'draft',
-        other: 'other'
+        IMPORT: 'import',
+        EXPORT: 'export',
+        REEXPORT: 'reexport',
+        ARTICLE_10: 'article10',
+        MIC: 'mic',
+        TEC: 'tec',
+        POC: 'poc',
+        SEMI_COMPLETE: 'semiComplete',
+        DRAFT: 'draft',
+        OTHER: 'other'
     },
     permitType: {
-        import: 'import',
-        export: 'export',
-        reexport: 'reexport',
-        article10: 'article10',
-        mic: 'mic',
-        tec: 'tec',
-        poc: 'poc'
+        IMPORT: 'import',
+        EXPORT: 'export',
+        REEXPORT: 'reexport',
+        ARTICLE_10: 'article10',
+        MIC: 'mic',
+        TEC: 'tec',
+        POC: 'poc'
     },
     permitSubType: {
-        semiComplete: 'semiComplete',
-        draft: 'draft',
-        article9Movement: 'article9Movement',
-        legalAcquisition: 'legalAcquisition'
+        SEMI_COMPLETE: 'semiComplete',
+        DRAFT: 'draft',
+        ARTICLE_9_MOVEMENT: 'article9Movement',
+        LEGAL_ACQUISITION: 'legalAcquisition'
     }
 }
 
@@ -38,41 +38,40 @@ function getPermit(permitTypeOption) {
     }
 
     switch (permitTypeOption) {
-        case pto.import:
-            permit.permitType = pt.import
+        case pto.IMPORT:
+            permit.permitType = pt.IMPORT
             break
-        case pto.export:
-            permit.permitType = pt.export
+        case pto.EXPORT:
+            permit.permitType = pt.EXPORT
             break
-        case pto.reexport:
-            permit.permitType = pt.reexport
+        case pto.REEXPORT:
+            permit.permitType = pt.REEXPORT
             break
-        case pto.article10:
-            permit.permitType = pt.article10
+        case pto.ARTICLE_10:
+            permit.permitType = pt.ARTICLE_10
             break
-        case pto.mic:
-            permit.permitType = pt.mic
+        case pto.MIC:
+            permit.permitType = pt.MIC
             break
-        case pto.tec:
-            permit.permitType = pt.tec
+        case pto.TEC:
+            permit.permitType = pt.TEC
             break
-        case pto.poc:
-            permit.permitType = pt.poc
+        case pto.POC:
+            permit.permitType = pt.POC
             break
-        case pto.semiComplete:
-            permit.permitType = pt.reexport
-            permit.permitSubType = pst.semiComplete
+        case pto.SEMI_COMPLETE:
+            permit.permitType = pt.REEXPORT
+            permit.permitSubType = pst.SEMI_COMPLETE
             break
-        case pto.draft:
-            permit.permitType = pt.import
-            permit.permitSubType = pst.draft
+        case pto.DRAFT:
+            permit.permitType = pt.IMPORT
+            permit.permitSubType = pst.DRAFT
             break
-        case pto.other:
+        case pto.OTHER:
             break
         default:
             throw('Unknown permit type')
     }
-
 
     return permit
 }
