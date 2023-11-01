@@ -1044,6 +1044,7 @@ const schema = Joi.object().keys({
     textBreadcrumbs: Joi.string().required(),
     tableHeadReferenceNumber: Joi.string().required(),
     tableHeadScientificName: Joi.string().required(),
+    tableHeadInternalReference: Joi.string().required(),
     notificationHeader: Joi.string().required(),
     notificationContent: Joi.string().required(),
     pendingApplicationsBodyText: Joi.string().required()
