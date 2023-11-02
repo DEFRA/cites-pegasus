@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableInternalReference } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { setYarValue, getYarValue } = require('../lib/session')
 const dynamics = require("../services/dynamics-service")
@@ -23,9 +23,10 @@ function createModel(errors, data) {
     const referenceNumber = application.applicationRef
     
     const referenceNumberUrl = `${nextPathViewApplication}/${application.applicationIndex}`
-    const speciesName= application.species.speciesName
+    const speciesName = application.species.speciesName
+    const internalReference = application.internalReference
    
-    return { referenceNumber, referenceNumberUrl, speciesName}
+    return { referenceNumber, referenceNumberUrl, speciesName, internalReference}
   })
 
   const startIndex = (data.pageNo - 1) * pageSize
@@ -54,10 +55,12 @@ function createModel(errors, data) {
     breadcrumbs: breadcrumbs,
     notificationHeader: notificationHeader,
     notificationContent: notificationContent,
+    enableInternalReference,
     pageTitle: data.submissionRef,
     pageHeader: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadScientificName: pageContent.tableHeadScientificName,
+    tableHeadInternalReference: pageContent.tableHeadInternalReference,
     pendingApplicationsBodyText: pageContent.pendingApplicationsBodyText,
     applicationsData : applicationsTableData,
     showPayNowNotification: data.showPayNowNotification,
