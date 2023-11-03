@@ -1,9 +1,9 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableInternalReference } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { permitType: pt } = require('../lib/permit-type-helper')
 const { getYarValue, setYarValue } = require('../lib/session')
 const { deliveryType: dt } = require("../lib/constants")
+const { permitType: pt, getPermitDescription } = require("../lib/permit-type-helper")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
@@ -66,29 +66,28 @@ function createApplicationSummaryModel(errors, data) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
   let headingPermitDetails = null
-  let permitTypeValue = null
+  let permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
   switch (data.permitType) {
-    case "import":
+    case pt.IMPORT:
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
       headingImporterExporterDetails = pageContent.headerExportOrReexporterContactDetails
       headingPermitDetails = pageContent.headerExportOrReexportPermitDetails
-      permitTypeValue = commonContent.permitTypeDescriptionImport
       break
-    case "export":
+    case pt.EXPORT:
       headerApplicantContactDetails = pageContent.headerExporterContactDetails
       headingImporterExporterDetails = pageContent.headerImporterContactDetails
-      permitTypeValue = commonContent.permitTypeDescriptionExport
       break
-    case "reexport":
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
       headerApplicantContactDetails = pageContent.headerReexporterContactDetails
       headingImporterExporterDetails = pageContent.headerImporterContactDetails
       headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
-      permitTypeValue = commonContent.permitTypeDescriptionReexport
       break
-    case "article10":
+    case pt.ARTICLE_10:
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
-      permitTypeValue = commonContent.permitTypeDescriptionArticle10
       break
   }
 
@@ -261,8 +260,8 @@ function createApplicationSummaryModel(errors, data) {
   const importerExporterDetailsData = {
     isImporterExporterDetails: true,
     fullName: data.importerExporterDetails?.name,
-    country: data.permitType !== "import" ? data.importerExporterDetails?.country : "",
-    countryDesc: data.permitType !== "import" ? data.importerExporterDetails?.countryDesc : "",
+    country: data.permitType !== pt.IMPORT ? data.importerExporterDetails?.country : "",
+    countryDesc: data.permitType !== pt.IMPORT ? data.importerExporterDetails?.countryDesc : "",
     address: {
       addressLine1: data.importerExporterDetails?.addressLine1,
       addressLine2: data.importerExporterDetails?.addressLine2,
@@ -551,31 +550,37 @@ function createAreYouSureModel(errors, data) {
   } else if (data.isAgent) {
     if (changeType === "applicantContactDetails") {
       switch (data.permitType) {
-        case "import":
+        case pt.IMPORT:
           pageContent = areYouSureText.importerContactDetails
           break
-        case "export":
+        case pt.EXPORT:
           pageContent = areYouSureText.exporterContactDetails
           break
-        case "reexport":
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
           pageContent = areYouSureText.reexporterContactDetails
           break
-        case "article10":
+        case pt.ARTICLE_10:
           pageContent = areYouSureText.article10ContactDetails
           break
       }
     } else if (changeType === "applicantAddress") {
       switch (data.permitType) {
-        case "import":
+        case pt.IMPORT:
           pageContent = areYouSureText.importerAddress
           break
-        case "export":
+        case pt.EXPORT:
           pageContent = areYouSureText.exporterAddress
           break
-        case "reexport":
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
           pageContent = areYouSureText.reexporterAddress
           break
-        case "article10":
+        case pt.ARTICLE_10:
           pageContent = areYouSureText.article10Address
           break
       }
@@ -686,6 +691,7 @@ module.exports = [
         //submissionRef: submission.submissionRef || clonedSubmissionRef,
         submissionRef: submission.submissionRef,
         permitType: submission.permitType,
+        permitSubType: submission.applications[applicationIndex].permitSubType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
         delivery: submission.delivery,
@@ -718,14 +724,14 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex, changeType, summaryType } = request.params
-
+      const submission = getSubmission(request)
       const returnUrl = `${currentPath}/${summaryType}/${applicationIndex}`
-      const changeRouteData = setChangeRoute(request, changeType, applicationIndex, returnUrl)
+      const changeRouteData = setChangeRoute(request, changeType, applicationIndex, returnUrl, submission.permitTypeOption)
 
       if (changeRouteData.showConfirmationPage) {
         return h.redirect(`${currentPath}/are-you-sure/${summaryType}/${applicationIndex}`)
       } else {
-        return h.redirect(changeRouteData.startUrl)
+        return h.redirect(changeRouteData.startUrls[0])
       }
     }
   },
@@ -782,6 +788,7 @@ module.exports = [
             summaryType: summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
+            permitSubType: submission.applications[applicationIndex].permitSubType,
             isAgent: submission.isAgent,
             applicant: submission.applicant,
             delivery: submission.delivery,
@@ -855,7 +862,7 @@ module.exports = [
         const changeRouteData = getChangeRouteData(request)
 
         if (request.payload.areYouSure) {
-          return h.redirect(changeRouteData.startUrl)
+          return h.redirect(changeRouteData.startUrls[0])
         } else {
           return h.redirect(`${currentPath}/${summaryType}/${applicationIndex}`)
         }

@@ -4,6 +4,8 @@ const { findErrorList, getFieldError, isChecked } = require("../lib/helper-funct
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
+const { certificateUse: cu } = require("../lib/constants")
+const { getPermit } = require("../lib/permit-type-helper")
 const pageId = "use-certificate-for"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-origin`
@@ -56,43 +58,43 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: "legallyAcquired",
+          value: cu.LEGALLY_ACQUIRED,
           text: pageContent.radioOptionLegallyAcquired,
           checked: isChecked(
             data.useCertificateFor,
-            "legallyAcquired"
+            cu.LEGALLY_ACQUIRED
           )
         },
         {
-          value: "commercialActivities",
+          value: cu.COMMERCIAL_ACTIVITIES,
           text: pageContent.radioOptionCommercialActivities,
           checked: isChecked(
             data.useCertificateFor,
-            "commercialActivities"
+            cu.COMMERCIAL_ACTIVITIES
           )
         },
         {
-          value: "displayWithoutSale",
+          value: cu.DISPLAY_WITHOUT_SALE,
           text: pageContent.radioOptionDisplayWithoutSale,
           checked: isChecked(
             data.useCertificateFor,
-            "displayWithoutSale"
+            cu.DISPLAY_WITHOUT_SALE
           )
         },
         {
-          value: "nonDetrimentalPurposes",
+          value: cu.NON_DETRIMENTAL_PURPOSES,
           text: pageContent.radioOptionNonDetrimentalPurposes,
           checked: isChecked(
             data.useCertificateFor,
-            "nonDetrimentalPurposes"
+            cu.NON_DETRIMENTAL_PURPOSES
           )
         },
         {
-          value: "moveALiveSpecimen",
+          value: cu.MOVE_LIVE_SPECIMEN,
           text: pageContent.radioOptionMoveALiveSpecimen,
           checked: isChecked(
             data.useCertificateFor,
-            "moveALiveSpecimen"
+            cu.MOVE_LIVE_SPECIMEN
           )
         }
       ],
@@ -144,7 +146,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          useCertificateFor: Joi.string().valid("legallyAcquired", "commercialActivities", "nonDetrimentalPurposes", "displayWithoutSale", "moveALiveSpecimen").required()
+          useCertificateFor: Joi.string().valid(...Object.values(cu)).required()
         }),
         failAction: (request, h, err) => {
           const pageData = {
@@ -158,9 +160,10 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        const species = submission.applications[applicationIndex].species
+        const application = submission.applications[applicationIndex]
         
-        species.useCertificateFor = request.payload.useCertificateFor
+        application.species.useCertificateFor = request.payload.useCertificateFor
+        application.permitSubType = getPermit(submission.otherPermitTypeOption || submission.permitTypeOption, request.payload.useCertificateFor).permitSubType
 
         try {
           mergeSubmission(

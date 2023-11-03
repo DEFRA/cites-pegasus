@@ -1,25 +1,6 @@
 const Joi = require("@hapi/joi")
 const textContent = require("./text-content.json")
 
-const searchAddressSchema = Joi.object({
-  defaultTitleImport: Joi.string().required(),
-  defaultTitleExport: Joi.string().required(),
-  defaultTitleReexport: Joi.string().required(),
-  defaultTitleArticle10: Joi.string().required(),
-  pageHeaderImport: Joi.string().required(),
-  pageHeaderExport: Joi.string().required(),
-  pageHeaderReexport: Joi.string().required(),
-  pageHeaderArticle10: Joi.string().required(),
-  pageBody: Joi.string().required(),
-  inputLabelProperty: Joi.string().required(),
-  inputLabelStreet: Joi.string().required(),
-  inputLabelTown: Joi.string().required(),
-  errorMessagesImport: Joi.object(),
-  errorMessagesExport: Joi.object(),
-  errorMessagesReexport: Joi.object(),
-  errorMessagesArticle10: Joi.object()
-})
-
 const selectAddressSchema = Joi.object({
   defaultTitle: Joi.string(),
   pageHeader: Joi.string(),
@@ -232,6 +213,13 @@ const schema = Joi.object().keys({
     permitTypeDescriptionExport: Joi.string().required(),
     permitTypeDescriptionReexport: Joi.string().required(),
     permitTypeDescriptionArticle10: Joi.string().required(),
+    permitTypeDescriptionMIC: Joi.string().required(),
+    permitTypeDescriptionTEC: Joi.string().required(),
+    permitTypeDescriptionPOC: Joi.string().required(),
+    permitTypeDescriptionSemiComplete: Joi.string().required(),
+    permitTypeDescriptionDraft: Joi.string().required(),
+    permitTypeDescriptionArticle9Movement: Joi.string().required(),
+    permitTypeDescriptionLegalAcquisition: Joi.string().required(),
     statusDescriptionReceived: Joi.string().required(),
     statusDescriptionAwaitingPayment: Joi.string().required(),
     statusDescriptionAwaitingReply: Joi.string().required(),
@@ -323,11 +311,6 @@ const schema = Joi.object().keys({
     applicant: postcodeSchema,
     agentLed: postcodeSchema,
     delivery: postcodeSchema
-  }).required(),
-  searchAddress: Joi.object({
-    agent: searchAddressSchema,
-    applicant: searchAddressSchema,
-    agentLed: searchAddressSchema
   }).required(),
   selectAddress: Joi.object({
     common: Joi.object({

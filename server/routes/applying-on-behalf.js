@@ -13,8 +13,8 @@ const nextPath = `${urlPrefix}/contact-details/applicant`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
-  const commonContent = textContent.common;
-  const pageContent = textContent.applyingOnBehalf;
+  const commonContent = textContent.common
+  const pageContent = textContent.applyingOnBehalf
 
   let isAgentRadioVal = null
   switch (data.isAgent) {
@@ -126,7 +126,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const isAgent = request.payload.isAgent === textContent.common.radioOptionYes;
+      const isAgent = request.payload.isAgent === textContent.common.radioOptionYes
 
       try {
         const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null }

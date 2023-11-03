@@ -36,9 +36,9 @@ function createModel(errors, data) {
   }
 
   let defaultBacklink = previousPath
-  if (data.fromYourSubmission) {
-    defaultBacklink = previousPathYourSubmission
-  }
+  // if (data.fromYourSubmission) {
+  //   defaultBacklink = previousPathYourSubmission
+  // }
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -153,8 +153,10 @@ module.exports = [{
       }
 
       submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
-
-      submission.permitType = getPermit(request.payload.otherPermitTypeOption).permitType
+      
+      const permit = getPermit(request.payload.otherPermitTypeOption, submission.applications[0].useCertificateFor)
+      submission.permitType = permit.permitType
+      submission.applications[0].permitSubType = permit.permitSubType
       
       try {
         setSubmission(request, submission, pageId)

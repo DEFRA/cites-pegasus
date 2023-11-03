@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -18,13 +19,19 @@ function createModel(errors, data) {
   const pageContent = textContent.permitDetails
 
   let heading = ''
-  if (data.permitType === "import") {
-    heading = pageContent.headingImport
-  } else if (
-    data.permitType === "reexport" ||
-    data.permitType === "article10"
-  ) {
-    heading = pageContent.headingReexportA10
+  switch (data.permitType) {
+    case pt.IMPORT:
+      heading = pageContent.headingImport;
+      break
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
+    case pt.ARTICLE_10:
+      heading = pageContent.headingReexportA10;
+      break
+    default:
+      break
   }
 
   const previousPath = data.isEverImportedExported
@@ -546,7 +553,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo =  `${nextPath}/${applicationIndex}`
+        const redirectTo = `${nextPath}/${applicationIndex}`
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

@@ -1,3 +1,6 @@
+const textContent = require("../content/text-content")
+const { certificateUse: cu } = require("../lib/constants")
+
 const constants = {
     permitTypeOption: {
         IMPORT: 'import',
@@ -30,7 +33,42 @@ const constants = {
 
 const { permitTypeOption: pto, permitType: pt, permitSubType: pst } = constants
 
-function getPermit(permitTypeOption) {
+function getPermitDescription(permitType, permitSubType) {
+    const commonContent = textContent.common
+    const { permitType: pt, permitSubType: pst } = constants
+    let description
+    if (permitSubType) {
+        switch (permitSubType) {
+            case pst.SEMI_COMPLETE:
+                return commonContent.permitTypeDescriptionSemiComplete
+            case pst.DRAFT:
+                return commonContent.permitTypeDescriptionDraft
+            case pst.ARTICLE_9_MOVEMENT:
+                return commonContent.permitTypeDescriptionArticle9Movement
+            case pst.LEGAL_ACQUISITION:
+                return commonContent.permitTypeDescriptionLegalAcquisition
+        }
+    }
+
+    switch (permitType) {
+        case pt.IMPORT:
+            return commonContent.permitTypeDescriptionImport
+        case pt.EXPORT:
+            return commonContent.permitTypeDescriptionExport
+        case pt.REEXPORT:
+            return commonContent.permitTypeDescriptionReexport
+        case pt.ARTICLE_10:
+            return commonContent.permitTypeDescriptionArticle10
+        case pt.MIC:
+            return commonContent.permitTypeDescriptionMIC
+        case pt.TEC:
+            return commonContent.permitTypeDescriptionTEC
+        case pt.POC:
+            return commonContent.permitTypeDescriptionPOC
+    }
+}
+
+function getPermit(permitTypeOption, useCertificateFor) {
 
     const permit = {
         permitType: null,
@@ -70,7 +108,18 @@ function getPermit(permitTypeOption) {
         case pto.OTHER:
             break
         default:
-            throw('Unknown permit type')
+            throw ('Unknown permit type')
+    }
+
+    if (permit.permitType === pt.ARTICLE_10) {
+        switch (useCertificateFor) {
+            case cu.LEGALLY_ACQUIRED:
+                permit.permitSubType = pst.LEGAL_ACQUISITION
+                break
+            case cu.MOVE_LIVE_SPECIMEN:
+                permit.permitSubType = pst.ARTICLE_9_MOVEMENT
+                break
+        }
     }
 
     return permit
@@ -78,5 +127,6 @@ function getPermit(permitTypeOption) {
 
 module.exports = {
     getPermit,
+    getPermitDescription,
     ...constants
 }

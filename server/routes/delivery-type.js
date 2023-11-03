@@ -115,7 +115,7 @@ module.exports = [
       validate: {
         options: { abortEarly: false },
         payload: Joi.object({
-          deliveryType: Joi.string().valid(dt.STANDARD_DELIVERY, dt.SPECIAL_DELIVERY).required()
+          deliveryType: Joi.string().valid(...Object.values(dt)).required()
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)   

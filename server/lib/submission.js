@@ -30,7 +30,14 @@ function mergeSubmission(request, data, path) {
     const mergedSubmission = lodash.merge(existingSubmission, data)
 
     setYarValue(request, 'submission', mergedSubmission)
-
+    
+    //TODO Remove the log lines
+    console.log('PermitTypeOption: ' + mergedSubmission.permitTypeOption)
+    console.log('OtherPermitTypeOption: ' + mergedSubmission.otherPermitTypeOption)
+    console.log('PermitType: ' + mergedSubmission.permitType)
+    mergedSubmission.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
+    console.log('----------------------------------------')
+    
     return mergedSubmission
 }
 
@@ -39,7 +46,13 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
-    console.log(data)
+    
+    //TODO Remove the log lines
+    console.log('PermitTypeOption: ' + data.permitTypeOption)
+    console.log('OtherPermitTypeOption: ' + data.otherPermitTypeOption)
+    console.log('PermitType: ' + data.permitType)
+    data.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
+    console.log('----------------------------------------')
 }
 
 function clearSubmission(request) {

@@ -3,6 +3,7 @@ const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
 const pageId = 'enter-address'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -36,26 +37,29 @@ function createModel(errors, data) {
     let errorMessages = pageContent.errorMessages
 
     switch (data.permitType) {
-        case 'import':
+        case pt.IMPORT:
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
             pageBody = pageContent.pageBodyImport
-            break;
-        case 'export':
+            break
+        case pt.EXPORT:
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
             pageBody = pageContent.pageBodyExport
-            break;
-        case 'reexport':
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
             pageBody = pageContent.pageBodyReexport
-            break;
-        case 'article10':
+            break
+        case pt.ARTICLE_10:
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
             pageBody = pageContent.pageBodyArticle10
-            break;
+            break
     }
 
     let errorList = null
@@ -78,15 +82,15 @@ function createModel(errors, data) {
         text: commonContent.countrySelectDefault,
         value: '',
         selected: false
-      }]
-    
-      countries.push(...data.countries.map(country => {
+    }]
+
+    countries.push(...data.countries.map(country => {
         return {
-          text: country.name,
-          value: country.code,
-          selected: country.code === (data.country || '')
+            text: country.name,
+            value: country.code,
+            selected: country.code === (data.country || '')
         }
-      }))
+    }))
 
     const model = {
         backLink: `${previousPath}/${data.contactType}`,
@@ -276,8 +280,8 @@ module.exports = [{
             }
             const redirectTo = `${nextPath}/${contactType}`
             saveDraftSubmission(request, redirectTo)
-            return h.redirect(redirectTo)    
-            
+            return h.redirect(redirectTo)
+
         }
     },
 }

@@ -106,7 +106,7 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
 
-    const fromYourSubmission = appStatuses.some((application) => application.status === "complete")    
+    const fromYourSubmission = appStatuses.some((application) => application.status === "complete")
 
     const pageData = {
       backLinkOverride: checkChangeRouteExit(request, true),
@@ -157,9 +157,11 @@ module.exports = [{
         submission = createSubmission(request)
       }
 
+      //if(submission.permitTypeOption === undefined || isChange){
       submission.permitTypeOption = request.payload.permitTypeOption
-      submission.permitType = getPermit(request.payload.permitTypeOption).permitType        
-      
+      submission.permitType = getPermit(submission.otherPermitTypeOption || request.payload.permitTypeOption).permitType
+      //}
+
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -172,6 +174,7 @@ module.exports = [{
       }
 
       const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
+      //if (exitChangeRouteUrl && (!submission.permitTypeOption || submission.permitTypeOption !== pto.OTHER)) {
       if (exitChangeRouteUrl) {
         saveDraftSubmission(request, exitChangeRouteUrl)
         return h.redirect(exitChangeRouteUrl)
@@ -179,7 +182,7 @@ module.exports = [{
 
       let redirectTo
 
-      if(request.payload.permitTypeOption === pto.OTHER){
+      if (request.payload.permitTypeOption === pto.OTHER) {
         redirectTo = enableOtherPermitTypes ? nextPathOtherPermitType : cannotUseServicePath
       } else {
         redirectTo = nextPathApplyingOnBehalf
