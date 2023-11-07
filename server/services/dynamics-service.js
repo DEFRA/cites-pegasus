@@ -391,16 +391,19 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
   }
 
   if (searchTerm) {
+
+    const encodedSearchTerm = encodeURIComponent(searchTerm).replace(/'/g, '%27%27')
+
     const searchTermParts = [
-      `cites_submissionreference eq '${searchTerm}'`,
-      `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${searchTerm}'))`,
-      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_name eq '${searchTerm}'))`,
-      `cites_cites_submission_incident_submission/any(o4:(contains(o4/cites_deliveryaddresspostcode, '${searchTerm}')))`,
-      `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${searchTerm}')))`,
-      `contains(cites_applicantfullname,'${searchTerm}')`,
+      `cites_submissionreference eq '${encodedSearchTerm}'`,
+      `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${encodedSearchTerm}'))`,
+      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_name eq '${encodedSearchTerm}'))`,
+      `cites_cites_submission_incident_submission/any(o4:(contains(o4/cites_deliveryaddresspostcode, '${encodedSearchTerm}')))`,
+      `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${encodedSearchTerm}')))`,
+      `contains(cites_applicantfullname,'${encodedSearchTerm}')`,
     ]
     if(config.enableInternalReference){
-      searchTermParts.push(`cites_cites_submission_incident_submission/any(o6:(o6/cites_internalreference eq '${searchTerm}'))`)
+      searchTermParts.push(`cites_cites_submission_incident_submission/any(o6:(o6/cites_internalreference eq '${encodedSearchTerm}'))`)
     }
     filterParts.push(`(${searchTermParts.join(" or ")})`)
   }
