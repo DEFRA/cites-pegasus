@@ -267,7 +267,9 @@ const schema = Joi.object().keys({
     pageBody: Joi.string().required(),
     bullet1: Joi.string().required(),
     bullet2: Joi.string().required(),
-    link: Joi.string().required(),
+    bullet3: Joi.string().required(),
+    bullet4: Joi.string().required(),
+    pageBody2: Joi.string().required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
   }).required(),
   applyingOnBehalf: Joi.object({

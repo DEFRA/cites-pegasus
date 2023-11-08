@@ -82,12 +82,14 @@
     }
   },
   "cannotUseService": {
-    "pageTitle": "You cannot use this service yet",
-    "pageHeader": "You cannot use this service yet",
-    "pageBody": "You can only use this service to apply for:",
-    "bullet1": "import, export or re-export permits",
-    "bullet2": "article 10 certificates",
-    "link": "<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>Check how to apply for other CITES permits and certificates</a>",
+    "pageTitle": "You cannot use this service",
+    "pageHeader": "You cannot use this service",
+    "pageBody": "This service cannot be used for the following applications:",
+    "bullet1": "Biological Sample Permits",
+    "bullet2": "Certificates of Origin",
+    "bullet3": "Nursery Permits",
+    "bullet4": "Import Notifications",
+    "pageBody2": "For more information on how to apply please contact APHA at <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'>wildlife.licensing@apha.gov.uk</a>",
     "finishButtonUrl": "/your-submission"
   },
   "applyingOnBehalf": {
