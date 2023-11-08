@@ -373,7 +373,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = submission.permitType === 'article10' ? `${nextPathSpecimenOrigin}/${applicationIndex}` : `${nextPathPurposeCode}/${applicationIndex}`
+        const redirectTo = submission.permitType === pt.ARTICLE_10 ? `${nextPathSpecimenOrigin}/${applicationIndex}` : `${nextPathPurposeCode}/${applicationIndex}`
         
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

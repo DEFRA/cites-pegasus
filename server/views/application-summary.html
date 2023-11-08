@@ -44,13 +44,15 @@
         {{ govukSummaryList (summaryListApplicantContactDetails) }}
 
         <h2 class="govuk-heading-m">{{headerDeliveryAddress}}</h2>
-        {{ govukSummaryList (summaryListDeliveryAddress) }}        
+        {{ govukSummaryList (summaryListDeliveryAddress) }}
 
         <h2 class="govuk-heading-m">{{headerSpecimenDetails}}</h2>
         {{ govukSummaryList (summaryListSpecimenDetails) }}
 
-        <h2 class="govuk-heading-m">{{headingImporterExporterDetails}}</h2>
-        {{ govukSummaryList (summaryListImporterExporterDetails) }}
+        {% if showImporterExporterDetails %}
+          <h2 class="govuk-heading-m">{{headingImporterExporterDetails}}</h2>
+          {{ govukSummaryList (summaryListImporterExporterDetails) }}
+        {% endif %}
 
         <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
         {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}

@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { dateValidator } = require("../lib/validators")
@@ -9,6 +10,7 @@ const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
+const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -121,7 +123,7 @@ function createModel(errors, data) {
     inputLabelDescription: pageContent.inputLabelDescription,
     inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
     inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
-    showParentDetails: data.permitType === 'article10',
+    showParentDetails: data.permitType === pt.ARTICLE_10,
     inputSex: {
       idPrefix: "sex",
       name: "sex",
@@ -306,8 +308,8 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const modifiedMaleParentDetails = submission.permitType === 'article10' ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        const modifiedFemaleParentDetails = submission.permitType === 'article10' ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        const modifiedMaleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.maleParentDetails.replace(/\r/g, '') : null
+        const modifiedFemaleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         const schema = Joi.object({ 
           description: Joi.string().max(500).optional().allow(null, ""),
           maleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, ""),
@@ -322,8 +324,8 @@ module.exports = [
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
-        species.maleParentDetails = submission.permitType === 'article10' ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        species.femaleParentDetails = submission.permitType === 'article10' ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        species.maleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.maleParentDetails.replace(/\r/g, '') : null
+        species.femaleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         species.sex = request.payload.sex
         species.dateOfBirth = { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]) }
         // species.undeterminedSexReason = request.payload.sex === 'U' ? request.payload.undeterminedSexReason : null
@@ -342,7 +344,14 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = submission.permitType === 'article10' ? `${nextPathAcquiredDate}/${applicationIndex}` : `${nextPathImporterExporter}/${applicationIndex}`
+        let redirectTo
+        if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
+          redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
+        } else if (submission.permitType === pt.ARTICLE_10) {
+          redirectTo = `${nextPathAcquiredDate}/${applicationIndex}`
+        } else {
+          redirectTo = `${nextPathImporterExporter}/${applicationIndex}`
+        }
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

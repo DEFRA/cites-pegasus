@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
@@ -80,7 +81,7 @@ function createModel(errors, data) {
     ]
   }
 
-  const defaultBacklink = data.permitType === 'article10' ? `${urlPrefix}/use-certificate-for/${data.applicationIndex}` : `${urlPrefix}/purpose-code/${data.applicationIndex}`
+  const defaultBacklink = data.permitType === pt.ARTICLE_10 ? `${urlPrefix}/use-certificate-for/${data.applicationIndex}` : `${urlPrefix}/purpose-code/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
   
   const model = {

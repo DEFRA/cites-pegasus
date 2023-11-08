@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix, enableInternalReference } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { permitType: pt} = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
@@ -39,9 +40,9 @@ function createModel(errors, data) {
   }
 
   let previousPath = ''
-  if (data.permitType === 'export') {
+  if (data.permitType === pt.EXPORT) {
       previousPath = previousPathImporterExporter
-  } else if (!data.isEverImportedExported && data.permitType === 'article10') {
+  } else if (!data.isEverImportedExported && data.permitType === pt.ARTICLE_10) {
       previousPath = previousPathEverImportedExported
   } else if (data.permitDetails) {
     previousPath = previousPathPermitDetails

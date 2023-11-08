@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission, moveApplicationToEndOfList, reIndexApplications } = require('../lib/submission')
 const { setYarValue } = require('../lib/session')
 const textContent = require('../content/text-content')
@@ -21,16 +22,19 @@ function createSubmitApplicationModel(errors, data) {
   const yourSubmissionText = lodash.cloneDeep(textContent.yourSubmission) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
   switch (data.permitType) {
-    case "import":
+    case pt.IMPORT:
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.importApplications)
       break
-    case "export":
+    case pt.EXPORT:
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.exportApplications)
       break
-    case "reexport":
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.reexportApplications)
       break
-    case "article10":
+    case pt.ARTICLE_10:
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.article10Applications)
       break
   }

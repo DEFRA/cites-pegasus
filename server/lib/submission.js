@@ -393,6 +393,7 @@ function getAppFlow(submission) {
                         }
 
                         if (species.specimenDescriptionGeneric || species.sex) {
+
                             if (submission.permitType === pt.ARTICLE_10) { 
                                 appFlow.push(`acquired-date/${applicationIndex}`)
 
@@ -406,16 +407,21 @@ function getAppFlow(submission) {
                                 } else {
                                     return { appFlow, applicationStatuses }
                                 }
-
-                            } else { //Not article 10 flow
+                            } else if (submission.permitType !== pt.REEXPORT || submission.otherPermitTypeOption !== pto.SEMI_COMPLETE) {
                                 appFlow.push(`importer-exporter/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT) || species.isEverImportedExported === true || species.isEverImportedExported === false) {
+                            if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT) 
+                                    || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
+                                    || species.isEverImportedExported === true 
+                                    || species.isEverImportedExported === false
+                                    ) {
                                 appFlow.push(`permit-details/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType === pt.EXPORT) || (!species.isEverImportedExported && submission.permitType === pt.ARTICLE_10) || application.permitDetails) {
+                            if ((application.importerExporterDetails && submission.permitType === pt.EXPORT) 
+                                || (!species.isEverImportedExported && submission.permitType === pt.ARTICLE_10) 
+                                || application.permitDetails) {
                                 appFlow.push(`additional-info/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)

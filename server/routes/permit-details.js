@@ -2,7 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { permitType: pt } = require('../lib/permit-type-helper')
+const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -11,6 +11,8 @@ const pageId = "permit-details"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
+const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
+const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPath = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -34,9 +36,14 @@ function createModel(errors, data) {
       break
   }
 
-  const previousPath = data.isEverImportedExported
-    ? previousPathEverImportedExported
-    : previousPathImporterExporter
+  let previousPath
+  if (data.isEverImportedExported) {
+    previousPath = previousPathEverImportedExported
+  } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
+    previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
+  } else {
+    previousPath = previousPathImporterExporter
+  }
 
   let exportOrReexportPermitIssueDateErrors = []
   let countryOfOriginPermitIssueDateErrors = []
@@ -389,6 +396,8 @@ module.exports = [
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
+        otherPermitTypeOption: submission.otherPermitTypeOption,
+        sex: submission.applications[applicationIndex]?.species.sex,
         isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
         exportOrReexportCountry: permitDetails?.exportOrReexportCountry,
         exportOrReexportPermitNumber: permitDetails?.exportOrReexportPermitNumber,
@@ -465,6 +474,8 @@ module.exports = [
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
+            otherPermitTypeOption: submission.otherPermitTypeOption,
+            sex: submission.applications[applicationIndex]?.species.sex,
             isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
             exportOrReexportCountry: exportOrReexportCountry,
             exportOrReexportPermitNumber: exportOrReexportPermitNumber,

@@ -44,9 +44,9 @@ function getPermitDescription(permitType, permitSubType) {
             case pst.DRAFT:
                 return commonContent.permitTypeDescriptionDraft
             case pst.ARTICLE_9_MOVEMENT:
-                return commonContent.permitTypeDescriptionArticle9Movement
+                return commonContent.permitTypeDescriptionArticle10
             case pst.LEGAL_ACQUISITION:
-                return commonContent.permitTypeDescriptionLegalAcquisition
+                return commonContent.permitTypeDescriptionArticle10
         }
     }
 
