@@ -31,12 +31,7 @@ function mergeSubmission(request, data, path) {
 
     setYarValue(request, 'submission', mergedSubmission)
     
-    //TODO Remove the log lines
-    console.log('PermitTypeOption: ' + mergedSubmission.permitTypeOption)
-    console.log('OtherPermitTypeOption: ' + mergedSubmission.otherPermitTypeOption)
-    console.log('PermitType: ' + mergedSubmission.permitType)
     mergedSubmission.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
-    console.log('----------------------------------------')
     
     return mergedSubmission
 }
@@ -47,12 +42,7 @@ function setSubmission(request, data, path) {
 
     setYarValue(request, 'submission', data)
     
-    //TODO Remove the log lines
-    console.log('PermitTypeOption: ' + data.permitTypeOption)
-    console.log('OtherPermitTypeOption: ' + data.otherPermitTypeOption)
-    console.log('PermitType: ' + data.permitType)
-    data.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
-    console.log('----------------------------------------')
+    data.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))    
 }
 
 function clearSubmission(request) {

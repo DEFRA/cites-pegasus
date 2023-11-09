@@ -140,10 +140,6 @@ module.exports = [{
     },
     handler: async (request, h) => {
 
-      // if (request.payload.permitTypeOption === 'other' && enableOtherPermitTypes){
-      //   return h.redirect(nextPathOtherPermitType)
-      // }
-
       let submission = getSubmission(request)
 
       if (!submission) {
@@ -157,11 +153,9 @@ module.exports = [{
         submission = createSubmission(request)
       }
 
-      //if(submission.permitTypeOption === undefined || isChange){
       submission.permitTypeOption = request.payload.permitTypeOption
       submission.permitType = getPermit(submission.otherPermitTypeOption || request.payload.permitTypeOption).permitType
-      //}
-
+      
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -174,7 +168,7 @@ module.exports = [{
       }
 
       const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
-      //if (exitChangeRouteUrl && (!submission.permitTypeOption || submission.permitTypeOption !== pto.OTHER)) {
+      
       if (exitChangeRouteUrl) {
         saveDraftSubmission(request, exitChangeRouteUrl)
         return h.redirect(exitChangeRouteUrl)

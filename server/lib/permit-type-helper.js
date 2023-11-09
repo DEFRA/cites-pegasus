@@ -36,7 +36,7 @@ const { permitTypeOption: pto, permitType: pt, permitSubType: pst } = constants
 function getPermitDescription(permitType, permitSubType) {
     const commonContent = textContent.common
     const { permitType: pt, permitSubType: pst } = constants
-    let description
+    
     if (permitSubType) {
         switch (permitSubType) {
             case pst.SEMI_COMPLETE:
@@ -108,7 +108,7 @@ function getPermit(permitTypeOption, useCertificateFor) {
         case pto.OTHER:
             break
         default:
-            throw ('Unknown permit type')
+            throw new Error('Unknown permit type')
     }
 
     if (permit.permitType === pt.ARTICLE_10) {
