@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -34,22 +35,25 @@ function createModel(errors, data) {
     let inputHintEmail = ''
 
     switch (data.permitType) {
-        case 'import':
+        case pt.IMPORT:
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
             inputHintEmail = pageContent.inputHintEmailImport
-            break;
-        case 'export':
+            break
+        case pt.EXPORT:
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
             inputHintEmail = pageContent.inputHintEmailExport
-            break;
-        case 'reexport':
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
             inputHintEmail = pageContent.inputHintEmailReexport
-            break;
-        case 'article10':
+            break
+        case pt.ARTICLE_10:
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
             inputHintEmail = pageContent.inputHintEmailArticle10

@@ -3,6 +3,7 @@ const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { NAME_REGEX } = require('../lib/regex-validation')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'importer-exporter'
@@ -22,7 +23,7 @@ function createModel(errors, data) {
 
   const importerExporterText = lodash.cloneDeep(textContent.importerExporter) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
-  if (data.permitType === 'import') {
+  if (data.permitType === pt.IMPORT) {
     pageContent = lodash.merge(importerExporterText.common, importerExporterText.exporterDetails)
   } else {
     pageContent = lodash.merge(importerExporterText.common, importerExporterText.importerDetails)
@@ -261,7 +262,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = submission.permitType === 'export' ? `${nextPathAdditionalInfo}/${applicationIndex}` : `${nextPathPermitDetails}/${applicationIndex}`
+        const redirectTo = submission.permitType === pt.EXPORT ? `${nextPathAdditionalInfo}/${applicationIndex}` : `${nextPathPermitDetails}/${applicationIndex}`
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

@@ -3,6 +3,7 @@ const { urlPrefix, enableDeliveryType, enableInternalReference } = require("../.
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
 const { deliveryType: dt } = require("../lib/constants")
+const { permitType: pt, permitTypeOption: pto, getPermitDescription } = require("../lib/permit-type-helper")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
 const dynamics = require("../services/dynamics-service")
@@ -65,29 +66,28 @@ function createApplicationSummaryModel(errors, data) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
   let headingPermitDetails = null
-  let permitTypeValue = null
+  let permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
   switch (data.permitType) {
-    case "import":
+    case pt.IMPORT:
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
       headingImporterExporterDetails = pageContent.headerExportOrReexporterContactDetails
       headingPermitDetails = pageContent.headerExportOrReexportPermitDetails
-      permitTypeValue = commonContent.permitTypeDescriptionImport
       break
-    case "export":
+    case pt.EXPORT:
       headerApplicantContactDetails = pageContent.headerExporterContactDetails
       headingImporterExporterDetails = pageContent.headerImporterContactDetails
-      permitTypeValue = commonContent.permitTypeDescriptionExport
       break
-    case "reexport":
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
       headerApplicantContactDetails = pageContent.headerReexporterContactDetails
       headingImporterExporterDetails = pageContent.headerImporterContactDetails
       headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
-      permitTypeValue = commonContent.permitTypeDescriptionReexport
       break
-    case "article10":
+    case pt.ARTICLE_10:
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       headingPermitDetails = pageContent.headerPermitDetailsFromExportIntoGreatBritain
-      permitTypeValue = commonContent.permitTypeDescriptionArticle10
       break
   }
 
@@ -225,10 +225,10 @@ function createApplicationSummaryModel(errors, data) {
   let deliveryTypeDataValue = ""
   if (enableDeliveryType) {
     switch (data.delivery.deliveryType) {
-      case dt.specialDelivery:
+      case dt.SPECIAL_DELIVERY:
         deliveryTypeDataValue = pageContent.rowTextSpecialDelivery
         break
-      case dt.standardDelivery:
+      case dt.STANDARD_DELIVERY:
         deliveryTypeDataValue = pageContent.rowTextStandardDelivery
     }
   }
@@ -260,8 +260,8 @@ function createApplicationSummaryModel(errors, data) {
   const importerExporterDetailsData = {
     isImporterExporterDetails: true,
     fullName: data.importerExporterDetails?.name,
-    country: data.permitType !== "import" ? data.importerExporterDetails?.country : "",
-    countryDesc: data.permitType !== "import" ? data.importerExporterDetails?.countryDesc : "",
+    country: data.permitType !== pt.IMPORT ? data.importerExporterDetails?.country : "",
+    countryDesc: data.permitType !== pt.IMPORT ? data.importerExporterDetails?.countryDesc : "",
     address: {
       addressLine1: data.importerExporterDetails?.addressLine1,
       addressLine2: data.importerExporterDetails?.addressLine2,
@@ -321,14 +321,14 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextOtherSourceCode, `${otherSourceCode} ${otherSourceCodeValueText[otherSourceCode]}`, "", "", summaryType))
   }
 
-  if (data.permitType !== "article10") {
+  if (data.permitType !== pt.ARTICLE_10) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextPurposeCode, `${data.species.purposeCode} ${purposeCodeValueText[data.species.purposeCode]}`, hrefPrefix + "/purposeCode", "purpose code", summaryType))
   }
   summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSpecimenType, specimenTypeValue[data.species.specimenType], hrefPrefix + "/specimenType", "specimen type", summaryType))
   if (data.species.specimenType !== "animalLiving") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode} ${data.species.tradeTermCodeDesc}` : pageContent.rowTextNotKnown, hrefPrefix + "/tradeTermCode", "trade term code", summaryType))
   }
-  if (data.permitType === "article10") {
+  if (data.permitType === pt.ARTICLE_10) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10SpecimenOrigin, a10SpecimenOriginValue[data.species.specimenOrigin], hrefPrefix + "/specimenOrigin", "specimen origin", summaryType))
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextA10CertificatePurpose, a10CertificatePurposeValue[data.species.useCertificateFor], hrefPrefix + "/useCertificateFor", "use certificate for", summaryType))
   }
@@ -337,20 +337,20 @@ function createApplicationSummaryModel(errors, data) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextSex, sexDescription, hrefPrefix + "/describeLivingAnimal", "sex", summaryType))
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextDateOfBirth, data.species.dateOfBirth.year ? getDateValue(data.species.dateOfBirth) : "", hrefPrefix + "/describeLivingAnimal", "date of birth", summaryType))
   }
-  if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked' && data.permitType === "article10") {
+  if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked' && data.permitType === pt.ARTICLE_10) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, hrefPrefix + "/describeLivingAnimal", "male parent details", summaryType))
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextFemaleParentDetails, data.species.femaleParentDetails, hrefPrefix + "/describeLivingAnimal", "female parent details", summaryType))
   }
   if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(data.permitType == "article10" ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description", summaryType))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(data.permitType == pt.ARTICLE_10 ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", hrefPrefix + "/describeLivingAnimal", "other description", summaryType))
   }
   if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextCreatedDate, data.species.createdDate.isExactDateUnknown ? data.species.createdDate.approximateDate : getDateValue(data.species.createdDate), hrefPrefix + "/createdDate", "created date", summaryType))
   }
   if (data.species.specimenType !== "animalLiving" || (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(data.permitType === "article10" ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, hrefPrefix + "/descriptionGeneric", "description", summaryType))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(data.permitType === pt.ARTICLE_10 ? "govuk-summary-list__row--no-border" : "", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, hrefPrefix + "/descriptionGeneric", "description", summaryType))
   }
-  if (data.permitType === "article10") {
+  if (data.permitType === pt.ARTICLE_10) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextAcquiredDate, data.species.acquiredDate.isExactDateUnknown ? data.species.acquiredDate.approximateDate : getDateValue(data.species.acquiredDate), hrefPrefix + "/acquiredDate", "acquired date", summaryType))
     summaryListSpecimenDetailsRows.push(createSummaryListRow("", pageContent.rowTextExistingArticle10Certificate, data.species.isA10CertificateNumberKnown ? data.species.a10CertificateNumber : pageContent.rowTextNotKnown, hrefPrefix + "/a10CertificateNumber", "existing a10 certificate", summaryType))
   }
@@ -372,8 +372,11 @@ function createApplicationSummaryModel(errors, data) {
   const summaryListImporterExporterDetails = {
     id: "importerExporterDetail",
     name: "importerExporterDetail",
+    classes: "govuk-!-margin-bottom-9",
     rows: summaryListImporterExporterDetailsRows
   }
+
+  const showImporterExporterDetails = data.permitType !== pt.ARTICLE_10 && !(data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE)
 
   const summaryListRemarks = {
     id: "remarks",
@@ -448,7 +451,8 @@ function createApplicationSummaryModel(errors, data) {
     headerContactDetails: headerContactDetails,
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
-    headingImporterExporterDetails: headingImporterExporterDetails,
+    showImporterExporterDetails,
+    headingImporterExporterDetails,
     headingPermitDetails: data.permitDetails && headingPermitDetails,
     headerCountryOfOriginPermitDetails: data.permitDetails && pageContent.headerCountryOfOriginPermitDetails,
     headerAdditionalInformation: pageContent.headerAdditionalInformation,
@@ -459,7 +463,7 @@ function createApplicationSummaryModel(errors, data) {
     summaryListApplicantContactDetails: summaryListApplicantContactDetails,
     summaryListDeliveryAddress: summaryListDeliveryAddress,
     summaryListSpecimenDetails: summaryListSpecimenDetails,
-    summaryListImporterExporterDetails: data.permitType !== "article10" && summaryListImporterExporterDetails,
+    summaryListImporterExporterDetails: summaryListImporterExporterDetails,
     summaryListExportOrReexportPermitDetails: summaryListExportOrReexportPermitDetails,
     summaryListCountryOfOriginPermitDetails: summaryListCountryOfOriginPermitDetails,
     summaryListRemarks: summaryListRemarks
@@ -550,31 +554,37 @@ function createAreYouSureModel(errors, data) {
   } else if (data.isAgent) {
     if (changeType === "applicantContactDetails") {
       switch (data.permitType) {
-        case "import":
+        case pt.IMPORT:
           pageContent = areYouSureText.importerContactDetails
           break
-        case "export":
+        case pt.EXPORT:
           pageContent = areYouSureText.exporterContactDetails
           break
-        case "reexport":
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
           pageContent = areYouSureText.reexporterContactDetails
           break
-        case "article10":
+        case pt.ARTICLE_10:
           pageContent = areYouSureText.article10ContactDetails
           break
       }
     } else if (changeType === "applicantAddress") {
       switch (data.permitType) {
-        case "import":
+        case pt.IMPORT:
           pageContent = areYouSureText.importerAddress
           break
-        case "export":
+        case pt.EXPORT:
           pageContent = areYouSureText.exporterAddress
           break
-        case "reexport":
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
           pageContent = areYouSureText.reexporterAddress
           break
-        case "article10":
+        case pt.ARTICLE_10:
           pageContent = areYouSureText.article10Address
           break
       }
@@ -685,6 +695,8 @@ module.exports = [
         //submissionRef: submission.submissionRef || clonedSubmissionRef,
         submissionRef: submission.submissionRef,
         permitType: submission.permitType,
+        otherPermitTypeOption: submission.otherPermitTypeOption,
+        permitSubType: submission.applications[applicationIndex].permitSubType,
         isAgent: submission.isAgent,
         applicant: submission.applicant,
         delivery: submission.delivery,
@@ -717,14 +729,14 @@ module.exports = [
     },
     handler: async (request, h) => {
       const { applicationIndex, changeType, summaryType } = request.params
-
+      const submission = getSubmission(request)
       const returnUrl = `${currentPath}/${summaryType}/${applicationIndex}`
-      const changeRouteData = setChangeRoute(request, changeType, applicationIndex, returnUrl)
+      const changeRouteData = setChangeRoute(request, changeType, applicationIndex, returnUrl, submission.permitTypeOption)
 
       if (changeRouteData.showConfirmationPage) {
         return h.redirect(`${currentPath}/are-you-sure/${summaryType}/${applicationIndex}`)
       } else {
-        return h.redirect(changeRouteData.startUrl)
+        return h.redirect(changeRouteData.startUrls[0])
       }
     }
   },
@@ -781,6 +793,8 @@ module.exports = [
             summaryType: summaryType,
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
+            otherPermitTypeOption: submission.otherPermitTypeOption,
+            permitSubType: submission.applications[applicationIndex].permitSubType,
             isAgent: submission.isAgent,
             applicant: submission.applicant,
             delivery: submission.delivery,
@@ -854,7 +868,7 @@ module.exports = [
         const changeRouteData = getChangeRouteData(request)
 
         if (request.payload.areYouSure) {
-          return h.redirect(changeRouteData.startUrl)
+          return h.redirect(changeRouteData.startUrls[0])
         } else {
           return h.redirect(`${currentPath}/${summaryType}/${applicationIndex}`)
         }

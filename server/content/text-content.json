@@ -33,6 +33,13 @@
     "permitTypeDescriptionExport": "Export",
     "permitTypeDescriptionReexport": "Re-export",
     "permitTypeDescriptionArticle10": "Article 10",
+    "permitTypeDescriptionMIC": "Musical instrument certificate",
+    "permitTypeDescriptionTEC": "Travelling exhibition certificate",
+    "permitTypeDescriptionPOC": "Personal ownership certificate",
+    "permitTypeDescriptionSemiComplete": "Semi complete permit",
+    "permitTypeDescriptionDraft": "Draft import permit",
+    "permitTypeDescriptionArticle9Movement": "Article 9 Movement certificate",
+    "permitTypeDescriptionLegalAcquisition": "Certificate of legal acquisition ",
     "statusDescriptionReceived": "Received",
     "statusDescriptionAwaitingPayment": "Awaiting payment",
     "statusDescriptionAwaitingReply": "Awaiting reply",
@@ -56,17 +63,33 @@
     "radioOptionArticle10Hint": "To use any specimen of an GB/EU Annex A species for commercial purposes within the United Kingdom",
     "radioOptionOther": "Other",
     "errorMessages": {
-      "error.permitType.any.required": "Select the type of permit or certificate that you are applying for",
-      "error.permitType.any.only": "Select the type of permit or certificate that you are applying for"
+      "error.permitTypeOption.any.required": "Select the type of permit or certificate that you are applying for",
+      "error.permitTypeOption.any.only": "Select the type of permit or certificate that you are applying for"
+    }
+  },
+  "otherPermitType": {
+    "defaultTitle": "What other type of permit or certificate are you applying for?",
+    "pageHeader": "What other type of permit or certificate are you applying for?",
+    "radioOptionMIC": "Musical instrument certificate",
+    "radioOptionTEC": "Travelling exhibition certificate",
+    "radioOptionPOC": "Personal ownership certificate",
+    "radioOptionSemiComplete": "Semi-complete permits",
+    "radioOptionDraft": "Draft import permit",
+    "radioOptionOther": "Other",
+    "errorMessages": {
+      "error.otherPermitTypeOption.any.required": "Select the type of permit or certificate that you are applying for",
+      "error.otherPermitTypeOption.any.only": "Select the type of permit or certificate that you are applying for"
     }
   },
   "cannotUseService": {
-    "pageTitle": "You cannot use this service yet",
-    "pageHeader": "You cannot use this service yet",
-    "pageBody": "You can only use this service to apply for:",
-    "bullet1": "import, export or re-export permits",
-    "bullet2": "article 10 certificates",
-    "link": "<a href='https://www.gov.uk/guidance/cites-imports-and-exports'>Check how to apply for other CITES permits and certificates</a>",
+    "pageTitle": "You cannot use this service",
+    "pageHeader": "You cannot use this service",
+    "pageBody": "This service cannot be used for the following applications:",
+    "bullet1": "Biological Sample Permits",
+    "bullet2": "Certificates of Origin",
+    "bullet3": "Nursery Permits",
+    "bullet4": "Import Notifications",
+    "pageBody2": "For more information on how to apply please contact APHA at <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'>wildlife.licensing@apha.gov.uk</a>",
     "finishButtonUrl": "/your-submission"
   },
   "applyingOnBehalf": {
@@ -210,50 +233,6 @@
       "pageHeaderExport": "What is the delivery address?",
       "pageHeaderReexport": "What is the delivery address?",
       "pageHeaderArticle10": "What is the delivery address?"
-    }
-  },
-  "searchAddress": {
-    "agent": {
-      "defaultTitleImport": "Search for your address",
-      "defaultTitleExport": "Search for your address",
-      "defaultTitleReexport": "Search for your address",
-      "defaultTitleArticle10": "Search for your address",
-      "pageHeaderImport": "Search for your address",
-      "pageHeaderExport": "Search for your address",
-      "pageHeaderReexport": "Search for your address",
-      "pageHeaderArticle10": "Search for your address",
-      "pageBody": "If you are a business, give the business address.",
-      "inputLabelProperty": "Property number or name",
-      "inputLabelStreet": "Street",
-      "inputLabelTown": "Town or city"
-    },
-    "applicant": {
-      "defaultTitleImport": "Search for your address",
-      "defaultTitleExport": "Search for your address",
-      "defaultTitleReexport": "Search for your address",
-      "defaultTitleArticle10": "Search for your address",
-      "pageHeaderImport": "Search for your address",
-      "pageHeaderExport": "Search for your address",
-      "pageHeaderReexport": "Search for your address",
-      "pageHeaderArticle10": "Search for your address",
-      "pageBody": "If you are a business, give the business address.",
-      "inputLabelProperty": "Property number or name",
-      "inputLabelStreet": "Street",
-      "inputLabelTown": "Town or city"
-    },
-    "agentLed": {
-      "defaultTitleImport": "Search for the importer’s address",
-      "defaultTitleExport": "Search for the exporter’s address",
-      "defaultTitleReexport": "Search for the re-exporter’s address",
-      "defaultTitleArticle10": "Search for the applicant’s address",
-      "pageHeaderImport": "Search for the importer’s address",
-      "pageHeaderExport": "Search for the exporter’s address",
-      "pageHeaderReexport": "Search for the re-exporter’s address",
-      "pageHeaderArticle10": "Search for the applicant’s address",
-      "pageBody": "If you are a business, give the business address.",
-      "inputLabelProperty": "Property number or name",
-      "inputLabelStreet": "Street",
-      "inputLabelTown": "Town or city"
     }
   },
   "selectAddress": {
@@ -1583,6 +1562,11 @@
   "speciesWarning": {
     "defaultTitle": "This species is covered by exemptions or restrictions",
     "pageHeader": "This species is covered by exemptions or restrictions"
+  },
+  "guidanceCompletion": {
+    "defaultTitle": "Guidance on completion",
+    "pageHeader": "Guidance on completion",
+    "warningMessage": "When entering details of the exporter and importer these must be for the legal owner of the specimen(s)"
   },
   "draftSubmissionWarning": {
     "defaultTitle": "Are you sure you want to start a new application?",

@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryType } = require('../../config/config')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'confirm-address'
@@ -34,22 +35,25 @@ function createModel(errors, data) {
     let pageHeader = ''
 
     switch (data.permitType) {
-        case 'import':
+        case pt.IMPORT:
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
-            break;
-        case 'export':
+            break
+        case pt.EXPORT:
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
-            break;
-        case 'reexport':
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
-            break;
-        case 'article10':
+            break
+        case pt.ARTICLE_10:
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
-            break;
+            break
     }
 
     const model = {
@@ -122,7 +126,6 @@ module.exports = [{
                     permitType: submission?.permitType,
                     ...submission[request.params.contactType]?.candidateAddressData,
                 }
-
                 return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
@@ -149,17 +152,15 @@ module.exports = [{
                 return h.redirect(invalidSubmissionPath)
             }
 
-            
-
             let nextPath = ''
             if (contactType === 'agent') {
                 nextPath = `${urlPrefix}/contact-details/applicant`
             } else if (contactType === 'applicant') {
-                nextPath = `${urlPrefix}/select-delivery-address`                
+                nextPath = `${urlPrefix}/select-delivery-address`
             } else {
-                const appStatuses = validateSubmission(submission, null)            
+                const appStatuses = validateSubmission(submission, null)
                 const applicationIndex = getApplicationIndex(submission, appStatuses)
-                nextPath = enableDeliveryType ?  `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`                
+                nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
             }
 
             const exitChangeRouteUrl = checkChangeRouteExit(request, false)
@@ -167,7 +168,7 @@ module.exports = [{
                 saveDraftSubmission(request, exitChangeRouteUrl)
                 return h.redirect(exitChangeRouteUrl)
             }
-            
+
             saveDraftSubmission(request, nextPath)
             return h.redirect(nextPath)
         }

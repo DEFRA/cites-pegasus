@@ -1,21 +1,23 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
 const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-
+const { permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
 const pageId = 'applying-on-behalf'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/permit-type`
+const previousPathPermitType = `${urlPrefix}/permit-type`
+const previousPathOtherPermitType = `${urlPrefix}/other-permit-type`
+const previousPathGuidanceCompletion = `${urlPrefix}/guidance-completion`
 const nextPath = `${urlPrefix}/contact-details/applicant`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, isAgent) {
-  const commonContent = textContent.common;
-  const pageContent = textContent.applyingOnBehalf;
+function createModel(errors, data) {
+  const commonContent = textContent.common
+  const pageContent = textContent.applyingOnBehalf
 
   let isAgentRadioVal = null
-  switch (isAgent) {
+  switch (data.isAgent) {
     case true:
       isAgentRadioVal = commonContent.radioOptionYes
       break;
@@ -25,23 +27,34 @@ function createModel(errors, isAgent) {
   }
 
   let errorList = null
-  if(errors){
-      errorList = []
-      const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-      const fields = ['isAgent']
-      fields.forEach(field => {
-          const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-          if (fieldError) {
-              errorList.push({
-                  text: fieldError,
-                  href: `#${field}`
-              })
-          }
-      })
+  if (errors) {
+    errorList = []
+    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
+    const fields = ['isAgent']
+    fields.forEach(field => {
+      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+      if (fieldError) {
+        errorList.push({
+          text: fieldError,
+          href: `#${field}`
+        })
+      }
+    })
+  }
+
+  let backLink = null
+  if (enableOtherPermitTypes && data.otherPermitTypeOption) {
+    if ([pto.MIC, pto.TEC, pto.POC].includes(data.otherPermitTypeOption)) {
+      backLink = previousPathGuidanceCompletion
+    } else {
+      backLink = previousPathOtherPermitType
+    }
+  } else {
+    backLink = previousPathPermitType
   }
 
   const model = {
-    backLink: previousPath,
+    backLink,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageHeader: pageContent.pageHeader,
@@ -79,14 +92,19 @@ module.exports = [{
 
     try {
       validateSubmission(submission, pageId)
-      
+
     }
     catch (err) {
       console.error(err);
       return h.redirect(invalidSubmissionPath)
     }
 
-    return h.view(pageId, createModel(null, submission?.isAgent));
+    const pageData = {
+      isAgent: submission.isAgent,
+      otherPermitTypeOption: submission.otherPermitTypeOption
+    }
+
+    return h.view(pageId, createModel(null, pageData));
   }
 },
 {
@@ -99,24 +117,29 @@ module.exports = [{
         isAgent: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo)
       }),
       failAction: (request, h, err) => {
-        return h.view(pageId, createModel(err, request.payload.isAgent)).takeover()
+        const submission = getSubmission(request)
+        const pageData = {
+          isAgent: submission.isAgent,
+          otherPermitTypeOption: submission.otherPermitTypeOption
+        }
+        return h.view(pageId, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
-      const isAgent = request.payload.isAgent === textContent.common.radioOptionYes;
+      const isAgent = request.payload.isAgent === textContent.common.radioOptionYes
 
       try {
-        const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null } 
+        const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null }
 
-        mergeSubmission(request, agentData, pageId)        
+        mergeSubmission(request, agentData, pageId)
       }
-      catch (err){
+      catch (err) {
         console.error(err);
         return h.redirect(invalidSubmissionPath)
       }
-      
+
       saveDraftSubmission(request, nextPath)
-      return h.redirect(nextPath)      
+      return h.redirect(nextPath)
     }
   },
 }]

@@ -1,25 +1,6 @@
 const Joi = require("@hapi/joi")
 const textContent = require("./text-content.json")
 
-const searchAddressSchema = Joi.object({
-  defaultTitleImport: Joi.string().required(),
-  defaultTitleExport: Joi.string().required(),
-  defaultTitleReexport: Joi.string().required(),
-  defaultTitleArticle10: Joi.string().required(),
-  pageHeaderImport: Joi.string().required(),
-  pageHeaderExport: Joi.string().required(),
-  pageHeaderReexport: Joi.string().required(),
-  pageHeaderArticle10: Joi.string().required(),
-  pageBody: Joi.string().required(),
-  inputLabelProperty: Joi.string().required(),
-  inputLabelStreet: Joi.string().required(),
-  inputLabelTown: Joi.string().required(),
-  errorMessagesImport: Joi.object(),
-  errorMessagesExport: Joi.object(),
-  errorMessagesReexport: Joi.object(),
-  errorMessagesArticle10: Joi.object()
-})
-
 const selectAddressSchema = Joi.object({
   defaultTitle: Joi.string(),
   pageHeader: Joi.string(),
@@ -232,6 +213,13 @@ const schema = Joi.object().keys({
     permitTypeDescriptionExport: Joi.string().required(),
     permitTypeDescriptionReexport: Joi.string().required(),
     permitTypeDescriptionArticle10: Joi.string().required(),
+    permitTypeDescriptionMIC: Joi.string().required(),
+    permitTypeDescriptionTEC: Joi.string().required(),
+    permitTypeDescriptionPOC: Joi.string().required(),
+    permitTypeDescriptionSemiComplete: Joi.string().required(),
+    permitTypeDescriptionDraft: Joi.string().required(),
+    permitTypeDescriptionArticle9Movement: Joi.string().required(),
+    permitTypeDescriptionLegalAcquisition: Joi.string().required(),
     statusDescriptionReceived: Joi.string().required(),
     statusDescriptionAwaitingPayment: Joi.string().required(),
     statusDescriptionAwaitingReply: Joi.string().required(),
@@ -255,8 +243,22 @@ const schema = Joi.object().keys({
     radioOptionArticle10Hint: Joi.string().required(),
     radioOptionOther: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.permitType.any.required": Joi.string().required(),
-      "error.permitType.any.only": Joi.string().required()
+      "error.permitTypeOption.any.required": Joi.string().required(),
+      "error.permitTypeOption.any.only": Joi.string().required()
+    })
+  }).required(),
+  otherPermitType: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    radioOptionMIC: Joi.string().required(),
+    radioOptionTEC: Joi.string().required(),
+    radioOptionPOC: Joi.string().required(),
+    radioOptionSemiComplete: Joi.string().required(),
+    radioOptionDraft: Joi.string().required(),
+    radioOptionOther: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.otherPermitTypeOption.any.required": Joi.string().required(),
+      "error.otherPermitTypeOption.any.only": Joi.string().required()
     })
   }).required(),
   cannotUseService: Joi.object({
@@ -265,7 +267,9 @@ const schema = Joi.object().keys({
     pageBody: Joi.string().required(),
     bullet1: Joi.string().required(),
     bullet2: Joi.string().required(),
-    link: Joi.string().required(),
+    bullet3: Joi.string().required(),
+    bullet4: Joi.string().required(),
+    pageBody2: Joi.string().required(),
     finishButtonUrl: Joi.string().uri({ allowRelative: true }).required()
   }).required(),
   applyingOnBehalf: Joi.object({
@@ -309,11 +313,6 @@ const schema = Joi.object().keys({
     applicant: postcodeSchema,
     agentLed: postcodeSchema,
     delivery: postcodeSchema
-  }).required(),
-  searchAddress: Joi.object({
-    agent: searchAddressSchema,
-    applicant: searchAddressSchema,
-    agentLed: searchAddressSchema
   }).required(),
   selectAddress: Joi.object({
     common: Joi.object({
@@ -1183,6 +1182,11 @@ const schema = Joi.object().keys({
   speciesWarning: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required()
+  }).required(),
+  guidanceCompletion: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    warningMessage: Joi.string().required()
   }).required(),
   draftSubmissionWarning: Joi.object({
     defaultTitle: Joi.string().required(),

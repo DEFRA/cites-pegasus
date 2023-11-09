@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { POSTCODE_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -21,8 +22,8 @@ function createModel(errors, data) {
 
     const postcodeText = lodash.cloneDeep(textContent.postcode) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
-    if(data.contactType === 'applicant'){
-        if(data.isAgent){
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
             pageContent = lodash.merge(postcodeText.common, postcodeText.agentLed)
         } else {
             pageContent = lodash.merge(postcodeText.common, postcodeText.applicant)
@@ -33,30 +34,33 @@ function createModel(errors, data) {
         pageContent = lodash.merge(postcodeText.common, postcodeText.delivery)
         defaultBackLink = previousPathSelectDeliveryAddress
     }
-    
+
     const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBackLink
 
     let defaultTitle = ''
     let pageHeader = ''
-    
+
     let errorMessages = null
     switch (data.permitType) {
-        case 'import':
+        case pt.IMPORT:
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
             errorMessages = pageContent.errorMessagesImport
-            break;
-        case 'export':
+            break
+        case pt.EXPORT:
             defaultTitle = pageContent.defaultTitleExport
             pageHeader = pageContent.pageHeaderExport
             errorMessages = pageContent.errorMessagesExport
-            break;
-        case 'reexport':
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
             defaultTitle = pageContent.defaultTitleReexport
             pageHeader = pageContent.pageHeaderReexport
             errorMessages = pageContent.errorMessagesReexport
             break;
-        case 'article10':
+        case pt.ARTICLE_10:
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
             errorMessages = pageContent.errorMessagesArticle10
@@ -64,7 +68,7 @@ function createModel(errors, data) {
     }
 
     let errorList = null
-    if(errors){
+    if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }
         const fields = ['postcode']
@@ -78,7 +82,7 @@ function createModel(errors, data) {
             }
         })
     }
-    
+
     const model = {
         backLink: backLink,
         pageHeader: pageHeader,
@@ -97,12 +101,12 @@ function createModel(errors, data) {
             name: "postcode",
             classes: "govuk-!-width-two-thirds",
             autocomplete: "postal-code",
-            attributes: {maxlength: 8},
+            attributes: { maxlength: 8 },
             ...(data.postcode ? { value: data.postcode } : {}),
             errorMessage: getFieldError(errorList, '#postcode')
         },
     }
-    
+
     return { ...commonContent, ...model }
 }
 
@@ -116,7 +120,7 @@ module.exports = [{
             }),
             failAction: (request, h, error) => {
                 console.log(error)
-            }   
+            }
         }
     },
     handler: async (request, h) => {
@@ -130,12 +134,12 @@ module.exports = [{
             return h.redirect(invalidSubmissionPath)
         }
 
-        const pageData = { 
+        const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
-            contactType: request.params.contactType, 
-            isAgent: submission?.isAgent, 
-            permitType: submission?.permitType, 
-            postcode: submission[request.params.contactType]?.candidateAddressData?.addressSearchData?.postcode 
+            contactType: request.params.contactType,
+            isAgent: submission?.isAgent,
+            permitType: submission?.permitType,
+            postcode: submission[request.params.contactType]?.candidateAddressData?.addressSearchData?.postcode
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -155,14 +159,14 @@ module.exports = [{
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
-                const pageData = { 
+                const pageData = {
                     backLinkOverride: checkChangeRouteExit(request, true),
-                    contactType: request.params.contactType, 
-                    isAgent: submission?.isAgent, 
-                    permitType: submission?.permitType, 
-                    ...request.payload 
+                    contactType: request.params.contactType,
+                    isAgent: submission?.isAgent,
+                    permitType: submission?.permitType,
+                    ...request.payload
                 }
-                
+
                 return h.view(pageId, createModel(err, pageData)).takeover()
             }
         },
@@ -173,7 +177,7 @@ module.exports = [{
             const submission = {
                 [contactType]: {
                     candidateAddressData: {
-                        addressSearchData: {               
+                        addressSearchData: {
                             postcode: request.payload.postcode.trim().toUpperCase()
                         }
                     }
@@ -190,7 +194,7 @@ module.exports = [{
 
             const redirectTo = `${nextPath}/${contactType}`
             saveDraftSubmission(request, redirectTo)
-            return h.redirect(redirectTo)      
+            return h.redirect(redirectTo)
 
         }
     },

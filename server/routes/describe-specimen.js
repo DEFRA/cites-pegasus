@@ -3,14 +3,16 @@ const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
+const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require("../content/text-content")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
 const previousPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
-const nextPathImporterDetails = `${urlPrefix}/importer-exporter`
-const nextPathArticle10 = `${urlPrefix}/acquired-date`
+const nextPathPermitDetails = `${urlPrefix}/permit-details`
+const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
+const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -167,8 +169,15 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = submission.permitType === "article10" ? `${nextPathArticle10}/${applicationIndex}` : `${nextPathImporterDetails}/${applicationIndex}`
-        
+        let redirectTo
+        if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
+          redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
+        } else if (submission.permitType === pt.ARTICLE_10) {
+          redirectTo = `${nextPathAcquiredDate}/${applicationIndex}`
+        } else {
+          redirectTo = `${nextPathImporterExporter}/${applicationIndex}`
+        }
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
       }

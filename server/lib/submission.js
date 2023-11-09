@@ -1,5 +1,7 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
+const { deliveryType: dt } = require("../lib/constants")
+const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -28,7 +30,14 @@ function mergeSubmission(request, data, path) {
     const mergedSubmission = lodash.merge(existingSubmission, data)
 
     setYarValue(request, 'submission', mergedSubmission)
-
+    
+    //TODO Remove the log lines
+    console.log('PermitTypeOption: ' + mergedSubmission.permitTypeOption)
+    console.log('OtherPermitTypeOption: ' + mergedSubmission.otherPermitTypeOption)
+    console.log('PermitType: ' + mergedSubmission.permitType)
+    mergedSubmission.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
+    console.log('----------------------------------------')
+    
     return mergedSubmission
 }
 
@@ -37,6 +46,13 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
+    
+    //TODO Remove the log lines
+    console.log('PermitTypeOption: ' + data.permitTypeOption)
+    console.log('OtherPermitTypeOption: ' + data.otherPermitTypeOption)
+    console.log('PermitType: ' + data.permitType)
+    data.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
+    console.log('----------------------------------------')
 }
 
 function clearSubmission(request) {
@@ -119,7 +135,7 @@ function cloneSubmission(request, applicationIndex) {
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
     if (config.enableDeliveryType && !submission.delivery.deliveryType) {
-        submission.delivery.deliveryType = 'standardDelivery'
+        submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
     submission.applications = [newApplication]
@@ -230,11 +246,14 @@ function getAppFlow(submission) {
             }
         } else {
             appFlow.push('permit-type')
-            if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
+            if(config.enableOtherPermitTypes && submission.permitTypeOption === pto.OTHER){
+                appFlow.push('other-permit-type')
+            }
+            if (submission.otherPermitTypeOption === pto.OTHER) { appFlow.push('cannot-use-service') }
 
-            if (submission.permitType && submission.permitType !== 'other') {
+            if (submission.permitType && submission.otherPermitTypeOption !== pto.OTHER) {
+                appFlow.push('guidance-completion')
                 appFlow.push('applying-on-behalf')
-
 
                 if (typeof submission.isAgent === 'boolean') {
 
@@ -300,7 +319,7 @@ function getAppFlow(submission) {
 
                         const species = application.species
                         if (species.sourceCode) {
-                            if (submission.permitType === "article10") {
+                            if (submission.permitType === pt.ARTICLE_10) {
                                 appFlow.push(`specimen-origin/${applicationIndex}`)
                                 if (species.specimenOrigin) {
                                     appFlow.push(`use-certificate-for/${applicationIndex}`)
@@ -374,7 +393,8 @@ function getAppFlow(submission) {
                         }
 
                         if (species.specimenDescriptionGeneric || species.sex) {
-                            if (submission.permitType === 'article10') { //Article 10 flow
+
+                            if (submission.permitType === pt.ARTICLE_10) { 
                                 appFlow.push(`acquired-date/${applicationIndex}`)
 
                                 if (species.acquiredDate) {
@@ -387,16 +407,21 @@ function getAppFlow(submission) {
                                 } else {
                                     return { appFlow, applicationStatuses }
                                 }
-
-                            } else { //Not article 10 flow
+                            } else if (submission.permitType !== pt.REEXPORT || submission.otherPermitTypeOption !== pto.SEMI_COMPLETE) {
                                 appFlow.push(`importer-exporter/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
+                            if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT) 
+                                    || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
+                                    || species.isEverImportedExported === true 
+                                    || species.isEverImportedExported === false
+                                    ) {
                                 appFlow.push(`permit-details/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
+                            if ((application.importerExporterDetails && submission.permitType === pt.EXPORT) 
+                                || (!species.isEverImportedExported && submission.permitType === pt.ARTICLE_10) 
+                                || application.permitDetails) {
                                 appFlow.push(`additional-info/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)

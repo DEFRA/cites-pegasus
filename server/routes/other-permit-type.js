@@ -1,28 +1,29 @@
 const Joi = require('joi')
-const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
+const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
-const pageId = 'permit-type'
+const pageId = 'other-permit-type'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/`
+const previousPath = `${urlPrefix}/permit-type`
 const nextPathApplyingOnBehalf = `${urlPrefix}/applying-on-behalf`
-const nextPathOtherPermitType = `${urlPrefix}/other-permit-type`
+const nextPathGuidanceCompletion = `${urlPrefix}/guidance-completion`
 const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 const invalidSubmissionPath = `${urlPrefix}/`
 const previousPathYourSubmission = `${urlPrefix}/your-submission`
 
+
 function createModel(errors, data) {
   const commonContent = textContent.common;
-  const pageContent = textContent.permitType;
+  const pageContent = textContent.otherPermitType;
 
   let errorList = null
   if (errors) {
     errorList = []
     const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-    const fields = ['permitTypeOption']
+    const fields = ['otherPermitTypeOption']
     fields.forEach(field => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -35,9 +36,9 @@ function createModel(errors, data) {
   }
 
   let defaultBacklink = previousPath
-  if (data.fromYourSubmission) {
-    defaultBacklink = previousPathYourSubmission
-  }
+  // if (data.fromYourSubmission) {
+  //   defaultBacklink = previousPathYourSubmission
+  // }
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -45,9 +46,9 @@ function createModel(errors, data) {
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-    inputPermitType: {
-      idPrefix: "permitTypeOption",
-      name: "permitTypeOption",
+    inputOtherPermitType: {
+      idPrefix: "otherPermitTypeOption",
+      name: "otherPermitTypeOption",
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
@@ -57,36 +58,37 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: pto.IMPORT,
-          text: pageContent.radioOptionImport,
-          hint: { text: pageContent.radioOptionImportHint },
-          checked: isChecked(data.permitTypeOption, pto.IMPORT)
+          value: pto.MIC,
+          text: pageContent.radioOptionMIC,
+          checked: isChecked(data.otherPermitTypeOption, pto.MIC)
         },
         {
-          value: pto.EXPORT,
-          text: pageContent.radioOptionExport,
-          hint: { text: pageContent.radioOptionExportHint },
-          checked: isChecked(data.permitTypeOption, pto.EXPORT)
+          value: pto.TEC,
+          text: pageContent.radioOptionTEC,
+          checked: isChecked(data.otherPermitTypeOption, pto.TEC)
         },
         {
-          value: pto.REEXPORT,
-          text: pageContent.radioOptionReexport,
-          hint: { text: pageContent.radioOptionReexportHint },
-          checked: isChecked(data.permitTypeOption, pto.REEXPORT)
+          value: pto.POC,
+          text: pageContent.radioOptionPOC,
+          checked: isChecked(data.otherPermitTypeOption, pto.POC)
         },
         {
-          value: pto.ARTICLE_10,
-          text: pageContent.radioOptionArticle10,
-          hint: { text: pageContent.radioOptionArticle10Hint },
-          checked: isChecked(data.permitTypeOption, pto.ARTICLE_10)
+          value: pto.SEMI_COMPLETE,
+          text: pageContent.radioOptionSemiComplete,
+          checked: isChecked(data.otherPermitTypeOption, pto.SEMI_COMPLETE)
+        },
+        {
+          value: pto.DRAFT,
+          text: pageContent.radioOptionDraft,
+          checked: isChecked(data.otherPermitTypeOption, pto.DRAFT)
         },
         {
           value: pto.OTHER,
           text: pageContent.radioOptionOther,
-          checked: isChecked(data.permitTypeOption, pto.OTHER)
+          checked: isChecked(data.otherPermitTypeOption, pto.OTHER)
         }
       ],
-      errorMessage: getFieldError(errorList, '#permitTypeOption')
+      errorMessage: getFieldError(errorList, '#otherPermitTypeOption')
     }
   }
   return { ...commonContent, ...model }
@@ -110,7 +112,7 @@ module.exports = [{
 
     const pageData = {
       backLinkOverride: checkChangeRouteExit(request, true),
-      permitTypeOption: submission?.permitTypeOption,
+      otherPermitTypeOption: submission?.otherPermitTypeOption,
       fromYourSubmission: fromYourSubmission
     }
 
@@ -124,14 +126,14 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        permitTypeOption: Joi.string().required().valid(pto.IMPORT, pto.EXPORT, pto.REEXPORT, pto.ARTICLE_10, pto.OTHER)
+        otherPermitTypeOption: Joi.string().required().valid(pto.MIC, pto.TEC, pto.POC, pto.SEMI_COMPLETE, pto.DRAFT, pto.OTHER)
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
         const appStatuses = validateSubmission(submission, pageId)
         const pageData = {
           backLinkOverride: checkChangeRouteExit(request, true),
-          permitTypeOption: request.payload.permitTypeOption,
+          otherPermitTypeOption: request.payload.otherPermitTypeOption,
           fromYourSubmission: appStatuses.some((application) => application.status === "complete")
         }
 
@@ -140,28 +142,22 @@ module.exports = [{
     },
     handler: async (request, h) => {
 
-      // if (request.payload.permitTypeOption === 'other' && enableOtherPermitTypes){
-      //   return h.redirect(nextPathOtherPermitType)
-      // }
-
       let submission = getSubmission(request)
 
-      if (!submission) {
-        submission = createSubmission(request)
-      }
-
-      const isChange = submission.permitTypeOption && submission.permitTypeOption !== request.payload.permitTypeOption
+      const isChange = submission.otherPermitTypeOption && submission.otherPermitTypeOption !== request.payload.otherPermitTypeOption
 
       if (isChange) {
         //Clear the whole submission if the permit type has changed
         submission = createSubmission(request)
+        submission.permitTypeOption = pto.OTHER
       }
 
-      //if(submission.permitTypeOption === undefined || isChange){
-      submission.permitTypeOption = request.payload.permitTypeOption
-      submission.permitType = getPermit(submission.otherPermitTypeOption || request.payload.permitTypeOption).permitType
-      //}
-
+      submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
+      
+      const permit = getPermit(request.payload.otherPermitTypeOption, submission.applications[0].useCertificateFor)
+      submission.permitType = permit.permitType
+      submission.applications[0].permitSubType = permit.permitSubType
+      
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -174,20 +170,26 @@ module.exports = [{
       }
 
       const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
-      //if (exitChangeRouteUrl && (!submission.permitTypeOption || submission.permitTypeOption !== pto.OTHER)) {
       if (exitChangeRouteUrl) {
         saveDraftSubmission(request, exitChangeRouteUrl)
         return h.redirect(exitChangeRouteUrl)
       }
 
       let redirectTo
-
-      if (request.payload.permitTypeOption === pto.OTHER) {
-        redirectTo = enableOtherPermitTypes ? nextPathOtherPermitType : cannotUseServicePath
-      } else {
-        redirectTo = nextPathApplyingOnBehalf
+      switch (request.payload.otherPermitTypeOption) {
+        case pto.MIC:
+        case pto.TEC:
+        case pto.POC:
+          redirectTo = nextPathGuidanceCompletion
+          break
+        case pto.SEMI_COMPLETE:
+        case pto.DRAFT:
+          redirectTo = nextPathApplyingOnBehalf
+          break
+        case pto.OTHER:
+          redirectTo = cannotUseServicePath
+          break
       }
-
       saveDraftSubmission(request, redirectTo)
       return h.redirect(redirectTo)
     }

@@ -1,14 +1,15 @@
 const textContent = require('../content/text-content')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
 const pageId = 'cannot-use-service'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/permit-type`
+const previousPathPermitType = `${urlPrefix}/permit-type`
+const previousPathOtherPermitType = `${urlPrefix}/other-permit-type`
 
 function createModel(){
   const commonContent = textContent.common;
   const pageContent = textContent.cannotUseService;
-
-  return { ...commonContent, ...pageContent, backLink: previousPath }
+  let backLink = enableOtherPermitTypes ? previousPathOtherPermitType : previousPathPermitType
+  return { ...commonContent, ...pageContent, backLink }
 }
 
 module.exports = [{

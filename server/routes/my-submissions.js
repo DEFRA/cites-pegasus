@@ -1,6 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
 const user = require('../lib/user')
@@ -15,7 +16,7 @@ const draftContinuePath = `${currentPath}/draft-continue`
 const draftDeletePath = `${currentPath}/draft-delete`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
-const permitTypes = ['import', 'export', 'reexport', 'article10']
+const permitTypes = [pt.IMPORT, pt.EXPORT, pt.REEXPORT, pt.ARTICLE_10]
 const statuses = ['awaitingPayment', 'inProgress', 'closed']
 
 const pageSize = 15
@@ -109,24 +110,24 @@ function createModel(errors, data) {
       name: "permitTypes",
       items: [
         {
-          value: "import",
+          value: pt.IMPORT,
           text: commonContent.permitTypeDescriptionImport,
-          checked: isChecked(data.permitTypes, "import")
+          checked: isChecked(data.permitTypes, pt.IMPORT)
         },
         {
-          value: "export",
+          value: pt.EXPORT,
           text: commonContent.permitTypeDescriptionExport,
-          checked: isChecked(data.permitTypes, "export")
+          checked: isChecked(data.permitTypes, pt.EXPORT)
         },
         {
-          value: "reexport",
+          value: pt.REEXPORT,
           text: commonContent.permitTypeDescriptionReexport,
-          checked: isChecked(data.permitTypes, "reexport")
+          checked: isChecked(data.permitTypes, pt.REEXPORT)
         },
         {
-          value: "article10",
+          value: pt.ARTICLE_10,
           text: commonContent.permitTypeDescriptionArticle10,
-          checked: isChecked(data.permitTypes, "article10")
+          checked: isChecked(data.permitTypes, pt.ARTICLE_10)
         }
       ],
     },

@@ -62,19 +62,19 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: dt.standardDelivery,
+          value: dt.STANDARD_DELIVERY,
           text: pageContent.radioOptionStandardDelivery,
           checked: isChecked(
             data.deliveryType,
-            dt.standardDelivery
+            dt.STANDARD_DELIVERY
           )
         },
         {
-          value: dt.specialDelivery,
+          value: dt.SPECIAL_DELIVERY,
           text: pageContent.radioOptionSpecialDelivery,
           checked: isChecked(
             data.deliveryType,
-            dt.specialDelivery
+            dt.SPECIAL_DELIVERY
           )
         }
       ],
@@ -115,7 +115,7 @@ module.exports = [
       validate: {
         options: { abortEarly: false },
         payload: Joi.object({
-          deliveryType: Joi.string().valid(dt.standardDelivery, dt.specialDelivery).required()
+          deliveryType: Joi.string().valid(...Object.values(dt)).required()
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)   
