@@ -38,20 +38,6 @@ ul.smaller-indent {
     border-top: 1px solid #b1b4b6;
 }
 
-// .govuk-header__content {
-//     display: flex;
-//     justify-content: space-between;
-//     align-items: center;
-// }
-
-// .js-enabled .govuk-header__menu-button {
-//     display: none;
-// }
-
-// .js-enabled .govuk-header__navigation-list {
-//     display: inline-block;
-// }
-
 .loading-overlay-container {
     top: 100px;
     position: relative;
@@ -67,7 +53,6 @@ ul.smaller-indent {
     display: flex;
     justify-content: center;
     align-items: center;
-    //background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
 }
 
@@ -110,9 +95,6 @@ ul.smaller-indent {
 .loader-wrapper .indicator-text {
     display: inline-block;
 
-    //font-family: monospace;
-    //color: #000;
-    //font-size: 14px;
     margin: 10px 0;
 }
 

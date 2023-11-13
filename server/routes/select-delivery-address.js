@@ -129,7 +129,6 @@ module.exports = [{
                     deliveryAddress = { ...submission.applicant.address }
                     break;                
                 case 'different':
-                    deliveryAddress = null
                     nextPath = `${urlPrefix}/postcode/delivery`
                     break;
                 default:

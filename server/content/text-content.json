@@ -702,6 +702,7 @@
     "radioOptionLabel": "Label",
     "radioOptionSwissInstitue": "Swiss institute",
     "radioOptionSerialNumber": "Serial number",
+    "radioOptionTag": "Tag",
     "radioOptionDivider": "or",
     "radioOptionUnmarked": "The specimen is not marked",
     "errorMessages": {
@@ -728,6 +729,9 @@
       "error.inputSN.string.empty": "Enter the specimen’s unique identification mark",
       "error.inputSN.string.max": "Unique identification mark must be 150 characters or less",
       "error.inputSN.string.min": "Unique identification mark must be 3 characters or more",
+      "error.inputTG.string.empty": "Enter the specimen’s unique identification mark",
+      "error.inputTG.string.max": "Unique identification mark must be 150 characters or less",
+      "error.inputTG.string.min": "Unique identification mark must be 3 characters or more",
       "error.inputSR.string.empty": "Enter the specimen’s unique identification mark",
       "error.inputSR.string.max": "Unique identification mark must be 150 characters or less",
       "error.inputSR.string.min": "Unique identification mark must be 3 characters or more",

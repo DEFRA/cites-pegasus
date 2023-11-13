@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableTagIdentifier } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
@@ -29,7 +29,7 @@ function createModel(errors, data) {
       ...commonContent.errorMessages,
       ...pageContent.errorMessages
     }
-    const fields = ["uniqueIdentificationMarkType", "inputCB", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI"]
+    const fields = ["uniqueIdentificationMarkType", "inputCB", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI", "inputTG"]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
       if (fieldError) {
@@ -54,6 +54,11 @@ function createModel(errors, data) {
     { text: pageContent.radioOptionDivider, value: null, hasInput: false },
     { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasInput: false }
   ]
+
+  if (enableTagIdentifier) {
+    const insertIndex = radioOptions.length - 2
+    radioOptions.splice(insertIndex, 0, { text: pageContent.radioOptionTag, value: 'TG', hasInput: true });
+  }
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
@@ -177,7 +182,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "unmarked"),
+          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG", "unmarked"),
           inputCB: getUniqueIdentificationMarkInputSchema("CB"),
           inputCR: getUniqueIdentificationMarkInputSchema("CR"),
           inputHU: getUniqueIdentificationMarkInputSchema("HU"),
@@ -185,6 +190,7 @@ module.exports = [
           inputMC: getUniqueIdentificationMarkInputSchema("MC"),
           inputOT: getUniqueIdentificationMarkInputSchema("OT"),
           inputSN: getUniqueIdentificationMarkInputSchema("SN"),
+          inputTG: getUniqueIdentificationMarkInputSchema("TG"),
           inputSR: getUniqueIdentificationMarkInputSchema("SR"),
           inputSI: getUniqueIdentificationMarkInputSchema("SI"),
         }),
@@ -193,7 +199,7 @@ module.exports = [
           const submission = getSubmission(request)
           const species = submission.applications[applicationIndex].species
 
-          var uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
+          const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: request.params.applicationIndex,
