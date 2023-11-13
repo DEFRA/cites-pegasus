@@ -34,6 +34,7 @@ CITES Application Portal
 | ENABLE_DELIVERY_TYPE                     | Enable the delivery type page for special delivery     |    no    | false   |                                  |       |
 | ENABLE_INTERNAL_REFERENCE                | Enable the internal referece field                     |    no    | false   |                                  |       |
 | ENABLE_OTHER_PERMIT_TYPES                | Enable the additional non standard permit types        |    no    | false   |                                  |       |
+| ENABLE_TAG_IDENTIFIER                    | Enable the Tag radio option on the unique identification mark page     |    no    | false   |                                  |       |
 
 
 

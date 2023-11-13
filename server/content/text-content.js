@@ -557,6 +557,7 @@ const schema = Joi.object().keys({
     radioOptionLabel: Joi.string().required(),
     radioOptionSwissInstitue: Joi.string().required(),
     radioOptionSerialNumber: Joi.string().required(),
+    radioOptionTag: Joi.string().required(),
     radioOptionDivider: Joi.string().required(),
     radioOptionUnmarked: Joi.string().required(),
     errorMessages: Joi.object({
@@ -584,6 +585,9 @@ const schema = Joi.object().keys({
       "error.inputSN.string.empty": Joi.string().required(),
       "error.inputSN.string.max": Joi.string().required(),
       "error.inputSN.string.min": Joi.string().required(),
+      "error.inputTG.string.empty": Joi.string().required(),
+      "error.inputTG.string.max": Joi.string().required(),
+      "error.inputTG.string.min": Joi.string().required(),
       "error.inputSR.string.empty": Joi.string().required(),
       "error.inputSR.string.max": Joi.string().required(),
       "error.inputSR.string.min": Joi.string().required(),
