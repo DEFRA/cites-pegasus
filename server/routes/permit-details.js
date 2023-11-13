@@ -338,7 +338,7 @@ const payloadSchema = Joi.object({
   }),
   exportOrReexportPermitNumber: Joi.when("isExportOrReexportNotApplicable", {
     is: false,
-    then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()
+    then: Joi.string().min(1).max(27).regex(COMMENTS_REGEX).required()
   }),
   exportOrReexportPermitIssueDate: Joi.when("isExportOrReexportNotApplicable", {
     is: false,
@@ -356,7 +356,7 @@ const payloadSchema = Joi.object({
   }),
   countryOfOriginPermitNumber: Joi.when("isCountryOfOriginNotApplicable", {
     is: false,
-    then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()
+    then: Joi.string().min(1).max(27).regex(COMMENTS_REGEX).required()
   }),
   countryOfOriginPermitIssueDate: Joi.when("isCountryOfOriginNotApplicable", {
     is: false,

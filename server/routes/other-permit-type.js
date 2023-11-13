@@ -36,9 +36,7 @@ function createModel(errors, data) {
   }
 
   let defaultBacklink = previousPath
-  // if (data.fromYourSubmission) {
-  //   defaultBacklink = previousPathYourSubmission
-  // }
+  
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
