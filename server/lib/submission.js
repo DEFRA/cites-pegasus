@@ -1,11 +1,8 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
-const { deliveryType: dt } = require("../lib/constants")
-const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
-const submissionFileName = 'submission.json'
 
 function getSubmission(request) {
     const session = getYarValue(request, 'submission')
@@ -30,9 +27,7 @@ function mergeSubmission(request, data, path) {
     const mergedSubmission = lodash.merge(existingSubmission, data)
 
     setYarValue(request, 'submission', mergedSubmission)
-    
-    mergedSubmission.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
-    
+
     return mergedSubmission
 }
 
@@ -41,8 +36,6 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
-    
-    data.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))    
 }
 
 function clearSubmission(request) {
@@ -61,8 +54,14 @@ function validateSubmission(submission, path) {
 
 function getContainerName(request) {
     const cidmAuth = getYarValue(request, 'CIDMAuth')
-    const uniqueId = cidmAuth.user.organisationId ? cidmAuth.user.organisationId : cidmAuth.user.contactId
+    const uniqueId = cidmAuth.user.contactId
     return `cites-draft-${uniqueId}`
+}
+
+function getSubmissionFileName(request) {
+    const cidmAuth = getYarValue(request, 'CIDMAuth')
+    const fileName = cidmAuth.user.organisationId ? `submission-${cidmAuth.user.organisationId}.json` : `submission.json`
+    return fileName
 }
 
 async function checkDraftSubmissionExists(request) {
@@ -70,6 +69,7 @@ async function checkDraftSubmissionExists(request) {
         return false
     }
     const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
     return await checkFileExists(containerName, submissionFileName)
 }
 
@@ -82,6 +82,7 @@ async function saveDraftSubmission(request, savePointUrl) {
     submission.savePointUrl = savePointUrl
     submission.savePointDate = new Date()
     const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
     const containerExists = await checkContainerExists(containerName)
     if (!containerExists) {
         await createContainer(containerName)
@@ -92,6 +93,7 @@ async function saveDraftSubmission(request, savePointUrl) {
 async function loadDraftSubmission(request) {
     try {
         const containerName = getContainerName(request)
+        const submissionFileName = getSubmissionFileName(request)
         const draftSubmission = await getObjectFromContainer(containerName, submissionFileName)
         setSubmission(request, draftSubmission, null)
         return draftSubmission
@@ -107,6 +109,7 @@ async function deleteDraftSubmission(request) {
         return
     }
     const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
     await deleteFileFromContainer(containerName, submissionFileName)
 }
 
@@ -125,7 +128,7 @@ function cloneSubmission(request, applicationIndex) {
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
     if (config.enableDeliveryType && !submission.delivery.deliveryType) {
-        submission.delivery.deliveryType = dt.STANDARD_DELIVERY
+        submission.delivery.deliveryType = 'standardDelivery'
     }
 
     submission.applications = [newApplication]
@@ -236,14 +239,11 @@ function getAppFlow(submission) {
             }
         } else {
             appFlow.push('permit-type')
-            if(config.enableOtherPermitTypes && submission.permitTypeOption === pto.OTHER){
-                appFlow.push('other-permit-type')
-            }
-            if (submission.otherPermitTypeOption === pto.OTHER) { appFlow.push('cannot-use-service') }
+            if (submission.permitType === 'other') { appFlow.push('cannot-use-service') }
 
-            if (submission.permitType && submission.otherPermitTypeOption !== pto.OTHER) {
-                appFlow.push('guidance-completion')
+            if (submission.permitType && submission.permitType !== 'other') {
                 appFlow.push('applying-on-behalf')
+
 
                 if (typeof submission.isAgent === 'boolean') {
 
@@ -309,7 +309,7 @@ function getAppFlow(submission) {
 
                         const species = application.species
                         if (species.sourceCode) {
-                            if (submission.permitType === pt.ARTICLE_10) {
+                            if (submission.permitType === "article10") {
                                 appFlow.push(`specimen-origin/${applicationIndex}`)
                                 if (species.specimenOrigin) {
                                     appFlow.push(`use-certificate-for/${applicationIndex}`)
@@ -383,8 +383,7 @@ function getAppFlow(submission) {
                         }
 
                         if (species.specimenDescriptionGeneric || species.sex) {
-
-                            if (submission.permitType === pt.ARTICLE_10) { 
+                            if (submission.permitType === 'article10') { //Article 10 flow
                                 appFlow.push(`acquired-date/${applicationIndex}`)
 
                                 if (species.acquiredDate) {
@@ -397,21 +396,16 @@ function getAppFlow(submission) {
                                 } else {
                                     return { appFlow, applicationStatuses }
                                 }
-                            } else if (submission.permitType !== pt.REEXPORT || submission.otherPermitTypeOption !== pto.SEMI_COMPLETE) {
+
+                            } else { //Not article 10 flow
                                 appFlow.push(`importer-exporter/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT) 
-                                    || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
-                                    || species.isEverImportedExported === true 
-                                    || species.isEverImportedExported === false
-                                    ) {
+                            if ((application.importerExporterDetails && submission.permitType !== 'export') || species.isEverImportedExported === true || species.isEverImportedExported === false) {
                                 appFlow.push(`permit-details/${applicationIndex}`)
                             }
 
-                            if ((application.importerExporterDetails && submission.permitType === pt.EXPORT) 
-                                || (!species.isEverImportedExported && submission.permitType === pt.ARTICLE_10) 
-                                || application.permitDetails) {
+                            if ((application.importerExporterDetails && submission.permitType === 'export') || (!species.isEverImportedExported && submission.permitType === 'article10') || application.permitDetails) {
                                 appFlow.push(`additional-info/${applicationIndex}`)
                                 appFlow.push(`application-summary/check/${applicationIndex}`)
                                 appFlow.push(`application-summary/copy/${applicationIndex}`)
