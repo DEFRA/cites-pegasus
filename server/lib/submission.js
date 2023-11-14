@@ -5,7 +5,6 @@ const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-he
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
-const submissionFileName = 'submission.json'
 
 function getSubmission(request) {
     const session = getYarValue(request, 'submission')
@@ -30,9 +29,7 @@ function mergeSubmission(request, data, path) {
     const mergedSubmission = lodash.merge(existingSubmission, data)
 
     setYarValue(request, 'submission', mergedSubmission)
-    
-    mergedSubmission.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))
-    
+
     return mergedSubmission
 }
 
@@ -41,8 +38,6 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
-    
-    data.applications.forEach(application => console.log(application.applicationIndex + ' PermitSubType: ' + application.permitSubType))    
 }
 
 function clearSubmission(request) {
@@ -61,8 +56,14 @@ function validateSubmission(submission, path) {
 
 function getContainerName(request) {
     const cidmAuth = getYarValue(request, 'CIDMAuth')
-    const uniqueId = cidmAuth.user.organisationId ? cidmAuth.user.organisationId : cidmAuth.user.contactId
+    const uniqueId = cidmAuth.user.contactId
     return `cites-draft-${uniqueId}`
+}
+
+function getSubmissionFileName(request) {
+    const cidmAuth = getYarValue(request, 'CIDMAuth')
+    const fileName = cidmAuth.user.organisationId ? `submission-${cidmAuth.user.organisationId}.json` : `submission.json`
+    return fileName
 }
 
 async function checkDraftSubmissionExists(request) {
@@ -70,6 +71,7 @@ async function checkDraftSubmissionExists(request) {
         return false
     }
     const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
     return await checkFileExists(containerName, submissionFileName)
 }
 
@@ -82,6 +84,7 @@ async function saveDraftSubmission(request, savePointUrl) {
     submission.savePointUrl = savePointUrl
     submission.savePointDate = new Date()
     const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
     const containerExists = await checkContainerExists(containerName)
     if (!containerExists) {
         await createContainer(containerName)
@@ -92,6 +95,7 @@ async function saveDraftSubmission(request, savePointUrl) {
 async function loadDraftSubmission(request) {
     try {
         const containerName = getContainerName(request)
+        const submissionFileName = getSubmissionFileName(request)
         const draftSubmission = await getObjectFromContainer(containerName, submissionFileName)
         setSubmission(request, draftSubmission, null)
         return draftSubmission
@@ -107,6 +111,7 @@ async function deleteDraftSubmission(request) {
         return
     }
     const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
     await deleteFileFromContainer(containerName, submissionFileName)
 }
 
@@ -240,10 +245,10 @@ function getAppFlow(submission) {
                 appFlow.push('other-permit-type')
             }
             if (submission.otherPermitTypeOption === pto.OTHER) { appFlow.push('cannot-use-service') }
-
             if (submission.permitType && submission.otherPermitTypeOption !== pto.OTHER) {
                 appFlow.push('guidance-completion')
                 appFlow.push('applying-on-behalf')
+
 
                 if (typeof submission.isAgent === 'boolean') {
 
@@ -309,7 +314,7 @@ function getAppFlow(submission) {
 
                         const species = application.species
                         if (species.sourceCode) {
-                            if (submission.permitType === pt.ARTICLE_10) {
+                            if (submission.permitType ===  pt.ARTICLE_10) {
                                 appFlow.push(`specimen-origin/${applicationIndex}`)
                                 if (species.specimenOrigin) {
                                     appFlow.push(`use-certificate-for/${applicationIndex}`)
@@ -383,8 +388,7 @@ function getAppFlow(submission) {
                         }
 
                         if (species.specimenDescriptionGeneric || species.sex) {
-
-                            if (submission.permitType === pt.ARTICLE_10) { 
+                            if (submission.permitType ===  pt.ARTICLE_10) { //Article 10 flow
                                 appFlow.push(`acquired-date/${applicationIndex}`)
 
                                 if (species.acquiredDate) {
@@ -397,7 +401,9 @@ function getAppFlow(submission) {
                                 } else {
                                     return { appFlow, applicationStatuses }
                                 }
+
                             } else if (submission.permitType !== pt.REEXPORT || submission.otherPermitTypeOption !== pto.SEMI_COMPLETE) {
+
                                 appFlow.push(`importer-exporter/${applicationIndex}`)
                             }
 
@@ -469,3 +475,4 @@ module.exports = {
     moveApplicationToEndOfList,
     reIndexApplications
 }
+
