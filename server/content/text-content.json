@@ -637,6 +637,7 @@
     "defaultTitle": "What is the CITES trade term code",
     "pageHeader": "What is the CITES trade term code",
     "pageBody": "You can find more information on each trade term code ​in <a target='_blank' href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/968365/guid-fed0172.pdf'>Annex A of the guidance</a> (opens in a new tab)",
+    "pageBody2": "If you are unsure of your CITES trade term, select ‘Not Known’",
     "tradeTermCodeSelectDefault": "Select a trade term code...",
     "tradeTermCodeUnknown": "Not known",
     "errorMessages": {
@@ -1412,7 +1413,7 @@
     "notPaid": {
       "simple": {
         "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
-        "pageBody2": "Your application will not be processed until payment has been received",
+        "pageBodyWarning": "Your application will not be processed until payment has been received",
         "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications.",
         "pageBody4": ""
       },
