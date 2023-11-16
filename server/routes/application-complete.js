@@ -34,6 +34,7 @@ function createModel(errors, data) {
     panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
     pageBody1: pageBodyContent.pageBody1,
+    pageBodyWarning: pageBodyContent.pageBodyWarning,
     pageBody2: pageBodyContent.pageBody2,
     pageBody3: pageBodyContent.pageBody3,
     pageBody4: pageBodyContent.pageBody4

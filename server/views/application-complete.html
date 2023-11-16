@@ -3,6 +3,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% block beforeContent %}{% endblock %}
 
@@ -22,6 +23,12 @@
         <h2 class="govuk-heading-m">{{pageHeader}}</h2>
 
         <p>{{pageBody1 | safe}}</p>
+        {% if pageBodyWarning %}
+        {{ govukWarningText({
+          text: pageBodyWarning,
+          iconFallbackText: "Warning"
+        }) }}
+        {% endif %}
         <p>{{pageBody2 | safe}}</p>
         <p>{{pageBody3 | safe}}</p>
         <p>{{pageBody4 | safe}}</p>

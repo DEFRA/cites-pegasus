@@ -420,7 +420,7 @@
     "defaultTitle": "How do you want your permit to be delivered?",
     "pageHeader": "How do you want your permit to be delivered?",
     "hintText": "If you have selected Royal Mail Special Delivery the additional fee for this will be calculated when your application is processed",
-    "radioOptionStandardDelivery": "Standard delivery",
+    "radioOptionStandardDelivery": "Royal Mail First Class Delivery",
     "radioOptionSpecialDelivery": "Royal Mail Special Delivery",
     "errorMessages": {
       "error.deliveryType.any.required": "Select the delivery type"
@@ -622,7 +622,7 @@
     "radioOptionAnimalLiving": "A living animal",
     "radioOptionAnimalPart": "An animal part or derivative",
     "radioOptionAnimalWorked": "A worked item or finished product",
-    "radioOptionAnimalCoral": "Coral",
+    "radioOptionAnimalCoral": "Dead coral",
     "radioOptionPlantLiving": "A living plant",
     "radioOptionPlantProduct": "A plant product",
     "radioOptionPlantProductHint": "Any plant body or part that was removed from its natural habitat to make a product. For example, seeds, fruits, roots, stems, flowers or leaves, including extracts or powders.",
@@ -637,6 +637,7 @@
     "defaultTitle": "What is the CITES trade term code",
     "pageHeader": "What is the CITES trade term code",
     "pageBody": "You can find more information on each trade term code ​in <a target='_blank' href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/968365/guid-fed0172.pdf'>Annex A of the guidance</a> (opens in a new tab)",
+    "pageBody2": "If you are unsure of your CITES trade term, select ‘Not Known’",
     "tradeTermCodeSelectDefault": "Select a trade term code...",
     "tradeTermCodeUnknown": "Not known",
     "errorMessages": {
@@ -1072,7 +1073,7 @@
     "rowTextEmailAddress": "Email address",
     "rowTextAddress": "Address",
     "rowTextDeliveryType": "Type",
-    "rowTextStandardDelivery": "Standard delivery",
+    "rowTextStandardDelivery": "Royal Mail First Class Delivery",
     "rowTextSpecialDelivery": "Royal Mail Special Delivery",
     "headerDeliveryAddress": "Delivery",
     "headerSpecimenDetails": "Specimen details",
@@ -1148,7 +1149,7 @@
     "rowTextSpecimenTypeAnimalLiving": "A living animal",
     "rowTextSpecimenTypeAnimalPart": "An animal part or derivative",
     "rowTextSpecimenTypeAnimalWorked": "A worked item or finished product",
-    "rowTextSpecimenTypeAnimalCoral": "Coral",
+    "rowTextSpecimenTypeAnimalCoral": "Dead coral",
     "rowTextSpecimenTypePlantLiving": "A living plant",
     "rowTextSpecimenTypePlantProduct": "A plant product",
     "rowTextSpecimenTypePlantWorked": "A worked item or finished product",
@@ -1412,7 +1413,7 @@
     "notPaid": {
       "simple": {
         "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
-        "pageBody2": "Your application will not be processed until payment has been received",
+        "pageBodyWarning": "Your application will not be processed until payment has been received",
         "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications.",
         "pageBody4": ""
       },

@@ -492,6 +492,7 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().allow("", null),
+    pageBody2: Joi.string().allow("", null),
     tradeTermCodeSelectDefault: Joi.string().required(),
     tradeTermCodeUnknown: Joi.string().required(),
     errorMessages: Joi.object({
@@ -1065,12 +1066,14 @@ const schema = Joi.object().keys({
     notPaid: Joi.object({
       simple: Joi.object({
         pageBody1: Joi.string().required(),
+        pageBodyWarning: Joi.string().allow("", null),
         pageBody2: Joi.string().allow("", null),
         pageBody3: Joi.string().allow("", null),
         pageBody4: Joi.string().allow("", null)
       }).required(),
       complex: Joi.object({
         pageBody1: Joi.string().required(),
+        pageBodyWarning: Joi.string().allow("", null),
         pageBody2: Joi.string().allow("", null),
         pageBody3: Joi.string().allow("", null),
         pageBody4: Joi.string().allow("", null)

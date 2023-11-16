@@ -81,6 +81,7 @@ function createModel(errors, data) {
     captionText: data.speciesName,
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
+    pageBody2: pageContent.pageBody2,
     selectTradeTermCode    
   }
   return { ...commonContent, ...model }
