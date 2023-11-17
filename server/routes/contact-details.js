@@ -81,6 +81,7 @@ function createModel(errors, data) {
     const model = {
         backLink: backLink,
         pageHeader: pageHeader,
+        pageBody: pageContent.pageBody,
         inputLabelBusinessName: pageContent.inputLabelBusinessName,
         businessNameValue: data.businessName,
         formActionPage: `${currentPath}/${data.contactType}`,
