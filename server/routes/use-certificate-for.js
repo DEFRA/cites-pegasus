@@ -58,14 +58,6 @@ function createModel(errors, data) {
       },
       items: [
         {
-          value: cu.LEGALLY_ACQUIRED,
-          text: pageContent.radioOptionLegallyAcquired,
-          checked: isChecked(
-            data.useCertificateFor,
-            cu.LEGALLY_ACQUIRED
-          )
-        },
-        {
           value: cu.COMMERCIAL_ACTIVITIES,
           text: pageContent.radioOptionCommercialActivities,
           checked: isChecked(
@@ -95,6 +87,14 @@ function createModel(errors, data) {
           checked: isChecked(
             data.useCertificateFor,
             cu.MOVE_LIVE_SPECIMEN
+          )
+        },
+        {
+          value: cu.LEGALLY_ACQUIRED,
+          text: pageContent.radioOptionLegallyAcquired,
+          checked: isChecked(
+            data.useCertificateFor,
+            cu.LEGALLY_ACQUIRED
           )
         }
       ],

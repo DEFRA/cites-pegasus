@@ -36,6 +36,7 @@ const contactDetailsSchema = Joi.object({
   pageHeaderExport: Joi.string().required(),
   pageHeaderReexport: Joi.string().required(),
   pageHeaderArticle10: Joi.string().required(),
+  pageBody: Joi.string().allow("", null),
   inputLabelFullName: Joi.string().required(),
   inputLabelBusinessName: Joi.string().required(),
   inputLabelEmail: Joi.string().required(),
