@@ -20,17 +20,17 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.permitDetails
 
-  let heading = ''
+  let headingImportReexportA10 = ''
   switch (data.permitType) {
     case pt.IMPORT:
-      heading = pageContent.headingImport;
+      headingImportReexportA10 = pageContent.headingImport;
       break
     case pt.MIC:
     case pt.TEC:
     case pt.POC:
     case pt.REEXPORT:
     case pt.ARTICLE_10:
-      heading = pageContent.headingReexportA10;
+      headingImportReexportA10 = pageContent.headingReexportA10;
       break
     default:
       break
@@ -171,7 +171,9 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     pageHeader: pageContent.pageHeader,
-    headingExportOrReexport: heading,
+    hintImportReexportA10: pageContent.hintImportReexportA10,
+    hintCountryOfOrigin: pageContent.hintCountryOfOrigin,
+    headingImportReexportA10,
     headingCountryOfOrigin: pageContent.headingCountryOfOrigin,
     divider: pageContent.dividerText,
 

@@ -34,23 +34,11 @@
         {{pageHeader}}
       </h1>
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {% call govukFieldset({
-          legend: {
-            html: '<h2 class="govuk-fieldset__legend--m">' + headingExportOrReexport + '</h2>',
-            isPageHeading: false
-          }
-        }) %}
         
-          {{ govukSelect(selectExportOrReexportCountry) }}
-          {{ govukInput(inputExportOrReexportPermitNumber) }}
-          {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
-          <p>{{divider}}</p>
-          {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
-        {% endcall %}
 
         {% call govukFieldset({
           legend: {
-            html: '<h2 class="govuk-fieldset__legend--m">' + headingCountryOfOrigin + '</h2>',
+            html: '<h2 class="govuk-fieldset__legend--m">' + headingCountryOfOrigin + '</h2><div class="govuk-hint">' + hintCountryOfOrigin + '</div>',
             isPageHeading: false
           }
         }) %}
@@ -60,6 +48,20 @@
             {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
             <p>{{divider}}</p>
             {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
+        {% endcall %}
+
+{% call govukFieldset({
+          legend: {
+            html: '<h2 class="govuk-fieldset__legend--m">' + headingImportReexportA10 + '</h2><div class="govuk-hint">' + hintImportReexportA10 + '</div>',
+            isPageHeading: false
+          }
+        }) %}
+        
+          {{ govukSelect(selectExportOrReexportCountry) }}
+          {{ govukInput(inputExportOrReexportPermitNumber) }}
+          {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
+          <p>{{divider}}</p>
+          {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
         {% endcall %}
 
             {{ govukButton({

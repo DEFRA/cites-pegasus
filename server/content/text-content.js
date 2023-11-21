@@ -739,6 +739,7 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     headingImport: Joi.string().required(),
+    hintImportReexportA10: Joi.string().required(),
     headingReexportA10: Joi.string().required(),
     inputLabelCountry: Joi.string().required(),
     inputLabelPermitNumber: Joi.string().required(),
@@ -747,6 +748,7 @@ const schema = Joi.object().keys({
     dividerText: Joi.string().required(),
     checkboxLabelNotApplicable: Joi.string().required(),
     headingCountryOfOrigin: Joi.string().required(),
+    hintCountryOfOrigin: Joi.string().required(),
     errorMessages: Joi.object({
       "error.exportOrReexportCountry.string.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.empty": Joi.string().required(),
