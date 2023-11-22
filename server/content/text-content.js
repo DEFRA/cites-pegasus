@@ -229,6 +229,19 @@ const schema = Joi.object().keys({
     statusDescriptionRefused: Joi.string().required(),
     statusDescriptionCancelled: Joi.string().required(),
     statusDescriptionClosed: Joi.string().required(),
+    uniqueIdentfierMarkTypes: Joi.object({
+      MC: Joi.string().required(),
+      CR: Joi.string().required(),
+      SR: Joi.string().required(),
+      OT: Joi.string().required(),
+      CB: Joi.string().required(),
+      HU: Joi.string().required(),
+      LB: Joi.string().required(),
+      SI: Joi.string().required(),
+      SN: Joi.string().required(),
+      TG: Joi.string().required(),
+      unmarked: Joi.string().required(),
+    }),
     errorMessages: Joi.object()
   }).required(),
   permitType: Joi.object({
@@ -963,7 +976,8 @@ const schema = Joi.object().keys({
       tableHeadQuantity: Joi.string(),
       tableHeadUnitOfMeasurement: Joi.string(),
       rowTextUnitsOfMeasurementNoOfSpecimens: Joi.string().required(),
-      rowTextUnitsOfMeasurementNoOfPiecesOrParts: Joi.string().required()
+      rowTextUnitsOfMeasurementNoOfPiecesOrParts: Joi.string().required(),
+      labelInternalReference: Joi.string().required()
     }).required(),
     importApplications: yourSubmissionSchema,
     exportApplications: yourSubmissionSchema,
