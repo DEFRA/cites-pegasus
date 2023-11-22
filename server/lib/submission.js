@@ -1,7 +1,7 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
-const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
+const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('../lib/permit-type-helper')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -142,6 +142,11 @@ function createApplication(request) {
     const submission = getSubmission(request)
     const applications = submission.applications
     const newApplication = { applicationIndex: applications.length }
+    
+    if([pst.DRAFT, pst.SEMI_COMPLETE].includes(applications[0].permitSubType)){
+        newApplication.permitSubType = applications[0].permitSubType
+    }
+
     applications.push(newApplication)
     setYarValue(request, 'submission', submission)
     return newApplication.applicationIndex

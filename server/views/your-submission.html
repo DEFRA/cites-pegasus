@@ -42,6 +42,12 @@
 
                 <td class="govuk-table__cell">
                   <a href="{{application.speciesNameUrl}}">{{application.speciesName}}</a>
+                  {% if application.uniqueIdentificationMark %}
+                  <p class="margin-bottom-0">{{application.labelUniqueIdentificationMark}}: {{application.uniqueIdentificationMark}}</p>
+                  {% endif %}
+                  {% if application.internalReference %}
+                  <p class="margin-bottom-0">{{labelInternalReference}}: {{application.internalReference}}</p>
+                  {% endif %}
                 </td>
                 <td class="govuk-table__cell">{{application.quantity}}</td>
                 <td class="govuk-table__cell">{{application.unitsOfMeasurementText}}</td>
