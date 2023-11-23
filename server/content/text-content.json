@@ -48,6 +48,19 @@
     "statusDescriptionRefused": "Refused",
     "statusDescriptionCancelled": "Cancelled",
     "statusDescriptionClosed": "Closed",
+    "uniqueIdentfierMarkTypes": {
+      "MC": "Microchip number",
+      "CR": "Closed ring number",
+      "SR": "Split ring number",
+      "OT": "Other metal ring",
+      "CB": "Cable tie",
+      "HU": "Hunting trophy",
+      "LB": "Label",
+      "SI": "Swiss institute",
+      "SN": "Serial number",
+      "TG": "Tag",
+      "unmarked": "Unmarked"
+    },
     "errorMessages": {}
   },
   "permitType": {
@@ -1045,7 +1058,7 @@
   "additionalInfo": {
     "defaultTitle": "Additional information",
     "pageHeader": "Additional information",
-    "headingRemarks":  "Remarks",
+    "headingRemarks": "Remarks",
     "inputHintRemarks": "Include any other comments that may support your application (optional).",
     "headingInternalReference": "Internal reference",
     "inputHintInternalReference": "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes. (Optional)",
@@ -1278,7 +1291,8 @@
       "tableHeadQuantity": "Quantity",
       "tableHeadUnitOfMeasurement": "Unit of measurement",
       "rowTextUnitsOfMeasurementNoOfSpecimens": "Number of specimens",
-      "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts"      
+      "rowTextUnitsOfMeasurementNoOfPiecesOrParts": "Number of pieces or parts",
+      "labelInternalReference": "Internal reference"
     },
     "importApplications": {
       "defaultTitle": "Your import applications",

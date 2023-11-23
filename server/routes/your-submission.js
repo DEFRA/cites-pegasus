@@ -42,6 +42,8 @@ function createSubmitApplicationModel(errors, data) {
   const applicationsData = data.applications
   const applicationsTableData = applicationsData.map(application => {
     const speciesNameUrl = `${nextPathCheckApplication}/${application.applicationIndex}`
+    const internalReference = application.internalReference
+    const uniqueIdentificationMark = application.species.uniqueIdentificationMark
     let unitsOfMeasurementText = null
     if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
       unitsOfMeasurementText = `specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
@@ -65,8 +67,15 @@ function createSubmitApplicationModel(errors, data) {
     }
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
     const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
-    return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, formActionCopy, formActionRemove }
+
+    let labelUniqueIdentificationMark
+    if (commonContent.uniqueIdentfierMarkTypes.hasOwnProperty(application.species.uniqueIdentificationMarkType)) {
+      labelUniqueIdentificationMark = commonContent.uniqueIdentfierMarkTypes[application.species.uniqueIdentificationMarkType]
+    }
+
+    return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, labelUniqueIdentificationMark, uniqueIdentificationMark, internalReference, formActionCopy, formActionRemove }
   })
+
 
   const model = {
     pageTitle: pageContent.defaultTitle,
@@ -74,6 +83,7 @@ function createSubmitApplicationModel(errors, data) {
     tableHeadScientificName: pageContent.tableHeadScientificName,
     tableHeadQuantity: pageContent.tableHeadQuantity,
     tableHeadUnitOfMeasurement: pageContent.tableHeadUnitOfMeasurement,
+    labelInternalReference: pageContent.labelInternalReference,
     applicationsData: applicationsTableData,
     addAnotherSpeciesUrl: `${currentPath}/create-application`,
     copyAriaLabel: pageContent.copyAriaLabel,
@@ -222,7 +232,7 @@ module.exports = [
       const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
       if (inProgressAppStatus) {
         let inProgressApplicationIndex = inProgressAppStatus.applicationIndex
-        if (inProgressAppStatus.applicationIndex < submission.applications.length - 1) { 
+        if (inProgressAppStatus.applicationIndex < submission.applications.length - 1) {
           //The application being worked on should always be the last in the array so that the add-application screen knows which was your last application so that it can offer you the chance to copy it
           moveApplicationToEndOfList(submission.applications, inProgressAppStatus.applicationIndex)
           reIndexApplications(submission.applications)
