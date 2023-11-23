@@ -46,7 +46,7 @@ function createModel(errors, data) {
 
   const anotherSourceCodeI = lodash.cloneDeep([
     { text: pageContent.anotherSourceCodePrompt, value: null },
-    ...pageContent.anotherSourceCodes
+    ...pageContent.anotherSourceCodes.filter(x => x.showForI === true)
   ])
 
   anotherSourceCodeI.forEach((e) => {
@@ -55,7 +55,7 @@ function createModel(errors, data) {
 
   const anotherSourceCodeO = lodash.cloneDeep([
     { text: pageContent.anotherSourceCodePrompt, value: null },
-    ...pageContent.anotherSourceCodes
+    ...pageContent.anotherSourceCodes.filter(x => x.showForO === true)
   ])
  
  anotherSourceCodeO.forEach((e) => {
@@ -258,11 +258,19 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
-const anotherSourceCodesPlantValues = textContent.sourceCode.plant.anotherSourceCodes.map(
+const anotherSourceCodesPlantValuesForI = textContent.sourceCode.plant.anotherSourceCodes.filter(x => x.showForI === true).map(
   (e) => e.value
 )
 
-const anotherSourceCodesAnimalValues = textContent.sourceCode.animal.anotherSourceCodes.map(
+const anotherSourceCodesPlantValuesForO = textContent.sourceCode.plant.anotherSourceCodes.filter(x => x.showForO === true).map(
+  (e) => e.value
+)
+
+const anotherSourceCodesAnimalValuesForI = textContent.sourceCode.animal.anotherSourceCodes.filter(x => x.showForI === true).map(
+  (e) => e.value
+)
+
+const anotherSourceCodesAnimalValuesForO = textContent.sourceCode.animal.anotherSourceCodes.filter(x => x.showForO === true).map(
   (e) => e.value
 )
 
@@ -318,11 +326,11 @@ module.exports = [
           sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "A", "U", "Y"),
           anotherSourceCodeForI: Joi.when("sourceCode", {
             is: "I",
-            then: Joi.string().valid(...anotherSourceCodesAnimalValues, ...anotherSourceCodesPlantValues).required()
+            then: Joi.string().valid(...anotherSourceCodesAnimalValuesForI, ...anotherSourceCodesPlantValuesForI).required()
           }),
           anotherSourceCodeForO: Joi.when("sourceCode", {
             is: "O",
-            then: Joi.string().valid(...anotherSourceCodesAnimalValues, ...anotherSourceCodesPlantValues).required()
+            then: Joi.string().valid(...anotherSourceCodesAnimalValuesForO, ...anotherSourceCodesPlantValuesForO).required()
           }),
           enterAReason: Joi.when("sourceCode", {
             is: "U",
