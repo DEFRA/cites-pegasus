@@ -148,7 +148,9 @@ const sourceCodeSchema = Joi.object({
     .items(
       Joi.object({
         "text": Joi.string().required(),
-        "value": Joi.string().required()
+        "value": Joi.string().required(),
+        "showForO": Joi.boolean().required(),
+        "showForI": Joi.boolean().required()
       }).required()
     )
     .required(),
@@ -931,6 +933,7 @@ const schema = Joi.object().keys({
     rowTextSourceCodeO: Joi.string().required(),
     rowTextSourceCodeX: Joi.string().required(),
     rowTextSourceCodeY: Joi.string().required(),
+    rowTextSourceCodeU: Joi.string().required(),
     rowTextPurposeCodeB: Joi.string().required(),
     rowTextPurposeCodeE: Joi.string().required(),
     rowTextPurposeCodeG: Joi.string().required(),

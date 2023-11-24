@@ -131,6 +131,7 @@ function createApplicationSummaryModel(errors, data) {
     A: pageContent.rowTextSourceCodeA,
     X: pageContent.rowTextSourceCodeX,
     Y: pageContent.rowTextSourceCodeY,
+    U: pageContent.rowTextSourceCodeU
   };
 
   const otherSourceCode = data.species.anotherSourceCodeForI || data.species.anotherSourceCodeForO

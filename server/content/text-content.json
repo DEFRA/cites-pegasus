@@ -488,27 +488,45 @@
       "anotherSourceCodes": [
         {
           "text": "W - From the wild",
-          "value": "W"
+          "value": "W",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "R - Reared in a controlled environment (taken as eggs or juveniles from the wild)",
-          "value": "R"
-        },
-        {
-          "text": "D - Animals bred in captivity by a CITES registered breeder",
-          "value": "D"
+          "value": "R",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "C - Animals bred in captivity to second generation specimens or that meet the Commission Regulation criteria",
-          "value": "C"
+          "value": "C",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "F - Animals born in captivity to first generation specimens or that do not meet the Commission Regulation criteria",
-          "value": "F"
+          "value": "F",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "X - Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
-          "value": "X"
+          "value": "X",
+          "showForO": true,
+          "showForI": true
+        },
+        {
+          "text": "D - Animals bred in captivity by a CITES registered breeder",
+          "value": "D",
+          "showForO": true,
+          "showForI": true
+        },
+        {
+          "text": "U - Unknown",
+          "value": "U",
+          "showForO": true,
+          "showForI": false
         }
       ],
       "errorMessages": {
@@ -545,23 +563,39 @@
       "anotherSourceCodes": [
         {
           "text": "W - From the wild",
-          "value": "W"
+          "value": "W",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "D - Plants artificially propagated for commercial purposes",
-          "value": "D"
+          "value": "D",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "A - Plants artificially propagated for non-commercial purposes",
-          "value": "A"
+          "value": "A",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "X - Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
-          "value": "X"
+          "value": "X",
+          "showForO": true,
+          "showForI": true
         },
         {
           "text": "Y - Plants that meet the definition for assisted production",
-          "value": "Y"
+          "value": "Y",
+          "showForO": true,
+          "showForI": true
+        },
+        {
+          "text": "U - Unknown",
+          "value": "U",
+          "showForO": true,
+          "showForI": false
         }
       ],
       "errorMessages": {
@@ -1152,6 +1186,7 @@
     "rowTextSourceCodeO": "Pre-convention",
     "rowTextSourceCodeX": "Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
     "rowTextSourceCodeY": "Plants that meet the definition for assisted production",
+    "rowTextSourceCodeU": "Unknown",
     "rowTextPurposeCodeB": "Breeding in captivity or artificial propagation",
     "rowTextPurposeCodeE": "Educational",
     "rowTextPurposeCodeG": "Botanical gardens",
