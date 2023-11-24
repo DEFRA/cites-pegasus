@@ -34,7 +34,6 @@
         {{pageHeader}}
       </h1>
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        
 
         {% call govukFieldset({
           legend: {
@@ -43,32 +42,33 @@
           }
         }) %}
 
-            {{ govukSelect(selectCountryOfOrigin) }}
-            {{ govukInput(inputCountryOfOriginPermitNumber) }}
-            {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
-            <p>{{divider}}</p>
-            {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
+        {{ govukSelect(selectCountryOfOrigin) }}
+        {{ govukInput(inputCountryOfOriginPermitNumber) }}
+        {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
+        <p>{{divider}}</p>
+        {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
         {% endcall %}
 
-{% call govukFieldset({
+        {% call govukFieldset({
           legend: {
+            id: "exportOrReExport"
             html: '<h2 class="govuk-fieldset__legend--m">' + headingImportReexportA10 + '</h2><div class="govuk-hint">' + hintImportReexportA10 + '</div>',
             isPageHeading: false
           }
         }) %}
-        
-          {{ govukSelect(selectExportOrReexportCountry) }}
-          {{ govukInput(inputExportOrReexportPermitNumber) }}
-          {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
-          <p>{{divider}}</p>
-          {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
+        {{govukButton(buttonCopyCountryOfOrigin) }}
+        {{ govukSelect(selectExportOrReexportCountry) }}
+        {{ govukInput(inputExportOrReexportPermitNumber) }}
+        {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
+        <p>{{divider}}</p>
+        {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
         {% endcall %}
 
-            {{ govukButton({
+        {{ govukButton({
               text: saveAndContinueButton,
               type: "submit"
             }) }}
-          </form>
-        </div>
-      </div>
-    {% endblock %}
+      </form>
+    </div>
+  </div>
+{% endblock %}
