@@ -587,7 +587,7 @@ module.exports = [
       validate: {
         params: Joi.object({
           applicationIndex: Joi.number().required()
-        }),        
+        }),
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
@@ -625,7 +625,7 @@ module.exports = [
           isCountryOfOriginNotApplicable: isCountryOfOriginNotApplicable,
           countries: request.server.app.countries
         }
-        return h.view(pageId, createModel(null, pageData)).takeover()
+        return h.view(pageId, createModel(null, pageData))
       }
     }
   }

@@ -48,22 +48,21 @@
         <p>{{divider}}</p>
         {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
         {% endcall %}
-
-        {% call govukFieldset({
+        <div id="headerExportOrReExportPermitDetails">
+          {% call govukFieldset({
           legend: {
-            id: "exportOrReExport"
             html: '<h2 class="govuk-fieldset__legend--m">' + headingImportReexportA10 + '</h2><div class="govuk-hint">' + hintImportReexportA10 + '</div>',
             isPageHeading: false
           }
         }) %}
-        {{govukButton(buttonCopyCountryOfOrigin) }}
-        {{ govukSelect(selectExportOrReexportCountry) }}
-        {{ govukInput(inputExportOrReexportPermitNumber) }}
-        {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
-        <p>{{divider}}</p>
-        {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
-        {% endcall %}
-
+          {{govukButton(buttonCopyCountryOfOrigin) }}
+          {{ govukSelect(selectExportOrReexportCountry) }}
+          {{ govukInput(inputExportOrReexportPermitNumber) }}
+          {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
+          <p>{{divider}}</p>
+          {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
+          {% endcall %}
+        </div>
         {{ govukButton({
               text: saveAndContinueButton,
               type: "submit"
@@ -71,4 +70,8 @@
       </form>
     </div>
   </div>
+{% endblock %}
+
+{% block localJS %}
+  <script src="{{assetPath}}/js/permit-details.client.js"></script>
 {% endblock %}
