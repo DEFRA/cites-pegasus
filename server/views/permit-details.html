@@ -34,39 +34,44 @@
         {{pageHeader}}
       </h1>
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+
         {% call govukFieldset({
           legend: {
-            html: '<h2 class="govuk-fieldset__legend--m">' + headingExportOrReexport + '</h2>',
+            html: '<h2 class="govuk-fieldset__legend--m">' + headingCountryOfOrigin + '</h2><div class="govuk-hint">' + hintCountryOfOrigin + '</div>',
             isPageHeading: false
           }
         }) %}
-        
+
+        {{ govukSelect(selectCountryOfOrigin) }}
+        {{ govukInput(inputCountryOfOriginPermitNumber) }}
+        {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
+        <p>{{divider}}</p>
+        {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
+        {% endcall %}
+        <div id="headerExportOrReExportPermitDetails">
+          {% call govukFieldset({
+          legend: {
+            html: '<h2 class="govuk-fieldset__legend--m">' + headingImportReexportA10 + '</h2><div class="govuk-hint">' + hintImportReexportA10 + '</div>',
+            isPageHeading: false
+          }
+        }) %}
+          {{govukButton(buttonCopyCountryOfOrigin) }}
           {{ govukSelect(selectExportOrReexportCountry) }}
           {{ govukInput(inputExportOrReexportPermitNumber) }}
           {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
           <p>{{divider}}</p>
           {{ govukCheckboxes(checkboxExportOrReexportNotApplicable) }}
-        {% endcall %}
-
-        {% call govukFieldset({
-          legend: {
-            html: '<h2 class="govuk-fieldset__legend--m">' + headingCountryOfOrigin + '</h2>',
-            isPageHeading: false
-          }
-        }) %}
-
-            {{ govukSelect(selectCountryOfOrigin) }}
-            {{ govukInput(inputCountryOfOriginPermitNumber) }}
-            {{ govukDateInput(inputCountryOfOriginPermitIssueDate) }}
-            <p>{{divider}}</p>
-            {{ govukCheckboxes(checkboxCountryOfOriginNotApplicable) }}
-        {% endcall %}
-
-            {{ govukButton({
+          {% endcall %}
+        </div>
+        {{ govukButton({
               text: saveAndContinueButton,
               type: "submit"
             }) }}
-          </form>
-        </div>
-      </div>
-    {% endblock %}
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block localJS %}
+  <script src="{{assetPath}}/js/permit-details.client.js"></script>
+{% endblock %}

@@ -984,6 +984,7 @@
     "pageHeader": "Permit details",
     "headingImport": "Export or re-export permit details",
     "headingReexportA10": "Export into Great Britain permit details",
+    "hintImportReexportA10": "This will be on the most recent permit from the country you are importing/exporting or re-exporting from, if different to the country of origin.",
     "inputLabelCountry": "Country",
     "inputLabelPermitNumber": "Permit number",
     "inputLabelPermitIssueDate": "Permit issue date",
@@ -991,6 +992,8 @@
     "dividerText": "Or",
     "checkboxLabelNotApplicable": "Not applicable",
     "headingCountryOfOrigin": "Country of origin",
+    "hintCountryOfOrigin": "This is the country the specimen came from, and will be on the original import/export or re-export permit.",
+    "copyButton": "Copy from country of origin",
     "errorMessages": {
       "error.exportOrReexportCountry.string.empty": "Enter the country of export or re-export",
       "error.exportOrReexportCountry.any.empty": "Enter the country of export or re-export",
