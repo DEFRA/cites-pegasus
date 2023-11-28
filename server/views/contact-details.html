@@ -41,13 +41,14 @@
         {% endif %}
         {{ govukInput(inputFullName) }}
 
-        <div class="govuk-form-group">
-          <label class="govuk-label" for="businessName">
-            {{inputLabelBusinessName}}
-          </label>
-          <input disabled="disabled" class="disabled govuk-input govuk-!-width-two-thirds" id="businessName" name="businessName" value="{{businessNameValue}}" type="text" aria-describedby="businessName-hint">
-        </div>
-
+        {% if isAgent != true %}
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="businessName">
+              {{inputLabelBusinessName}}
+            </label>
+            <input disabled="disabled" class="disabled govuk-input govuk-!-width-two-thirds" id="businessName" name="businessName" value="{{businessNameValue}}" type="text" aria-describedby="businessName-hint">
+          </div>
+        {% endif %}
         {{ govukInput(inputEmail) }}
 
         {{ govukButton({

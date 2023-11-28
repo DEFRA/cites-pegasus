@@ -170,7 +170,7 @@
       "pageHeaderReexport": "Enter the re-exporter’s contact details",
       "pageHeaderArticle10": "Enter the applicant’s contact details",
       "pageBody": "These details must match the name of the person or organisation you're applying for, exactly as it appears on the import, export, or re-export permit.",
-      "inputLabelFullName": "Full name",
+      "inputLabelFullName": "Full name and/or organisation name",
       "inputLabelBusinessName": "Business name",
       "inputLabelEmail": "Email address",
       "inputHintEmailImport": "This is the importer's email address and will be stored with this submission.",
