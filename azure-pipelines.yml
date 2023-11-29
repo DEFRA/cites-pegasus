@@ -53,7 +53,7 @@ steps:
 
 - task: GitHubRelease@1
   inputs:
-    gitHubConnection: 'CITES-Pegasus-Public-Repo'
+    gitHubConnection: 'CITES-Pegasus-Public-Repo1'
     repositoryName: 'DEFRA/cites-pegasus'
     action: 'create'
     target: '$(Build.SourceVersion)'
