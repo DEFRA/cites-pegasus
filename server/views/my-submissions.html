@@ -10,8 +10,7 @@
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% block beforeContent %}
-  
-  
+
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -65,7 +64,8 @@
       <div class="govuk-body button-text-inline">{{pageBodyNewApplicationFromPrevious}}</div>
 
     </div>
-
+  </form>
+  <form method="POST" autocomplete="off" novalidate="novalidate">
     <div class="govuk-grid-row" style="display: flex; align-content: center">
       <div class="govuk-grid-column-one-half search-container">
         <div class="govuk-grid-column-full search-input">
@@ -127,7 +127,7 @@
           {{ govukCheckboxes(checkboxSubmittedBy) }}
           {% endcall %}
         {% endif %}
-        
+
         {{ govukButton({
                     text: buttonApplyFilters,
                     classes: "govuk-button--secondary",
