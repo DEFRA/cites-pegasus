@@ -123,7 +123,7 @@ function createModel(errors, data) {
     inputLabelDescription: pageContent.inputLabelDescription,
     inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
     inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
-    showParentDetails: data.permitType === pt.ARTICLE_10,
+    showParentDetails: [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType),
     inputSex: {
       idPrefix: "sex",
       name: "sex",
@@ -308,8 +308,8 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const modifiedMaleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        const modifiedFemaleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        const modifiedMaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
+        const modifiedFemaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         const schema = Joi.object({ 
           description: Joi.string().max(500).optional().allow(null, ""),
           maleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, ""),
@@ -324,8 +324,8 @@ module.exports = [
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
-        species.maleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        species.femaleParentDetails = submission.permitType === pt.ARTICLE_10 ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        species.maleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
+        species.femaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         species.sex = request.payload.sex
         species.dateOfBirth = { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]) }
         // species.undeterminedSexReason = request.payload.sex === 'U' ? request.payload.undeterminedSexReason : null
