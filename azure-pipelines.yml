@@ -59,6 +59,6 @@ steps:
     target: '$(Build.SourceVersion)'
     tagSource: 'userSpecifiedTag'
     tagPattern: 'release*'
-    #tag: '$(Build.BuildNumber)'
+    tag: 'release'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
