@@ -106,9 +106,6 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
         case "a10CertificateNumber":
             startUrls.push(`${urlPrefix}/already-have-a10/${applicationIndex}`)
             break
-        case "unmarkedSpecimens":
-            startUrls.push(`${urlPrefix}/unmarked-specimens/${applicationIndex}`)
-            break
         case "createdDate":
             startUrls.push(`${urlPrefix}/created-date/${applicationIndex}`)
             break

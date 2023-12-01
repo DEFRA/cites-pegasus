@@ -38,7 +38,7 @@ function createModel(errors, data) {
     })
   }
 
-  const previousPath = data.numberOfUnmarkedSpecimens ? previousPathUnmarkedSpecimens : previousPathUniqueId
+  const previousPath = previousPathUniqueId
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -78,7 +78,6 @@ function failAction(request, h, err) {
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: applicationIndex,
     speciesName: species.speciesName,
-    numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
     ...request.payload
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -112,7 +111,6 @@ module.exports = [
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
-        numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
         specimenDescriptionGeneric: species.specimenDescriptionGeneric
       }
 

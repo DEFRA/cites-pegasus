@@ -58,7 +58,7 @@ function createSubmitApplicationModel(errors, data) {
     }
 
     let quantity = null
-    if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
+    if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked" && application.species.numberOfUnmarkedSpecimens) {
       quantity = application.species.numberOfUnmarkedSpecimens
     } else if (application.species.specimenType === "animalLiving") {
       quantity = 1
