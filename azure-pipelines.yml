@@ -32,11 +32,11 @@ steps:
   displayName: 'npm install and build'
 
 - task: SonarCloudAnalyze@1
-  #inputs:
-   # jdkversion: 'JAVA_HOME_17_X64'
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
 - task: SonarCloudPublish@1
- # inputs:
-  #  pollingTimeoutSec: '300'
+  inputs:
+    pollingTimeoutSec: '300'
 
 - task: CopyFiles@2
   inputs:
@@ -51,19 +51,20 @@ steps:
     artifactName: npm
   displayName: 'Publish npm artifact'
 
-- task: GitHubRelease@1
-  inputs:
-    gitHubConnection: 'CITES-Pegasus-Public-Repo1'
-    repositoryName: 'DEFRA/cites-pegasus'
+- #task: GitHubRelease@1
+  #inputs:
+    #gitHubConnection: 'CITES-Pegasus-Public-Repo1'
+    #repositoryName: 'DEFRA/cites-pegasus'
     #action: 'create'
-    action: 'edit'
-    target: '$(build.sourceVersion)'
-    tagSource: 'gitTag'
-    tag: 'release2'
-    assetUploadMode: 'replace'
+    #action: 'edit'
+    #target: '$(build.sourceVersion)'
+    #tagSource: 'gitTag'
+    #tag: 'release2'
+    #assetUploadMode: 'replace'
     #target: '$(Build.SourceVersion)'
     #tagSource: 'userSpecifiedTag'
     #tagPattern: 'release*'
     #tag: 'release'
     #changeLogCompareToRelease: 'lastFullRelease'
     #changeLogType: 'commitBased'
+    
