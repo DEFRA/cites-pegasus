@@ -870,6 +870,7 @@ const schema = Joi.object().keys({
     headerReexporterContactDetails: Joi.string().required(),
     headerArticle10ContactDetails: Joi.string().required(),
     rowTextFullName: Joi.string().required(),
+    rowTextFullNameAgent: Joi.string().required(),
     rowTextBusinessName: Joi.string().required(),
     rowTextEmailAddress: Joi.string().required(),
     rowTextAddress: Joi.string().required(),
