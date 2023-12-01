@@ -1122,6 +1122,7 @@
     "headerReexporterContactDetails": "Reexporter’s contact details",
     "headerArticle10ContactDetails": "Applicant's contact details",
     "rowTextFullName": "Full name",
+    "rowTextFullNameAgent": "Full name and/or organisation name",
     "rowTextBusinessName": "Business name",
     "rowTextEmailAddress": "Email address",
     "rowTextAddress": "Address",

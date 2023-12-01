@@ -380,7 +380,7 @@ function createApplicationSummaryModel(errors, data) {
     summaryListRemarks.rows.push(createSummaryListRow("govuk-summary-list__row", pageContent.rowTextInternalReference, data.internalReference, hrefPrefix + "/additionalInfo", "internal reference", summaryType))
   }
 
-  const summaryListApplicantContactDetails = getContactDetails(pageContent, applicantContactDetailsData, hrefPrefix, summaryType)
+  const summaryListApplicantContactDetails = getContactDetails(pageContent, applicantContactDetailsData, hrefPrefix, summaryType, data.isAgent)
   const summaryListExportOrReexportPermitDetails = data.permitDetails && getPermitDetails(pageContent, exportOrReexportPermitDetailData, hrefPrefix, summaryType)
   const summaryListCountryOfOriginPermitDetails = data.permitDetails && getPermitDetails(pageContent, countryOfOriginPermitDetailData, hrefPrefix, summaryType)
 
@@ -494,10 +494,14 @@ function getDateValue(date) {
   }
 }
 
-function getContactDetails(pageContent, contactDetailsData, hrefPrefix, summaryType) {
+function getContactDetails(pageContent, contactDetailsData, hrefPrefix, summaryType, isAgent) {
   const summaryListContactDetailsRows = []
-  summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", pageContent.rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details", summaryType))
-  summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextBusinessName, contactDetailsData.businessName, "", "", summaryType))
+  
+  const rowTextFullName = isAgent ? pageContent.rowTextFullNameAgent : pageContent.rowTextFullName
+  summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border border-top", rowTextFullName, contactDetailsData.fullName, hrefPrefix + contactDetailsData.hrefPathSuffixContactDetails, "contact details", summaryType))
+  if (!isAgent) {
+    summaryListContactDetailsRows.push(createSummaryListRow("govuk-summary-list__row--no-border", pageContent.rowTextBusinessName, contactDetailsData.businessName, "", "", summaryType))
+  }
   summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextEmailAddress, contactDetailsData.email, "", "", summaryType))
   summaryListContactDetailsRows.push(createSummaryListRow("", pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.countryDesc} ${contactDetailsData.address.postcode}`, hrefPrefix + contactDetailsData.hrefPathSuffixAddress, "address", summaryType))
 
