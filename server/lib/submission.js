@@ -133,6 +133,14 @@ function cloneSubmission(request, applicationIndex) {
         submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
+    if (newApplication.species.numberOfUnmarkedSpecimens) {
+        newApplication.species.numberOfUnmarkedSpecimens = null
+    }
+
+    if (newApplication.species.uniqueIdentificationMarkType === 'unmarked') {
+        newApplication.species.uniqueIdentificationMark = null
+    }
+
     submission.applications = [newApplication]
     setYarValue(request, 'submission', submission)
     setYarValue(request, 'cloneSource', cloneSource)
@@ -343,12 +351,8 @@ function getAppFlow(submission) {
 
                                 if (species.uniqueIdentificationMarkType) {
                                     if (species.uniqueIdentificationMarkType === 'unmarked') {
-                                        appFlow.push(`unmarked-specimens/${applicationIndex}`)
-                                        if (species.numberOfUnmarkedSpecimens) {
-                                            appFlow.push(`describe-specimen/${applicationIndex}`)
-                                        } else {
-                                            return { appFlow, applicationStatuses }
-                                        }
+                                        appFlow.push(`describe-specimen/${applicationIndex}`)
+                                        
                                     } else {
                                         appFlow.push(`describe-living-animal/${applicationIndex}`)
                                     }

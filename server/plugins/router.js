@@ -26,7 +26,6 @@ const routes = [].concat(
   require('../routes/importer-exporter'),
   require('../routes/already-have-a10'),
   require('../routes/ever-imported-exported'),
-  require('../routes/unmarked-specimens'),
   require('../routes/quantity'),
   require('../routes/permit-details'),
   require('../routes/additional-info'),

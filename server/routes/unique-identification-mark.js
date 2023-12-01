@@ -11,7 +11,6 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpecimenType = `${urlPrefix}/specimen-type`
 const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
 const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
-const nextPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -223,7 +222,7 @@ module.exports = [
         const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
-        species.uniqueIdentificationMark = uniqueIdentificationMark || ""
+        species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
 
         
         //Didn't change from unmarked to marked or vice versa
@@ -256,9 +255,7 @@ module.exports = [
 
         let redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
         if (species.specimenType === 'animalLiving') {
-          if (request.payload.uniqueIdentificationMarkType === 'unmarked') {
-            redirectTo = `${nextPathUnmarkedSpecimens}/${applicationIndex}`
-          } else {
+          if (request.payload.uniqueIdentificationMarkType !== 'unmarked') {
             redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
           }
         }
