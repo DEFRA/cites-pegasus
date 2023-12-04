@@ -1,6 +1,5 @@
 const hapi = require('@hapi/hapi')
 const config = require('../config/config')
-const { configureAppInsights } = require('../config/app-insights-config')
 const { getCacheConfig } = require('../config/cache')
 const Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
@@ -49,13 +48,10 @@ async function createServer() {
     }
   })
 
-//   server.ext({ type: "onPreResponse", method: (request, reply) => {
-//     appInsights.client.trackRequest(request, request.reponse);
-//     appInsights.client.sendPendingData();
-//     reply.continue();
-// }})
+  
   console.log('###### CITES PORTAL STARTUP: Configuring application insights ######')
-  configureAppInsights()
+  
+  await server.register(require('../server/plugins/app-insights-plugin'))
   
   console.log('###### CITES PORTAL STARTUP: Getting dynamics access token ######')
   await getAccessToken(server)
@@ -82,6 +78,9 @@ async function createServer() {
   await server.register(require('./plugins/logging'))
   await server.register(require('./plugins/yar'))
   await server.register(require('blipp'))
+
+
+
 
   console.log(`###### CITES PORTAL STARTUP: Ready to start server on port ${config.port} ######`)
   return server
