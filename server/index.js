@@ -1,7 +1,5 @@
 const hapi = require('@hapi/hapi')
 const config = require('../config/config')
-const { configureAppInsights } = require('../config/app-insights-config')
-const { appInsights } = require('applicationinsights')
 const { getCacheConfig } = require('../config/cache')
 const Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
@@ -52,8 +50,9 @@ async function createServer() {
 
   
   console.log('###### CITES PORTAL STARTUP: Configuring application insights ######')
-  configureAppInsights(server)
-
+  
+  await server.register(require('../server/plugins/app-insights-plugin'))
+  
   console.log('###### CITES PORTAL STARTUP: Getting dynamics access token ######')
   await getAccessToken(server)
 

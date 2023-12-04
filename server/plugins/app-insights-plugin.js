@@ -1,7 +1,7 @@
 const appInsights = require('applicationinsights')
-const config = require('./config')
+const config = require('../../config/config')
 
-function configureAppInsights(server) {
+const register = (server, options) => {
   if (config.appInsightsInstrumentationKey && config.appInsightsInstrumentationCloudRole) {
     appInsights.setup(config.appInsightsInstrumentationKey)
       .setAutoDependencyCorrelation(true)
@@ -31,7 +31,7 @@ function configureAppInsights(server) {
         properties: {
                 // Add custom properties
                 method: request.method,
-                headers: request.headers,
+                //headers: request.headers,
                 query: request.query,
                 payload: request.payload,
                 // Add more details as needed
@@ -75,4 +75,7 @@ function configureAppInsights(server) {
   }
 }
 
-module.exports = { configureAppInsights }
+module.exports = {
+  name: 'app-insights-plugin',
+  register,
+}
