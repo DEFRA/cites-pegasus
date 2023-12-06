@@ -287,16 +287,7 @@ function createModel(errors, data) {
           checked: data.isCountryOfOriginNotApplicable
         }
       ]
-    },
-    buttonCopyCountryOfOrigin: {
-      text: pageContent.copyButton,
-      classes: "govuk-button--secondary",
-      type: "submit",
-      attributes: {
-        "aria-label": pageContent.copyButton,
-        formAction: `${currentPath}/copyCountryOfOrigin/${data.applicationIndex}`
-      }
-    }
+    }    
   }
   return { ...commonContent, ...model }
 }
@@ -577,55 +568,6 @@ module.exports = [
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-      }
-    }
-  },
-  {
-    method: "POST",
-    path: `${currentPath}/copyCountryOfOrigin/{applicationIndex}`,
-    options: {
-      validate: {
-        params: Joi.object({
-          applicationIndex: Joi.number().required()
-        }),
-      },
-      handler: async (request, h) => {
-        const { applicationIndex } = request.params
-        const submission = getSubmission(request)
-
-        const {
-          countryOfOrigin,
-          countryOfOriginPermitNumber,
-          "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
-          "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
-          "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
-          isExportOrReexportNotApplicable,
-          isCountryOfOriginNotApplicable
-        } = request.payload
-
-
-        const pageData = {
-          backLinkOverride: checkChangeRouteExit(request, true),
-          applicationIndex,
-          permitType: submission.permitType,
-          otherPermitTypeOption: submission.otherPermitTypeOption,
-          sex: submission.applications[applicationIndex]?.species.sex,
-          isEverImportedExported: submission.applications[applicationIndex]?.species.isEverImportedExported,
-          exportOrReexportCountry: countryOfOrigin,
-          exportOrReexportPermitNumber: countryOfOriginPermitNumber,
-          exportOrReexportPermitIssueDateDay: countryOfOriginDay,
-          exportOrReexportPermitIssueDateMonth: countryOfOriginMonth,
-          exportOrReexportPermitIssueDateYear: countryOfOriginYear,
-          isExportOrReexportNotApplicable: isExportOrReexportNotApplicable,
-          countryOfOrigin,
-          countryOfOriginPermitNumber,
-          countryOfOriginPermitIssueDateDay: countryOfOriginDay,
-          countryOfOriginPermitIssueDateMonth: countryOfOriginMonth,
-          countryOfOriginPermitIssueDateYear: countryOfOriginYear,
-          isCountryOfOriginNotApplicable: isCountryOfOriginNotApplicable,
-          countries: request.server.app.countries
-        }
-        return h.view(pageId, createModel(null, pageData))
       }
     }
   }

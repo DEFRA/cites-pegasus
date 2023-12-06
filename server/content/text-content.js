@@ -764,7 +764,6 @@ const schema = Joi.object().keys({
     checkboxLabelNotApplicable: Joi.string().required(),
     headingCountryOfOrigin: Joi.string().required(),
     hintCountryOfOrigin: Joi.string().required(),
-    copyButton: Joi.string().required(),
     errorMessages: Joi.object({
       "error.exportOrReexportCountry.string.empty": Joi.string().required(),
       "error.exportOrReexportCountry.any.empty": Joi.string().required(),

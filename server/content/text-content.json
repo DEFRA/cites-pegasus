@@ -993,7 +993,6 @@
     "checkboxLabelNotApplicable": "Not applicable",
     "headingCountryOfOrigin": "Country of origin",
     "hintCountryOfOrigin": "This is the country the specimen came from, and will be on the original import/export or re-export permit.",
-    "copyButton": "Copy from country of origin",
     "errorMessages": {
       "error.exportOrReexportCountry.string.empty": "Enter the country of export or re-export",
       "error.exportOrReexportCountry.any.empty": "Enter the country of export or re-export",
