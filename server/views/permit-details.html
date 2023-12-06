@@ -55,7 +55,6 @@
             isPageHeading: false
           }
         }) %}
-          {{govukButton(buttonCopyCountryOfOrigin) }}
           {{ govukSelect(selectExportOrReexportCountry) }}
           {{ govukInput(inputExportOrReexportPermitNumber) }}
           {{ govukDateInput(inputExportOrReexportPermitIssueDate) }}
@@ -70,8 +69,4 @@
       </form>
     </div>
   </div>
-{% endblock %}
-
-{% block localJS %}
-  <script src="{{assetPath}}/js/permit-details.client.js"></script>
 {% endblock %}
