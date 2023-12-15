@@ -51,5 +51,7 @@ steps:
     artifactName: npm
   displayName: 'Publish npm artifact'
 
-
+- bash: |
+    git branch
+    
     
