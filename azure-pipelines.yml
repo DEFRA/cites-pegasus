@@ -52,5 +52,5 @@ steps:
   displayName: 'Publish npm artifact'
 
 - bash: |
-    git push https://$(GITHUB_PAT)@github.com/$REPO_URL main
+    git push https://$(GITHUB_PAT)@github.com/$REPO_NAME main
     
