@@ -6,3 +6,8 @@ server/public/build
 server/certificates
 lcov.info
 .env
+.env sand
+.env snd
+.env dev
+.env test
+.env tst
