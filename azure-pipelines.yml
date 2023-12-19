@@ -10,7 +10,6 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- bash: git push https://$(GITHUB_PAT)@github.com/$REPO_NAME main
 - checkout: self
   fetchDepth: 0
 - task: SonarCloudPrepare@1
@@ -52,6 +51,4 @@ steps:
     artifactName: npm
   displayName: 'Publish npm artifact'
 
-
-    
-    
+- bash: git push https://$(GITHUB_PAT)@github.com/$REPO_NAME main
