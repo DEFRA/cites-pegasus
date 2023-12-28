@@ -21,7 +21,7 @@
 
   {% if errorList %}
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-column">
         {{govukErrorSummary ({
          "titleText": errorSummaryTitle,
          "errorList": errorList
@@ -63,7 +63,7 @@
         <h2 class="govuk-heading-m">{{headerAdditionalInformation}}</h2>
         {{ govukSummaryList (summaryListRemarks) }}
 
-        {% if showButton %}
+        {% if showConfirmButton %}
           {{ govukButton({
               text: buttonText,
               type: "submit"

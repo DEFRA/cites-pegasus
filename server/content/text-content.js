@@ -859,6 +859,7 @@ const schema = Joi.object().keys({
     pageHeaderView: Joi.string().required(),
     textBreadcrumbs: Joi.string().required(),
     changeLinkText: Joi.string().required(),
+    tagIncompleteText: Joi.string().required(),
     headerPermit: Joi.string().required(),
     rowTextPermitType: Joi.string().required(),
     headerYourContactDetails: Joi.string().required(),

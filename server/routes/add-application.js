@@ -102,17 +102,16 @@ function copyPrevious(request, h) {
 }
 
 function getLastCompletedApplication(submission) {
-  let applicationStatuses
-  try {
-    applicationStatuses = validateSubmission(submission, pageId)
+    try {
+    const { applicationStatuses } = validateSubmission(submission, pageId)
+    
+    const completeApplications = getCompletedApplications(submission, applicationStatuses)
+    
+    return completeApplications[completeApplications.length - 1]
   } catch (err) {
     console.error(err)
     throw err
   }
-
-  const completeApplications = getCompletedApplications(submission, applicationStatuses)
-
-  return completeApplications[completeApplications.length - 1]
 }
 
 module.exports = [

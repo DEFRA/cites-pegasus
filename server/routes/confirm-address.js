@@ -158,8 +158,8 @@ module.exports = [{
             } else if (contactType === 'applicant') {
                 nextPath = `${urlPrefix}/select-delivery-address`
             } else {
-                const appStatuses = validateSubmission(submission, null)
-                const applicationIndex = getApplicationIndex(submission, appStatuses)
+                const { applicationStatuses } = validateSubmission(submission, null)
+                const applicationIndex = getApplicationIndex(submission, applicationStatuses)
                 nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
             }
 

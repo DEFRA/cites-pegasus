@@ -215,3 +215,28 @@ div:has(a[data-disabled]:hover) {
 .margin-bottom-0 {
     margin-bottom: 0px;
 }
+
+.extra-wide.govuk-summary-list__actions {
+    width: 30%
+}
+
+.govuk-summary-list__actions-list-item {
+    // margin-left: 0;
+    // min-width: 40%;
+}
+
+.govuk-summary-list__actions-list-item:not(:first-child) {
+    border: 0;
+}
+
+.govuk-summary-list__actions-list-item:first-child {
+    // float: left;
+}
+
+.blue-background {
+    background-color: #1d70b8
+}
+
+.red-background {
+    background-color: #d4351c
+}
