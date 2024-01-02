@@ -267,7 +267,7 @@ function getSubmissionProgress(submission, includePageData) {
                 submissionProgress.push(getPageProgess(`application-summary/view-submitted/${applicationIndex}`, applicationIndex))
             })
         }
-        return { submissionProgress, applicationStatuses }
+        //return { submissionProgress, applicationStatuses }
     }
     //Non submitted application
     submissionProgress.push(getPageProgess('permit-type', null, includePageData, getPageDataSimple('permitTypeOption', submission.permitTypeOption)))
@@ -466,7 +466,7 @@ function getSubmissionProgress(submission, includePageData) {
 
         if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT)
             || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
-            || typeof species.isEverImportedExported === 'boolean'
+            || species.isEverImportedExported === true
         ) {
             submissionProgress.push(getPageProgess(`permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataPermitDetails(application.permitDetails)))
         }
@@ -487,16 +487,15 @@ function getSubmissionProgress(submission, includePageData) {
         applicationStatuses[applicationIndex].status = 'complete'
     })
 
-    if (completeApplications > 0) {
+    if (completeApplications > 0 && !submission.submissionRef) {
         submissionProgress.push(getPageProgess(`your-submission`))
         submissionProgress.push(getPageProgess(`your-submission/are-you-sure/permit-type`))
         submissionProgress.push(getPageProgess(`your-submission/are-you-sure/remove`))
         submissionProgress.push(getPageProgess(`your-submission/create-application`))
         submissionProgress.push(getPageProgess(`add-application`))
         submissionProgress.push(getPageProgess('upload-supporting-documents'))
-        submissionProgress.push(getPageProgess('declaration'))
+        submissionProgress.push(getPageProgess('declaration'))        
     }
-
 
     return { submissionProgress, applicationStatuses }
 }
