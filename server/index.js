@@ -4,7 +4,6 @@ const { getCacheConfig } = require('../config/cache')
 const Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
 const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service');
-//const appInsights = require('applicationinsights')
 //Run this command line to create certs
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
