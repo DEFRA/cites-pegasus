@@ -51,4 +51,6 @@ steps:
     artifactName: npm
   displayName: 'Publish npm artifact'
 
-- bash: git push https://$(GITHUB_PAT)@github.com/$REPO_NAME main
+- script: |
+    git branch main
+    git push https://$(GITHUB_PAT)@github.com/$REPO_NAME main
