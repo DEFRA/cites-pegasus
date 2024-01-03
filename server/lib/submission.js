@@ -137,21 +137,46 @@ function cloneSubmission(request, applicationIndex) {
 
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
+    submission.applications = [newApplication]
+
+    migrateSubmissionToNewSchema(submission)
+
+    setYarValue(request, 'submission', submission)
+    setYarValue(request, 'cloneSource', cloneSource)
+}
+
+function migrateSubmissionToNewSchema(submission) {
     if (config.enableDeliveryType && !submission.delivery.deliveryType) {
         submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
-    if (newApplication.species.numberOfUnmarkedSpecimens) {
-        newApplication.species.numberOfUnmarkedSpecimens = null
-    }
+    submission.applications.forEach(app => {
 
-    if (newApplication.species.uniqueIdentificationMarkType === 'unmarked') {
-        newApplication.species.uniqueIdentificationMark = null
-    }
+        if (app.species.numberOfUnmarkedSpecimens) {
+            app.species.numberOfUnmarkedSpecimens = null
+        }
 
-    submission.applications = [newApplication]
-    setYarValue(request, 'submission', submission)
-    setYarValue(request, 'cloneSource', cloneSource)
+        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
+            app.species.uniqueIdentificationMark = null
+        }
+    })
+
+    if (!submission.permitTypeOption) {
+        switch (submission.permitType) {
+            case "import":
+                submission.permitTypeOption = 'import'
+                break
+            case "export":
+                submission.permitTypeOption = 'export'
+                break
+            case "reexport":
+                submission.permitTypeOption = 'reexport'
+                break
+            case "article10":
+                submission.permitTypeOption = 'article10'
+                break
+        }
+    }
 }
 
 function createApplication(request) {
@@ -278,6 +303,10 @@ function getSubmissionProgress(submission, includePageData) {
 
     if (submission.otherPermitTypeOption === pto.OTHER) {
         submissionProgress.push(getPageProgess('cannot-use-service'))
+        return { submissionProgress, applicationStatuses }
+    }
+
+    if (!submission.permitType) {
         return { submissionProgress, applicationStatuses }
     }
 
@@ -494,7 +523,7 @@ function getSubmissionProgress(submission, includePageData) {
         submissionProgress.push(getPageProgess(`your-submission/create-application`))
         submissionProgress.push(getPageProgess(`add-application`))
         submissionProgress.push(getPageProgess('upload-supporting-documents'))
-        submissionProgress.push(getPageProgess('declaration'))        
+        submissionProgress.push(getPageProgess('declaration'))
     }
 
     return { submissionProgress, applicationStatuses }

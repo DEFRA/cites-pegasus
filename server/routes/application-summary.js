@@ -26,7 +26,7 @@ const commonContent = textContent.common
 function createApplicationSummaryModel(errors, data) {
   const summaryType = data.summaryType
   const applicationRef = data.cloneSource ? data.cloneSource.applicationRef : data.applicationRef
-  
+
   const summaryData = {
     summaryType,
     hrefPrefix: `../../application-summary/${summaryType}/change/${data.applicationIndex}`,
@@ -117,7 +117,7 @@ function createApplicationSummaryModel(errors, data) {
     returnToYourApplicationsLinkText: summaryType === 'view-submitted' ? pageContent.returnToYourApplicationsLinkText : "",
     returnToYourApplicationsLinkUrl: summaryType === 'view-submitted' ? `${urlPrefix}/my-submissions` : "",
     ...summaryListSectionsObject,
-    errorSummaryTitle: "There are some mandatory fields that need to be completed before you can continue",//TODO Put this into text content file
+    errorSummaryTitle: pageContent.errorSummaryTitle,
     errorList
   }
   return { ...commonContent, ...model }
@@ -538,11 +538,11 @@ function createSummaryListRow(summaryData, fieldIds, label, value, href, hiddenT
     const actionItems = []
     if (summaryData.mandatoryFieldIssues.some(issue => fieldIdArray.includes(issue))) {
       actionItems.push({
-        html: `<strong class="red-background govuk-tag">${pageContent.tagIncompleteText}</strong>`
+        html: `<strong id=${fieldIdArray[0]} class="red-background govuk-tag">${pageContent.tagIncompleteText}</strong>`
       })
       error = {
         text: label,
-        href: "#"
+        href: `#${fieldIdArray[0]}`
       }
     }
 
@@ -890,10 +890,6 @@ module.exports = [
       const { summaryType, applicationIndex } = request.params
       let submission = getSubmission(request)
 
-
-      //submission.applications[applicationIndex].importerExporterDetails.country = null//TODO REMOVE THIS AFTER DEV TESTS ARE COMPLETE
-
-
       let cloneSource = null
       if (summaryType === 'copy-as-new' || (!submission.submissionRef && summaryType === 'view-submitted')) {
         cloneSource = getYarValue(request, 'cloneSource')
@@ -1029,22 +1025,6 @@ module.exports = [
 
         const { submissionProgress } = validateSubmission(submission, null, true)
 
-        const mandatoryFieldIssues = checkMandatoryFields(submissionProgress, applicationIndex)
-
-        if (mandatoryFieldIssues.length > 0) {
-          const error = {
-            details: [
-              {
-                path: ['incompleteFields'],
-                type: 'any.incompleteFields',
-                context: { label: 'applicationSummary', key: 'applicationSummary' }
-              }
-            ],
-            mandatoryFieldIssues
-          }
-          return postFailAction(request, h, error)
-        }
-
         if (summaryType === 'view-submitted') {
           const draftSubmissionExists = await checkDraftSubmissionExists(request)
           if (draftSubmissionExists) {
@@ -1059,6 +1039,21 @@ module.exports = [
           saveDraftSubmission(request, `${nextPathCopyAsNewApplication}/0`)
           return h.redirect(`${nextPathCopyAsNewApplication}/0`)
         } else {
+          const mandatoryFieldIssues = checkMandatoryFields(submissionProgress, applicationIndex)
+
+          if (mandatoryFieldIssues.length > 0) {
+            const error = {
+              details: [
+                {
+                  path: ['incompleteFields'],
+                  type: 'any.incompleteFields',
+                  context: { label: 'applicationSummary', key: 'applicationSummary' }
+                }
+              ],
+              mandatoryFieldIssues
+            }
+            return postFailAction(request, h, error)
+          }
           saveDraftSubmission(request, nextPathYourSubmission)
           return h.redirect(nextPathYourSubmission)
         }

@@ -1121,6 +1121,7 @@
     "headerExporterContactDetails": "Exporter’s contact details",
     "headerReexporterContactDetails": "Reexporter’s contact details",
     "headerArticle10ContactDetails": "Applicant's contact details",
+    "errorSummaryTitle": "There are some mandatory fields that need to be completed before you can continue",
     "rowTextFullName": "Full name",
     "rowTextFullNameAgent": "Full name and/or organisation name",
     "rowTextBusinessName": "Business name",
