@@ -100,7 +100,7 @@ module.exports = [{
 
     let applicationStatuses = []
     try {
-      ({ applicationStatuses: applicationStatuses } = validateSubmission(submission, pageId))
+      applicationStatuses = validateSubmission(submission, pageId).applicationStatuses
     } catch (err) {
       console.error(err)
       return h.redirect(invalidSubmissionPath)

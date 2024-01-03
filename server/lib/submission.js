@@ -292,7 +292,6 @@ function getSubmissionProgress(submission, includePageData) {
                 submissionProgress.push(getPageProgess(`application-summary/view-submitted/${applicationIndex}`, applicationIndex))
             })
         }
-        //return { submissionProgress, applicationStatuses }
     }
     //Non submitted application
     submissionProgress.push(getPageProgess('permit-type', null, includePageData, getPageDataSimple('permitTypeOption', submission.permitTypeOption)))

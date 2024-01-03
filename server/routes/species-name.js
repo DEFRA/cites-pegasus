@@ -38,7 +38,8 @@ function createModel(errors, data) {
     })  
   }
 
-  const previousPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : (data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`)
+  const previousPathOld = (data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`)
+  const previousPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : previousPathOld
   const defaultBacklink = data.applicationIndex === 0 ? previousPath : addApplication
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
