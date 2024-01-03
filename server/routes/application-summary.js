@@ -50,7 +50,7 @@ function createApplicationSummaryModel(errors, data) {
   const breadcrumbs = getBreadcrumbs(pageContent, data, summaryType)
 
   let backLink = null;
-  if (summaryType !== 'view-submitted' && summaryType !== 'copy-as-new') {
+  if (!['view-submitted', 'copy-as-new'].includes(summaryType)) {
     if (summaryType === 'check') {
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
     } else {
@@ -63,30 +63,13 @@ function createApplicationSummaryModel(errors, data) {
   summaryListSections.forEach(item => applyBorderClasses(item.value))
 
   let errorList = null
-  if (errors) {
-    if (errors.mandatoryFieldIssues) {
-      errorList = summaryListSections.flatMap(section =>
-        section.value.rows
-          .filter(row => row.error)
-          .map(row => row.error)
-      )
-    } else {
-      errorList = []
-      const mergedErrorMessages = {
-        ...commonContent.errorMessages,
-        ...pageContent.errorMessages
-      }
-      const fields = []
-      fields.forEach((field) => {
-        const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-        if (fieldError) {
-          errorList.push({
-            text: fieldError,
-            href: `#${field}`
-          })
-        }
-      })
-    }
+
+  if (errors?.mandatoryFieldIssues) {
+    errorList = summaryListSections.flatMap(section =>
+      section.value.rows
+        .filter(row => row.error)
+        .map(row => row.error)
+    )
   }
 
   const summaryListSectionsObject = summaryListSections.reduce((result, current) => {
@@ -94,10 +77,9 @@ function createApplicationSummaryModel(errors, data) {
     return result
   }, {})
 
-
   const model = {
     backLink,
-    breadcrumbs: summaryType === 'view-submitted' || summaryType === 'copy-as-new' ? breadcrumbs : "",
+    breadcrumbs: ['view-submitted', 'copy-as-new'].includes(summaryType) ? breadcrumbs : "",
     pageHeader: appContent.pageHeader,
     pageTitle: appContent.pageTitle,
     buttonText: appContent.buttonText,
@@ -907,7 +889,7 @@ module.exports = [
       let submissionProgress
 
       try {
-        ({ submissionProgress: submissionProgress } = validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`, true))
+        submissionProgress = validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`, true).submissionProgress
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
