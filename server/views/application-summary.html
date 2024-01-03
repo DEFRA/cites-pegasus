@@ -21,7 +21,7 @@
 
   {% if errorList %}
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-column">
         {{govukErrorSummary ({
          "titleText": errorSummaryTitle,
          "errorList": errorList
@@ -54,16 +54,20 @@
           {{ govukSummaryList (summaryListImporterExporterDetails) }}
         {% endif %}
 
-        <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
-        {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
+        {% if showPermitDetails %}
+          <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
+          {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
+       
+          <h2 class="govuk-heading-m">{{headerCountryOfOriginPermitDetails}}</h2>
+          {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
+        {% endif %}
 
-        <h2 class="govuk-heading-m">{{headerCountryOfOriginPermitDetails}}</h2>
-        {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
+        {% if showAdditionalInfo %}
+          <h2 class="govuk-heading-m">{{headerAdditionalInformation}}</h2>
+          {{ govukSummaryList (summaryListRemarks) }}
+        {% endif %}
 
-        <h2 class="govuk-heading-m">{{headerAdditionalInformation}}</h2>
-        {{ govukSummaryList (summaryListRemarks) }}
-
-        {% if showButton %}
+        {% if showConfirmButton %}
           {{ govukButton({
               text: buttonText,
               type: "submit"

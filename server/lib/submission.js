@@ -5,6 +5,7 @@ const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('.
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
+const { describe } = require('@hapi/joi/lib/base')
 
 function getSubmission(request) {
     const session = getYarValue(request, 'submission')
@@ -44,14 +45,21 @@ function clearSubmission(request) {
     setYarValue(request, 'submission', null)
 }
 
-function validateSubmission(submission, path) {
-    const { appFlow, applicationStatuses } = getAppFlow(submission)
+function validateSubmission(submission, path, includePageData = false) {
+    const { submissionProgress, applicationStatuses } = getSubmissionProgress(submission, includePageData)
+
     if (path) {
-        if (!appFlow.includes(path)) {
+        if (!submissionProgress.map(item => item.pageUrl).includes(path)) {
             throw new Error(`Invalid navigation to ${path}`)
         }
     }
-    return applicationStatuses
+
+    return { applicationStatuses, submissionProgress }
+
+}
+
+function allowPageNavigation(submissionProgress, path) {
+    return submissionProgress.map(item => item.pageUrl).includes(path)
 }
 
 function getContainerName(request) {
@@ -129,29 +137,54 @@ function cloneSubmission(request, applicationIndex) {
 
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef
+    submission.applications = [newApplication]
+
+    migrateSubmissionToNewSchema(submission)
+
+    setYarValue(request, 'submission', submission)
+    setYarValue(request, 'cloneSource', cloneSource)
+}
+
+function migrateSubmissionToNewSchema(submission) {
     if (config.enableDeliveryType && !submission.delivery.deliveryType) {
         submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
-    if (newApplication.species.numberOfUnmarkedSpecimens) {
-        newApplication.species.numberOfUnmarkedSpecimens = null
-    }
+    submission.applications.forEach(app => {
 
-    if (newApplication.species.uniqueIdentificationMarkType === 'unmarked') {
-        newApplication.species.uniqueIdentificationMark = null
-    }
+        if (app.species.numberOfUnmarkedSpecimens) {
+            app.species.numberOfUnmarkedSpecimens = null
+        }
 
-    submission.applications = [newApplication]
-    setYarValue(request, 'submission', submission)
-    setYarValue(request, 'cloneSource', cloneSource)
+        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
+            app.species.uniqueIdentificationMark = null
+        }
+    })
+
+    if (!submission.permitTypeOption) {
+        switch (submission.permitType) {
+            case "import":
+                submission.permitTypeOption = 'import'
+                break
+            case "export":
+                submission.permitTypeOption = 'export'
+                break
+            case "reexport":
+                submission.permitTypeOption = 'reexport'
+                break
+            case "article10":
+                submission.permitTypeOption = 'article10'
+                break
+        }
+    }
 }
 
 function createApplication(request) {
     const submission = getSubmission(request)
     const applications = submission.applications
     const newApplication = { applicationIndex: applications.length }
-    
-    if([pst.DRAFT, pst.SEMI_COMPLETE].includes(applications[0].permitSubType)){
+
+    if ([pst.DRAFT, pst.SEMI_COMPLETE].includes(applications[0].permitSubType)) {
         newApplication.permitSubType = applications[0].permitSubType
     }
 
@@ -196,7 +229,7 @@ function moveApplicationToEndOfList(applications, applicationIndex) {
 function deleteInProgressApplications(request) {
     while (true) {
         const submission = getSubmission(request)
-        const { applicationStatuses } = getAppFlow(submission)
+        const { applicationStatuses } = getSubmissionProgress(submission, false)
         if (!applicationStatuses.some(appStatus => appStatus.status === "in-progress")) {
             //All partial / in-progress applications have been removed
             break
@@ -221,6 +254,10 @@ function getCompletedApplications(submission, appStatuses) {
     });
 }
 
+function getPageProgess(pageUrl, applicationIndex = null, includePageData = null, pageData = null) {
+    return includePageData ? { pageUrl, applicationIndex, pageData } : { pageUrl, applicationIndex }
+}
+
 function getApplicationIndex(submission, applicationStatuses) {
     //This function should be used as a last resort to get the applicationIndex when the applicationIndex is not available in the URL
     let applicationIndex = 0
@@ -236,231 +273,554 @@ function getApplicationIndex(submission, applicationStatuses) {
     return applicationIndex
 }
 
-function getAppFlow(submission) {
+function getSubmissionProgress(submission, includePageData) {
+
     let applicationStatuses = []
-    let appFlow = []
-    if (submission) {
-        if (submission.submissionRef) {
-            appFlow.push('pay-application')
-            if (submission.paymentDetails) {
-                appFlow.push('application-complete')
-                appFlow.push('govpay')
-                appFlow.push('payment-problem')
-            }
-            if (submission.applications?.length > 0) {
-                submission.applications.forEach((application, applicationIndex) => {
-                    appFlow.push(`application-summary/view-submitted/${applicationIndex}`)
-                })
+    let submissionProgress = []
+    if (!submission) {
+        return { submissionProgress, applicationStatuses }
+    }
+    if (submission.submissionRef) {
+        submissionProgress.push(getPageProgess('pay-application'))
+        if (submission.paymentDetails) {
+            submissionProgress.push(getPageProgess('application-complete'))
+            submissionProgress.push(getPageProgess('govpay'))
+            submissionProgress.push(getPageProgess('payment-problem'))
+        }
+        if (submission.applications?.length > 0) {
+            submission.applications.forEach((application, applicationIndex) => {
+                submissionProgress.push(getPageProgess(`application-summary/view-submitted/${applicationIndex}`, applicationIndex))
+            })
+        }
+        //return { submissionProgress, applicationStatuses }
+    }
+    //Non submitted application
+    submissionProgress.push(getPageProgess('permit-type', null, includePageData, getPageDataSimple('permitTypeOption', submission.permitTypeOption)))
+
+    if (submission.permitTypeOption === pto.OTHER) {
+        submissionProgress.push(getPageProgess('other-permit-type', null, includePageData, getPageDataSimple('otherPermitTypeOption', submission.otherPermitTypeOption)))
+    }
+
+    if (submission.otherPermitTypeOption === pto.OTHER) {
+        submissionProgress.push(getPageProgess('cannot-use-service'))
+        return { submissionProgress, applicationStatuses }
+    }
+
+    if (!submission.permitType) {
+        return { submissionProgress, applicationStatuses }
+    }
+
+    if (submission.permitType && submission.otherPermitTypeOption !== pto.OTHER) {
+        submissionProgress.push(getPageProgess('guidance-completion'))
+    }
+
+    submissionProgress.push(getPageProgess('applying-on-behalf', null, includePageData, getPageDataSimple('isAgent', submission.isAgent)))
+
+    if (typeof submission.isAgent !== 'boolean') {
+        return { submissionProgress, applicationStatuses }
+    }
+
+    submissionProgress.push(getPageProgess('contact-details/applicant', null, includePageData, getPageDataContactDetails(submission.applicant)))
+
+    if (!submission.applicant?.fullName) {
+        return { submissionProgress, applicationStatuses }
+    }
+
+    submissionProgress.push(getPageProgess('postcode/applicant'))
+    submissionProgress.push(getPageProgess('enter-address/applicant'))
+
+    if (submission.applicant?.candidateAddressData?.addressSearchData?.postcode) {
+        submissionProgress.push(getPageProgess('select-address/applicant'))
+    }
+
+    if (submission.applicant?.candidateAddressData?.selectedAddress) {
+        submissionProgress.push(getPageProgess('confirm-address/applicant', null, includePageData, getPageDataSimple('applicant-address', submission.applicant?.address)))
+    }
+
+
+    if (!submission.applicant?.address) {
+        return { submissionProgress, applicationStatuses }
+    }
+
+    submissionProgress.push(getPageProgess('select-delivery-address', null, includePageData, getPageDataSimple('delivery-address', submission.delivery?.address)))
+    submissionProgress.push(getPageProgess('postcode/delivery'))
+    submissionProgress.push(getPageProgess('enter-address/delivery'))
+
+    if (submission.delivery?.candidateAddressData?.addressSearchData?.postcode) {
+        submissionProgress.push(getPageProgess('select-address/delivery'))
+    }
+
+    if (submission.delivery?.candidateAddressData?.selectedAddress) {
+        submissionProgress.push(getPageProgess('confirm-address/delivery', null, includePageData, getPageDataSimple('delivery-address', submission.delivery?.address)))
+    }
+
+    if (!submission.delivery?.address) {
+        return { submissionProgress, applicationStatuses }
+    }
+
+    let initialApplication
+    if (submission.applications?.length > 0) {
+        initialApplication = submission.applications[0]
+    }
+
+    if (config.enableDeliveryType) {
+        submissionProgress.push(getPageProgess('delivery-type', null, includePageData, getPageDataSimple('deliveryType', submission.delivery?.deliveryType)))
+
+        if (submission.delivery?.deliveryType) {
+            submissionProgress.push(getPageProgess('species-name/0', 0, includePageData, getPageDataSimple('speciesName', initialApplication?.species?.speciesName)))
+        }
+    } else {
+        submissionProgress.push(getPageProgess('species-name/0', 0, includePageData, getPageDataSimple('speciesName', initialApplication?.species?.speciesName)))
+    }
+
+    if (submission.applications?.length === 0) {
+        return { submissionProgress, applicationStatuses }
+    }
+
+    let completeApplications = 0
+
+    submission.applications.forEach((application, applicationIndex) => {
+        applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
+
+        submissionProgress.push(getPageProgess(`application-summary/check/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/are-you-sure/check/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/copy-as-new/${applicationIndex}`, applicationIndex))
+
+        if (applicationIndex > 0) {
+            submissionProgress.push(getPageProgess(`species-name/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('speciesName', application?.species?.speciesName)))
+        }
+
+        const species = application.species
+
+        if (!species?.speciesName) {
+            return { submissionProgress, applicationStatuses }
+        }
+
+        if (species.hasRestriction) {
+            submissionProgress.push(getPageProgess(`species-warning/${applicationIndex}`, applicationIndex))
+        }
+
+        submissionProgress.push(getPageProgess(`source-code/${applicationIndex}`, applicationIndex, includePageData, getPageDataSourceCode(species)))
+
+        if (!species.sourceCode) {
+            return { submissionProgress, applicationStatuses }
+        }
+
+        if (submission.permitType === pt.ARTICLE_10) {
+            submissionProgress.push(getPageProgess(`specimen-origin/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenOrigin', species.specimenOrigin)))
+            if (species.specimenOrigin) {
+                submissionProgress.push(getPageProgess(`use-certificate-for/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('useCertificateFor', species.useCertificateFor)))
             }
         } else {
-            appFlow.push('permit-type')
-            if(config.enableOtherPermitTypes && submission.permitTypeOption === pto.OTHER){
-                appFlow.push('other-permit-type')
+            submissionProgress.push(getPageProgess(`purpose-code/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('purposeCode', species.purposeCode)))
+        }
+
+        if (!species.purposeCode && !species.useCertificateFor) {
+            return { submissionProgress, applicationStatuses }
+        }
+
+        submissionProgress.push(getPageProgess(`specimen-type/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenType', species.specimenType)))
+
+        if (!species.specimenType) {
+            return { submissionProgress, applicationStatuses }
+        }
+
+        if (species.specimenType === 'animalLiving') {//Living animal flow
+            submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+
+            if (!species.uniqueIdentificationMarkType) {
+                return { submissionProgress, applicationStatuses }
             }
-            if (submission.otherPermitTypeOption === pto.OTHER) { appFlow.push('cannot-use-service') }
-            if (submission.permitType && submission.otherPermitTypeOption !== pto.OTHER) {
-                appFlow.push('guidance-completion')
-                appFlow.push('applying-on-behalf')
 
+            if (species.uniqueIdentificationMarkType === 'unmarked') {
+                submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))
+            } else {
+                submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))
+            }
 
-                if (typeof submission.isAgent === 'boolean') {
+        } else {//Not living animal flow
+            submissionProgress.push(getPageProgess(`quantity/${applicationIndex}`, applicationIndex, includePageData, getPageDataQuantity(species)))
 
-                    appFlow.push('contact-details/applicant')
-                    if (submission.applicant?.fullName) {
-                        appFlow.push('postcode/applicant')
-                        appFlow.push('enter-address/applicant')
-                        if (submission.applicant?.candidateAddressData?.addressSearchData?.postcode) {
-                            appFlow.push('select-address/applicant')
-                        }
-                        if (submission.applicant?.candidateAddressData?.selectedAddress) {
-                            appFlow.push('confirm-address/applicant')
-                        }
-                    }
+            if (!species.quantity) {
+                return { submissionProgress, applicationStatuses }
+            }
 
-                } else {
-                    return { appFlow, applicationStatuses }
-                }
-
-                if (submission.applicant?.address) {
-                    appFlow.push('select-delivery-address')
-                    appFlow.push('postcode/delivery')
-                    appFlow.push('enter-address/delivery')
-                    if (submission.delivery?.candidateAddressData?.addressSearchData?.postcode) {
-                        appFlow.push('select-address/delivery')
-                    }
-                    if (submission.delivery?.candidateAddressData?.selectedAddress) {
-                        appFlow.push('confirm-address/delivery')
-                    }
-                } else {
-                    return { appFlow, applicationStatuses }
-                }
-
-                if (submission.delivery?.address) {
-                    if (config.enableDeliveryType) {
-                        appFlow.push('delivery-type')
-                        if (submission.delivery?.deliveryType) {
-                            appFlow.push('species-name/0')
-                        }
-                    }
-                    else {
-                        appFlow.push('species-name/0')
-                    }
-                } else {
-                    return { appFlow, applicationStatuses }
-                }
-                let completeApplications = 0
-                if (submission.applications?.length > 0) {
-                    submission.applications.forEach((application, applicationIndex) => {
-                        applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
-                        if (applicationIndex > 0) {
-                            appFlow.push(`species-name/${applicationIndex}`)
-                        }
-
-                        if (application.species?.speciesName) {
-                            appFlow.push(`source-code/${applicationIndex}`)
-                            if (application.species.hasRestriction) {
-                                appFlow.push(`species-warning/${applicationIndex}`)
-                            }
-                        } else {
-                            return { appFlow, applicationStatuses }
-                        }
-
-                        const species = application.species
-                        if (species.sourceCode) {
-                            if (submission.permitType ===  pt.ARTICLE_10) {
-                                appFlow.push(`specimen-origin/${applicationIndex}`)
-                                if (species.specimenOrigin) {
-                                    appFlow.push(`use-certificate-for/${applicationIndex}`)
-                                }
-                            } else {
-                                appFlow.push(`purpose-code/${applicationIndex}`)
-                            }
-                        } else {
-                            return { appFlow, applicationStatuses }
-                        }
-
-                        if (species.purposeCode || species.useCertificateFor) {
-                            appFlow.push(`specimen-type/${applicationIndex}`)
-                        } else {
-                            return { appFlow, applicationStatuses }
-                        }
-
-                        if (species.specimenType) {
-                            if (species.specimenType === 'animalLiving') {//Living animal flow
-                                appFlow.push(`unique-identification-mark/${applicationIndex}`)
-
-                                if (species.uniqueIdentificationMarkType) {
-                                    if (species.uniqueIdentificationMarkType === 'unmarked') {
-                                        appFlow.push(`describe-specimen/${applicationIndex}`)
-                                        
-                                    } else {
-                                        appFlow.push(`describe-living-animal/${applicationIndex}`)
-                                    }
-                                } else {
-                                    return { appFlow, applicationStatuses }
-                                }
-
-
-                            } else {//Not living animal flow
-                                appFlow.push(`quantity/${applicationIndex}`)
-
-                                if (species.quantity) {
-                                    if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
-                                        appFlow.push(`created-date/${applicationIndex}`)
-                                        if (species.createdDate) {
-                                            appFlow.push(`trade-term-code/${applicationIndex}`)
-                                        } else {
-                                            return { appFlow, applicationStatuses }
-                                        }
-                                    } else {
-                                        appFlow.push(`trade-term-code/${applicationIndex}`)
-                                    }
-                                } else {
-                                    return { appFlow, applicationStatuses }
-                                }
-
-
-                                if (species.isTradeTermCode === true || species.isTradeTermCode === false) {
-                                    appFlow.push(`unique-identification-mark/${applicationIndex}`)
-                                } else {
-                                    return { appFlow, applicationStatuses }
-                                }
-
-                                if (species.uniqueIdentificationMarkType) {
-                                    appFlow.push(`describe-specimen/${applicationIndex}`)
-                                } else {
-                                    return { appFlow, applicationStatuses }
-                                }
-                            }
-                        } else {
-                            return { appFlow, applicationStatuses }
-                        }
-
-                        if (species.specimenDescriptionGeneric || species.sex) {
-                            if (submission.permitType ===  pt.ARTICLE_10) { //Article 10 flow
-                                appFlow.push(`acquired-date/${applicationIndex}`)
-
-                                if (species.acquiredDate) {
-                                    appFlow.push(`already-have-a10/${applicationIndex}`)
-                                } else {
-                                    return { appFlow, applicationStatuses }
-                                }
-                                if (species.isA10CertificateNumberKnown === true || species.isA10CertificateNumberKnown === false) {
-                                    appFlow.push(`ever-imported-exported/${applicationIndex}`)
-                                } else {
-                                    return { appFlow, applicationStatuses }
-                                }
-
-                            } else if (submission.permitType !== pt.REEXPORT || submission.otherPermitTypeOption !== pto.SEMI_COMPLETE) {
-
-                                appFlow.push(`importer-exporter/${applicationIndex}`)
-                            }
-
-                            if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT) 
-                                    || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
-                                    || species.isEverImportedExported === true 
-                                    || species.isEverImportedExported === false
-                                    ) {
-                                appFlow.push(`permit-details/${applicationIndex}`)
-                            }
-
-                            if ((application.importerExporterDetails && submission.permitType === pt.EXPORT) 
-                                || (!species.isEverImportedExported && submission.permitType === pt.ARTICLE_10) 
-                                || application.permitDetails) {
-                                appFlow.push(`additional-info/${applicationIndex}`)
-                                appFlow.push(`application-summary/check/${applicationIndex}`)
-                                appFlow.push(`application-summary/copy/${applicationIndex}`)
-                                appFlow.push(`application-summary/view/${applicationIndex}`)
-                                appFlow.push(`application-summary/copy-as-new/${applicationIndex}`)
-                                appFlow.push(`application-summary/are-you-sure/check/${applicationIndex}`)
-                                appFlow.push(`application-summary/are-you-sure/copy/${applicationIndex}`)
-                                appFlow.push(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`)
-                                completeApplications++
-                                applicationStatuses[applicationIndex].status = 'complete'
-                            } else {
-                                return { appFlow, applicationStatuses }
-                            }
-                        } else {
-                            return { appFlow, applicationStatuses }
-                        }
-                    })
-
-                    if (completeApplications > 0) {
-                        appFlow.push(`your-submission`)
-                        appFlow.push(`your-submission/are-you-sure/permit-type`)
-                        appFlow.push(`your-submission/are-you-sure/remove`)
-                        appFlow.push(`your-submission/create-application`)
-                        appFlow.push(`add-application`)
-                        appFlow.push('upload-supporting-documents')
-                        appFlow.push('declaration')
-                    }
+            if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
+                submissionProgress.push(getPageProgess(`created-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataCreatedDate(species?.createdDate)))
+                if (!species.createdDate) {
+                    return { submissionProgress, applicationStatuses }
                 }
             }
 
+            submissionProgress.push(getPageProgess(`trade-term-code/${applicationIndex}`, applicationIndex, includePageData, getPageDataTradeTermCode(species)))
+
+            if (typeof species.isTradeTermCode !== 'boolean') {
+                return { submissionProgress, applicationStatuses }
+            }
+
+            submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+
+            if (!species.uniqueIdentificationMarkType) {
+                return { submissionProgress, applicationStatuses }
+            }
+
+            submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))
 
         }
+
+        if (!species.specimenDescriptionGeneric && !species.sex) {
+            return { submissionProgress, applicationStatuses }
+        }
+
+        if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
+            submissionProgress.push(getPageProgess(`acquired-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataAcquiredDate(species?.acquiredDate)))
+
+            if (!species.acquiredDate) {
+                return { submissionProgress, applicationStatuses }
+            }
+
+            submissionProgress.push(getPageProgess(`already-have-a10/${applicationIndex}`, applicationIndex, includePageData, getPageDataA10CertificateNumber(species)))
+
+            if (typeof species.isA10CertificateNumberKnown !== 'boolean') {
+                return { submissionProgress, applicationStatuses }
+            }
+
+            submissionProgress.push(getPageProgess(`ever-imported-exported/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isEverImportedExported', species.isEverImportedExported)))
+
+        } else if (!(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)) {
+
+            submissionProgress.push(getPageProgess(`importer-exporter/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterExporter(application.importerExporterDetails)))
+
+        }
+
+        if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT)
+            || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
+            || species.isEverImportedExported === true
+        ) {
+            submissionProgress.push(getPageProgess(`permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataPermitDetails(application.permitDetails)))
+        }
+
+        if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
+            && (species.isEverImportedExported || submission.permitType !== pt.ARTICLE_10)
+            && !application.permitDetails) {
+            return { submissionProgress, applicationStatuses }
+        }
+
+        submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
+        submissionProgress.push(getPageProgess(`application-summary/copy/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/view/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`, applicationIndex))
+
+        completeApplications++
+        applicationStatuses[applicationIndex].status = 'complete'
+    })
+
+    if (completeApplications > 0 && !submission.submissionRef) {
+        submissionProgress.push(getPageProgess(`your-submission`))
+        submissionProgress.push(getPageProgess(`your-submission/are-you-sure/permit-type`))
+        submissionProgress.push(getPageProgess(`your-submission/are-you-sure/remove`))
+        submissionProgress.push(getPageProgess(`your-submission/create-application`))
+        submissionProgress.push(getPageProgess(`add-application`))
+        submissionProgress.push(getPageProgess('upload-supporting-documents'))
+        submissionProgress.push(getPageProgess('declaration'))
     }
-    return { appFlow, applicationStatuses }
+
+    return { submissionProgress, applicationStatuses }
+}
+
+function getPageDataSimple(fieldId, value) {
+
+    let hasData = false
+    if (typeof value === 'boolean') {
+        hasData = true
+    } else {
+        hasData = Boolean(value)
+    }
+
+    return [
+        {
+            fieldId: fieldId,
+            isMandatory: true,
+            hasData
+        }
+    ]
+}
+
+function getPageDataContactDetails(contact) {
+    return [
+        {
+            fieldId: 'applicant-fullName',
+            isMandatory: true,
+            hasData: Boolean(contact?.fullName)
+        },
+        {
+            fieldId: 'applicant-businessName',
+            isMandatory: false,
+            hasData: Boolean(contact?.businessName)
+        },
+        {
+            fieldId: 'applicant-email',
+            isMandatory: false,
+            hasData: Boolean(contact?.email)
+        }
+    ]
+}
+
+function getPageDataSourceCode(species) {
+    return [
+        {
+            fieldId: 'sourceCode',
+            isMandatory: true,
+            hasData: Boolean(species?.sourceCode)
+        },
+        {
+            fieldId: 'anotherSourceCodeForI',
+            isMandatory: species?.sourceCode === 'I',
+            hasData: Boolean(species?.anotherSourceCodeForI)
+        },
+        {
+            fieldId: 'anotherSourceCodeForO',
+            isMandatory: species?.sourceCode === 'O',
+            hasData: Boolean(species?.anotherSourceCodeForO)
+        },
+        {
+            fieldId: 'enterAReason',
+            isMandatory: species?.sourceCode === 'U',
+            hasData: Boolean(species?.enterAReason)
+        }
+    ]
+}
+
+function getPageDataUniqueIdentificationMark(species) {
+    return [
+        {
+            fieldId: 'uniqueIdentificationMarkType',
+            isMandatory: true,
+            hasData: Boolean(species?.uniqueIdentificationMarkType)
+        },
+        {
+            fieldId: 'uniqueIdentificationMark',
+            isMandatory: Boolean(species?.uniqueIdentificationMarkType) && species?.uniqueIdentificationMarkType !== 'unmarked',
+            hasData: Boolean(species?.uniqueIdentificationMark)
+        }
+    ]
+}
+
+function getPageDataDescribeLivingAnimal(species) {
+    return [
+        {
+            fieldId: 'sex',
+            isMandatory: true,
+            hasData: Boolean(species.sex)
+        },
+        {
+            fieldId: 'dateOfBirth',
+            isMandatory: false,
+            hasData: Boolean(species.dateOfBirth)
+        },
+        {
+            fieldId: 'maleParentDetails',
+            isMandatory: false,
+            hasData: Boolean(species.maleParentDetails)
+        },
+        {
+            fieldId: 'femaleParentDetails',
+            isMandatory: false,
+            hasData: Boolean(species.femaleParentDetails)
+        },
+        {
+            fieldId: 'specimenDescriptionLivingAnimal',
+            isMandatory: false,
+            hasData: Boolean(species.specimenDescriptionLivingAnimal)
+        }
+    ]
+}
+
+function getPageDataA10CertificateNumber(species) {
+    return [
+        {
+            fieldId: 'isA10CertificateNumberKnown',
+            isMandatory: true,
+            hasData: typeof species.isA10CertificateNumberKnown === 'boolean'
+        },
+        {
+            fieldId: 'a10CertificateNumber',
+            isMandatory: Boolean(species.isA10CertificateNumberKnown),
+            hasData: Boolean(species.a10CertificateNumber)
+        }
+    ]
+}
+
+function getPageDataImporterExporter(importerExporterDetails) {
+    return [
+        {
+            fieldId: 'importerExporter-country',
+            isMandatory: true,
+            hasData: Boolean(importerExporterDetails?.country)
+        },
+        {
+            fieldId: 'importerExporter-name',
+            isMandatory: true,
+            hasData: Boolean(importerExporterDetails?.name)
+        },
+        {
+            fieldId: 'importerExporter-addressLine1',
+            isMandatory: true,
+            hasData: Boolean(importerExporterDetails?.addressLine1)
+        },
+        {
+            fieldId: 'importerExporter-addressLine2',
+            isMandatory: true,
+            hasData: Boolean(importerExporterDetails?.addressLine2)
+        },
+        {
+            fieldId: 'importerExporter-addressLine3',
+            isMandatory: false,
+            hasData: Boolean(importerExporterDetails?.addressLine3)
+        },
+        {
+            fieldId: 'importerExporter-addressLine4',
+            isMandatory: false,
+            hasData: Boolean(importerExporterDetails?.addressLine4)
+        },
+        {
+            fieldId: 'importerExporter-postcode',
+            isMandatory: false,
+            hasData: Boolean(importerExporterDetails?.postcode)
+        },
+    ]
+}
+
+function getPageDataPermitDetails(permitDetails) {
+    return [
+        {
+            fieldId: 'isCountryOfOriginNotApplicable',
+            isMandatory: true,
+            hasData: typeof permitDetails?.isCountryOfOriginNotApplicable === 'boolean'
+        },
+        {
+            fieldId: 'countryOfOrigin',
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotApplicable),
+            hasData: Boolean(permitDetails?.countryOfOrigin)
+        },
+        {
+            fieldId: 'countryOfOriginPermitNumber',
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotApplicable),
+            hasData: Boolean(permitDetails?.countryOfOriginPermitNumber)
+        },
+        {
+            fieldId: 'countryOfOriginPermitIssueDate',
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotApplicable),
+            hasData: Boolean(permitDetails?.countryOfOriginPermitIssueDate?.year)
+        },
+
+        {
+            fieldId: 'isExportOrReexportNotApplicable',
+            isMandatory: true,
+            hasData: typeof permitDetails?.isExportOrReexportNotApplicable === 'boolean'
+        },
+        {
+            fieldId: 'exportOrReexportCountry',
+            isMandatory: !Boolean(permitDetails?.isExportOrReexportNotApplicable),
+            hasData: Boolean(permitDetails?.exportOrReexportCountry)
+        },
+        {
+            fieldId: 'exportOrReexportPermitNumber',
+            isMandatory: !Boolean(permitDetails?.isExportOrReexportNotApplicable),
+            hasData: Boolean(permitDetails?.exportOrReexportPermitNumber)
+        },
+        {
+            fieldId: 'exportOrReexportPermitIssueDate',
+            isMandatory: !Boolean(permitDetails?.isExportOrReexportNotApplicable),
+            hasData: Boolean(permitDetails?.exportOrReexportPermitIssueDate?.year)
+        }
+    ]
+}
+
+function getPageDataQuantity(species) {
+    return [
+        {
+            fieldId: 'quantity',
+            isMandatory: true,
+            hasData: Boolean(species?.quantity)
+        },
+        {
+            fieldId: 'unitOfMeasurement',
+            isMandatory: true,
+            hasData: Boolean(species?.unitOfMeasurement)
+        }
+    ]
+}
+
+function getPageDataCreatedDate(createdDate) {
+    return [
+        {
+            fieldId: 'createdDate-isExactDateUnknown',
+            isMandatory: true,
+            hasData: typeof createdDate?.isExactDateUnknown === 'boolean'
+        },
+        {
+            fieldId: 'createdDate-approximateDate',
+            isMandatory: createdDate?.isExactDateUnknown,
+            hasData: Boolean(createdDate?.approximateDate)
+        },
+        {
+            fieldId: 'createdDate-date',
+            isMandatory: !createdDate?.isExactDateUnknown,
+            hasData: Boolean(createdDate?.day) && Boolean(createdDate?.month) && Boolean(createdDate?.year)
+        }
+    ]
+}
+
+function getPageDataAcquiredDate(acquiredDate) {
+    return [
+        {
+            fieldId: 'acquiredDate-isExactDateUnknown',
+            isMandatory: true,
+            hasData: typeof acquiredDate?.isExactDateUnknown === 'boolean'
+        },
+        {
+            fieldId: 'acquiredDate-approximateDate',
+            isMandatory: acquiredDate?.isExactDateUnknown,
+            hasData: Boolean(acquiredDate?.approximateDate)
+        },
+        {
+            fieldId: 'acquiredDate-date',
+            isMandatory: !acquiredDate?.isExactDateUnknown,
+            hasData: Boolean(acquiredDate?.day) && Boolean(acquiredDate?.month) && Boolean(acquiredDate?.year)
+        }
+    ]
+}
+
+function getPageDataTradeTermCode(species) {
+    return [
+        {
+            fieldId: 'isTradeTermCode',
+            isMandatory: true,
+            hasData: typeof species?.isTradeTermCode === 'boolean'
+        },
+        {
+            fieldId: 'tradeTermCode',
+            isMandatory: species?.isTradeTermCode,
+            hasData: Boolean(species?.tradeTermCode)
+        }
+    ]
+}
+
+function getPageDataAdditionalInfo(application) {
+    return [
+        {
+            fieldId: 'comments',
+            isMandatory: false,
+            hasData: Boolean(application?.comments)
+        },
+        {
+            fieldId: 'internalReference',
+            isMandatory: false,
+            hasData: Boolean(application?.internalReference)
+        }
+    ]
 }
 
 module.exports = {
@@ -482,6 +842,7 @@ module.exports = {
     deleteDraftSubmission,
     loadDraftSubmission,
     moveApplicationToEndOfList,
-    reIndexApplications
+    reIndexApplications,
+    allowPageNavigation
 }
 

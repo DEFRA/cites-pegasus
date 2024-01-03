@@ -175,6 +175,7 @@ module.exports = [
           species.purposeCode = null
           species.useCertificateFor = null
           species.specimenType = null
+          species.specimenOrigin = null
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null

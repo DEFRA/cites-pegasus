@@ -98,15 +98,15 @@ module.exports = [{
   handler: async (request, h) => {
     const submission = getSubmission(request)
 
-    let appStatuses = []
+    let applicationStatuses = []
     try {
-      appStatuses = validateSubmission(submission, pageId)
+      ({ applicationStatuses: applicationStatuses } = validateSubmission(submission, pageId))
     } catch (err) {
       console.error(err)
       return h.redirect(invalidSubmissionPath)
     }
 
-    const fromYourSubmission = appStatuses.some((application) => application.status === "complete")
+    const fromYourSubmission = applicationStatuses.some((application) => application.status === "complete")
 
     const pageData = {
       backLinkOverride: checkChangeRouteExit(request, true),
@@ -128,11 +128,11 @@ module.exports = [{
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
-        const appStatuses = validateSubmission(submission, pageId)
+        const { applicationStatuses } = validateSubmission(submission, pageId)
         const pageData = {
           backLinkOverride: checkChangeRouteExit(request, true),
           permitTypeOption: request.payload.permitTypeOption,
-          fromYourSubmission: appStatuses.some((application) => application.status === "complete")
+          fromYourSubmission: applicationStatuses.some((application) => application.status === "complete")
         }
 
         return h.view(pageId, createModel(err, pageData)).takeover()

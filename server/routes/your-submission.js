@@ -176,16 +176,16 @@ module.exports = [
     path: currentPath,
     handler: async (request, h) => {
       const submission = getSubmission(request)
-      let appStatuses = null
+      let applicationStatuses = null
 
       try {
-        appStatuses = validateSubmission(submission, pageId)
+        ({applicationStatuses: applicationStatuses} = validateSubmission(submission, pageId))
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
-      const completeApplications = getCompletedApplications(submission, appStatuses)
+      const completeApplications = getCompletedApplications(submission, applicationStatuses)
 
       setYarValue(request, 'cloneSource', null)
 
@@ -221,15 +221,15 @@ module.exports = [
     path: `${currentPath}/create-application`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
-      let appStatuses = null
+      let applicationStatuses = null
       try {
-        appStatuses = validateSubmission(submission, `${pageId}/create-application`)
+        ({ applicationStatuses: applicationStatuses } = validateSubmission(submission, `${pageId}/create-application`))
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
 
-      const inProgressAppStatus = appStatuses.find(appStatus => appStatus.status === 'in-progress')
+      const inProgressAppStatus = applicationStatuses.find(appStatus => appStatus.status === 'in-progress')
       if (inProgressAppStatus) {
         let inProgressApplicationIndex = inProgressAppStatus.applicationIndex
         if (inProgressAppStatus.applicationIndex < submission.applications.length - 1) {
@@ -289,8 +289,8 @@ module.exports = [
       validate: {
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
-          const appStatuses = validateSubmission(submission, null)
-          const completeApplications = getCompleteApplications(submission, appStatuses)
+          const { applicationStatuses } = validateSubmission(submission, null)
+          const completeApplications = getCompleteApplications(submission, applicationStatuses)
 
           const pageData = {
             permitType: submission.permitType,
