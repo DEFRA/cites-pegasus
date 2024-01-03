@@ -220,17 +220,9 @@ div:has(a[data-disabled]:hover) {
     width: 30%
 }
 
-.govuk-summary-list__actions-list-item {
-    // margin-left: 0;
-    // min-width: 40%;
-}
 
 .govuk-summary-list__actions-list-item:not(:first-child) {
     border: 0;
-}
-
-.govuk-summary-list__actions-list-item:first-child {
-    // float: left;
 }
 
 .blue-background {
