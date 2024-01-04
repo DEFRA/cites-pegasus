@@ -86,7 +86,7 @@ function createModel(errors, data) {
   ]
 
   //nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => x = getRadioItem(data.sex, x, errorList))
+  const radioItems = radioOptions.map(x => getRadioItem(data.sex, x, errorList))
 
   const dateOfBirthInputGroupItems = getDateOfBirthInputGroupItems(dateOfBirthComponents, dateOfBirthErrors)
 
