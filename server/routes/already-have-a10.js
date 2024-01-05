@@ -8,7 +8,8 @@ const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "already-have-a10"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/acquired-date`
+const previousPathAcquiredDate = `${urlPrefix}/acquired-date`
+const previousPathBreeder = `${urlPrefix}/breeder`
 const nextPath = `${urlPrefix}/ever-imported-exported`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -56,7 +57,7 @@ function createModel(errors, data) {
     }
   })
 
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const defaultBacklink =  data.isBreeder ? `${previousPathBreeder}/${data.applicationIndex}` : `${previousPathAcquiredDate}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
   
   const model = {
@@ -121,15 +122,16 @@ module.exports = [
         console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
-      
-      const species = submission.applications[applicationIndex].species
+      const application = submission.applications[applicationIndex]
+      const species = application.species
       
       const pageData = {
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species?.speciesName,
         isA10CertificateNumberKnown: species.isA10CertificateNumberKnown,
-        a10CertificateNumber: species.a10CertificateNumber
+        a10CertificateNumber: species.a10CertificateNumber,
+        isBreeder: application.isBreeder
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -154,7 +156,8 @@ module.exports = [
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
-          const species = submission.applications[applicationIndex].species
+          const application = submission.applications[applicationIndex]
+          const species = application.species
 
           let isA10CertificateNumberKnown = null
           switch (request.payload.isA10CertificateNumberKnown) {
@@ -172,6 +175,7 @@ module.exports = [
             speciesName: species?.speciesName,
             isA10CertificateNumberKnown: isA10CertificateNumberKnown,
             a10CertificateNumber: request.payload.a10CertificateNumber,
+            isBreeder: application.isBreeder
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()

@@ -12,7 +12,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
-const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
+const nextPathBreeder = `${urlPrefix}/breeder`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -348,7 +348,7 @@ module.exports = [
         if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
           redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
         } else if (submission.permitType === pt.ARTICLE_10) {
-          redirectTo = `${nextPathAcquiredDate}/${applicationIndex}`
+          redirectTo = `${nextPathBreeder}/${applicationIndex}`
         } else {
           redirectTo = `${nextPathImporterExporter}/${applicationIndex}`
         }

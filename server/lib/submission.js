@@ -472,9 +472,18 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
-            submissionProgress.push(getPageProgess(`acquired-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataAcquiredDate(species?.acquiredDate)))
 
-            if (!species.acquiredDate) {
+            submissionProgress.push(getPageProgess(`breeder/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isBreeder', application.isBreeder)))
+            
+            if (typeof application.isBreeder !== 'boolean') {
+                return { submissionProgress, applicationStatuses }
+            }
+
+            if (application.isBreeder === false) {
+                submissionProgress.push(getPageProgess(`acquired-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataAcquiredDate(species?.acquiredDate)))
+            }
+
+            if (!species.acquiredDate && application.isBreeder === false) {
                 return { submissionProgress, applicationStatuses }
             }
 
