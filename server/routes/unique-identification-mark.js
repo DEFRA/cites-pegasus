@@ -60,7 +60,7 @@ function createModel(errors, data) {
   }
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => x = getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
+  const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
 
   const previousPath = data.specimenType === 'animalLiving' ? previousPathSpecimenType : previousPathTradeTermCode
 
@@ -100,8 +100,8 @@ function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, ra
   }
 
   const checked = uniqueIdentificationMarkType ? isChecked(uniqueIdentificationMarkType, radioOption.value) : false
-
-  const html = radioOption.hasInput ? getInputUniqueIdentificationMark('input' + radioOption.value, checked ? uniqueIdentificationMark : null, errorList) : ""
+  const checkedMarkOrNull = checked ? uniqueIdentificationMark : null
+  const html = radioOption.hasInput ? getInputUniqueIdentificationMark('input' + radioOption.value, checkedMarkOrNull, errorList) : ""
 
   return {
     value: radioOption.value,

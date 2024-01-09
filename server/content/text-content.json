@@ -898,6 +898,13 @@
       "error.a10CertificateNumber.string.pattern.base": "Certificate number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
     }
   },
+  "breeder": {
+    "defaultTitle": "Are you the breeder of this specimen?",
+    "pageHeader": "Are you the breeder of this specimen?",
+    "errorMessages": {
+      "error.isBreeder.any.required": "Select yes if you are the breeder"
+    }
+  },
   "everImportedExported": {
     "defaultTitle": "Has the specimen ever been imported or exported? ",
     "pageHeader": "Has the specimen ever been imported or exported? ",
@@ -1147,6 +1154,7 @@
     "rowTextMaleParentDetails": "Male parent details",
     "rowTextFemaleParentDetails": "Female parent details",
     "rowTextOtherDescription": "Describe the specimen",
+    "rowTextAreYouTheBreeder": "Are you the breeder",
     "rowTextA10SpecimenOrigin": "Article 10 specimen origin",
     "rowTextSpecimenOriginA": "were taken from the wild in accordance with the legislation in force in the United Kingdom",
     "rowTextSpecimenOriginB": "are abandoned or escaped specimens that were recovered in accordance with the legislation in force in the United Kingdom",

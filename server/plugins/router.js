@@ -23,6 +23,7 @@ const routes = [].concat(
   require('../routes/unique-identification-mark'),
   require('../routes/describe-specimen'),
   require('../routes/describe-living-animal'),
+  require('../routes/breeder'),
   require('../routes/importer-exporter'),
   require('../routes/already-have-a10'),
   require('../routes/ever-imported-exported'),

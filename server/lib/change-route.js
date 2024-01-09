@@ -28,7 +28,8 @@ const changeTypes = [
     'additionalInfo',
     'uniqueIdentificationMark',
     'everImportedExported',
-    'specimenOrigin']
+    'specimenOrigin',
+    'breeder']
 
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
@@ -40,7 +41,7 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
     switch (changeType) {
         case "permitType"://Change flow
             startUrls.push(`${urlPrefix}/permit-type`)
-            if(permitTypeOption === pto.OTHER){
+            if (permitTypeOption === pto.OTHER) {
                 startUrls.push(`${urlPrefix}/other-permit-type`)//This is the only case so far for 2 start urls and it's because it's 2 pages that are basically capturing the same thing
             }
             endUrls.push(`${urlPrefix}/additional-info/${applicationIndex}`)//You must go all the way through the flow                        
@@ -99,6 +100,11 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
             break
         case "describeLivingAnimal":
             startUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            break
+        case "breeder":
+            startUrls.push(`${urlPrefix}/breeder/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/acquired-date/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/already-have-a10/${applicationIndex}`)
             break
         case "acquiredDate":
             startUrls.push(`${urlPrefix}/acquired-date/${applicationIndex}`)
