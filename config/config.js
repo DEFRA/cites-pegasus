@@ -28,6 +28,7 @@ const schema = Joi.object().keys({
   enableOtherPermitTypes: Joi.boolean(),
   enableInternalReference: Joi.boolean(),
   enableTagIdentifier: Joi.boolean(),
+  enableBreederPage: Joi.boolean(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -70,6 +71,7 @@ const config = {
   enableOtherPermitTypes: process.env.ENABLE_OTHER_PERMIT_TYPES || false,
   enableInternalReference: process.env.ENABLE_INTERNAL_REFERENCE || false,
   enableTagIdentifier: process.env.ENABLE_TAG_IDENTIFIER || false,
+  enableBreederPage: process.env.ENABLE_BREEDER_PAGE || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',

@@ -294,6 +294,17 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   if (allowPageNavigation(data.submissionProgress, "describe-specimen/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionGeneric", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, "/descriptionGeneric", "description"))
   }
+  if (allowPageNavigation(data.submissionProgress, "breeder/" + data.applicationIndex)) {
+    let textDescription = ""
+    if (typeof data.isBreeder === 'boolean') {
+      if (data.isBreeder) {
+        textDescription = commonContent.radioOptionYes
+      } else {
+        textDescription = commonContent.radioOptionNo
+      }
+    }
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'isBreeder', pageContent.rowTextAreYouTheBreeder, textDescription, "/breeder", "are you the breeder"))
+  }
   //if (data.permitType === pt.ARTICLE_10) {
   if (allowPageNavigation(data.submissionProgress, "acquired-date/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['acquiredDate-isExactDateUnknown', 'acquiredDate-approximateDate', 'acquiredDate-date'], pageContent.rowTextAcquiredDate, data.species.acquiredDate?.isExactDateUnknown ? data.species.acquiredDate?.approximateDate : getDateValue(data.species.acquiredDate), "/acquiredDate", "acquired date"))
@@ -842,6 +853,7 @@ function postFailAction(request, h, err) {
     permitDetails: submission.applications[applicationIndex].permitDetails,
     comments: submission.applications[applicationIndex].comments,
     isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId,
+    isBreeder: submission.applications[applicationIndex].isBreeder,
     submissionProgress
   }
 
@@ -919,6 +931,7 @@ module.exports = [
         comments: submission.applications[applicationIndex].comments,
         internalReference: submission.applications[applicationIndex].internalReference,
         isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId,
+        isBreeder: submission.applications[applicationIndex].isBreeder,
         mandatoryFieldIssues,
         submissionProgress
       }

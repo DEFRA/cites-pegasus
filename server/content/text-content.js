@@ -902,6 +902,7 @@ const schema = Joi.object().keys({
     rowTextMaleParentDetails: Joi.string().required(),
     rowTextFemaleParentDetails: Joi.string().required(),
     rowTextOtherDescription: Joi.string().required(),
+    rowTextAreYouTheBreeder: Joi.string().required(),
     rowTextA10SpecimenOrigin: Joi.string().required(),
     rowTextSpecimenOriginA: Joi.string().required(),
     rowTextSpecimenOriginB: Joi.string().required(),

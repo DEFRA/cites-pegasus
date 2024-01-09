@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
@@ -57,7 +57,11 @@ function createModel(errors, data) {
     }
   })
 
-  const defaultBacklink =  data.isBreeder ? `${previousPathBreeder}/${data.applicationIndex}` : `${previousPathAcquiredDate}/${data.applicationIndex}`
+  let defaultBacklink = data.isBreeder ? `${previousPathBreeder}/${data.applicationIndex}` : `${previousPathAcquiredDate}/${data.applicationIndex}`
+  if(!enableBreederPage){
+    defaultBacklink = `${previousPathAcquiredDate}/${data.applicationIndex}`
+  }
+
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
   
   const model = {

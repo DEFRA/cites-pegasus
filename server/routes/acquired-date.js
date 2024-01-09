@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { dateValidator } = require("../lib/validators")
@@ -9,6 +9,7 @@ const nunjucks = require("nunjucks")
 const pageId = "acquired-date"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
+const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathBreeder = `${urlPrefix}/breeder`
 const nextPath = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -97,7 +98,11 @@ function createModel(errors, data) {
     }
   })
 
-  const previousPath = data.sex ? previousPathBreeder : previousPathDescribeSpecimen
+  let previousPath = data.sex ? previousPathBreeder : previousPathDescribeSpecimen
+  if (!enableBreederPage){
+    previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
+  }
+
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
