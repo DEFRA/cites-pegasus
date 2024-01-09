@@ -473,7 +473,7 @@ function getSubmissionProgress(submission, includePageData) {
 
         if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
 
-            if (config.enableBreederPage) {
+            if (config.enableBreederPage && application.species.specimenType === 'animalLiving') {
                 submissionProgress.push(getPageProgess(`breeder/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isBreeder', application.isBreeder)))
 
                 if (typeof application.isBreeder !== 'boolean') {

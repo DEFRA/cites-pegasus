@@ -191,6 +191,7 @@ module.exports = [
           species.femaleParentDetails = null
           species.sex = null
           species.dateOfBirth = null
+          application.isBreeder = null
         }
 
         try {
