@@ -179,7 +179,8 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        const species = submission.applications[applicationIndex].species
+        const application = submission.applications[applicationIndex]
+        const species = application.species
 
         const animalSchema = Joi.string().required().valid('animalLiving', 'animalPart', 'animalWorked', 'animalCoral')
         const plantSchema = Joi.string().required().valid('plantLiving', 'plantWorked', 'plantProduct')
@@ -213,6 +214,7 @@ module.exports = [
           species.femaleParentDetails = null
           species.sex = null
           species.dateOfBirth = null
+          application.isBreeder = null
         }
 
         if(!isWorkedItem){
