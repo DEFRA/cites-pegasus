@@ -709,6 +709,13 @@ const schema = Joi.object().keys({
       "error.a10CertificateNumber.string.pattern.base": Joi.string().required()
     }).required()
   }).required(),
+  breeder: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isBreeder.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   everImportedExported: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -895,6 +902,7 @@ const schema = Joi.object().keys({
     rowTextMaleParentDetails: Joi.string().required(),
     rowTextFemaleParentDetails: Joi.string().required(),
     rowTextOtherDescription: Joi.string().required(),
+    rowTextAreYouTheBreeder: Joi.string().required(),
     rowTextA10SpecimenOrigin: Joi.string().required(),
     rowTextSpecimenOriginA: Joi.string().required(),
     rowTextSpecimenOriginB: Joi.string().required(),

@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
@@ -12,6 +12,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/unique-identification-mark`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
+const nextPathBreeder = `${urlPrefix}/breeder`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -348,7 +349,7 @@ module.exports = [
         if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
           redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
         } else if (submission.permitType === pt.ARTICLE_10) {
-          redirectTo = `${nextPathAcquiredDate}/${applicationIndex}`
+          redirectTo = enableBreederPage ? `${nextPathBreeder}/${applicationIndex}` : `${nextPathAcquiredDate}/${applicationIndex}`
         } else {
           redirectTo = `${nextPathImporterExporter}/${applicationIndex}`
         }
