@@ -4,7 +4,7 @@
     "phaseBannerPhase": "beta",
     "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
     "navigationSignOut": "Sign out",
-    "navigationAccountManagement": "Account Management",
+    "navigationAccountManagement": "Account management",
     "backLinkButton": "Back",
     "continueButton": "Continue",
     "saveAndContinueButton": "Save and continue",
@@ -18,7 +18,7 @@
     "agreeAndSubmitButton": "Agree and submit",
     "confirmAndContinueButton": "Confirm and continue",
     "returnYourApplicationsButton": "Return to your applications",
-    "copyAsNewApplicationButton": "Copy as new application",
+    "copyAsNewApplicationButton": "Copy as a new application",
     "errorSummaryTitlePrefix": "Error: ",
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
@@ -31,7 +31,7 @@
     "footerLinkUrlContactUs": "https://www.gov.uk/guidance/contact-apha#endangered-plant-and-animal-species-cites",
     "permitTypeDescriptionImport": "Import",
     "permitTypeDescriptionExport": "Export",
-    "permitTypeDescriptionReexport": "Re-export",
+    "permitTypeDescriptionReexport": "Re-Export",
     "permitTypeDescriptionArticle10": "Article 10",
     "permitTypeDescriptionMIC": "Musical instrument certificate",
     "permitTypeDescriptionTEC": "Travelling exhibition certificate",
@@ -70,7 +70,7 @@
     "radioOptionImportHint": "To move a specimen to the United Kingdom (or between Great Britain and Northern Ireland)",
     "radioOptionExport": "Export",
     "radioOptionExportHint": "To move a specimen out of the United Kingdom (or between Great Britain and Northern Ireland)",
-    "radioOptionReexport": "Re-export",
+    "radioOptionReexport": "Re-Export",
     "radioOptionReexportHint": "To move a previously imported specimen out of the United Kingdom (or between Great Britain and Northern Ireland)",
     "radioOptionArticle10": "Article 10",
     "radioOptionArticle10Hint": "To use any specimen of an GB/EU Annex A species for commercial purposes within the United Kingdom",
@@ -133,7 +133,7 @@
       "pageHeaderExport": "Enter your contact details",
       "pageHeaderReexport": "Enter your contact details",
       "pageHeaderArticle10": "Enter your contact details",
-      "pageBody": "These details must match the name of the person or organisation you're applying for, exactly as it appears on the import, export, or re-export permit.",
+      "pageBody": "These details must match the name of the person or organisation you're applying for, exactly as it appears on the Import, Export, or Re-export permit.",
       "inputLabelFullName": "Full name",
       "inputLabelBusinessName": "Business name",
       "inputLabelEmail": "Email address",
@@ -169,7 +169,7 @@
       "pageHeaderExport": "Enter the exporter’s contact details",
       "pageHeaderReexport": "Enter the re-exporter’s contact details",
       "pageHeaderArticle10": "Enter the applicant’s contact details",
-      "pageBody": "These details must match the name of the person or organisation you're applying for, exactly as it appears on the import, export, or re-export permit.",
+      "pageBody": "These details must match the name of the person or organisation you're applying for, exactly as it appears on the Import, Export, or Re-export permit.",
       "inputLabelFullName": "Full name and/or organisation name",
       "inputLabelBusinessName": "Business name",
       "inputLabelEmail": "Email address",
@@ -179,13 +179,13 @@
       "inputHintEmailArticle10": "This is the applicant's email address and will be stored with this submission."
     },
     "errorMessages": {
-      "error.fullName.string.empty": "Full name is required",
+      "error.fullName.string.empty": "Enter a full name",
       "error.fullName.string.max": "Full name must be 150 characters or less",
       "error.fullName.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
       "error.businessName.string.pattern.base": "Business name must only include letters a to z, numbers 0 to 9, and special characters such as commas, full stops, hyphens and apostrophes",
       "error.businessName.string.max": "Business name must be 150 characters or less",
       "error.email.string.email": "Enter an email address in the correct format, like name@example.com",
-      "error.email.string.max": "Email must be 150 characters or less"
+      "error.email.string.max": "Email address must be 150 characters or less"
     }
   },
   "postcode": {
@@ -283,21 +283,21 @@
       "inputLabelAddressLine2": "Address line 2",
       "inputLabelAddressLine3": "Address line 3 (optional)",
       "inputLabelAddressLine4": "Address line 4 (optional)",
-      "inputLabelPostcode": "Postal or zip code (if your country has one)",
+      "inputLabelPostcode": "Postcode or zip code (if your country has one)",
       "inputLabelCountry": "Country",
       "errorMessages": {
-        "error.addressLine1.string.empty": "Enter the address line 1",
+        "error.addressLine1.string.empty": "Enter address line 1",
         "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
-        "error.addressLine2.string.empty": "Enter the address line 2",
+        "error.addressLine2.string.empty": "Enter address line 2",
         "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
-        "error.addressLine3.string.empty": "Enter the address line 3",
+        "error.addressLine3.string.empty": "Enter address line 3",
         "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
-        "error.addressLine4.string.empty": "Enter the address line 4",
+        "error.addressLine4.string.empty": "Enter address line 4",
         "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
-        "error.postcode.string.empty": "Enter a postal or zip code",
-        "error.postcode.string.max": "Enter a real postal or zip code",
-        "error.postcode.string.pattern.base": "Enter a real postal or zip code",
-        "error.country.string.empty": "Enter the country",
+        "error.postcode.string.empty": "Enter a postcode or zip code",
+        "error.postcode.string.max": "Enter a real postcode or zip code",
+        "error.postcode.string.pattern.base": "Enter a real postcode or zip code",
+        "error.country.string.empty": "Enter a country",
         "error.country.string.max": "Country must be 150 characters or less"
       }
     },
@@ -446,8 +446,8 @@
     "defaultTitle": "What is the scientific name of the species?",
     "pageHeader": "What is the scientific name of the species?",
     "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
-    "bodyText2": "If you are applying for a hybrid species that is not listed, please enter 'Plant Hybrid' or 'Animal Hybrid'.",
-    "bodyText3": "Applications made using this selection will be rejected if the species name is listed.",
+    "bodyText2": "If you are applying for a hybrid species that is not listed, enter 'plant hybrid' or 'animal hybrid'.",
+    "bodyText3": "Applications made using this description will be rejected if the species name is listed.",
     "inputLabelSpeciesName": "Scientific name",
     "errorMessages": {
       "error.speciesName.string.empty": "Enter the scientific name"
@@ -456,20 +456,20 @@
   "couldNotConfirm": {
     "pageTitle": "We could not confirm the scientific name",
     "pageHeader": "We could not confirm the scientific name",
-    "bodyText1": "We have been unable to confirm your scientific name, please check your spelling is correct. If you are unable to find its name and it is a hybrid then please enter 'Plant Hybrid' or 'Animal Hybrid'.",
+    "bodyText1": "We have been unable to confirm your specimen's scientific name, check your spelling is correct. If you are unable to find its name and it is a hybrid then enter 'plant hybrid' or 'animal hybrid'.",
     "bodyText2": "You can <a target='_blank' href='https://speciesplus.net/'>check scientific names on Species+ (opens in a new tab)</a>",
     "searchAgainButton": "Search again"
   },
   "sourceCode": {
     "animal": {
-      "defaultTitle": "What is the source code?",
-      "pageHeader": "What is the source code?",
+      "defaultTitle": "Select the source code",
+      "pageHeader": "Select the source code",
       "radioOptionW": "W",
       "radioOptionWHint": "From the wild",
       "radioOptionR": "R",
       "radioOptionRHint": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
       "radioOptionD": "D",
-      "radioOptionDHint": "Animals bred in captivity by a CITES registered breeder",
+      "radioOptionDHint": "Animals bred in captivity by a CITES-registered breeder",
       "radioOptionC": "C",
       "radioOptionCHint": "Animals bred in captivity to second generation specimens or that meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-12-10-R15.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
       "radioOptionF": "F",
@@ -484,7 +484,7 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
-      "anotherSourceCodePrompt": "Choose a second source code",
+      "anotherSourceCodePrompt": "Select another source code",
       "anotherSourceCodes": [
         {
           "text": "W - From the wild",
@@ -517,7 +517,7 @@
           "showForI": true
         },
         {
-          "text": "D - Animals bred in captivity by a CITES registered breeder",
+          "text": "D - Animals bred in captivity by a CITES-registered breeder",
           "value": "D",
           "showForO": true,
           "showForI": true
@@ -531,16 +531,16 @@
       ],
       "errorMessages": {
         "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.any.only": "Enter another source code",
-        "error.anotherSourceCodeForO.any.only": "Enter another source code",
+        "error.anotherSourceCodeForI.any.only": "Select another source code",
+        "error.anotherSourceCodeForO.any.only": "Select another source code",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 300 characters or less"
       }
     },
     "plant": {
-      "defaultTitle": "What is the source code?",
-      "pageHeader": "What is the source code?",
+      "defaultTitle": "Select the source code",
+      "pageHeader": "Select the source code",
       "radioOptionW": "W",
       "radioOptionWHint": "From the wild",
       "radioOptionD": "D",
@@ -559,7 +559,7 @@
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
       "dividerText": "Or",
-      "anotherSourceCodePrompt": "Choose a second source code",
+      "anotherSourceCodePrompt": "Select another source code",
       "anotherSourceCodes": [
         {
           "text": "W - From the wild",
@@ -599,9 +599,9 @@
         }
       ],
       "errorMessages": {
-        "error.sourceCode.any.required": "Select the source code",
-        "error.anotherSourceCodeForI.any.only": "Enter another source code",
-        "error.anotherSourceCodeForO.any.only": "Enter another source code",
+        "error.sourceCode.any.required": "Select a source code",
+        "error.anotherSourceCodeForI.any.only": "Select another source code",
+        "error.anotherSourceCodeForO.any.only": "Select another source code",
         "error.enterAReason.string.empty": "Enter a reason",
         "error.enterAReason.string.pattern.base": "Reason must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.enterAReason.string.max": "Reason must be 300 characters or less"
@@ -609,8 +609,8 @@
     }
   },
   "purposeCode": {
-    "defaultTitle": "What is the purpose code?",
-    "pageHeader": "What is the purpose code?",
+    "defaultTitle": "Select a purpose code",
+    "pageHeader": "Select a purpose code",
     "radioOptionB": "B",
     "radioOptionBHint": "Breeding in captivity or artificial propagation",
     "radioOptionE": "E",
@@ -636,7 +636,7 @@
     "radioOptionZ": "Z",
     "radioOptionZHint": "Zoos",
     "errorMessages": {
-      "error.purposeCode.any.required": "Select the purpose code"
+      "error.purposeCode.any.required": "Select a purpose code"
     }
   },
   "specimenOrigin": {
@@ -657,7 +657,7 @@
   "useCertificateFor": {
     "defaultTitle": "What will you use the certificate for?",
     "pageHeader": "What will you use the certificate for?",
-    "radioOptionLegallyAcquired": "To prove that you legally acquired a specimen",
+    "radioOptionLegallyAcquired": "To prove that I legally acquired a specimen",
     "radioOptionCommercialActivities": "To use the specimen for commercial activities",
     "radioOptionNonDetrimentalPurposes": "To use the specimen for science, breeding, propagation, research, education or other non-detrimental purposes",
     "radioOptionDisplayWithoutSale": "To display the specimen to the public without sale",
@@ -679,8 +679,8 @@
     "radioOptionPlantWorked": "A worked item or finished product",
     "radioOptionPlantWorkedHint": "A specimen that has been significantly altered from its natural raw state and used for items such as furniture, jewellery, carved figures or musical instruments.",
     "errorMessages": {
-      "error.specimenType.any.only": "Select what best describes the specimen",
-      "error.specimenType.any.required": "Select what best describes the specimen"
+      "error.specimenType.any.only": "Select the option that describes your specimen best",
+      "error.specimenType.any.required": "Select the option that describes your specimen best"
     }
   },
   "tradeTermCode": {
@@ -688,7 +688,7 @@
     "pageHeader": "What is the CITES trade term code",
     "pageBody": "You can find more information on each trade term code ​in <a target='_blank' href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/968365/guid-fed0172.pdf'>Annex A of the guidance</a> (opens in a new tab)",
     "pageBody2": "If you are unsure of your CITES trade term, select ‘Not Known’",
-    "tradeTermCodeSelectDefault": "Select a trade term code...",
+    "tradeTermCodeSelectDefault": "Select a trade term code",
     "tradeTermCodeUnknown": "Not known",
     "errorMessages": {
       "error.tradeTermCode.string.empty": "Enter the trade term code",
@@ -707,7 +707,7 @@
       "error.createdDate.any.empty": "Enter the date the worked item or finished product was created, or select I do not know the exact date",
       "error.createdDate.any.future": "The date the worked item or finished product was created must be in the past",
       "error.createdDate.any.invalid": "The date the worked item or finished product was created must be a real date ",
-      "error.createdDate.any.beforeMinDate": "The date the worked item or finished product was created must be on or after 01/01/1753",
+      "error.createdDate.any.beforeMinDate": "The date the worked item or finished product was created must be on or after 1 January 1753",
       "error.createdDate-day.any.empty": "The date the worked item or finished product was created must include a day",
       "error.createdDate-day-month.any.empty": "The date the worked item or finished product was created must include a day and month",
       "error.createdDate-day-year.any.empty": "The date the worked item or finished product was created must include a day and year",
@@ -902,7 +902,7 @@
     "defaultTitle": "Are you the breeder of this specimen?",
     "pageHeader": "Are you the breeder of this specimen?",
     "errorMessages": {
-      "error.isBreeder.any.required": "Select yes if you are the breeder"
+      "error.isBreeder.any.required": "Select yes if you are the breeder of this specimen"
     }
   },
   "everImportedExported": {
@@ -989,7 +989,7 @@
   "permitDetails": {
     "defaultTitle": "Permit details",
     "pageHeader": "Permit details",
-    "headingImport": "Export or re-export permit details",
+    "headingImport": "Export or Re-Export permit details",
     "headingReexportA10": "Export into Great Britain permit details",
     "hintImportReexportA10": "This will be on the most recent permit from the country you are importing/exporting or re-exporting from, if different to the country of origin.",
     "inputLabelCountry": "Country",
@@ -999,28 +999,28 @@
     "dividerText": "Or",
     "checkboxLabelNotApplicable": "Not applicable",
     "headingCountryOfOrigin": "Country of origin",
-    "hintCountryOfOrigin": "This is the country the specimen came from, and will be on the original import/export or re-export permit.",
+    "hintCountryOfOrigin": "This is the country the specimen came from, and will be on the original Import/Export or Re-Export permit.",
     "errorMessages": {
-      "error.exportOrReexportCountry.string.empty": "Enter the country of export or re-export",
-      "error.exportOrReexportCountry.any.empty": "Enter the country of export or re-export",
-      "error.exportOrReexportCountry.any.required": "Enter the country of export or re-export",
-      "error.exportOrReexportCountry.string.max": "The country of export or re-export must be 150 characters or less",
-      "error.exportOrReexportPermitNumber.any.required": "Enter the country of export or re-export permit number",
-      "error.exportOrReexportPermitNumber.string.empty": "Enter the country of export or re-export permit number",
-      "error.exportOrReexportPermitNumber.string.pattern.base": "Export or re-export permit number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
-      "error.exportOrReexportPermitNumber.string.min": "Export or re-export permit number must be 1 character or more",
-      "error.exportOrReexportPermitNumber.string.max": "Export or re-export permit number must be 27 characters or less",
-      "error.exportOrReexportPermitIssueDate.any.empty": "Enter the export or re-export permit issue date",
-      "error.exportOrReexportPermitIssueDate.any.custom": "Enter the export or re-export permit issue date",
-      "error.exportOrReexportPermitIssueDate.any.future": "The export or re-export permit issue date must be in the past",
-      "error.exportOrReexportPermitIssueDate.any.invalid": "The export or re-export permit issue date must be a real date",
-      "error.exportOrReexportPermitIssueDate.any.beforeMinDate": "The export or re-export permit issue date must be on or after 01/01/1753",
-      "error.exportOrReexportPermitIssueDate-day.any.empty": "The export or re-export permit issue date must include a day",
-      "error.exportOrReexportPermitIssueDate-day-month.any.empty": "The export or re-export permit issue date must include a day and month",
-      "error.exportOrReexportPermitIssueDate-day-year.any.empty": "The export or re-export permit issue date must include a day and year",
-      "error.exportOrReexportPermitIssueDate-month.any.empty": "The export or re-export permit issue date must include a month",
-      "error.exportOrReexportPermitIssueDate-month-year.any.empty": "The export or re-export permit issue date must include a month and year",
-      "error.exportOrReexportPermitIssueDate-year.any.empty": "The export or re-export permit issue date must include a year",
+      "error.exportOrReexportCountry.string.empty": "Enter the country of Export or Re-Export",
+      "error.exportOrReexportCountry.any.empty": "Enter the country of Export or Re-Export",
+      "error.exportOrReexportCountry.any.required": "Enter the country of Export or Re-Export",
+      "error.exportOrReexportCountry.string.max": "The country of Export or Re-Export must be 150 characters or less",
+      "error.exportOrReexportPermitNumber.any.required": "Enter the country of Export or Re-Export permit number",
+      "error.exportOrReexportPermitNumber.string.empty": "Enter the country of Export or Re-Export permit number",
+      "error.exportOrReexportPermitNumber.string.pattern.base": "Export or Re-Export permit number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+      "error.exportOrReexportPermitNumber.string.min": "Export or Re-Export permit number must be 1 character or more",
+      "error.exportOrReexportPermitNumber.string.max": "Export or Re-Export permit number must be 27 characters or less",
+      "error.exportOrReexportPermitIssueDate.any.empty": "Enter the Export or Re-Export permit issue date",
+      "error.exportOrReexportPermitIssueDate.any.custom": "Enter the Export or Re-Export permit issue date",
+      "error.exportOrReexportPermitIssueDate.any.future": "The Export or Re-Export permit issue date must be in the past",
+      "error.exportOrReexportPermitIssueDate.any.invalid": "The Export or Re-Export permit issue date must be a real date",
+      "error.exportOrReexportPermitIssueDate.any.beforeMinDate": "The Export or Re-Export permit issue date must be on or after 1 january 1753",
+      "error.exportOrReexportPermitIssueDate-day.any.empty": "The Export or Re-Export permit issue date must include a day",
+      "error.exportOrReexportPermitIssueDate-day-month.any.empty": "The Export or Re-Export permit issue date must include a day and month",
+      "error.exportOrReexportPermitIssueDate-day-year.any.empty": "The Export or Re-Export permit issue date must include a day and year",
+      "error.exportOrReexportPermitIssueDate-month.any.empty": "The Export or Re-Export permit issue date must include a month",
+      "error.exportOrReexportPermitIssueDate-month-year.any.empty": "The Export or Re-Export permit issue date must include a month and year",
+      "error.exportOrReexportPermitIssueDate-year.any.empty": "The Export or Re-Export permit issue date must include a year",
       "error.countryOfOrigin.string.empty": "Enter the country of origin",
       "error.countryOfOrigin.any.empty": "Enter the country of origin",
       "error.countryOfOrigin.any.required": "Enter the country of origin",
@@ -1049,7 +1049,7 @@
     "pageBody1": "You should add any documents that may support your application. For example, you can upload:",
     "bulletList1Items": [
       {
-        "bulletListItem": "an export or re-export permit"
+        "bulletListItem": "an Export or Re-Export permit"
       },
       {
         "bulletListItem": "an endorsed import permit"
@@ -1070,7 +1070,7 @@
     "agentBulletListItem": "permission to act on the applicant’s behalf",
     "heading1": "Upload files",
     "pageBody2a": "You are allowed to upload up to ",
-    "pageBody2b": " files, provided that each file is less than 10MB in size and meets one of the following criteria",
+    "pageBody2b": " files. Each file must be less than 10MB in size and in one of the following formats:",
     "bulletList2Items": [
       {
         "bulletListItem": "a PDF"
@@ -1079,7 +1079,7 @@
         "bulletListItem": "a Microsoft Word document (.DOC or .DOCX)"
       },
       {
-        "bulletListItem": "an image file (JPG or PNG)"
+        "bulletListItem": "an image file (.JPG or .PNG)"
       }
     ],
     "buttonUpload": "Upload file",
@@ -1088,7 +1088,7 @@
     "buttonDelete": "Remove",
     "errorMessages": {
       "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
-      "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a word document, pdf, jpeg or png",
+      "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a .DOX, .DOCX, .PDF, .JPEG or .PNG",
       "error.fileUpload.any.existing": "A file with this name has already been uploaded",
       "error.fileUpload.any.maxfiles": "Maximum number of supporting documents reached",
       "error.fileUpload.upload.exception": "The selected file could not be uploaded – try again",
@@ -1099,10 +1099,10 @@
   "additionalInfo": {
     "defaultTitle": "Additional information",
     "pageHeader": "Additional information",
-    "headingRemarks": "Remarks",
+    "headingRemarks": "Additional comments",
     "inputHintRemarks": "Include any other comments that may support your application (optional).",
     "headingInternalReference": "Internal reference",
-    "inputHintInternalReference": "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes. (Optional)",
+    "inputHintInternalReference": "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes (optional).",
     "errorMessages": {
       "error.comments.string.max": "Comments must be 500 characters or less",
       "error.comments.string.pattern.base": "Comments must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
@@ -1113,8 +1113,8 @@
   "applicationSummary": {
     "defaultTitleCheck": "Check and confirm application details",
     "pageHeaderCheck": "Check and confirm application details",
-    "defaultTitleCopy": "Copy as new application",
-    "pageHeaderCopy": "Copy as new application",
+    "defaultTitleCopy": "Copy as a new application",
+    "pageHeaderCopy": "Copy as a new application",
     "defaultTitleView": "Application",
     "pageHeaderView": "Application",
     "textBreadcrumbs": "Your applications",
@@ -1128,7 +1128,7 @@
     "headerExporterContactDetails": "Exporter’s contact details",
     "headerReexporterContactDetails": "Reexporter’s contact details",
     "headerArticle10ContactDetails": "Applicant's contact details",
-    "errorSummaryTitle": "There are some mandatory fields that need to be completed before you can continue",
+    "errorSummaryTitle": "There are some mandatory fields that need to be completed before you can continue.",
     "rowTextFullName": "Full name",
     "rowTextFullNameAgent": "Full name and/or organisation name",
     "rowTextBusinessName": "Business name",
@@ -1183,11 +1183,11 @@
     "headerCountryOfOriginPermitDetails": "Country of origin permit details",
     "rowTextNotApplicable": "Not applicable",
     "headerAdditionalInformation": "Additional information",
-    "rowTextRemarks": "Remarks",
+    "rowTextRemarks": "Additional comments",
     "rowTextInternalReference": "Internal reference",
     "rowTextSourceCodeW": "From the wild",
     "rowTextSourceCodeR": "Reared in a controlled environment (taken as eggs or juveniles from the wild)",
-    "rowTextSourceCodeDAnimal": "Animals bred in captivity by a CITES registered breeder",
+    "rowTextSourceCodeDAnimal": "Animals bred in captivity by a CITES-registered breeder",
     "rowTextSourceCodeDPlant": "Plants artificially propagated for commercial purposes",
     "rowTextSourceCodeC": "Animals bred in captivity to second generation specimens or that meet the Commission Regulation criteria",
     "rowTextSourceCodeF": "Animals born in captivity to first generation specimens or that do not meet the Commission Regulation criteria",
@@ -1227,8 +1227,8 @@
       "permitType": {
         "defaultTitle": "Are you sure that you want to change the permit type?",
         "pageHeader": "Are you sure that you want to change the permit type?",
-        "pageBody1": "If you change the permit type, we will cancel all of your",
-        "pageBody2": " applications and you will need to start again.",
+        "pageBody1": "If you change the permit type, all your",
+        "pageBody2": " applications will be cancelled and you will need to start again.",
         "errorMessages": {
           "error.areYouSure.any.required": "Select yes if you want to change the permit type"
         }
@@ -1413,7 +1413,7 @@
     "heading1": "Filters",
     "pageBodyPermitType": "Permit type",
     "pageBodyStatus": "Status",
-    "pageBodySubmittedBy": "Submitted By",
+    "pageBodySubmittedBy": "Submitted by",
     "submittedByDescriptionMe": "Me",
     "buttonApplyFilters": "Apply filters",
     "linkTextClearFilters": "Clear filters",
