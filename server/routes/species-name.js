@@ -153,7 +153,7 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        const isChange = application.species && application.species?.speciesName !== speciesData?.scientificName
+        const isMajorChange = application.species && application.species?.kingdom !== speciesData?.kingdom //Change from plant to animal or vice versa is major, change within kingdom is minor
 
         if (!application.species) {
           application.species = {}
@@ -167,8 +167,8 @@ module.exports = [
         species.hasRestriction =  speciesData?.hasRestriction 
         species.warningMessage = speciesData?.warningMessage
 
-        if (isChange) {
-          //If changing speciesName, remove all other species data as far as the specimen description pages
+        if (isMajorChange) {
+          //If changing kingdom, remove all other species data as far as the specimen description pages
           species.sourceCode = null
           species.anotherSourceCodeForI = null
           species.anotherSourceCodeForO = null
@@ -201,11 +201,11 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        if (isChange) {
+        if (isMajorChange) {
           setDataRemoved(request)
         }
 
-        const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isMajorChange)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
