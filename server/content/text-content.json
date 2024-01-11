@@ -1236,7 +1236,7 @@
       "scientificName": {
         "defaultTitle": "Are you sure that you want to change the scientific name?",
         "pageHeader": "Are you sure that you want to change the scientific name?",
-        "pageBody1": "If you change the scientific name, you will have to enter the specimen’s details again.",
+        "pageBody1": "You will have to enter the specimens details again if you change the scientific name.",
         "errorMessages": {
           "error.areYouSure.any.required": "Select yes if you want to change the scientific name"
         }
