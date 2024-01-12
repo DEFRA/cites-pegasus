@@ -3,8 +3,6 @@ const { urlPrefix, enableTagIdentifier } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
-const { UNIQUE_MARK_REGEX } = require("../lib/regex-validation")
-const lodash = require('lodash')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
@@ -120,7 +118,7 @@ function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, err
     input: {
       id: inputId,
       name: inputId,
-      classes: "govuk-input govuk-input--width-10",// uppercase", //TODO Are we forcing uppercase or not?
+      classes: "govuk-input govuk-input--width-10",
       label: { text: textContent.uniqueIdentificationMark.inputLabelUniqueIdentificationMark },
       ...(uniqueIdentificationMark ? { value: uniqueIdentificationMark } : {}),
       errorMessage: getFieldError(errorList, "#" + inputId)
@@ -133,7 +131,7 @@ function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, err
 const getUniqueIdentificationMarkInputSchema = (uniqueIdentificationMarkType) => {
   return Joi.when('uniqueIdentificationMarkType', {
     is: uniqueIdentificationMarkType,
-    then: Joi.string().required().min(3).max(150).regex(UNIQUE_MARK_REGEX)
+    then: Joi.string().required().min(3).max(150)
   });
 }
 
@@ -220,7 +218,7 @@ module.exports = [
 
         const isMinorChange = species.kingdom === 'Plantae' || (species.uniqueIdentificationMarkType === 'unmarked') === (request.payload.uniqueIdentificationMarkType === 'unmarked')
 
-        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]//.toUpperCase()  //TODO Are we forcing uppercase or not?
+        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType].toUpperCase().replace(/ /g, '')
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")

@@ -8,7 +8,6 @@ const TOWN_COUNTY_REGEX = /^[a-zA-Z',.&‘’ -]+$/
 const ADDRESS_REGEX = /^[a-zA-Z0-9',.&‘’ -]+$/
 const ALPHA_REGEX = /^[a-zA-Z]+$/
 const COMMENTS_REGEX = /^[a-zA-Z0-9' ,.‘’£$%&*=+#@{[()}\]/\\:\-—\r\n;!?"]+$/
-const UNIQUE_MARK_REGEX = /^[^\s]*$/
                 
 module.exports = {
   POSTCODE_REGEX,
@@ -20,6 +19,5 @@ module.exports = {
   TOWN_COUNTY_REGEX,
   ADDRESS_REGEX,
   ALPHA_REGEX,
-  COMMENTS_REGEX,
-  UNIQUE_MARK_REGEX
+  COMMENTS_REGEX
 }
