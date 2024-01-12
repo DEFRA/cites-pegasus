@@ -3,7 +3,6 @@ const { urlPrefix, enableTagIdentifier } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
-const lodash = require('lodash')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
@@ -219,7 +218,7 @@ module.exports = [
 
         const isMinorChange = species.kingdom === 'Plantae' || (species.uniqueIdentificationMarkType === 'unmarked') === (request.payload.uniqueIdentificationMarkType === 'unmarked')
 
-        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]
+        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType].toUpperCase().replace(/ /g, '')
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
