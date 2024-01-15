@@ -218,7 +218,7 @@ module.exports = [
 
         const isMinorChange = species.kingdom === 'Plantae' || (species.uniqueIdentificationMarkType === 'unmarked') === (request.payload.uniqueIdentificationMarkType === 'unmarked')
 
-        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType].toUpperCase().replace(/ /g, '')
+        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
