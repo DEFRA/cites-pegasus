@@ -2,8 +2,10 @@ const Joi = require('joi')
 const { urlPrefix, enableDeliveryType } = require('../../config/config')
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
+const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
+const nunjucks = require("nunjucks")
 const pageId = 'select-delivery-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/confirm-address/applicant`
@@ -15,26 +17,12 @@ function createModel(errors, data) {
     const pageContent = textContent.selectDeliveryAddress;
 
     const applicantAddressSummary = getAddressSummary(data.applicantAddress)
-    
-    let deliveryAddressOptionItems = [{
-        value: "applicant",
-        //text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
-        text: applicantAddressSummary,
-        checked: isChecked(data.deliveryAddressOption, "applicant")
-    }]
-
-    deliveryAddressOptionItems.push({
-        value: "different",
-        text: pageContent.radioOptionDeliverToDifferentAddress,
-        checked: isChecked(data.deliveryAddressOption, "different")
-    })
-
 
     let errorList = null
     if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-        const fields = ['deliveryAddressOption']
+        const fields = ['deliveryAddressOption', 'deliveryName']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
             if (fieldError) {
@@ -45,6 +33,44 @@ function createModel(errors, data) {
             }
         })
     }
+
+    const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
+
+    nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+    
+    const deliveryNameInput = nunjucks.renderString(renderString, {
+        input: {
+            id: "deliveryName",
+            name: "deliveryName",
+            classes: "govuk-input govuk-input--width-20",
+            autocomplete: "on",
+            label: {
+                text: pageContent.inputLabelDeliveryName
+            },
+            // hint: {  //TODO
+            //     text: pageContent.inputLabelDeliveryNameHint
+            // },
+            ...(data.deliveryName ? { value: data.deliveryName } : {}),
+            errorMessage: getFieldError(errorList, "#deliveryName")
+        }
+    })
+
+
+    let deliveryAddressOptionItems = [{
+        value: "applicant",
+        //text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
+        text: applicantAddressSummary,
+        checked: isChecked(data.deliveryAddressOption, "applicant"),
+        conditional: {
+            html: deliveryNameInput
+        }
+    }]
+
+    deliveryAddressOptionItems.push({
+        value: "different",
+        text: pageContent.radioOptionDeliverToDifferentAddress,
+        checked: isChecked(data.deliveryAddressOption, "different")
+    })
 
     const model = {
         backLink: previousPath,
@@ -88,7 +114,8 @@ module.exports = [{
         const pageData = {
             permitType: submission?.permitType,
             deliveryAddressOption: submission?.delivery?.addressOption || null,
-            applicantAddress: submission.applicant.address            
+            applicantAddress: submission.applicant.address,
+            deliveryName: submission?.delivery?.address?.deliveryName
         }
 
         return h.view(pageId, createModel(null, pageData));
@@ -101,7 +128,8 @@ module.exports = [{
         validate: {
             options: { abortEarly: false },
             payload: Joi.object({
-                deliveryAddressOption: Joi.string().required().valid(...deliveryAddressOptions)
+                deliveryAddressOption: Joi.string().required().valid(...deliveryAddressOptions),
+                deliveryName: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
@@ -109,7 +137,8 @@ module.exports = [{
                 const pageData = {
                     permitType: submission?.permitType,
                     deliveryAddressOption: submission?.delivery?.addressOption,
-                    applicantAddress: submission.applicant.address
+                    applicantAddress: submission.applicant.address,
+                    deliveryName: request.payload.deliveryName
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
@@ -119,15 +148,15 @@ module.exports = [{
             const submission = getSubmission(request)
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
-            const { applicationStatuses } = validateSubmission(submission, pageId)            
+            const { applicationStatuses } = validateSubmission(submission, pageId)
             const applicationIndex = getApplicationIndex(submission, applicationStatuses)
 
-            let nextPath = enableDeliveryType ?  `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
+            let nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
 
             switch (deliveryAddressOption) {
                 case 'applicant':
-                    deliveryAddress = { ...submission.applicant.address }
-                    break;                
+                    deliveryAddress = { deliveryName: request.payload.deliveryName, ...submission.applicant.address }
+                    break;
                 case 'different':
                     nextPath = `${urlPrefix}/postcode/delivery`
                     break;
@@ -143,7 +172,7 @@ module.exports = [{
                     candidateAddressData: {
                         addressSearchData: null,
                         selectedAddress: null
-                        
+
                     }
                 }
             }
@@ -158,7 +187,7 @@ module.exports = [{
             }
 
             saveDraftSubmission(request, nextPath)
-            return h.redirect(nextPath)            
+            return h.redirect(nextPath)
         }
     }
 }]

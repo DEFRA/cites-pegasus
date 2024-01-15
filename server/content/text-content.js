@@ -391,10 +391,13 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     radioOptionDeliverToApplicantAddress: Joi.string().required(),
     radioOptionDeliverToAgentAddress: Joi.string().required(),
+    inputLabelDeliveryName: Joi.string().required(),
     radioOptionDeliverToDifferentAddress: Joi.string().required(),
     errorMessages: Joi.object({
       "error.deliveryAddressOption.any.required": Joi.string().required(),
-      "error.deliveryAddressOption.any.only": Joi.string().required()
+      "error.deliveryAddressOption.any.only": Joi.string().required(),
+      "error.deliveryName.string.max": Joi.string().required(),
+      "error.deliveryName.string.pattern.base": Joi.string().required()
     }).required()
   }).required(),
   deliveryType: Joi.object({
