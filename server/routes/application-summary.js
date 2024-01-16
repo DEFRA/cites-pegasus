@@ -157,21 +157,21 @@ function getSummaryListAboutThePermit(summaryData, pageContent, appContent) {
   }
 }
 
+
 function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
   const summaryListDeliveryAddressRows = []
+  
+  const deliveryAddressDataItems = [ data.delivery.address.deliveryName,
+    data.delivery.address.addressLine1,
+    data.delivery.address.addressLine2,
+    data.delivery.address.addressLine3,
+    data.delivery.address.addressLine4,
+    data.delivery.address.countryDesc,
+    data.delivery.address.postcode
+  ].filter(Boolean)
 
-  const deliveryAddressData = {
-    addressLine1: data.delivery.address.addressLine1,
-    addressLine2: data.delivery.address.addressLine2,
-    addressLine3: data.delivery.address.addressLine3 ? data.delivery.address.addressLine3 : "",
-    addressLine4: data.delivery.address.addressLine4 ? data.delivery.address.addressLine4 : "",
-    postcode: data.delivery.address.postcode,
-    country: data.delivery.address.country,
-    countryDesc: data.delivery.address.countryDesc
-  }
-
-  const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.countryDesc} ${deliveryAddressData.postcode}`
-
+  const deliveryAddressDataValue = deliveryAddressDataItems.join(' ')
+  
   let deliveryTypeDataValue = ""
   if (enableDeliveryType) {
     switch (data.delivery.deliveryType) {

@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { findErrorList, getFieldError, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressesByPostcode } = require('../services/address-service')
@@ -36,7 +36,7 @@ function createModel(errors, data) {
     if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-        const fields = ['address']
+        const fields = ['address', 'deliveryName']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
             if (fieldError) {
@@ -62,6 +62,31 @@ function createModel(errors, data) {
         addressSelectItems.push({ value: "", text: pageContent.selectAddressPromptNoResults })
     }
 
+    const selectAddress = {
+        id: "address",
+        name: "address",
+        label: {
+            text: pageContent.selectLabelAddress
+        },
+        items: addressSelectItems,
+        classes: "govuk-!-width-two-thirds",
+        errorMessage: getFieldError(errorList, '#address')
+    }
+
+    const inputDeliveryName = {
+        id: "deliveryName",
+        name: "deliveryName",
+        label: {
+          text: pageContent.inputLabelDeliveryName,
+          classes: "govuk-label--s",
+          isPageHeading: false
+        },
+        hint: {
+          text: pageContent.inputHintDeliveryName
+        },
+        ...(data.deliveryName ? { value: data.deliveryName } : {}),
+      }
+
     // const unitsOfMeasurement = lodash.cloneDeep([{ text: pageContent.unitOfMeasurementPrompt, value: null}, ...pageContent.unitsOfMeasurement])
     // unitsOfMeasurement.forEach(e => { if (e.value === data.unitOfMeasurement) e.selected = 'true' })
 
@@ -75,16 +100,9 @@ function createModel(errors, data) {
         enterManualAddressUrl: `/enter-address/${data.contactType}`,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-        selectAddress: {
-            id: "address",
-            name: "address",
-            label: {
-                text: pageContent.selectLabelAddress
-            },
-            items: addressSelectItems,
-            classes: "govuk-!-width-two-thirds",
-            errorMessage: getFieldError(errorList, '#address')
-        },
+        selectAddress,
+        inputDeliveryName,
+        showDeliveryName: data.contactType === 'delivery'
     }
     return { ...commonContent, ...model }
 }
@@ -168,7 +186,8 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             payload: Joi.object({
-                address: Joi.string().required()
+                address: Joi.string().required(),
+                deliveryName: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null)
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
@@ -195,7 +214,7 @@ module.exports = [{
                 const otherAddressLineComponents = [localityComponents.join(", "), selectedAddress.Town, selectedAddress.County].filter(Boolean)
 
                 const selectedCountry = request.server.app.countries.find(country => country.code === 'UK')
-
+                
                 const newSubmission = {
                     [contactType]: {
                         candidateAddressData: {
@@ -214,6 +233,7 @@ module.exports = [{
                 }
                 if (contactType === "delivery") {
                     newSubmission[contactType].addressOption = "different"
+                    newSubmission[contactType].candidateAddressData.selectedAddress.deliveryName = toPascalCase(request.payload.deliveryName.trim())
                 }
 
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)

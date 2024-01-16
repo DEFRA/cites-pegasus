@@ -335,12 +335,16 @@ const schema = Joi.object().keys({
       defaultTitle: Joi.string().required(),
       pageHeader: Joi.string().required(),
       selectLabelAddress: Joi.string().required(),
+      inputLabelDeliveryName: Joi.string().required(),
+      inputHintDeliveryName: Joi.string().required(),
       selectAddressPromptNoResults: Joi.string().required(),
       selectAddressPromptSingle: Joi.string().required(),
       selectAddressPromptMultiple: Joi.string().required(),
       changePostcodeLinkText: Joi.string().required(),
       errorMessages: Joi.object({
-        "error.address.string.empty": Joi.string().required()
+        "error.address.string.empty": Joi.string().required(),
+        "error.deliveryName.string.max": Joi.string().required(),
+        "error.deliveryName.string.pattern.base": Joi.string().required()
       }).required()
     }).required(),
     agent: selectAddressSchema,

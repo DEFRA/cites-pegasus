@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryType } = require('../../config/config')
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { findErrorList, getFieldError, isChecked, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressSummary } = require('../lib/helper-functions')
@@ -152,10 +152,12 @@ module.exports = [{
             const applicationIndex = getApplicationIndex(submission, applicationStatuses)
 
             let nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
+            
+            const deliveryName = toPascalCase(request.payload.deliveryName.trim())
 
             switch (deliveryAddressOption) {
                 case 'applicant':
-                    deliveryAddress = { deliveryName: request.payload.deliveryName, ...submission.applicant.address }
+                    deliveryAddress = { deliveryName: deliveryName, ...submission.applicant.address }
                     break;
                 case 'different':
                     nextPath = `${urlPrefix}/postcode/delivery`

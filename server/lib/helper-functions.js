@@ -85,6 +85,14 @@ const getAddressSummary = (address) => {
   return addressComponents.join(', ')
 }
 
+function toPascalCase(inputString) {
+  if(inputString){
+    //return inputString.toLowerCase().replace(/(?:^|\s)\w/g, match => match.toUpperCase())
+    return inputString.toLowerCase().replace(/\b\w/g, match => match.toUpperCase())
+  }
+  return ""
+}
+
 module.exports = {
   isChecked,
   setLabelData,
@@ -104,5 +112,6 @@ module.exports = {
   getDomain,
   getFieldError,
   getErrorMessage,
-  getAddressSummary
+  getAddressSummary,
+  toPascalCase
 }

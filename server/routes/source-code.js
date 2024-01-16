@@ -226,8 +226,7 @@ function createModel(errors, data) {
           value: "U",
           text: pageContent.radioOptionU,
           hint: {
-            text: pageContent.radioOptionUHint,
-            classes: "govuk-!-font-weight-bold"
+            text: pageContent.radioOptionUHint            
           },
           label: {
             classes: "govuk-!-font-weight-bold"
