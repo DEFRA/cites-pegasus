@@ -354,6 +354,8 @@ const schema = Joi.object().keys({
   }).required(),
   enterAddress: Joi.object({
     common: Joi.object({
+      inputLabelDeliveryName: Joi.string().required(),
+      inputHintDeliveryName: Joi.string().required(),
       inputLabelAddressLine1: Joi.string().required(),
       inputLabelAddressLine2: Joi.string().required(),
       inputLabelAddressLine3: Joi.string().required(),
@@ -361,6 +363,8 @@ const schema = Joi.object().keys({
       inputLabelPostcode: Joi.string().required(),
       inputLabelCountry: Joi.string().required(),
       errorMessages: Joi.object({
+        "error.deliveryName.string.max": Joi.string().required(),
+        "error.deliveryName.string.pattern.base": Joi.string().required(),
         "error.addressLine1.string.empty": Joi.string().required(),
         "error.addressLine1.string.max": Joi.string().required(),
         "error.addressLine2.string.empty": Joi.string().required(),

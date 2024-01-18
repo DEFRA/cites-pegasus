@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix, enableDeliveryType } = require('../../config/config')
+const { urlPrefix, enableDeliveryType, enableDeliveryName } = require('../../config/config')
 const { findErrorList, getFieldError, isChecked, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
@@ -62,7 +62,7 @@ function createModel(errors, data) {
         text: applicantAddressSummary,
         checked: isChecked(data.deliveryAddressOption, "applicant"),
         conditional: {
-            html: deliveryNameInput
+            html: enableDeliveryName ? deliveryNameInput : null
         }
     }]
 
@@ -153,7 +153,7 @@ module.exports = [{
 
             let nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
             
-            const deliveryName = toPascalCase(request.payload.deliveryName.trim())
+            const deliveryName = toPascalCase(request.payload.deliveryName?.trim())
 
             switch (deliveryAddressOption) {
                 case 'applicant':

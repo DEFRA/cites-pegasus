@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableDeliveryName } = require("../../config/config")
 const { findErrorList, getFieldError, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
@@ -102,7 +102,7 @@ function createModel(errors, data) {
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
         selectAddress,
         inputDeliveryName,
-        showDeliveryName: data.contactType === 'delivery'
+        showDeliveryName: data.contactType === 'delivery' && enableDeliveryName
     }
     return { ...commonContent, ...model }
 }
@@ -196,7 +196,8 @@ module.exports = [{
                     permitType: submission?.permitType,
                     isAgent: submission?.isAgent,
                     ...submission[request.params.contactType]?.candidateAddressData.addressSearchData,
-                    ...request.payload
+                    uprn: request.payload.address,
+                    deliveryName: request.payload.deliveryName
                 }
 
                 return h.view(pageId, createModel(err, pageData)).takeover()
@@ -233,7 +234,7 @@ module.exports = [{
                 }
                 if (contactType === "delivery") {
                     newSubmission[contactType].addressOption = "different"
-                    newSubmission[contactType].candidateAddressData.selectedAddress.deliveryName = toPascalCase(request.payload.deliveryName.trim())
+                    newSubmission[contactType].candidateAddressData.selectedAddress.deliveryName = toPascalCase(request.payload.deliveryName?.trim())
                 }
 
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)

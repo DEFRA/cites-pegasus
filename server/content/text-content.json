@@ -283,6 +283,8 @@
   },
   "enterAddress": {
     "common": {
+      "inputLabelDeliveryName": "Delivery name (optional)",
+      "inputHintDeliveryName": "This name will only be used with the delivery address provided, and will not appear on the permit.",
       "inputLabelAddressLine1": "Address line 1",
       "inputLabelAddressLine2": "Address line 2",
       "inputLabelAddressLine3": "Address line 3 (optional)",
@@ -290,6 +292,8 @@
       "inputLabelPostcode": "Postcode or zip code (if your country has one)",
       "inputLabelCountry": "Country",
       "errorMessages": {
+        "error.deliveryName.string.max": "Delivery name must be 150 characters or less",
+        "error.deliveryName.string.pattern.base": "Delivery name must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
         "error.addressLine1.string.empty": "Enter address line 1",
         "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
         "error.addressLine2.string.empty": "Enter address line 2",
@@ -415,14 +419,14 @@
       "pageHeaderArticle10": "Confirm the applicant’s address"
     },
     "delivery": {
-      "defaultTitleImport": "Confirm the delivery address",
-      "defaultTitleExport": "Confirm the delivery address",
-      "defaultTitleReexport": "Confirm the delivery address",
-      "defaultTitleArticle10": "Confirm the delivery address",
-      "pageHeaderImport": "Confirm the delivery address ",
-      "pageHeaderExport": "Confirm the delivery address",
-      "pageHeaderReexport": "Confirm the delivery address",
-      "pageHeaderArticle10": "Confirm the delivery address"
+      "defaultTitleImport": "Confirm the delivery details",
+      "defaultTitleExport": "Confirm the delivery details",
+      "defaultTitleReexport": "Confirm the delivery details",
+      "defaultTitleArticle10": "Confirm the delivery details",
+      "pageHeaderImport": "Confirm the delivery details",
+      "pageHeaderExport": "Confirm the delivery details",
+      "pageHeaderReexport": "Confirm the delivery details",
+      "pageHeaderArticle10": "Confirm the delivery details"
     }
   },
   "selectDeliveryAddress": {

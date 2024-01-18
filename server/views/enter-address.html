@@ -37,9 +37,12 @@
             isPageHeading: true
           }
         }) %}
-        
+
         <p class="govuk-body">{{pageBody}}</p>
 
+        {% if showDeliveryName %}
+          {{ govukInput(inputDeliveryName) }}
+        {% endif %}
         {{ govukInput(inputAddressLine1) }}
         {{ govukInput(inputAddressLine2) }}
         {{ govukInput(inputAddressLine3) }}
