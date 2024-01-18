@@ -1,6 +1,6 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { urlPrefix, enableDeliveryName } = require("../../config/config")
+const { findErrorList, getFieldError, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -66,7 +66,7 @@ function createModel(errors, data) {
     if (errors) {
         errorList = []
         const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }
-        const fields = ['addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode', 'country']
+        const fields = ['deliveryName', 'addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode', 'country']
         fields.forEach(field => {
             const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
             if (fieldError) {
@@ -100,6 +100,20 @@ function createModel(errors, data) {
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
         internationalAddress: data.contactType !== 'delivery',
+        showDeliveryName: data.contactType === 'delivery' && enableDeliveryName,
+        inputDeliveryName: {
+            label: {
+                text: pageContent.inputLabelDeliveryName
+            },
+            hint: {
+              text: pageContent.inputHintDeliveryName
+            },
+            id: "deliveryName",
+            name: "deliveryName",
+            autocomplete: "name",
+            ...(data.deliveryName ? { value: data.deliveryName } : {}),
+            errorMessage: getFieldError(errorList, '#deliveryName')
+        },
         inputAddressLine1: {
             label: {
                 text: pageContent.inputLabelAddressLine1
@@ -215,6 +229,7 @@ module.exports = [{
         handler: async (request, h) => {
             const contactType = request.params.contactType
             const ukAddressSchema = Joi.object({
+                deliveryName: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
                 addressLine1: Joi.string().max(150).regex(ADDRESS_REGEX),
                 addressLine2: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
                 addressLine3: Joi.string().max(150).regex(TOWN_COUNTY_REGEX),
@@ -249,11 +264,13 @@ module.exports = [{
             }
 
             const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'UK'))
+            const deliveryName = toPascalCase(request.payload.deliveryName?.trim())
 
             const newSubmission = {
                 [contactType]: {
                     candidateAddressData: {
                         selectedAddress: {
+                            deliveryName,
                             addressLine1: request.payload.addressLine1.trim(),
                             addressLine2: request.payload.addressLine2.trim(),
                             addressLine3: request.payload.addressLine3.trim(),

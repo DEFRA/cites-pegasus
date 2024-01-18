@@ -5,6 +5,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -38,7 +39,7 @@
         }) %}
 
         {{ govukSelect(selectAddress) }}
-
+        
         <p class="govuk-body">
           <a href="{{changePostcodeUrl}}">{{changePostcodeLinkText}}</a>
         </p>
@@ -46,6 +47,10 @@
         <p class="govuk-body">
           <a href="{{enterManualAddressUrl}}">{{enterManualAddressLinkText}}</a>
         </p>
+
+        {% if showDeliveryName %}
+          {{ govukInput(inputDeliveryName) }}
+        {% endif %}
 
         {{ govukButton({
           text: saveAndContinueButton,

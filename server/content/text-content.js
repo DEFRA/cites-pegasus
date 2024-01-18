@@ -335,12 +335,16 @@ const schema = Joi.object().keys({
       defaultTitle: Joi.string().required(),
       pageHeader: Joi.string().required(),
       selectLabelAddress: Joi.string().required(),
+      inputLabelDeliveryName: Joi.string().required(),
+      inputHintDeliveryName: Joi.string().required(),
       selectAddressPromptNoResults: Joi.string().required(),
       selectAddressPromptSingle: Joi.string().required(),
       selectAddressPromptMultiple: Joi.string().required(),
       changePostcodeLinkText: Joi.string().required(),
       errorMessages: Joi.object({
-        "error.address.string.empty": Joi.string().required()
+        "error.address.string.empty": Joi.string().required(),
+        "error.deliveryName.string.max": Joi.string().required(),
+        "error.deliveryName.string.pattern.base": Joi.string().required()
       }).required()
     }).required(),
     agent: selectAddressSchema,
@@ -350,6 +354,8 @@ const schema = Joi.object().keys({
   }).required(),
   enterAddress: Joi.object({
     common: Joi.object({
+      inputLabelDeliveryName: Joi.string().required(),
+      inputHintDeliveryName: Joi.string().required(),
       inputLabelAddressLine1: Joi.string().required(),
       inputLabelAddressLine2: Joi.string().required(),
       inputLabelAddressLine3: Joi.string().required(),
@@ -357,6 +363,8 @@ const schema = Joi.object().keys({
       inputLabelPostcode: Joi.string().required(),
       inputLabelCountry: Joi.string().required(),
       errorMessages: Joi.object({
+        "error.deliveryName.string.max": Joi.string().required(),
+        "error.deliveryName.string.pattern.base": Joi.string().required(),
         "error.addressLine1.string.empty": Joi.string().required(),
         "error.addressLine1.string.max": Joi.string().required(),
         "error.addressLine2.string.empty": Joi.string().required(),
@@ -391,10 +399,13 @@ const schema = Joi.object().keys({
     pageHeader: Joi.string().required(),
     radioOptionDeliverToApplicantAddress: Joi.string().required(),
     radioOptionDeliverToAgentAddress: Joi.string().required(),
+    inputLabelDeliveryName: Joi.string().required(),
     radioOptionDeliverToDifferentAddress: Joi.string().required(),
     errorMessages: Joi.object({
       "error.deliveryAddressOption.any.required": Joi.string().required(),
-      "error.deliveryAddressOption.any.only": Joi.string().required()
+      "error.deliveryAddressOption.any.only": Joi.string().required(),
+      "error.deliveryName.string.max": Joi.string().required(),
+      "error.deliveryName.string.pattern.base": Joi.string().required()
     }).required()
   }).required(),
   deliveryType: Joi.object({

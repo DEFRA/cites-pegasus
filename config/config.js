@@ -29,6 +29,7 @@ const schema = Joi.object().keys({
   enableInternalReference: Joi.boolean(),
   enableTagIdentifier: Joi.boolean(),
   enableBreederPage: Joi.boolean(),
+  enableDeliveryName: Joi.boolean(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -72,6 +73,7 @@ const config = {
   enableInternalReference: process.env.ENABLE_INTERNAL_REFERENCE || false,
   enableTagIdentifier: process.env.ENABLE_TAG_IDENTIFIER || false,
   enableBreederPage: process.env.ENABLE_BREEDER_PAGE || false,
+  enableDeliveryName: process.env.ENABLE_DELIVERY_NAME || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',

@@ -25,6 +25,7 @@
           }
         }) %}
         <p>
+        {% if showDeliveryName %}<br>{{deliveryName}}{% endif %}
         {% if addressLine1 %}<br>{{addressLine1}}{% endif %}
         {% if addressLine2 %}<br>{{addressLine2}}{% endif %}
         {% if addressLine3 %}<br>{{addressLine3}}{% endif %}

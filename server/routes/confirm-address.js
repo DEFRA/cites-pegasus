@@ -61,6 +61,8 @@ function createModel(errors, data) {
         pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
         pageTitle: defaultTitle,
+        deliveryName: data.selectedAddress.deliveryName,
+        showDeliveryName: data.selectedAddress.deliveryName && data.contactType === 'delivery',
         addressLine1: data.selectedAddress.addressLine1,
         addressLine2: data.selectedAddress.addressLine2,
         addressLine3: data.selectedAddress.addressLine3,

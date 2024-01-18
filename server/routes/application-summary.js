@@ -157,20 +157,21 @@ function getSummaryListAboutThePermit(summaryData, pageContent, appContent) {
   }
 }
 
+
 function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
   const summaryListDeliveryAddressRows = []
 
-  const deliveryAddressData = {
-    addressLine1: data.delivery.address.addressLine1,
-    addressLine2: data.delivery.address.addressLine2,
-    addressLine3: data.delivery.address.addressLine3 ? data.delivery.address.addressLine3 : "",
-    addressLine4: data.delivery.address.addressLine4 ? data.delivery.address.addressLine4 : "",
-    postcode: data.delivery.address.postcode,
-    country: data.delivery.address.country,
-    countryDesc: data.delivery.address.countryDesc
-  }
+  const deliveryAddressDataItems = [
+    data.delivery.address.deliveryName,
+    data.delivery.address.addressLine1,
+    data.delivery.address.addressLine2,
+    data.delivery.address.addressLine3,
+    data.delivery.address.addressLine4,
+    data.delivery.address.countryDesc,
+    data.delivery.address.postcode
+  ].filter(Boolean)
 
-  const deliveryAddressDataValue = `${deliveryAddressData.addressLine1} ${deliveryAddressData.addressLine2} ${deliveryAddressData.addressLine3} ${deliveryAddressData.addressLine4} ${deliveryAddressData.countryDesc} ${deliveryAddressData.postcode}`
+  const deliveryAddressDataValue = deliveryAddressDataItems.join(', ')
 
   let deliveryTypeDataValue = ""
   if (enableDeliveryType) {
@@ -335,26 +336,22 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
 function getSummaryListImporterExporterDetails(summaryData, pageContent, data) {
   const summaryListImporterExporterDetailsRows = []
 
-  const importerExporterDetailsData = {
-    isImporterExporterDetails: true,
-    fullName: data.importerExporterDetails?.name,
-    country: data.permitType !== pt.IMPORT ? data.importerExporterDetails?.country : "",
-    countryDesc: data.permitType !== pt.IMPORT ? data.importerExporterDetails?.countryDesc : "",
-    address: {
-      addressLine1: data.importerExporterDetails?.addressLine1 || "",
-      addressLine2: data.importerExporterDetails?.addressLine2 || "",
-      addressLine3: data.importerExporterDetails?.addressLine3 || "",
-      addressLine4: data.importerExporterDetails?.addressLine4 || "",
-      postcode: data.importerExporterDetails?.postcode || "",
-    }
-  }
+  const addressDataItems = [
+    data.importerExporterDetails?.addressLine1,
+    data.importerExporterDetails?.addressLine2,
+    data.importerExporterDetails?.addressLine3,
+    data.importerExporterDetails?.addressLine4,
+    data.importerExporterDetails?.postcode
+  ].filter(Boolean)
 
-  const importerExporterAddressValue = `${importerExporterDetailsData.address.addressLine1} ${importerExporterDetailsData.address.addressLine2} ${importerExporterDetailsData.address.addressLine3} ${importerExporterDetailsData.address.addressLine4} ${importerExporterDetailsData.address.postcode}`
+  const addressDataValue = addressDataItems.join(', ')
+
+  const countryDesc = data.permitType !== pt.IMPORT ? data.importerExporterDetails?.countryDesc : ""
 
   if (allowPageNavigation(data.submissionProgress, "importer-exporter/" + data.applicationIndex)) {
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, importerExporterDetailsData.countryDesc, "/importerExporterDetails", "country"))
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, importerExporterDetailsData.fullName, "/importerExporterDetails", "contact details"))
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, importerExporterAddressValue, "/importerExporterDetails", "contact details"))
+    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, countryDesc, "/importerExporterDetails", "country"))
+    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, "/importerExporterDetails", "contact details"))
+    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, "/importerExporterDetails", "contact details"))
   }
   return {
     key: 'summaryListImporterExporterDetails',
@@ -390,20 +387,21 @@ function getSummaryListRemarks(summaryData, pageContent, data) {
 
 function getSummaryListContactDetails(summaryData, pageContent, data) {
   const summaryListContactDetailsRows = []
+  const addressDataItems = [
+    data.applicant.address.addressLine1,
+    data.applicant.address.addressLine2,
+    data.applicant.address.addressLine3,
+    data.applicant.address.addressLine4,
+    data.applicant.address.countryDesc,
+    data.applicant.address.postcode
+  ].filter(Boolean)
+
+  const addressDataValue = addressDataItems.join(', ')
 
   const contactDetailsData = {
     fullName: data.applicant.fullName,
     businessName: data.applicant.businessName,
     email: data.applicant.email,
-    address: {
-      addressLine1: data.applicant.address.addressLine1,
-      addressLine2: data.applicant.address.addressLine2,
-      addressLine3: data.applicant.address.addressLine3 ? data.applicant.address.addressLine3 : "",
-      addressLine4: data.applicant.address.addressLine4 ? data.applicant.address.addressLine4 : "",
-      postcode: data.applicant.address.postcode,
-      country: data.applicant.address.country,
-      countryDesc: data.applicant.address.countryDesc
-    },
     hrefPathSuffixContactDetails: "/applicantContactDetails",
     hrefPathSuffixAddress: "/applicantAddress"
   }
@@ -414,7 +412,7 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
     summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-businessName', pageContent.rowTextBusinessName, contactDetailsData.businessName, contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
   }
   summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-email', pageContent.rowTextEmailAddress, contactDetailsData.email, contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
-  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-address', pageContent.rowTextAddress, `${contactDetailsData.address.addressLine1} ${contactDetailsData.address.addressLine2} ${contactDetailsData.address.addressLine3} ${contactDetailsData.address.addressLine4} ${contactDetailsData.address.countryDesc} ${contactDetailsData.address.postcode}`, contactDetailsData.hrefPathSuffixAddress, "address"))
+  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-address', pageContent.rowTextAddress, addressDataValue, contactDetailsData.hrefPathSuffixAddress, "address"))
 
   return {
     key: 'summaryListApplicantContactDetails',
