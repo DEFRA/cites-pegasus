@@ -47,9 +47,6 @@ function createModel(errors, data) {
             label: {
                 text: pageContent.inputLabelDeliveryName
             },
-            // hint: {  //TODO
-            //     text: pageContent.inputLabelDeliveryNameHint
-            // },
             ...(data.deliveryName ? { value: data.deliveryName } : {}),
             errorMessage: getFieldError(errorList, "#deliveryName")
         }

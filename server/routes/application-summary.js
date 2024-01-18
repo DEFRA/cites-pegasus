@@ -46,7 +46,6 @@ function createApplicationSummaryModel(errors, data) {
   summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data))
   summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data))
 
-  //const breadcrumbsUrlApplicationIndex = data.clonedApplicationIndex ? data.clonedApplicationIndex : data.applicationIndex
   const breadcrumbs = getBreadcrumbs(pageContent, data, summaryType)
 
   let backLink = null;
@@ -57,8 +56,6 @@ function createApplicationSummaryModel(errors, data) {
       backLink = nextPathYourSubmission
     }
   }
-
-  //const showImporterExporterDetails = data.permitType !== pt.ARTICLE_10 && !(data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE)
 
   summaryListSections.forEach(item => applyBorderClasses(item.value))
 
@@ -121,7 +118,6 @@ function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
   if (submissionRef) {
     breadcrumbs.items.push({
       text: submissionRef,
-      //href: `${previousPathMySubmission}/${data.submissionRef}`,
       href: submissionLink
     })
   }
@@ -252,7 +248,7 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
       summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForO", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForO || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForO] || ""}`, "/sourceCode", "source code"))
     }
   }
-  //if (data.permitType !== pt.ARTICLE_10) {
+  //Old logic if (data.permitType !== pt.ARTICLE_10) {
   if (allowPageNavigation(data.submissionProgress, "purpose-code/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "purposeCode", pageContent.rowTextPurposeCode, `${data.species.purposeCode || ""} ${appContent.purposeCodeValueText[data.species.purposeCode] || ""}`, "/purposeCode", "purpose code"))
   }
@@ -265,12 +261,12 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   if (allowPageNavigation(data.submissionProgress, "specimen-type/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenType", pageContent.rowTextSpecimenType, appContent.specimenTypeValue[data.species.specimenType], "/specimenType", "specimen type"))
   }
-  //if (data.species.specimenType !== "animalLiving") {
+  //Old logic if (data.species.specimenType !== "animalLiving") {
   if (allowPageNavigation(data.submissionProgress, "quantity/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, quantityValue, "/quantity", "quantity"))
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? "/unmarkedSpecimens" : "/quantity", "unit of measurement"))
   }
-  //if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
+  //Old logic if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
   if (allowPageNavigation(data.submissionProgress, "created-date/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['createdDate-isExactDateUnknown', 'createdDate-approximateDate', 'createdDate-date'], pageContent.rowTextCreatedDate, data.species.createdDate?.isExactDateUnknown ? data.species.createdDate?.approximateDate : getDateValue(data.species.createdDate), "/createdDate", "created date"))
   }
@@ -288,10 +284,10 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
       summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "maleParentDetails", pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, "/describeLivingAnimal", "male parent details"))
       summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "femaleParentDetails", pageContent.rowTextFemaleParentDetails, data.species.femaleParentDetails, "/describeLivingAnimal", "female parent details"))
     }
-    //if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
+    //Old logic if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionLivingAnimal", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", "/describeLivingAnimal", "describe the specimen"))
   }
-  //if (data.species.specimenType !== "animalLiving" || (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) {
+  //Old logic if (data.species.specimenType !== "animalLiving" || (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) {
   if (allowPageNavigation(data.submissionProgress, "describe-specimen/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionGeneric", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, "/descriptionGeneric", "description"))
   }
@@ -306,7 +302,7 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
     }
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'isBreeder', pageContent.rowTextAreYouTheBreeder, textDescription, "/breeder", "are you the breeder"))
   }
-  //if (data.permitType === pt.ARTICLE_10) {
+  //Old logic if (data.permitType === pt.ARTICLE_10) {
   if (allowPageNavigation(data.submissionProgress, "acquired-date/" + data.applicationIndex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['acquiredDate-isExactDateUnknown', 'acquiredDate-approximateDate', 'acquiredDate-date'], pageContent.rowTextAcquiredDate, data.species.acquiredDate?.isExactDateUnknown ? data.species.acquiredDate?.approximateDate : getDateValue(data.species.acquiredDate), "/acquiredDate", "acquired date"))
   }
@@ -441,7 +437,6 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
   }
 
   if (allowPageNavigation(data.submissionProgress, "permit-details/" + data.applicationIndex)) {
-    //showPermitDetails = true
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : exportOrReexportPermitDetailData.countryDesc, "/permitDetails", "permit details"))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : exportOrReexportPermitDetailData.permitNumber, "/permitDetails", "permit details"))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(exportOrReexportPermitDetailData.permitIssueDate), "/permitDetails", "permit details"))
@@ -564,7 +559,7 @@ function createSummaryListRow(summaryData, fieldIds, label, value, href, hiddenT
 }
 
 function getDateValue(date) {
-  if (!date || !date.month || !date.year) {
+  if (!date?.month || !date?.year) {
     return ''
   }
   const day = date.day?.toString().padStart(2, '0')
@@ -913,8 +908,6 @@ module.exports = [
         summaryType: summaryType,
         applicationIndex: applicationIndex,
         cloneSource,
-        //clonedApplicationIndex: clonedApplicationIndex,
-        //submissionRef: submission.submissionRef || clonedSubmissionRef,
         submissionRef: submission.submissionRef,
         permitType: submission.permitType,
         otherPermitTypeOption: submission.otherPermitTypeOption,

@@ -88,7 +88,7 @@ function createModel(errors, data) {
 
 function getPaginationControl(totalItems, pageNo, pageSize, url) {
   if (totalItems <= pageSize) {
-    return ""
+    return null
   }
 
   const startIndex = (pageNo - 1) * pageSize
