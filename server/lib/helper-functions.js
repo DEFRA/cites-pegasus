@@ -67,7 +67,7 @@ const getFieldError = (errorList, href) => {
 }
 
 const getErrorMessage = (errorList, href) => {
-  return errorList && errorList.some((err) => err.href === href)
+  return errorList?.some((err) => err?.href === href)
     ? errorList.find((err) => err.href === href).text
     : null
 }

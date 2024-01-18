@@ -362,8 +362,9 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
+  const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
   const filterParts = [
-    `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`,
+    `_cites_organisation_value eq ${organisationIdValue}`,
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]
@@ -485,10 +486,11 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
   const top = "$top=1"
   const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,statuscode,statecode"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
-
+  const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
+      
   const filterParts = [
     `cites_submissionreference eq '${submissionRef}'`,    
-    `_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
+    `_cites_organisation_value eq ${organisationIdValue}`
   ]
 
   if(contactId) {
@@ -559,8 +561,10 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     }
     const top = "$top=1"
     const select = "$select=cites_submissionreference"
+    const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
+    
     const filterParts = [
-      `$filter=_cites_organisation_value eq ${organisationId ? `'${organisationId}'` : 'null'}`
+      `$filter=_cites_organisation_value eq ${organisationIdValue}`
     ]
 
     if(contactId) {
