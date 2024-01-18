@@ -1247,7 +1247,7 @@
       "scientificName": {
         "defaultTitle": "Are you sure that you want to change the scientific name?",
         "pageHeader": "Are you sure that you want to change the scientific name?",
-        "pageBody1": "You will have to enter the specimens details again if you change the scientific name.",
+        "pageBody1": "If you change the scientific name of your specimen to another plant, or another animal, most of your application answers about the specimen will be kept. </p> <p> If you change the scientific name of your specimen from a plant to an animal, or from an animal to a plant, you will need to answer these questions again.",
         "errorMessages": {
           "error.areYouSure.any.required": "Select yes if you want to change the scientific name"
         }

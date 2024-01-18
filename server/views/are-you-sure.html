@@ -38,7 +38,7 @@
           }
         }) %}
 
-        <p>{{pageBody}}</p>
+        <p>{{pageBody | safe}}</p>
         {{ govukRadios(inputAreYouSure) }}
 
         {{ govukButton({
