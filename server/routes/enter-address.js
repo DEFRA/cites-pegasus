@@ -264,13 +264,12 @@ module.exports = [{
             }
 
             const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'UK'))
-            const deliveryName = toPascalCase(request.payload.deliveryName?.trim())
-
+            
             const newSubmission = {
                 [contactType]: {
                     candidateAddressData: {
                         selectedAddress: {
-                            deliveryName,
+                            deliveryName: request.payload.deliveryName?.trim(),
                             addressLine1: request.payload.addressLine1.trim(),
                             addressLine2: request.payload.addressLine2.trim(),
                             addressLine3: request.payload.addressLine3.trim(),

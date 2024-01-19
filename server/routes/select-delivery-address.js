@@ -150,7 +150,7 @@ module.exports = [{
 
             let nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
             
-            const deliveryName = toPascalCase(request.payload.deliveryName?.trim())
+            const deliveryName = request.payload.deliveryName?.trim()
 
             switch (deliveryAddressOption) {
                 case 'applicant':

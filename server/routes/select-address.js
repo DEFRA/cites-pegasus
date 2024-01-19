@@ -234,7 +234,7 @@ module.exports = [{
                 }
                 if (contactType === "delivery") {
                     newSubmission[contactType].addressOption = "different"
-                    newSubmission[contactType].candidateAddressData.selectedAddress.deliveryName = toPascalCase(request.payload.deliveryName?.trim())
+                    newSubmission[contactType].candidateAddressData.selectedAddress.deliveryName = request.payload.deliveryName?.trim()
                 }
 
                 mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
