@@ -6,7 +6,8 @@ const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("..
 const textContent = require("../content/text-content")
 const pageId = "breeder"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/describe-living-animal`
+const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
+const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const nextPathAlreadyHaveA10 = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -35,7 +36,7 @@ function createModel(errors, data) {
   const { common: commonContent, breeder: pageContent } = textContent
   const errorList = getErrors(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
 
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const defaultBacklink = data.uniqueIdentificationMarkType === 'unmarked' ? `${previousPathDescribeSpecimen}/${data.applicationIndex}` : `${previousPathDescribeLivingAnimal}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -102,7 +103,8 @@ module.exports = [
       const pageData = {
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
-        isBreeder: application.isBreeder
+        isBreeder: application.isBreeder,
+        uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -123,7 +125,9 @@ module.exports = [
 
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
-                    
+          const submission = getSubmission(request)
+          const application = submission.applications[applicationIndex]
+          
           let isBreeder = null
           switch (request.payload.isBreeder) {
             case "true":
@@ -137,7 +141,8 @@ module.exports = [
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
-            isBreeder
+            isBreeder,
+            uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()

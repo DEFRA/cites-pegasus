@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -13,6 +13,7 @@ const previousPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
+const nextPathBreeder = `${urlPrefix}/breeder`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -171,7 +172,7 @@ module.exports = [
         if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
           redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
         } else if (submission.permitType === pt.ARTICLE_10) {
-          redirectTo = `${nextPathAcquiredDate}/${applicationIndex}`
+          redirectTo = enableBreederPage && species.specimenType === 'animalLiving' ? `${nextPathBreeder}/${applicationIndex}` : `${nextPathAcquiredDate}/${applicationIndex}`
         } else {
           redirectTo = `${nextPathImporterExporter}/${applicationIndex}`
         }
