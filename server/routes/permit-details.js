@@ -61,9 +61,6 @@ function createModel(errors, data) {
       "exportOrReexportCountry",
       "exportOrReexportPermitNumber",
       "exportOrReexportPermitIssueDate",
-      // "exportOrReexportPermitIssueDate.exportOrReexportPermitIssueDate-day",
-      // "exportOrReexportPermitIssueDate.exportOrReexportPermitIssueDate-month",
-      // "exportOrReexportPermitIssueDate.exportOrReexportPermitIssueDate-year",
       "exportOrReexportPermitIssueDate-day",
       "exportOrReexportPermitIssueDate-day-month",
       "exportOrReexportPermitIssueDate-day-year",
@@ -73,9 +70,6 @@ function createModel(errors, data) {
       "countryOfOrigin",
       "countryOfOriginPermitNumber",
       "countryOfOriginPermitIssueDate",
-      // "countryOfOriginPermitIssueDate.countryOfOriginPermitIssueDate-day",
-      // "countryOfOriginPermitIssueDate.countryOfOriginPermitIssueDate-month",
-      // "countryOfOriginPermitIssueDate.countryOfOriginPermitIssueDate-year",
       "countryOfOriginPermitIssueDate-day",
       "countryOfOriginPermitIssueDate-day",
       "countryOfOriginPermitIssueDate-day-month",
@@ -354,25 +348,6 @@ function permitIssueDateValidator(value, helpers) {
 
 }
 
-// function permitIssueDateValidatorEmptyDate(value, helpers) {
-//   const { day, month, year, fieldName } = value.hasOwnProperty("exportOrReexportPermitIssueDate-day")
-//     ? {
-//       day: value["exportOrReexportPermitIssueDate-day"],
-//       month: value["exportOrReexportPermitIssueDate-month"],
-//       year: value["exportOrReexportPermitIssueDate-year"],
-//       fieldName: "exportOrReexportPermitIssueDate"
-//     } : {
-//       day: value["countryOfOriginPermitIssueDate-day"],
-//       month: value["countryOfOriginPermitIssueDate-month"],
-//       year: value["countryOfOriginPermitIssueDate-year"],
-//       fieldName: "countryOfOriginPermitIssueDate"
-//     }
-//   const dateValidatorResponse = emptyDateValidator(day, month, year, fieldName, helpers)
-
-//   return dateValidatorResponse === null ? value : dateValidatorResponse
-
-// }
-
 const payloadSchema = Joi.object({
   isExportOrReexportSameAsCountryOfOrigin: Joi.boolean().default(false),
 
@@ -498,8 +473,8 @@ module.exports = [
           "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
           "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
           "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
-          isExportOrReexportSameAsCountryOfOrigin: isExportOrReexportSameAsCountryOfOrigin,
-          isCountryOfOriginNotKnown: isCountryOfOriginNotKnown
+          isExportOrReexportSameAsCountryOfOrigin,
+          isCountryOfOriginNotKnown
         } = request.payload
 
         const requestPayload = {
@@ -537,7 +512,7 @@ module.exports = [
             exportOrReexportPermitIssueDateDay: exportOrReexportDay,
             exportOrReexportPermitIssueDateMonth: exportOrReexportMonth,
             exportOrReexportPermitIssueDateYear: exportOrReexportYear,
-            isExportOrReexportSameAsCountryOfOrigin: isExportOrReexportSameAsCountryOfOrigin,
+            isExportOrReexportSameAsCountryOfOrigin,
             countryOfOrigin: countryOfOrigin,
             countryOfOriginPermitNumber: countryOfOriginPermitNumber,
             countryOfOriginPermitIssueDateDay: countryOfOriginDay,
