@@ -779,7 +779,8 @@ const schema = Joi.object().keys({
     inputLabelPermitIssueDate: Joi.string().required(),
     inputLabelHintPermitIssueDate: Joi.string().required(),
     dividerText: Joi.string().required(),
-    checkboxLabelNotApplicable: Joi.string().required(),
+    checkboxLabelSameAsCountryOfOrigin: Joi.string().required(),
+    checkboxLabelCountryOfOriginNotKnown: Joi.string().required(),
     headingCountryOfOrigin: Joi.string().required(),
     hintCountryOfOrigin: Joi.string().required(),
     errorMessages: Joi.object({
@@ -980,6 +981,7 @@ const schema = Joi.object().keys({
     rowTextNotKnown: Joi.string().required(),
     rowTextShowHide: Joi.string().required(),
     rowTextOtherSourceCode: Joi.string().required(),
+    rowTextSameAsCountryOfOrigin: Joi.string().required(),
     returnToYourApplicationsLinkText: Joi.string().required(),
     areYouSure: Joi.object({
       permitType: areYouSureSchema,

@@ -1008,7 +1008,8 @@
     "inputLabelPermitIssueDate": "Permit issue date",
     "inputLabelHintPermitIssueDate": "For example, 27 3 2007",
     "dividerText": "Or",
-    "checkboxLabelNotApplicable": "Not applicable",
+    "checkboxLabelSameAsCountryOfOrigin": "Export or Re-Export permit details are the same as the country of origin",
+    "checkboxLabelCountryOfOriginNotKnown": "Country of origin permit details not known",
     "headingCountryOfOrigin": "Country of origin",
     "hintCountryOfOrigin": "This is the country the specimen came from, and will be on the original Import/Export or Re-Export permit.",
     "errorMessages": {
@@ -1231,6 +1232,7 @@
     "rowTextSexMale": "Male",
     "rowTextSexFemale": "Female",
     "rowTextNotKnown": "Not known",
+    "rowTextSameAsCountryOfOrigin": "Same as country of origin",
     "rowTextShowHide": "Show/Hide",
     "rowTextOtherSourceCode": "Other source code",
     "returnToYourApplicationsLinkText": "Return to your applications",

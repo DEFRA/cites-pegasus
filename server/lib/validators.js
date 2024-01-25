@@ -70,10 +70,37 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
     return null
 }
 
+function emptyDateValidator(day, month, year, fieldName, helpers) {
+
+    if (day && month && year) {
+        return helpers.error("any.notEmpty", { customLabel: fieldName })
+    }
+    if (day && month) {
+        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-day-month` })
+    }
+    if (day && year) {
+        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-day-year` })
+    }
+    if (month && year) {
+        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-month-year` })
+    }
+    if (day) {
+        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-day` })
+    }
+    if (month) {
+        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-month` })
+    }
+    if (year) {
+        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-year` })
+    }
+
+    return null
+}
 
 module.exports = {
     isValidDate,
     isPastDate,
     isAfterMinDate,
-    dateValidator
+    dateValidator,
+    emptyDateValidator
 }

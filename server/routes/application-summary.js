@@ -423,23 +423,33 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
 
 function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data) {
   const summaryListPermitDetailsExportOrReexportRows = []
+  
+  const permitIssueDate = {
+    day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
+    month: data.permitDetails?.exportOrReexportPermitIssueDate.month,
+    year: data.permitDetails?.exportOrReexportPermitIssueDate.year
+  }
 
-  const exportOrReexportPermitDetailData = {
-    notApplicable: data.permitDetails?.isExportOrReexportNotApplicable,
-    country: data.permitDetails?.exportOrReexportCountry,
-    countryDesc: data.permitDetails?.exportOrReexportCountryDesc,
-    permitNumber: data.permitDetails?.exportOrReexportPermitNumber,
-    permitIssueDate: {
-      day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
-      month: data.permitDetails?.exportOrReexportPermitIssueDate.month,
-      year: data.permitDetails?.exportOrReexportPermitIssueDate.year
-    }
+  let exportOrReexportCountryText = data.permitDetails?.exportOrReexportCountryDesc
+  let exportOrReexportPermitNumberText = data.permitDetails?.exportOrReexportPermitNumber
+  let exportOrReexportPermitIssueDateText = getDateValue(permitIssueDate)
+
+  if(data.permitDetails?.isExportOrReexportNotApplicable) { //This is for viewing historic applications data correctly
+    exportOrReexportCountryText = pageContent.rowTextNotApplicable
+    exportOrReexportPermitNumberText = pageContent.rowTextNotApplicable
+    exportOrReexportPermitIssueDateText = pageContent.rowTextNotApplicable
+  }
+
+  if(data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin) {
+    exportOrReexportCountryText = pageContent.rowTextSameAsCountryOfOrigin
+    exportOrReexportPermitNumberText = pageContent.rowTextSameAsCountryOfOrigin
+    exportOrReexportPermitIssueDateText = pageContent.rowTextSameAsCountryOfOrigin
   }
 
   if (allowPageNavigation(data.submissionProgress, "permit-details/" + data.applicationIndex)) {
-    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : exportOrReexportPermitDetailData.countryDesc, "/permitDetails", "permit details"))
-    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : exportOrReexportPermitDetailData.permitNumber, "/permitDetails", "permit details"))
-    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(exportOrReexportPermitDetailData.permitIssueDate), "/permitDetails", "permit details"))
+    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportCountryText, "/permitDetails", "permit details"))
+    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitNumberText, "/permitDetails", "permit details"))
+    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, "/permitDetails", "permit details"))
   }
   return {
     key: 'summaryListExportOrReexportPermitDetails',
@@ -455,22 +465,33 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
 function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data) {
   const summaryListPermitDetailsCountryOfOriginRows = []
 
-  const countryOfOriginPermitDetailData = {
-    notApplicable: data.permitDetails?.isCountryOfOriginNotApplicable,
-    country: data.permitDetails?.countryOfOrigin,
-    countryDesc: data.permitDetails?.countryOfOriginDesc,
-    permitNumber: data.permitDetails?.countryOfOriginPermitNumber,
-    permitIssueDate: {
-      day: data.permitDetails?.countryOfOriginPermitIssueDate.day,
-      month: data.permitDetails?.countryOfOriginPermitIssueDate.month,
-      year: data.permitDetails?.countryOfOriginPermitIssueDate.year
-    }
+  const permitIssueDate = {
+    day: data.permitDetails?.countryOfOriginPermitIssueDate.day,
+    month: data.permitDetails?.countryOfOriginPermitIssueDate.month,
+    year: data.permitDetails?.countryOfOriginPermitIssueDate.year
+  }
+
+
+  let countryOfOriginText = data.permitDetails?.countryOfOriginDesc
+  let countryOfOriginPermitNumberText = data.permitDetails?.countryOfOriginPermitNumber
+  let countryOfOriginPermitIssueDateText = getDateValue(permitIssueDate)
+
+  if (data.permitDetails?.isCountryOfOriginNotApplicable) {
+    countryOfOriginText = pageContent.rowTextNotApplicable
+    countryOfOriginPermitNumberText = pageContent.rowTextNotApplicable
+    countryOfOriginPermitIssueDateText = pageContent.rowTextNotApplicable
+  }
+
+  if (data.permitDetails?.isCountryOfOriginNotKnown) {
+    countryOfOriginText = pageContent.rowTextNotKnown
+    countryOfOriginPermitNumberText = pageContent.rowTextNotKnown
+    countryOfOriginPermitIssueDateText = pageContent.rowTextNotKnown
   }
 
   if (allowPageNavigation(data.submissionProgress, "permit-details/" + data.applicationIndex)) {
-    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOrigin', pageContent.rowTextCountry, countryOfOriginPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : countryOfOriginPermitDetailData.countryDesc, "/permitDetails", "permit details"))
-    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitNumber', pageContent.rowTextPermitNumber, countryOfOriginPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : countryOfOriginPermitDetailData.permitNumber, "/permitDetails", "permit details"))
-    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitIssueDate', pageContent.rowTextPermitIssueDate, countryOfOriginPermitDetailData.notApplicable ? pageContent.rowTextNotApplicable : getDateValue(countryOfOriginPermitDetailData.permitIssueDate), "/permitDetails", "permit details"))
+    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOrigin', pageContent.rowTextCountry, countryOfOriginText, "/permitDetails", "permit details"))
+    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitNumber', pageContent.rowTextPermitNumber, countryOfOriginPermitNumberText, "/permitDetails", "permit details"))
+    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitIssueDate', pageContent.rowTextPermitIssueDate, countryOfOriginPermitIssueDateText, "/permitDetails", "permit details"))
   }
   return {
     key: 'summaryListCountryOfOriginPermitDetails',
