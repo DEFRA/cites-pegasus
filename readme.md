@@ -1,11 +1,11 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=bugs&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=security_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-CITES Application Portal
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=sqale_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=vulnerabilities&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=security_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=reliability_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=duplicated_lines_density&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=duplicated_lines_density&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 
+CITES Application Portal
 
 # Prerequisites
 
