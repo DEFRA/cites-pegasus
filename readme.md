@@ -1,9 +1,41 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=bugs&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=security_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 CITES Application Portal
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=vulnerabilities&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=reliability_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=duplicated_lines_density&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=duplicated_lines_density&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
+
+
+# Prerequisites
+
+Node v18+
+
+# Running the application
+
+First build the application using:
+
+`$ npm run build`
+
+This will just build the 'govuk-frontend' and 'custom' sass
+
+Now the application is ready to run:
+
+`$ node index.js`
+
+## What is this?
+
+A website to capture CITES permit applications
+
+## Getting started
+
+Clone this repo and run the application as described above
+
+Check the server is running by pointing your browser to `http://localhost:8080` or whatever port you have in .env
+
 
 # Environment variables
-(Be sure to describe any environment variables here by maintaining a list like this)
+The following environment variables must be provided, for development this can be a in a .env file
 
 | name                                     | description                                            | required | default |            valid                 | notes |
 |------------------------------------------|--------------------------------------------------------|----------|---------|----------------------------------|-------|
@@ -39,32 +71,6 @@ CITES Application Portal
 | ENABLE_DELIVERY_NAME                     | Enable the delivery name field                         |    no    | false   |                                  |       |
 
 
-# Prerequisites
-
-Node v16+
-
-# Running the application
-
-First build the application using:
-
-`$ npm run build`
-
-This will just build the 'govuk-frontend' and 'custom' sass
-
-Now the application is ready to run:
-
-`$ node index.js`
-
-## What is this?
-
-A website to capture CITES permit applications
-
-## Getting started
-
-Clone this repo and run the application as described above
-
-Check the server is running by pointing your browser to `http://localhost:8080` or whatever port you have in .env
-
 ## Project structure
 
 Here's the default structure for your project files.
@@ -91,8 +97,6 @@ Here's the default structure for your project files.
 The configuration file for the server is found at `config/config.js`.
 This is where to put any config and all config should be read from the environment.
 The final config object should be validated using joi and the application should not start otherwise.
-
-A table of environment variables should be maintained in this README as above.
 
 ## Plugins
 
