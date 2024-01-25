@@ -1,3 +1,5 @@
+# CITES Application Portal
+
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=bugs&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=sqale_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=code_smells&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
@@ -6,13 +8,12 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=reliability_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=duplicated_lines_density&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
 
-CITES Application Portal
 
-# Prerequisites
+## Prerequisites
 
 Node v18+
 
-# Running the application
+## Running the application
 
 First build the application using:
 
@@ -35,7 +36,7 @@ Clone this repo and run the application as described above
 Check the server is running by pointing your browser to `http://localhost:8080` or whatever port you have in .env
 
 
-# Environment variables
+## Environment variables
 The following environment variables must be provided, for development this can be a in a .env file
 
 | name                                     | description                                            | required | default |            valid                 | notes |
