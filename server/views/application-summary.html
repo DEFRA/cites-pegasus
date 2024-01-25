@@ -55,11 +55,11 @@
         {% endif %}
 
         {% if showPermitDetails %}
-          <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
-          {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
-       
           <h2 class="govuk-heading-m">{{headerCountryOfOriginPermitDetails}}</h2>
           {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
+
+          <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
+          {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}       
         {% endif %}
 
         {% if showAdditionalInfo %}

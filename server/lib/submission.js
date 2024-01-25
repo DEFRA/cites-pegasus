@@ -159,6 +159,15 @@ function migrateSubmissionToNewSchema(submission) {
         if (app.species.uniqueIdentificationMarkType === 'unmarked') {
             app.species.uniqueIdentificationMark = null
         }
+        
+///////////        //TODO WORKING ON THIS BIT
+        //app.permitDetails.isCountryOfOriginNotKnown = app.permitDetails.isCountryOfOriginNotApplicable
+        //isExportOrReexportSameAsCountryOfOrigin
+
+        delete app.permitDetails.isCountryOfOriginNotApplicable
+        delete app.permitDetails.isExportOrReexportNotApplicable
+///////////
+
     })
 
     if (!submission.permitTypeOption) {
@@ -710,44 +719,44 @@ function getPageDataImporterExporter(importerExporterDetails) {
 function getPageDataPermitDetails(permitDetails) {
     return [
         {
-            fieldId: 'isCountryOfOriginNotApplicable',
+            fieldId: 'isCountryOfOriginNotKnown',
             isMandatory: true,
-            hasData: typeof permitDetails?.isCountryOfOriginNotApplicable === 'boolean'
+            hasData: typeof permitDetails?.isCountryOfOriginNotKnown === 'boolean'
         },
         {
             fieldId: 'countryOfOrigin',
-            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotApplicable),
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
             hasData: Boolean(permitDetails?.countryOfOrigin)
         },
         {
             fieldId: 'countryOfOriginPermitNumber',
-            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotApplicable),
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
             hasData: Boolean(permitDetails?.countryOfOriginPermitNumber)
         },
         {
             fieldId: 'countryOfOriginPermitIssueDate',
-            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotApplicable),
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
             hasData: Boolean(permitDetails?.countryOfOriginPermitIssueDate?.year)
         },
 
         {
             fieldId: 'isExportOrReexportNotApplicable',
             isMandatory: true,
-            hasData: typeof permitDetails?.isExportOrReexportNotApplicable === 'boolean'
+            hasData: typeof permitDetails?.isExportOrReexportSameAsCountryOfOrigin === 'boolean'
         },
         {
             fieldId: 'exportOrReexportCountry',
-            isMandatory: !Boolean(permitDetails?.isExportOrReexportNotApplicable),
+            isMandatory: !Boolean(permitDetails?.isExportOrReexportSameAsCountryOfOrigin),
             hasData: Boolean(permitDetails?.exportOrReexportCountry)
         },
         {
             fieldId: 'exportOrReexportPermitNumber',
-            isMandatory: !Boolean(permitDetails?.isExportOrReexportNotApplicable),
+            isMandatory: !Boolean(permitDetails?.isExportOrReexportSameAsCountryOfOrigin),
             hasData: Boolean(permitDetails?.exportOrReexportPermitNumber)
         },
         {
             fieldId: 'exportOrReexportPermitIssueDate',
-            isMandatory: !Boolean(permitDetails?.isExportOrReexportNotApplicable),
+            isMandatory: !Boolean(permitDetails?.isExportOrReexportSameAsCountryOfOrigin),
             hasData: Boolean(permitDetails?.exportOrReexportPermitIssueDate?.year)
         }
     ]
