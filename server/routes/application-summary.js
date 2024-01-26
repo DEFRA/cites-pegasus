@@ -342,10 +342,10 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data) {
 
   const addressDataValue = addressDataItems.join(', ')
 
-  const countryDesc = data.permitType !== pt.IMPORT ? data.importerExporterDetails?.countryDesc : ""
-
   if (allowPageNavigation(data.submissionProgress, "importer-exporter/" + data.applicationIndex)) {
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, countryDesc, "/importerExporterDetails", "country"))
+    if (data.permitType !== pt.IMPORT) {
+      summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, data.importerExporterDetails?.countryDesc, "/importerExporterDetails", "country"))
+    }
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, "/importerExporterDetails", "contact details"))
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, "/importerExporterDetails", "contact details"))
   }
@@ -423,7 +423,7 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
 
 function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data) {
   const summaryListPermitDetailsExportOrReexportRows = []
-  
+
   const permitIssueDate = {
     day: data.permitDetails?.exportOrReexportPermitIssueDate.day,
     month: data.permitDetails?.exportOrReexportPermitIssueDate.month,
@@ -434,13 +434,13 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
   let exportOrReexportPermitNumberText = data.permitDetails?.exportOrReexportPermitNumber
   let exportOrReexportPermitIssueDateText = getDateValue(permitIssueDate)
 
-  if(data.permitDetails?.isExportOrReexportNotApplicable) { //This is for viewing historic applications data correctly
+  if (data.permitDetails?.isExportOrReexportNotApplicable) { //This is for viewing historic applications data correctly
     exportOrReexportCountryText = pageContent.rowTextNotApplicable
     exportOrReexportPermitNumberText = pageContent.rowTextNotApplicable
     exportOrReexportPermitIssueDateText = pageContent.rowTextNotApplicable
   }
 
-  if(data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin) {
+  if (data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin) {
     exportOrReexportCountryText = pageContent.rowTextSameAsCountryOfOrigin
     exportOrReexportPermitNumberText = pageContent.rowTextSameAsCountryOfOrigin
     exportOrReexportPermitIssueDateText = pageContent.rowTextSameAsCountryOfOrigin
