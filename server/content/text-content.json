@@ -1052,7 +1052,8 @@
       "error.countryOfOriginPermitIssueDate-day-year.any.empty": "Country of origin permit issue date must include a day and year",
       "error.countryOfOriginPermitIssueDate-month.any.empty": "Country of origin permit issue date must include a month",
       "error.countryOfOriginPermitIssueDate-month-year.any.empty": "Country of origin permit issue date must include a month and year",
-      "error.countryOfOriginPermitIssueDate-year.any.empty": "Country of origin permit issue date must include a year"
+      "error.countryOfOriginPermitIssueDate-year.any.empty": "Country of origin permit issue date must include a year",
+      "error.isExportOrReexportSameAsCountryOfOrigin.any.invalid": "You must enter Export or Re-Export permit details"
     }
   },
   "uploadSupportingDocuments": {

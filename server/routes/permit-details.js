@@ -76,7 +76,8 @@ function createModel(errors, data) {
       "countryOfOriginPermitIssueDate-day-year",
       "countryOfOriginPermitIssueDate-month",
       "countryOfOriginPermitIssueDate-month-year",
-      "countryOfOriginPermitIssueDate-year"
+      "countryOfOriginPermitIssueDate-year",
+      "isExportOrReexportSameAsCountryOfOrigin"
     ]
     fields.forEach((field) => {
       const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
@@ -104,7 +105,7 @@ function createModel(errors, data) {
       "countryOfOriginPermitIssueDate-day-year",
       "countryOfOriginPermitIssueDate-month",
       "countryOfOriginPermitIssueDate-month-year",
-      "countryOfOriginPermitIssueDate-year"
+      "countryOfOriginPermitIssueDate-year",
     ]
     permitIssueDateFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)
@@ -221,7 +222,8 @@ function createModel(errors, data) {
         text: pageContent.checkboxLabelSameAsCountryOfOrigin,
         checked: data.isExportOrReexportSameAsCountryOfOrigin
       }
-    ]
+    ],
+    errorMessage: getFieldError(errorList, "#isExportOrReexportSameAsCountryOfOrigin")
   }
 
   const selectCountryOfOrigin = {
@@ -349,7 +351,7 @@ function permitIssueDateValidator(value, helpers) {
 }
 
 const payloadSchema = Joi.object({
-  isExportOrReexportSameAsCountryOfOrigin: Joi.boolean().default(false),
+  //isExportOrReexportSameAsCountryOfOrigin: Joi.boolean().default(false),
 
   exportOrReexportCountry: Joi.when("isExportOrReexportSameAsCountryOfOrigin", {
     is: false,
@@ -368,11 +370,6 @@ const payloadSchema = Joi.object({
       "exportOrReexportPermitIssueDate-month": Joi.any().optional(),
       "exportOrReexportPermitIssueDate-year": Joi.any().optional()
     }).custom(permitIssueDateValidator),
-    // otherwise: Joi.object({
-    //   "exportOrReexportPermitIssueDate-day": Joi.any().optional(),
-    //   "exportOrReexportPermitIssueDate-month": Joi.any().optional(),
-    //   "exportOrReexportPermitIssueDate-year": Joi.any().optional()
-    // }).custom(permitIssueDateValidatorEmptyDate),
   }),
 
   isCountryOfOriginNotKnown: Joi.boolean().default(false),
@@ -392,13 +389,18 @@ const payloadSchema = Joi.object({
       "countryOfOriginPermitIssueDate-day": Joi.any().optional(),
       "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
       "countryOfOriginPermitIssueDate-year": Joi.any().optional()
-    }).custom(permitIssueDateValidator),
-    // otherwise: Joi.object({
-    //   "countryOfOriginPermitIssueDate-day": Joi.any().optional(),
-    //   "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
-    //   "countryOfOriginPermitIssueDate-year": Joi.any().optional()
-    // }).custom(permitIssueDateValidatorEmptyDate),
+    }).custom(permitIssueDateValidator)
   }),
+  // Ensure that both flags cannot be true at the same time
+  isExportOrReexportSameAsCountryOfOrigin: Joi.when("isCountryOfOriginNotKnown", {
+    is: true,
+    then: Joi.boolean().invalid(true),
+    otherwise: Joi.boolean().default(false)
+  }),
+  // isCountryOfOriginNotKnown: Joi.when("isExportOrReexportSameAsCountryOfOrigin", {
+  //   is: false,
+  //   then: Joi.forbidden(),
+  // })
 })
 
 module.exports = [

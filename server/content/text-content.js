@@ -823,7 +823,8 @@ const schema = Joi.object().keys({
       "error.countryOfOriginPermitIssueDate-day-year.any.empty": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate-month.any.empty": Joi.string().required(),
       "error.countryOfOriginPermitIssueDate-month-year.any.empty": Joi.string().required(),
-      "error.countryOfOriginPermitIssueDate-year.any.empty": Joi.string().required()
+      "error.countryOfOriginPermitIssueDate-year.any.empty": Joi.string().required(),
+      "error.isExportOrReexportSameAsCountryOfOrigin.any.invalid": Joi.string().required()
     }).required()
   }).required(),
   uploadSupportingDocuments: Joi.object({
