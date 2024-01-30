@@ -160,15 +160,16 @@ function migrateSubmissionToNewSchema(submission) {
             app.species.uniqueIdentificationMark = null
         }
         
-        delete app.permitDetails.isCountryOfOriginNotApplicable
-        delete app.permitDetails.isExportOrReexportNotApplicable
-
-        if(app.permitDetails.countryOfOrigin) {
-            app.permitDetails.isCountryOfOriginNotKnown = false
-        }
-
-        if(app.permitDetails.exportOrReexportCountry) {
-            app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
+        if (app.permitDetails) {
+            delete app.permitDetails.isCountryOfOriginNotApplicable
+            delete app.permitDetails.isExportOrReexportNotApplicable
+            if (app.permitDetails.countryOfOrigin) {
+                app.permitDetails.isCountryOfOriginNotKnown = false
+            }
+            
+            if (app.permitDetails.exportOrReexportCountry) {
+                app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
+            }
         }
 
     })
