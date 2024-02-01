@@ -65,6 +65,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
 
 
@@ -73,13 +74,10 @@ function createModel(errors, data) {
       name: "isMultipleSpecimens",
       fieldset: {
         legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          text: pageContent.inputLabelIsMultipleSpecimens,
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--m"
         }
-      },
-      hint: {
-        html: pageContent.pageBody
       },
       items: [
         {

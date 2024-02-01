@@ -926,7 +926,8 @@
   "multipleSpecimens": {
     "defaultTitle": "Applying for multiple specimens",
     "pageHeader": "Applying for multiple specimens",
-    "hintText": "<p>Specimens in this application will be listed on one permit.</p><p>We recommend separate permits for each specimen. This can make re-exporting or onward distribution easier.</p><p>Once you have completed this application you can make copies of it for any additional specimens, then submit the applications together.</p>",
+    "pageBody": "<p>Specimens in this application will be listed on one permit.</p><p>We recommend separate permits for each specimen. This can make re-exporting or onward distribution easier.</p><p>Once you have completed this application you can make copies of it for any additional specimens, then submit the applications together.</p>",
+    "inputLabelIsMultipleSpecimens": "Is this permit for more than one specimen?",
     "inputLabelNumberOfSpecimens": "Number of specimens",
     "radioOptionYes": "Yes, this application is for more than one specimen and I would like them on one permit",
     "radioOptionNo": "No, continue this application for one specimen",

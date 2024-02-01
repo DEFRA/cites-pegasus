@@ -737,7 +737,8 @@ const schema = Joi.object().keys({
   multipleSpecimens: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    hintText: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    inputLabelIsMultipleSpecimens: Joi.string().required(),
     inputLabelNumberOfSpecimens: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
     radioOptionNo: Joi.string().required(),
