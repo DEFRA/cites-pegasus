@@ -734,17 +734,20 @@ const schema = Joi.object().keys({
       "error.isEverImportedExported.any.required": Joi.string().required()
     }).required()
   }).required(),
-  unmarkedSpecimens: Joi.object({
+  multipleSpecimens: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageHeaderHint: Joi.string().required(),
+    hintText: Joi.string().required(),
+    inputLabelNumberOfSpecimens: Joi.string().required(),
+    radioOptionYes: Joi.string().required(),
+    radioOptionNo: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.numberOfUnmarkedSpecimens.any.empty": Joi.string().required(),
-      "error.numberOfUnmarkedSpecimens.number.base": Joi.string().required(),
-      "error.numberOfUnmarkedSpecimens.number.integer": Joi.string().required(),
-      "error.numberOfUnmarkedSpecimens.number.min": Joi.string().required(),
-      "error.numberOfUnmarkedSpecimens.number.unsafe": Joi.string().required(),
-      "error.numberOfUnmarkedSpecimens.number.max": Joi.string().required()
+      "error.numberOfSpecimens.any.empty": Joi.string().required(),
+      "error.numberOfSpecimens.number.base": Joi.string().required(),
+      "error.numberOfSpecimens.number.integer": Joi.string().required(),
+      "error.numberOfSpecimens.number.min": Joi.string().required(),
+      "error.numberOfSpecimens.number.unsafe": Joi.string().required(),
+      "error.numberOfSpecimens.number.max": Joi.string().required()
     }).required()
   }).required(),
   quantity: Joi.object({

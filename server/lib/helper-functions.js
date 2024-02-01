@@ -52,11 +52,31 @@ function findErrorList({ details }, inputFields, errorMessages) {
   )
 }
 
+function getErrorList(errors, errorMessages, fields) {
+  if (!errors) {
+    return null
+  }
+
+  const errorList = []
+  
+  fields.forEach((field) => {
+    const fieldError = findErrorList(errors, [field], errorMessages)[0]
+    if (fieldError) {
+      errorList.push({
+        text: fieldError,
+        href: `#${field}`
+      })
+    }
+  })
+
+  return errorList
+}
+
 const getDomain = (request) => {
   const protocol = request.server.info.protocol
   const host = request.server.info.host
   const port = request.server.info.port
-console.log(process)
+  console.log(process)
   // Construct the full URL
   return `${protocol}://${host}:${port}`
 }
@@ -86,7 +106,7 @@ const getAddressSummary = (address) => {
 }
 
 function toPascalCase(inputString) {
-  if(inputString){
+  if (inputString) {
     //return inputString.toLowerCase().replace(/(?:^|\s)\w/g, match => match.toUpperCase())
     return inputString.toLowerCase().replace(/\b\w/g, match => match.toUpperCase())
   }
@@ -108,7 +128,7 @@ module.exports = {
   findErrorList,
   //   formatApplicationCode,
   //   getSbiHtml,
-  //   getErrorList
+  getErrorList,
   getDomain,
   getFieldError,
   getErrorMessage,
