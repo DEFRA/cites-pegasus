@@ -1,7 +1,7 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
-const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('../lib/permit-type-helper')
+const { permitType: pt, permitTypeOption: pto, permitSubType: pst, permitType } = require('../lib/permit-type-helper')
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -159,14 +159,14 @@ function migrateSubmissionToNewSchema(submission) {
         if (app.species.uniqueIdentificationMarkType === 'unmarked') {
             app.species.uniqueIdentificationMark = null
         }
-        
+
         if (app.permitDetails) {
             delete app.permitDetails.isCountryOfOriginNotApplicable
             delete app.permitDetails.isExportOrReexportNotApplicable
             if (app.permitDetails.countryOfOrigin) {
                 app.permitDetails.isCountryOfOriginNotKnown = false
             }
-            
+
             if (app.permitDetails.exportOrReexportCountry) {
                 app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
             }
@@ -439,17 +439,21 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         if (species.specimenType === 'animalLiving') {//Living animal flow
-            submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
-
-            if (!species.uniqueIdentificationMarkType) {
-                return { submissionProgress, applicationStatuses }
+            if (submission.permitType !== permitType.ARTICLE_10) {
+                submissionProgress.push(getPageProgess(`multiple-specimens/${applicationIndex}`, applicationIndex, includePageData, getPageDataMultipleSpecimens(species)))
+                if (typeof species.isMultipleSpecimens !== 'boolean') {
+                    return { submissionProgress, applicationStatuses }
+                }
             }
 
-            if (species.uniqueIdentificationMarkType === 'unmarked') {
-                submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))
-            } else {
-                submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))
+            if (submission.permitType === permitType.ARTICLE_10 || species.numberOfUnmarkedSpecimens === 1 || species.isMultipleSpecimens === false) {
+                submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+                if (!species.uniqueIdentificationMarkType) {
+                    return { submissionProgress, applicationStatuses }
+                }
             }
+
+            submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))            
 
         } else {//Not living animal flow
             submissionProgress.push(getPageProgess(`quantity/${applicationIndex}`, applicationIndex, includePageData, getPageDataQuantity(species)))
@@ -502,7 +506,7 @@ function getSubmissionProgress(submission, includePageData) {
                 }
             } else {
                 submissionProgress.push(getPageProgess(`acquired-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataAcquiredDate(species?.acquiredDate)))
-                
+
                 if (!species.acquiredDate) {
                     return { submissionProgress, applicationStatuses }
                 }
@@ -616,6 +620,21 @@ function getPageDataSourceCode(species) {
             fieldId: 'enterAReason',
             isMandatory: species?.sourceCode === 'U',
             hasData: Boolean(species?.enterAReason)
+        }
+    ]
+}
+
+function getPageDataMultipleSpecimens(species) {
+    return [
+        {
+            fieldId: 'isMultipleSpecimens',
+            isMandatory: true,
+            hasData: Boolean(species?.isMultipleSpecimens)
+        },
+        {
+            fieldId: 'numberOfSpecimens',
+            isMandatory: species?.isMultipleSpecimens,
+            hasData: Boolean(species?.numberOfSpecimens)
         }
     ]
 }

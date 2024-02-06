@@ -9,6 +9,7 @@ const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathQuantity = `${urlPrefix}/quantity`
 const nextPathUniqueId = `${urlPrefix}/unique-identification-mark`
+const nextPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -238,8 +239,17 @@ module.exports = [
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
+
+        let redirectTo =`${nextPathQuantity}/${request.params.applicationIndex}`
+
+        if (species.specimenType === 'animalLiving'){
+          if (submission.permitType === pt.ARTICLE_10) {
+            redirectTo = `${nextPathUniqueId}/${request.params.applicationIndex}`
+          } else {
+            redirectTo = `${nextPathMultipleSpecimens}/${request.params.applicationIndex}`
+          }
+        }
         
-        const redirectTo = species.specimenType === 'animalLiving' ? `${nextPathUniqueId}/${request.params.applicationIndex}` : `${nextPathQuantity}/${request.params.applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
 

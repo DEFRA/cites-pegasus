@@ -743,6 +743,7 @@ const schema = Joi.object().keys({
     radioOptionYes: Joi.string().required(),
     radioOptionNo: Joi.string().required(),
     errorMessages: Joi.object({
+      "error.isMultipleSpecimens.any.required": Joi.string().required(),
       "error.numberOfSpecimens.any.empty": Joi.string().required(),
       "error.numberOfSpecimens.number.base": Joi.string().required(),
       "error.numberOfSpecimens.number.integer": Joi.string().required(),

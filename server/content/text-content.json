@@ -799,7 +799,7 @@
       "error.inputSR.string.min": "Unique identification mark must be 3 characters or more",
       "error.inputSI.string.empty": "Enter the specimen’s unique identification mark",
       "error.inputSI.string.max": "Unique identification mark must be 150 characters or less",
-      "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"      
+      "error.inputSI.string.min": "Unique identification mark must be 3 characters or more"
     }
   },
   "specimenDescriptionGeneric": {
@@ -932,12 +932,13 @@
     "radioOptionYes": "Yes, this application is for more than one specimen and I would like them on one permit",
     "radioOptionNo": "No, continue this application for one specimen",
     "errorMessages": {
+      "error.isMultipleSpecimens.any.required": "Select yes if this application is for more than one specimen",
       "error.numberOfSpecimens.any.empty": "Enter the number of specimens",
-      "error.numberOfSpecimens.number.base": "The number of specimens must only include numbers 0 to 9",
+      "error.numberOfSpecimens.number.base": "Enter the number of specimens, this must only include numbers from 0-9",
       "error.numberOfSpecimens.number.integer": "The number of specimens must be a whole number, like 30",
-      "error.numberOfSpecimens.number.min": "The number of specimens must be 1 or more",
-      "error.numberOfSpecimens.number.max": "The number of specimens must be 1000000 or fewer",
-      "error.numberOfSpecimens.number.unsafe": "The number of specimens must be 1000000 or fewer"
+      "error.numberOfSpecimens.number.min": "The number of specimens must be 2 or more",
+      "error.numberOfSpecimens.number.unsafe": "The number of specimens must be 1,000,000 or fewer",
+      "error.numberOfSpecimens.number.max": "The number of specimens must be 1,000,000 or fewer"
     }
   },
   "quantity": {

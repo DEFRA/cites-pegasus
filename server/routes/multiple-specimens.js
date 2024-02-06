@@ -7,8 +7,9 @@ const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'multiple-specimens'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/unique-identification-mark`
-const nextPath = `${urlPrefix}/describe-specimen`
+const previousPath = `${urlPrefix}/specimen-type`
+const nextPathUniqueIdentifier = `${urlPrefix}/unique-identification-mark`
+const nextPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -16,8 +17,8 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.multipleSpecimens
 
-  const errorList = getErrorList(errors, {...commonContent.errorMessages, ...pageContent.errorMessages}, ["isMultipleSpecimens", "numberOfSpecimens"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isMultipleSpecimens", "numberOfSpecimens"])
+
   // if (errors) {
   //   errorList = []
   //   const mergedErrorMessages = {
@@ -59,7 +60,7 @@ function createModel(errors, data) {
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -106,10 +107,10 @@ function validateNumberOfSpecimens(value, helpers) {
     return helpers.error('any.empty', { customLabel: 'numberOfSpecimens' })
   }
 
-  const schema = Joi.number().min(1).max(1000000).integer()
+  const schema = Joi.number().min(2).max(1000000).integer()
   const result = schema.validate(value)
 
-  if(result.error){
+  if (result.error) {
     return helpers.error(result.error.details[0].type, { customLabel: 'numberOfSpecimens' })
   }
 
@@ -131,19 +132,19 @@ module.exports = [
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
 
-      //TODO Put this back in
-      // try {
-      //   validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
-      // } catch (err) {
-      //   console.error(err)
-      //   return h.redirect(invalidSubmissionPath)
-      // }
+      try {
+        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
+      } catch (err) {
+        console.error(err)
+        return h.redirect(invalidSubmissionPath)
+      }
 
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
+        isMultipleSpecimens: species.isMultipleSpecimens,
         numberOfSpecimens: species.numberOfUnmarkedSpecimens
       }
 
@@ -161,7 +162,13 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          numberOfSpecimens: Joi.any().custom(validateNumberOfSpecimens)
+          isMultipleSpecimens: Joi.boolean().required(),
+          numberOfSpecimens:Joi.number().when('isMultipleSpecimens', {
+            is: true,
+            then:  Joi.number().min(2).max(1000000).integer(),
+            //then: Joi.any().custom(validateNumberOfSpecimens),
+            otherwise: Joi.number().optional().allow(null, '')
+          }) 
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
@@ -176,7 +183,8 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        submission.applications[applicationIndex].species.numberOfUnmarkedSpecimens = request.payload.numberOfSpecimens
+        submission.applications[applicationIndex].species.isMultipleSpecimens = request.payload.isMultipleSpecimens
+        submission.applications[applicationIndex].species.numberOfUnmarkedSpecimens = request.payload.isMultipleSpecimens === true ? request.payload.numberOfSpecimens : null
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
@@ -184,14 +192,19 @@ module.exports = [
           console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
-        
+
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = `${nextPath}/${applicationIndex}`
+        let redirectTo = `${nextPathUniqueIdentifier}/${applicationIndex}`
+
+        if (request.payload.isMultipleSpecimens && request.payload.numberOfSpecimens > 1) {
+          redirectTo = `${nextPathDescribeLivingAnimal}/${applicationIndex}`
+        }
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
       }

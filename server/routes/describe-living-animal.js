@@ -9,7 +9,8 @@ const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPath = `${urlPrefix}/unique-identification-mark`
+const previousPathUniqueIdentifier = `${urlPrefix}/unique-identification-mark`
+const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathBreeder = `${urlPrefix}/breeder`
@@ -109,7 +110,7 @@ function createModel(errors, data) {
     errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
   }
   
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const defaultBacklink = data.isMultipleSpecimens && data.numberOfUnmarkedSpecimens > 1 ? `${previousPathMultipleSpecimens}/${data.applicationIndex}` : `${previousPathUniqueIdentifier}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -234,7 +235,9 @@ function failAction(request, h, err) {
     maleParentDetails: request.payload.maleParentDetails,
     femaleParentDetails: request.payload.femaleParentDetails,
     dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
-    sex: request.payload.sex
+    sex: request.payload.sex,
+    isMultipleSpecimens: submission.applications[applicationIndex].species.isMultipleSpecimens,
+    numberOfUnmarkedSpecimens: submission.applications[applicationIndex].species.numberOfUnmarkedSpecimens
     //undeterminedSexReason: request.payload.undeterminedSexReason
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -273,7 +276,9 @@ module.exports = [
         femaleParentDetails: species.femaleParentDetails,
         description: species.specimenDescriptionLivingAnimal,
         dateOfBirth: { day: species.dateOfBirth?.day, month: species.dateOfBirth?.month, year: species.dateOfBirth?.year },
-        sex: species.sex
+        sex: species.sex,
+        isMultipleSpecimens: species.isMultipleSpecimens,
+        numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens
       }
 
       return h.view(pageId, createModel(null, pageData))
