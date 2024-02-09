@@ -19,7 +19,7 @@ const changeTypes = [
     'useCertificateFor',
     'acquiredDate',
     'a10CertificateNumber',
-    'unmarkedSpecimens',
+    'multipleSpecimens',
     'createdDate',
     'specimenType',
     'descriptionGeneric',
@@ -73,6 +73,12 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
         case "quantity":
             startUrls.push(`${urlPrefix}/quantity/${applicationIndex}`)
             break
+        case "multipleSpecimens":
+            startUrls.push(`${urlPrefix}/multiple-specimens/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            confirm = true
+            break
         case "sourceCode":
             startUrls.push(`${urlPrefix}/source-code/${applicationIndex}`)
             break
@@ -87,10 +93,8 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
         case "tradeTermCode":
             startUrls.push(`${urlPrefix}/trade-term-code/${applicationIndex}`)
             break
-        case "uniqueIdentificationMark"://Change flow   //DDNE
+        case "uniqueIdentificationMark":
             startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             break
         case "specimenOrigin":
             startUrls.push(`${urlPrefix}/specimen-origin/${applicationIndex}`)

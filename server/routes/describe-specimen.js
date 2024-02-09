@@ -9,11 +9,12 @@ const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
-const previousPathUnmarkedSpecimens = `${urlPrefix}/unmarked-specimens`
+const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const nextPathBreeder = `${urlPrefix}/breeder`
+
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -39,7 +40,10 @@ function createModel(errors, data) {
     })
   }
 
-  const previousPath = previousPathUniqueId
+  let previousPath = previousPathUniqueId
+  if (data.specimenType === 'animalLiving' && data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
+    previousPath = previousPathMultipleSpecimens
+  }
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -79,6 +83,9 @@ function failAction(request, h, err) {
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: applicationIndex,
     speciesName: species.speciesName,
+    isMultipleSpecimens: species.isMultipleSpecimens,
+    numberOfSpecimens: species.numberOfUnmarkedSpecimens,
+    specimenType: species.specimenType,
     ...request.payload
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -112,6 +119,9 @@ module.exports = [
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         speciesName: species.speciesName,
+        isMultipleSpecimens: species.isMultipleSpecimens,
+        numberOfSpecimens: species.numberOfUnmarkedSpecimens,
+        specimenType: species.specimenType,
         specimenDescriptionGeneric: species.specimenDescriptionGeneric
       }
 
@@ -139,7 +149,7 @@ module.exports = [
 
         const modifiedDescription = request.payload.specimenDescriptionGeneric.replace(/\r/g, '')
         const schema = Joi.object({ specimenDescriptionGeneric: Joi.string().min(5).max(500) })
-        const result = schema.validate({specimenDescriptionGeneric: modifiedDescription},  { abortEarly: false })
+        const result = schema.validate({ specimenDescriptionGeneric: modifiedDescription }, { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -169,7 +179,7 @@ module.exports = [
         }
 
         let redirectTo
-        if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
+        if (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE) {
           redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
         } else if (submission.permitType === pt.ARTICLE_10) {
           redirectTo = enableBreederPage && species.specimenType === 'animalLiving' ? `${nextPathBreeder}/${applicationIndex}` : `${nextPathAcquiredDate}/${applicationIndex}`

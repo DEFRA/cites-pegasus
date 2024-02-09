@@ -4,11 +4,13 @@ const { findErrorList, getFieldError, isChecked } = require('../lib/helper-funct
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpecimenType = `${urlPrefix}/specimen-type`
 const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
+const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
@@ -61,11 +63,18 @@ function createModel(errors, data) {
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
 
-  const previousPath = data.specimenType === 'animalLiving' ? previousPathSpecimenType : previousPathTradeTermCode
+  let previousPath = previousPathTradeTermCode
+
+  if (data.specimenType === 'animalLiving') {
+    previousPath = previousPathMultipleSpecimens
+    if (data.permitType === pt.ARTICLE_10) {
+      previousPath = previousPathSpecimenType
+    }
+  }
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -164,7 +173,8 @@ module.exports = [
         applicationIndex: applicationIndex,
         specimenType: species.specimenType,
         uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
-        uniqueIdentificationMark: species.uniqueIdentificationMark
+        uniqueIdentificationMark: species.uniqueIdentificationMark,
+        permitType: submission.permitType
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -203,7 +213,8 @@ module.exports = [
             applicationIndex: request.params.applicationIndex,
             specimenType: species.specimenType,
             uniqueIdentificationMark: uniqueIdentificationMark,
-            uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType
+            uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
+            permitType: submission.permitType
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
@@ -216,25 +227,12 @@ module.exports = [
         // const previousSpecies = previousSubmission.applications[applicationIndex].species
         const species = submission.applications[applicationIndex].species
 
-        const isMinorChange = species.kingdom === 'Plantae' || (species.uniqueIdentificationMarkType === 'unmarked') === (request.payload.uniqueIdentificationMarkType === 'unmarked')
-
         const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
 
         
-        //Didn't change from unmarked to marked or vice versa
-        if (!isMinorChange) {
-          species.numberOfUnmarkedSpecimens = null
-          species.specimenDescriptionLivingAnimal = null
-          species.specimenDescriptionGeneric = null
-          species.maleParentDetails = null
-          species.femaleParentDetails = null
-          species.sex = null
-          species.dateOfBirth = null
-        }
-
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
@@ -242,11 +240,7 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        if (!isMinorChange) {
-          setDataRemoved(request)
-        }
-
-        const exitChangeRouteUrl = checkChangeRouteExit(request, false, isMinorChange)
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
@@ -254,11 +248,9 @@ module.exports = [
 
         let redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
         if (species.specimenType === 'animalLiving') {
-          if (request.payload.uniqueIdentificationMarkType !== 'unmarked') {
-            redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
-          }
+          redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
         }
-        
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
 

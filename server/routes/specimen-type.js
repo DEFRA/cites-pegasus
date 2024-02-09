@@ -9,6 +9,7 @@ const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathQuantity = `${urlPrefix}/quantity`
 const nextPathUniqueId = `${urlPrefix}/unique-identification-mark`
+const nextPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -200,13 +201,17 @@ module.exports = [
         species.specimenType = request.payload.specimenType
 
         if(isChange){
+          species.specimenOrigin = null,
+          species.useCertificateFor = null,
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
           species.isTradeTermCode = null
           species.tradeTermCode = null
+          species.tradeTermCodeDesc = null
           species.uniqueIdentificationMarkType = null
           species.uniqueIdentificationMark = null
+          species.isMultipleSpecimens = null
           species.numberOfUnmarkedSpecimens = null
           species.specimenDescriptionLivingAnimal = null
           species.specimenDescriptionGeneric = null
@@ -238,8 +243,17 @@ module.exports = [
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
+
+        let redirectTo =`${nextPathQuantity}/${request.params.applicationIndex}`
+
+        if (species.specimenType === 'animalLiving'){
+          if (submission.permitType === pt.ARTICLE_10) {
+            redirectTo = `${nextPathUniqueId}/${request.params.applicationIndex}`
+          } else {
+            redirectTo = `${nextPathMultipleSpecimens}/${request.params.applicationIndex}`
+          }
+        }
         
-        const redirectTo = species.specimenType === 'animalLiving' ? `${nextPathUniqueId}/${request.params.applicationIndex}` : `${nextPathQuantity}/${request.params.applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
 
