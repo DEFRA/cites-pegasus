@@ -200,14 +200,6 @@ function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
 function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, data) {
   const summaryListSpecimenDetailsRows = []
 
-  // let quantityValue = null
-  // if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === "unmarked") {
-  //   quantityValue = `${data.species.numberOfUnmarkedSpecimens} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
-  // } else {
-  //   quantityValue = data.species?.quantity
-  // }
-
-
   let unitsOfMeasurementValue = null
   if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfSpecimens") {
     unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
