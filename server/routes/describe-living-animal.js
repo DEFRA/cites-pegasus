@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { findErrorList, getFieldError, isChecked, getErrorList } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
@@ -22,38 +22,21 @@ function createModel(errors, data) {
   const pageContent = textContent.describeLivingAnimal
 
   let dateOfBirthErrors = []
-  let errorList = null
+  const fields = [
+    "dateOfBirth",
+    "dateOfBirth-day",
+    "dateOfBirth-day-month",
+    "dateOfBirth-day-year",
+    "dateOfBirth-month",
+    "dateOfBirth-month-year",
+    "dateOfBirth-year",
+    "sex",
+    "maleParentDetails",
+    "femaleParentDetails",
+    "description"
+  ]
 
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = [
-      "dateOfBirth",
-      "dateOfBirth-day",
-      "dateOfBirth-day-month",
-      "dateOfBirth-day-year",
-      "dateOfBirth-month",
-      "dateOfBirth-month-year",
-      "dateOfBirth-year",
-      "sex",
-      "maleParentDetails",
-      "femaleParentDetails",
-      "description"
-    ]
-
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, fields)
 
   if (errorList) {
     const dateOfBirthFields = [

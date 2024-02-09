@@ -31,9 +31,6 @@ function mergeSubmission(request, data, path) {
 
     setYarValue(request, 'submission', mergedSubmission)
 
-//TODO REMOVE THIS
-    console.log(mergedSubmission.applications[0].species)
-    
     return mergedSubmission
 }
 
@@ -42,8 +39,6 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
-    //TODO REMOVE THIS
-    console.log(data.applications[0].species)
 }
 
 function clearSubmission(request) {

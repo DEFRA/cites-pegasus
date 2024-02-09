@@ -201,8 +201,8 @@ module.exports = [
         species.specimenType = request.payload.specimenType
 
         if(isChange){
-          species.specimenOrigin = null,
-          species.useCertificateFor = null,
+          species.specimenOrigin = null
+          species.useCertificateFor = null
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
