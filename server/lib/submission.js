@@ -31,6 +31,9 @@ function mergeSubmission(request, data, path) {
 
     setYarValue(request, 'submission', mergedSubmission)
 
+//TODO REMOVE THIS
+    console.log(mergedSubmission.applications[0].species)
+    
     return mergedSubmission
 }
 
@@ -39,6 +42,8 @@ function setSubmission(request, data, path) {
     if (path) { validateSubmission(existingSubmission, path) }
 
     setYarValue(request, 'submission', data)
+    //TODO REMOVE THIS
+    console.log(data.applications[0].species)
 }
 
 function clearSubmission(request) {
@@ -453,7 +458,11 @@ function getSubmissionProgress(submission, includePageData) {
                 }
             }
 
-            submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))            
+            if (species.isMultipleSpecimens && species.numberOfUnmarkedSpecimens > 1) {
+                submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))            
+            } else {
+                submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))            
+            }
 
         } else {//Not living animal flow
             submissionProgress.push(getPageProgess(`quantity/${applicationIndex}`, applicationIndex, includePageData, getPageDataQuantity(species)))
@@ -634,7 +643,7 @@ function getPageDataMultipleSpecimens(species) {
         {
             fieldId: 'numberOfSpecimens',
             isMandatory: species?.isMultipleSpecimens,
-            hasData: Boolean(species?.numberOfSpecimens)
+            hasData: Boolean(species?.numberOfUnmarkedSpecimens)
         }
     ]
 }

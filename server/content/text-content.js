@@ -992,6 +992,7 @@ const schema = Joi.object().keys({
     areYouSure: Joi.object({
       permitType: areYouSureSchema,
       scientificName: areYouSureSchema,
+      multipleSpecimens: areYouSureSchema,
       yourContactDetails: areYouSureSchema,
       yourAddress: areYouSureSchema,
       deliveryAddress: areYouSureSchema,

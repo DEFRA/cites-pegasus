@@ -201,13 +201,17 @@ module.exports = [
         species.specimenType = request.payload.specimenType
 
         if(isChange){
+          species.specimenOrigin = null,
+          species.useCertificateFor = null,
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
           species.isTradeTermCode = null
           species.tradeTermCode = null
+          species.tradeTermCodeDesc = null
           species.uniqueIdentificationMarkType = null
           species.uniqueIdentificationMark = null
+          species.isMultipleSpecimens = null
           species.numberOfUnmarkedSpecimens = null
           species.specimenDescriptionLivingAnimal = null
           species.specimenDescriptionGeneric = null

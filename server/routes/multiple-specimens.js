@@ -1,8 +1,8 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { getErrorList, getFieldError } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-const { checkChangeRouteExit } = require("../lib/change-route")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'multiple-specimens'
@@ -10,6 +10,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
 const nextPathUniqueIdentifier = `${urlPrefix}/unique-identification-mark`
 const nextPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
+const nextPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -183,17 +184,38 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        submission.applications[applicationIndex].species.isMultipleSpecimens = request.payload.isMultipleSpecimens
-        submission.applications[applicationIndex].species.numberOfUnmarkedSpecimens = request.payload.isMultipleSpecimens === true ? request.payload.numberOfSpecimens : null
+        const species = submission.applications[applicationIndex].species
+        
+        const isMajorChange = species.isMultipleSpecimens !== request.payload.isMultipleSpecimens
+
+        species.isMultipleSpecimens = request.payload.isMultipleSpecimens
+        species.numberOfUnmarkedSpecimens = request.payload.isMultipleSpecimens === true ? request.payload.numberOfSpecimens : null
+
+        
+        if (isMajorChange) {
+          //If changing between 1 specimen and > 1 specimen, remove unique identifier and description details
+          species.uniqueIdentificationMarkType = null
+          species.uniqueIdentificationMark = null
+          species.specimenDescriptionGeneric = null
+          species.specimenDescriptionLivingAnimal = null
+          species.maleParentDetails = null
+          species.femaleParentDetails = null
+          species.sex = null
+          species.dateOfBirth = null
+        }
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
 
-        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        if (isMajorChange) {
+          setDataRemoved(request)
+        }
+
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isMajorChange)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
@@ -202,7 +224,7 @@ module.exports = [
         let redirectTo = `${nextPathUniqueIdentifier}/${applicationIndex}`
 
         if (request.payload.isMultipleSpecimens && request.payload.numberOfSpecimens > 1) {
-          redirectTo = `${nextPathDescribeLivingAnimal}/${applicationIndex}`
+          redirectTo = `${nextPathDescribeSpecimen}/${applicationIndex}`
         }
 
         saveDraftSubmission(request, redirectTo)

@@ -200,12 +200,12 @@ function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
 function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, data) {
   const summaryListSpecimenDetailsRows = []
 
-  let quantityValue = null
-  if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === "unmarked") {
-    quantityValue = `${data.species.numberOfUnmarkedSpecimens} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
-  } else {
-    quantityValue = data.species?.quantity
-  }
+  // let quantityValue = null
+  // if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === "unmarked") {
+  //   quantityValue = `${data.species.numberOfUnmarkedSpecimens} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
+  // } else {
+  //   quantityValue = data.species?.quantity
+  // }
 
 
   let unitsOfMeasurementValue = null
@@ -263,8 +263,12 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   }
   //Old logic if (data.species.specimenType !== "animalLiving") {
   if (allowPageNavigation(data.submissionProgress, "quantity/" + data.applicationIndex)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, quantityValue, "/quantity", "quantity"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? "/unmarkedSpecimens" : "/quantity", "unit of measurement"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, data.species.quantity, "/quantity", "quantity"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, "/quantity", "unit of measurement"))
+  }
+  if (allowPageNavigation(data.submissionProgress, "multiple-specimens/" + data.applicationIndex)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, "/multipleSpecimens", "multipleSpecimens"))
+    //summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, data.species.numberOfUnmarkedSpecimens ? "/unmarkedSpecimens" : "/quantity", "unit of measurement"))
   }
   //Old logic if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
   if (allowPageNavigation(data.submissionProgress, "created-date/" + data.applicationIndex)) {
@@ -749,6 +753,8 @@ function createAreYouSureModel(errors, data) {
     pageContent = areYouSureText.permitType
   } else if (changeType === "speciesName") {
     pageContent = areYouSureText.scientificName
+  } else if (changeType === "multipleSpecimens") {
+    pageContent = areYouSureText.multipleSpecimens
   } else if (changeType === "deliveryAddress") {
     pageContent = areYouSureText.deliveryAddress
   } else if (!data.isAgent) {

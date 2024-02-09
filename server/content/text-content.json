@@ -1260,6 +1260,14 @@
           "error.areYouSure.any.required": "Select yes if you want to change the scientific name"
         }
       },
+      "multipleSpecimens": {
+        "defaultTitle": "Are you sure that you want to change the number of specimens?",
+        "pageHeader": "Are you sure that you want to change the number of specimens?",
+        "pageBody1": "If you change your answer from 1 to more than one or the other way round then you will need to answer some questions again.",
+        "errorMessages": {
+          "error.areYouSure.any.required": "Select yes if you want to change the number of specimens"
+        }
+      },
       "yourContactDetails": {
         "defaultTitle": "Are you sure that you want to change your contact details?",
         "pageHeader": "Are you sure that you want to change your contact details?",

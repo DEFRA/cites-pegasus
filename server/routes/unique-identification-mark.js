@@ -227,25 +227,12 @@ module.exports = [
         // const previousSpecies = previousSubmission.applications[applicationIndex].species
         const species = submission.applications[applicationIndex].species
 
-        const isMinorChange = species.kingdom === 'Plantae' || (species.uniqueIdentificationMarkType === 'unmarked') === (request.payload.uniqueIdentificationMarkType === 'unmarked')
-
         const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
 
         species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
 
-
-        //Didn't change from unmarked to marked or vice versa
-        if (!isMinorChange) {
-          species.numberOfUnmarkedSpecimens = null
-          species.specimenDescriptionLivingAnimal = null
-          species.specimenDescriptionGeneric = null
-          species.maleParentDetails = null
-          species.femaleParentDetails = null
-          species.sex = null
-          species.dateOfBirth = null
-        }
-
+        
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
@@ -253,11 +240,7 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        if (!isMinorChange) {
-          setDataRemoved(request)
-        }
-
-        const exitChangeRouteUrl = checkChangeRouteExit(request, false, isMinorChange)
+        const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
