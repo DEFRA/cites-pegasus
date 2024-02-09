@@ -482,7 +482,7 @@ module.exports = [
         const requestPayload = {
           exportOrReexportCountry: exportOrReexportCountry,
           exportOrReexportPermitNumber: exportOrReexportPermitNumber,
-          isExportOrReexportSameAsCountryOfOrigin: isExportOrReexportSameAsCountryOfOrigin,
+          isExportOrReexportSameAsCountryOfOrigin: isExportOrReexportSameAsCountryOfOrigin || false,
           exportOrReexportPermitIssueDate: {
             "exportOrReexportPermitIssueDate-day": exportOrReexportDay,
             "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
@@ -490,7 +490,7 @@ module.exports = [
           },
           countryOfOrigin: countryOfOrigin,
           countryOfOriginPermitNumber: countryOfOriginPermitNumber,
-          isCountryOfOriginNotKnown: isCountryOfOriginNotKnown,
+          isCountryOfOriginNotKnown: isCountryOfOriginNotKnown || false,
           countryOfOriginPermitIssueDate: {
             "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
             "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
