@@ -43,7 +43,16 @@ const contactDetailsSchema = Joi.object({
   inputHintEmailImport: Joi.string().required(),
   inputHintEmailExport: Joi.string().required(),
   inputHintEmailReexport: Joi.string().required(),
-  inputHintEmailArticle10: Joi.string().required()
+  inputHintEmailArticle10: Joi.string().required(),
+  errorMessages: Joi.object({
+    "error.fullName.string.empty": Joi.string().optional(),
+    "error.fullName.string.max": Joi.string().optional(),
+    "error.fullName.string.pattern.base": Joi.string().optional(),
+    "error.businessName.string.pattern.base": Joi.string().optional(),
+    "error.businessName.string.max": Joi.string().optional(),
+    "error.email.string.email": Joi.string().optional(),
+    "error.email.string.max": Joi.string().optional()
+  }).optional()  
 })
 
 const enterAddressSchema = Joi.object({

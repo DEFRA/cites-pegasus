@@ -176,7 +176,12 @@
       "inputHintEmailImport": "This is the importer's email address and will be stored with this submission.",
       "inputHintEmailExport": "This is the exporter's email address and will be stored with this submission.",
       "inputHintEmailReexport": "This is the re-exporter's email address and will be stored with this submission.",
-      "inputHintEmailArticle10": "This is the applicant's email address and will be stored with this submission."
+      "inputHintEmailArticle10": "This is the applicant's email address and will be stored with this submission.",
+      "errorMessages": {
+        "error.fullName.string.empty": "Enter a full name and/or organisation name",
+        "error.fullName.string.max": "Full name and/or organisation name must be 150 characters or less",
+        "error.fullName.string.pattern.base": "Full name and/or organisation name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes"
+      }
     },
     "errorMessages": {
       "error.fullName.string.empty": "Enter a full name",
