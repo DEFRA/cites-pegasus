@@ -15,3 +15,5 @@ lcov.info
 .pem
 xxkey.pem
 xxcert.pem
+xxxcerts/cert.pem
+xxxcerts/key.pem
