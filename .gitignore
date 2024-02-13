@@ -12,8 +12,4 @@ lcov.info
 .env dev
 .env test
 .env tst
-.pem
-xxkey.pem
-xxcert.pem
-xxxcerts/cert.pem
-xxxcerts/key.pem
+*.pem
