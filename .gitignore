@@ -12,3 +12,4 @@ lcov.info
 .env dev
 .env test
 .env tst
+*.pem
