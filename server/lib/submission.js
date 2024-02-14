@@ -172,9 +172,9 @@ function migrateSubmissionToNewSchema(submission) {
 
 function migrateApplicationToNewSchema(app) {
 
-    // if (app.species.numberOfUnmarkedSpecimens) {
-    //     app.species.numberOfUnmarkedSpecimens = null
-    // }
+    if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
+        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1 ? true : false
+    }
 
     if (app.species.uniqueIdentificationMarkType === 'unmarked') {
         app.species.uniqueIdentificationMark = null
