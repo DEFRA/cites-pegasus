@@ -45,16 +45,20 @@ function createSubmitApplicationModel(errors, data) {
     const internalReference = application.internalReference
     const uniqueIdentificationMark = application.species.uniqueIdentificationMark
     let unitsOfMeasurementText = null
-    if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked") {
-      unitsOfMeasurementText = `specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
-    } else if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType !== "unmarked") {
-      unitsOfMeasurementText = `specimen`
-    } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfSpecimens") {
-      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
-    } else if (application.species.unitOfMeasurement && application.species.unitOfMeasurement === "noOfPiecesOrParts") {
-      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
+    if (application.species.specimenType === "animalLiving") {
+      if (application.species.numberOfUnmarkedSpecimens > 1) {
+        unitsOfMeasurementText = `Specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
+      } else {
+        unitsOfMeasurementText = `Specimen`
+      }
     } else {
-      unitsOfMeasurementText = application.species?.unitOfMeasurement
+      if (application.species.unitOfMeasurement === "noOfSpecimens") {
+        unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
+      } else if (application.species.unitOfMeasurement === "noOfPiecesOrParts") {
+        unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
+      } else {
+        unitsOfMeasurementText = application.species?.unitOfMeasurement
+      }
     }
 
     let quantity = null

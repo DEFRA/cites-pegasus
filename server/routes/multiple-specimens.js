@@ -20,24 +20,6 @@ function createModel(errors, data) {
 
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isMultipleSpecimens", "numberOfSpecimens"])
 
-  // if (errors) {
-  //   errorList = []
-  //   const mergedErrorMessages = {
-  //     ...commonContent.errorMessages,
-  //     ...pageContent.errorMessages
-  //   }
-  //   const fields = ["numberOfSpecimens"]
-  //   fields.forEach((field) => {
-  //     const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-  //     if (fieldError) {
-  //       errorList.push({
-  //         text: fieldError,
-  //         href: `#${field}`
-  //       })
-  //     }
-  //   })
-  // }
-
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
