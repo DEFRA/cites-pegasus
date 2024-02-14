@@ -150,29 +150,7 @@ function migrateSubmissionToNewSchema(submission) {
         submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
-    submission.applications.forEach(app => {
-
-        if (app.species.numberOfUnmarkedSpecimens) {
-            app.species.numberOfUnmarkedSpecimens = null
-        }
-
-        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
-            app.species.uniqueIdentificationMark = null
-        }
-
-        if (app.permitDetails) {
-            delete app.permitDetails.isCountryOfOriginNotApplicable
-            delete app.permitDetails.isExportOrReexportNotApplicable
-            if (app.permitDetails.countryOfOrigin) {
-                app.permitDetails.isCountryOfOriginNotKnown = false
-            }
-
-            if (app.permitDetails.exportOrReexportCountry) {
-                app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
-            }
-        }
-
-    })
+    submission.applications.forEach(migrateApplicationToNewSchema)
 
     if (!submission.permitTypeOption) {
         switch (submission.permitType) {
@@ -188,6 +166,29 @@ function migrateSubmissionToNewSchema(submission) {
             case "article10":
                 submission.permitTypeOption = 'article10'
                 break
+        }
+    }
+}
+
+function migrateApplicationToNewSchema(app) {
+
+    // if (app.species.numberOfUnmarkedSpecimens) {
+    //     app.species.numberOfUnmarkedSpecimens = null
+    // }
+
+    if (app.species.uniqueIdentificationMarkType === 'unmarked') {
+        app.species.uniqueIdentificationMark = null
+    }
+
+    if (app.permitDetails) {
+        delete app.permitDetails.isCountryOfOriginNotApplicable
+        delete app.permitDetails.isExportOrReexportNotApplicable
+        if (app.permitDetails.countryOfOrigin) {
+            app.permitDetails.isCountryOfOriginNotKnown = false
+        }
+
+        if (app.permitDetails.exportOrReexportCountry) {
+            app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
         }
     }
 }
@@ -454,9 +455,9 @@ function getSubmissionProgress(submission, includePageData) {
             }
 
             if (species.isMultipleSpecimens && species.numberOfUnmarkedSpecimens > 1) {
-                submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))            
+                submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))
             } else {
-                submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))            
+                submissionProgress.push(getPageProgess(`describe-living-animal/${applicationIndex}`, applicationIndex, includePageData, getPageDataDescribeLivingAnimal(species)))
             }
 
         } else {//Not living animal flow
@@ -633,7 +634,7 @@ function getPageDataMultipleSpecimens(species) {
         {
             fieldId: 'isMultipleSpecimens',
             isMandatory: true,
-            hasData: Boolean(species?.isMultipleSpecimens)
+            hasData: typeof species?.isMultipleSpecimens === 'boolean'
         },
         {
             fieldId: 'numberOfSpecimens',
