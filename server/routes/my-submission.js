@@ -8,7 +8,7 @@ const textContent = require('../content/text-content')
 const pageId = 'my-submission'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/my-submissions`
-const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted`//TO DO
+const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted`
 const invalidSubmissionPath = `${urlPrefix}/`
 const pageSize = 15
 
