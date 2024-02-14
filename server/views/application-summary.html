@@ -36,6 +36,7 @@
     <div class="govuk-grid-column-full">
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
         <h1 class="govuk-heading-l">{{pageHeader}}</h1>
+        <p>{{hintIncomplete}}</p>
 
         <h2 class="govuk-heading-m ">{{headerPermit}}</h2>
         {{ govukSummaryList (summaryListAboutThePermit) }}
