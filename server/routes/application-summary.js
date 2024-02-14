@@ -75,6 +75,11 @@ function createApplicationSummaryModel(errors, data) {
     return result
   }, {})
 
+  let hintIncomplete = ''
+  if(data.mandatoryFieldIssues.length > 0 && !['view-submitted'].includes(summaryType)) {
+    hintIncomplete = pageContent.hintIncomplete
+  }
+
   const model = {
     backLink,
     breadcrumbs: ['view-submitted', 'copy-as-new'].includes(summaryType) ? breadcrumbs : "",
@@ -83,6 +88,7 @@ function createApplicationSummaryModel(errors, data) {
     buttonText: appContent.buttonText,
     showConfirmButton: appContent.showConfirmButton,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
+    hintIncomplete,
     headerPermit: pageContent.headerPermit,
     headerContactDetails: data.isAgent ? appContent.headerApplicantContactDetails : pageContent.headerYourContactDetails,
     headerDeliveryAddress: pageContent.headerDeliveryAddress,

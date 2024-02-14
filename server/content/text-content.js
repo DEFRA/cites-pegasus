@@ -903,6 +903,7 @@ const schema = Joi.object().keys({
     headerExporterContactDetails: Joi.string().required(),
     headerReexporterContactDetails: Joi.string().required(),
     headerArticle10ContactDetails: Joi.string().required(),
+    hintIncomplete: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     rowTextFullName: Joi.string().required(),
     rowTextFullNameAgent: Joi.string().required(),
