@@ -51,10 +51,9 @@ function createApplicationSummaryModel(errors, data) {
 
   let backLink = null;
   if (!['view-submitted', 'copy-as-new'].includes(summaryType)) {
+    backLink = nextPathYourSubmission
     if (summaryType === 'check') {
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
-    } else {
-      backLink = nextPathYourSubmission
     }
   }
 
