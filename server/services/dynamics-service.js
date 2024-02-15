@@ -165,7 +165,7 @@ async function getSpecies(server, speciesName) {
 
     
 
-    if (payload && payload.value?.length) {
+    if (payload?.value?.length) {
       if (config.enableSpeciesWarning && payload.value[0].cites_warningmessage){
         return { 
           scientificName: payload.value[0].cites_name, 
