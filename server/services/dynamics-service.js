@@ -144,24 +144,38 @@ async function getSpecies(server, speciesName) {
   const accessToken = await getAccessToken(server)
 
   try {
-    const url = `${apiUrl}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
+    //const url = `${apiUrl}cites_specieses(cites_name=%27${speciesName.trim()}%27)`
+    //const url = `${apiUrl}cites_specieses?$filter=(cites_name=%27${speciesName.trim()}%27%20and%20statecode%20eq%200)`//cites_specieses?$filter=(cites_name%20eq%20%27Antilocapra%20Americana%27%20and%20statecode%20eq%200)
+    //const url = `${apiUrl}cites_specieses?$filter=(cites_name%20eq%20%27Antilocapra%20Americana%27%20and%20statecode%20eq%200)`
+
+    //const test = 'antilo'
+    //const url = `${apiUrl}cites_specieses?$filter=(cites_name%20eq%20%27${speciesName.trim()}%27%20and%20statecode%20eq%200)`
+    const select = "$select=cites_name,cites_kingdom,cites_warningmessage,cites_restrictionsapply,statuscode,statecode"
+    const filterParts = [
+      `cites_name eq '${speciesName.trim()}'`,
+      "statecode eq 0"
+    ]
+    const filter = `$filter=${filterParts.join(" and ")}`
+    const top = `$top=1`
+    const url = `${apiUrl}cites_specieses?${select}&${filter}&${top}`
+
     const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
     console.log(url)
-    const response = await Wreck.get(url, options)
+    const { payload } = await Wreck.get(url, options)
 
-    const { payload } = response
+    
 
-    if (payload) {
-      if (config.enableSpeciesWarning && payload.cites_warningmessage){
+    if (payload && payload.value?.length) {
+      if (config.enableSpeciesWarning && payload.value[0].cites_warningmessage){
         return { 
-          scientificName: payload.cites_name, 
-          kingdom: payload.cites_kingdom, 
-          hasRestriction: payload.cites_restrictionsapply,
-          warningMessage: payload.cites_warningmessage}
+          scientificName: payload.value[0].cites_name, 
+          kingdom: payload.value[0].cites_kingdom, 
+          hasRestriction: payload.value[0].cites_restrictionsapply,
+          warningMessage: payload.value[0].cites_warningmessage}
       } else {
         return { 
-          scientificName: payload.cites_name, 
-          kingdom: payload.cites_kingdom, 
+          scientificName: payload.value[0].cites_name, 
+          kingdom: payload.value[0].cites_kingdom, 
         }
       }
     }
