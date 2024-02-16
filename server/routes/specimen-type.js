@@ -92,7 +92,6 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-      captionText: data.speciesName,
 
     inputSpecimenType: {
       idPrefix: "specimenType",
