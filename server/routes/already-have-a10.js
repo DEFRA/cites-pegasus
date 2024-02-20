@@ -38,7 +38,7 @@ function createModel(errors, data) {
 
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+  nunjucks.configure(['node_modules/govuk-frontend/dist/'], { autoescape: true, watch: false })
 
   const a10CertificateNumberInput = nunjucks.renderString(renderString, {
     input: {

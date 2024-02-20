@@ -10,7 +10,7 @@ module.exports = [{
   path: '/assets/all.js',
   options: { auth: false },
   handler: {
-    file: 'node_modules/govuk-frontend/govuk/all.js'
+    file: 'node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.js'
   }
 }, {
   method: 'GET',
@@ -21,7 +21,7 @@ module.exports = [{
       path: [
         'server/public/static',
         'server/public/build',
-        'node_modules/govuk-frontend/govuk/assets'
+        'node_modules/govuk-frontend/dist/govuk/assets'
       ]
     }
   }

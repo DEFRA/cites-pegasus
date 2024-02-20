@@ -60,7 +60,7 @@ function createModel(errors, data) {
     radioOptions.splice(insertIndex, 0, { text: pageContent.radioOptionTag, value: 'TG', hasInput: true });
   }
 
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+  nunjucks.configure(['node_modules/govuk-frontend/dist/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
 
   let previousPath = previousPathTradeTermCode
