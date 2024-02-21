@@ -33,7 +33,6 @@
         {{pageHeader}}
       </h1>
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {# <span class="govuk-caption-l"> {{captionText}} </span> #}
         {{ govukCharacterCount (inputComments) }}
         {% if enableInternalReference %}
           {{ govukInput(inputInternalReference) }}

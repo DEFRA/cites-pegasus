@@ -3,9 +3,11 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -27,9 +29,6 @@
 
 {% endblock %}
 {% block content %}
-  <span class="govuk-caption-l">
-    {{captionText}}
-  </span>
   <h1 class="govuk-heading-l">{{pageHeader}}</h1>
   <div class="govuk-grid-column">
     <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
@@ -59,6 +58,7 @@
           </div>
           <div class="govuk-grid-column-one-half">
             {{ govukDateInput(inputDateOfBirth) }}
+            {{ govukCheckboxes(checkboxIsExactDateUnknown) }}
           </div>
         </fieldset>
       </div>

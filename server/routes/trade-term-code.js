@@ -78,7 +78,6 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
-    captionText: data.speciesName,
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     pageBody2: pageContent.pageBody2,

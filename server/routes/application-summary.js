@@ -279,7 +279,7 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   }
   if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, "/describeLivingAnimal", "sex"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "dateOfBirth", pageContent.rowTextDateOfBirth, data.species.dateOfBirth?.year ? getDateValue(data.species.dateOfBirth) : "", "/describeLivingAnimal", "date of birth"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "dateOfBirth", pageContent.rowTextDateOfBirth, data.species.dateOfBirth?.isExactDateUnknown ? data.species.dateOfBirth?.approximateDate : getDateValue(data.species.dateOfBirth), "/describeLivingAnimal", "date of birth"))
 
     if ([pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType)) {
       summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "maleParentDetails", pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, "/describeLivingAnimal", "male parent details"))
