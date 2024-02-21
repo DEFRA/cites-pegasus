@@ -9,9 +9,9 @@
   <!--<![endif]-->
 
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
-  {# see https://github.com/alphagov/govuk-frontend/dist/blob/master/docs/installation/supporting-internet-explorer-8.md #}
+  {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
   <!--[if IE 8]>
-    <link href="{{ assetPath }}/govuk-frontend/dist/all-ie8.css" rel="stylesheet" />
+    <link href="{{ assetPath }}/govuk-frontend/all-ie8.css" rel="stylesheet" />
   <![endif]-->
 
   {# For older browsers to allow them to recognise HTML5 elements such as `<header>` #}
@@ -91,11 +91,12 @@
 
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script type="module" src="{{ assetPath }}/all.js"></script>
-  <script type="module">
+  <script src="{{ assetPath }}/all.js"></script>
+  <script>window.GOVUKFrontend.initAll()</script>
+  {# <script type="module">
     import { initAll } from '{{ assetPath }}/all.js'
     initAll()
-  </script>
+  </script> #}
   {% block localJS %}
   {% endblock %}  
 {% endblock %}

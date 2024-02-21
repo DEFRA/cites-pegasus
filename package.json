@@ -34,7 +34,7 @@
     "applicationinsights": "^2.7.3",
     "blipp": "4.0.2",
     "dotenv": "^16.0.3",
-    "govuk-frontend": "^5.1.0",
+    "govuk-frontend": "^4.8.0",
     "hapi-auth-jwt2": "^10.4.0",
     "hapi-pino": "9.1.1",
     "jwks-rsa": "^3.0.1",
@@ -48,7 +48,7 @@
     "@hapi/code": "8.0.6",
     "@hapi/lab": "24.5.1",
     "codeclimate-test-reporter": "0.5.1",
-    "node-sass": "7.0.1",
+    "node-sass": "^9.0.0",
     "nodemon": "^2.0.20",
     "standard": "16.0.4"
   }

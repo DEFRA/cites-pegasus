@@ -70,7 +70,7 @@ function createModel(errors, data) {
     { text: pageContent.radioOptionSexUndetermined, value: 'U', hasInput: false }
   ]
 
-  //nunjucks.configure(['node_modules/govuk-frontend/dist/'], { autoescape: true, watch: false })
+  //nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   const radioItems = radioOptions.map(x => getRadioItem(data.sex, x, errorList))
 
   const dateOfBirthInputGroupItems = getDateOfBirthInputGroupItems(dateOfBirthComponents, dateOfBirthErrors)

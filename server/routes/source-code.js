@@ -64,7 +64,7 @@ function createModel(errors, data) {
 
   let renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
 
-  nunjucks.configure(['node_modules/govuk-frontend/dist/'], { autoescape: true, watch: false })
+  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
   const sourceInputForI = nunjucks.renderString(renderString, {
     input: {
