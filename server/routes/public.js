@@ -10,6 +10,7 @@ module.exports = [{
   path: '/assets/all.js',
   options: { auth: false },
   handler: {
+    // file: 'node_modules/govuk-frontend/govuk/govuk-frontend.min.js'
     file: 'node_modules/govuk-frontend/govuk/all.js'
   }
 }, {

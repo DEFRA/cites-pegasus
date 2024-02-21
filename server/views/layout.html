@@ -24,6 +24,7 @@
 {% block header %}
   {{ govukHeader({
     homepageUrl: "#",
+    useTudorCrown: true,
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
     serviceUrl: "#",
@@ -34,12 +35,12 @@
       attributes: {
         target: "_blank"
       },
-      active: true
+      active: false
     },
     {
       href: "/logout",
       text: navigationSignOut,
-      active: true
+      active: false
     }    
     ]
   }) }}
@@ -58,6 +59,7 @@
   {{ pageTitle }}
 {% endblock %}
 {% block content %}
+  <script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
   <h1 class="govuk-heading-xl">Default page template</h1>
 {% endblock %}
 
@@ -91,6 +93,10 @@
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
   <script src="{{ assetPath }}/all.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
+  {# <script type="module">
+    import { initAll } from '{{ assetPath }}/all.js'
+    initAll()
+  </script> #}
   {% block localJS %}
   {% endblock %}  
 {% endblock %}
