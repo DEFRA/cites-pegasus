@@ -208,11 +208,17 @@ function createApplication(request) {
 }
 
 function cloneApplication(request, applicationIndex) {
+    deleteInProgressApplications(request)
     const submission = getSubmission(request)
     const applications = submission.applications
-    const clonedApplication = { ...applications[applicationIndex], applicationIndex: applications.length }
+    const clonedApplication = lodash.cloneDeep(applications[applicationIndex])
+    clonedApplication.applicationIndex = applications.length
+    clonedApplication.species.uniqueIdentificationMark = null
+    if (clonedApplication.species.uniqueIdentificationMarkType != 'unmarked') {
+        clonedApplication.species.uniqueIdentificationMarkType = null
+    }
     applications.push(clonedApplication)
-    setYarValue(request, 'submission', submission)
+    mergeSubmission(request, { applications })
     return clonedApplication.applicationIndex
 }
 
@@ -396,6 +402,7 @@ function getSubmissionProgress(submission, includePageData) {
         applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
 
         submissionProgress.push(getPageProgess(`application-summary/check/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/copy/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/are-you-sure/check/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/copy-as-new/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`, applicationIndex))
@@ -545,7 +552,6 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
-        submissionProgress.push(getPageProgess(`application-summary/copy/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/view/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy/${applicationIndex}`, applicationIndex))
 
