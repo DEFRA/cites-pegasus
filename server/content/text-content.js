@@ -651,7 +651,6 @@ const schema = Joi.object().keys({
     hintTextSex: Joi.string().required(),
     inputLabelDateOfBirth: Joi.string().required(),
     inputLabelUndeterminedSexReason: Joi.string().required(),
-    inputHintDateOfBirth: Joi.string().required(),
     checkboxLabelIsExactDateUnknown: Joi.string().required(),
     inputLabelApproximateDate: Joi.string().required(),
     inputLabelDescription: Joi.string().required(),
