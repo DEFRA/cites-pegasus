@@ -824,7 +824,6 @@
     "hintTextSex": "If you do not know the sex of the specimen, or you are unsure, select 'Not known'.",
     "inputLabelUndeterminedSexReason": "Enter a reason",
     "inputLabelDateOfBirth": "What is the specimen’s birth or hatch date?",
-    "inputHintDateOfBirth": "If you do not know the exact date, enter the closest date.",
     "checkboxLabelIsExactDateUnknown": "I do not know the birth or hatch date",
     "inputLabelApproximateDate": "Enter an approximate date",
     "inputLabelMaleParentDetails": "Male parent details",

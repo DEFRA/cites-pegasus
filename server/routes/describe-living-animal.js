@@ -80,9 +80,6 @@ function createModel(errors, data) {
     id: "dateOfBirth",
     name: "dateOfBirth",
     namePrefix: "dateOfBirth",
-    hint: {
-      text: pageContent.inputHintDateOfBirth
-    },
     items: dateOfBirthInputGroupItems,
     errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
   }
@@ -149,13 +146,6 @@ function createModel(errors, data) {
       items: radioItems,
       errorMessage: getFieldError(errorList, "#sex")
     },
-    // inputDateOfBirth: {
-    //   id: "dateOfBirth",
-    //   namePrefix: "dateOfBirth",
-    //   hint: {
-    //     text: pageContent.inputHintDateOfBirth
-    //   }
-    // },
     inputDateOfBirth,
     checkboxIsExactDateUnknown,
 
