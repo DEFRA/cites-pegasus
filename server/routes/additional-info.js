@@ -67,7 +67,7 @@ function createModel(errors, data) {
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: pageContent.headingRemarks,
-        isPageHeading: true,
+        isPageHeading: false,
         classes: "govuk-label--m"
       },
       hint: {
