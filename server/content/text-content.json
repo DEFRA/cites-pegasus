@@ -1136,10 +1136,10 @@
   "additionalInfo": {
     "defaultTitle": "Additional information",
     "pageHeader": "Additional information",
-    "headingRemarks": "Additional comments",
-    "inputHintRemarks": "Include any other comments that may support your application (optional).",
-    "headingInternalReference": "Internal reference",
-    "inputHintInternalReference": "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes (optional).",
+    "headingRemarks": "Additional comments (optional)",
+    "inputHintRemarks": "Include any other comments that may support your application. For example, is this a retrospective submission?",
+    "headingInternalReference": "Internal reference (optional)",
+    "inputHintInternalReference": "You can enter any internal reference or code associated with this application. This can be a unique identifier or reference used within your organisation for tracking purposes.",
     "errorMessages": {
       "error.comments.string.max": "Comments must be 500 characters or less",
       "error.comments.string.pattern.base": "Comments must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
