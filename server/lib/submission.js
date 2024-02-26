@@ -689,7 +689,7 @@ function getPageDataDescribeLivingAnimal(species) {
         },
         {
             fieldId: 'specimenDescriptionLivingAnimal',
-            isMandatory: false,
+            isMandatory: true,
             hasData: Boolean(species.specimenDescriptionLivingAnimal)
         }
     ]
