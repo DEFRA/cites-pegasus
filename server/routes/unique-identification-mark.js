@@ -137,11 +137,46 @@ function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, err
   return nunjucks.renderString(renderString, inputModel)
 }
 
-const getUniqueIdentificationMarkInputSchema = (uniqueIdentificationMarkType) => {
+function getUniqueIdentificationMarkInputSchema(uniqueIdentificationMarkType) {
   return Joi.when('uniqueIdentificationMarkType', {
     is: uniqueIdentificationMarkType,
-    then: Joi.string().required().min(3).max(150)
-  });
+    then: Joi.string().required().min(3).max(150)    
+  })
+}
+
+function isDuplicateValidator(value, helpers, submission, applicationIndex) {
+
+  const uniqueIdentifiers = getExistingUniqueIdentifiersForSpeciesAndMarkType(submission, value.uniqueIdentificationMarkType, applicationIndex)
+
+  if (uniqueIdentifiers.includes(value.uniqueIdentificationMark)) {
+    return helpers.error('any.duplicate', { customLabel: 'input' + value.uniqueIdentificationMarkType });
+  }
+  return value;
+}
+
+function getExistingUniqueIdentifiersForSpeciesAndMarkType(submission, uniqueIdentificationMarkType, applicationIndex) {
+  return submission.applications.filter(app => 
+    app.applicationIndex !== applicationIndex 
+    && app.species.speciesName === submission.applications[applicationIndex].species.speciesName
+    && app.species.uniqueIdentificationMarkType === uniqueIdentificationMarkType
+  ).map(app => app.species.uniqueIdentificationMark)
+}
+
+function failAction(request, h, err) {
+  const { applicationIndex } = request.params
+  const submission = getSubmission(request)
+  const species = submission.applications[applicationIndex].species
+
+  const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
+  const pageData = {
+    backLinkOverride: checkChangeRouteExit(request, true),
+    applicationIndex: request.params.applicationIndex,
+    specimenType: species.specimenType,
+    uniqueIdentificationMark: uniqueIdentificationMark,
+    uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
+    permitType: submission.permitType
+  }
+  return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
 module.exports = [
@@ -202,37 +237,32 @@ module.exports = [
           inputSR: getUniqueIdentificationMarkInputSchema("SR"),
           inputSI: getUniqueIdentificationMarkInputSchema("SI"),
         }),
-        failAction: (request, h, err) => {
-          const { applicationIndex } = request.params
-          const submission = getSubmission(request)
-          const species = submission.applications[applicationIndex].species
-
-          const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
-          const pageData = {
-            backLinkOverride: checkChangeRouteExit(request, true),
-            applicationIndex: request.params.applicationIndex,
-            specimenType: species.specimenType,
-            uniqueIdentificationMark: uniqueIdentificationMark,
-            uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
-            permitType: submission.permitType
-          }
-          return h.view(pageId, createModel(err, pageData)).takeover()
-        }
+        failAction,
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        //const previousSubmission = getSubmission(request)
-        // const newSubmission = lodash.cloneDeep(previousSubmission)
-        // const previousSpecies = previousSubmission.applications[applicationIndex].species
+        const uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
+        const uniqueIdentificationMark = request.payload['input' + uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
+        
+        if (uniqueIdentificationMarkType !== 'unmarked') {
+          const schema = Joi.object({
+            uniqueIdentificationMark: Joi.string().required(),
+            uniqueIdentificationMarkType: Joi.string().required(),
+          }).custom((value, helpers) => isDuplicateValidator(value, helpers, submission, applicationIndex), 'Custom validation example')
+          
+          const result = schema.validate({ uniqueIdentificationMark, uniqueIdentificationMarkType: uniqueIdentificationMarkType }, { abortEarly: false })
+          
+          if (result.error) {
+            return failAction(request, h, result.error)
+          }
+        }
+        
         const species = submission.applications[applicationIndex].species
-
-        const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
-
-        species.uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
+        species.uniqueIdentificationMarkType = uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
 
-        
+
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
