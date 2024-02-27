@@ -1188,7 +1188,7 @@
     "rowTextUniqueIdentificationMark": "Unique identification mark",
     "rowTextSpecimenIsNotMarked": "The specimen is not marked",
     "rowTextSex": "Sex",
-    "rowTextDateOfBirth": "Date of birth",
+    "rowTextDateOfBirth": "Birth or hatch date",
     "rowTextMaleParentDetails": "Male parent details",
     "rowTextFemaleParentDetails": "Female parent details",
     "rowTextOtherDescription": "Describe the specimen",
