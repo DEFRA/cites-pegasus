@@ -406,6 +406,7 @@ function getSubmissionProgress(submission, includePageData) {
         submissionProgress.push(getPageProgess(`application-summary/are-you-sure/check/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/copy-as-new/${applicationIndex}`, applicationIndex))
         submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy-as-new/${applicationIndex}`, applicationIndex))
+        submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy/${applicationIndex}`, applicationIndex))
 
         if (applicationIndex > 0) {
             submissionProgress.push(getPageProgess(`species-name/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('speciesName', application?.species?.speciesName)))
@@ -553,8 +554,7 @@ function getSubmissionProgress(submission, includePageData) {
 
         submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
         submissionProgress.push(getPageProgess(`application-summary/view/${applicationIndex}`, applicationIndex))
-        submissionProgress.push(getPageProgess(`application-summary/are-you-sure/copy/${applicationIndex}`, applicationIndex))
-
+        
         completeApplications++
         applicationStatuses[applicationIndex].status = 'complete'
     })

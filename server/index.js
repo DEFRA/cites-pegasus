@@ -13,8 +13,8 @@ async function createServer() {
   const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
   const tlsConfig = config.env === 'local' ? {
-    key: Fs.readFileSync('certs/key.pem'),
-    cert: Fs.readFileSync('certs/cert.pem')
+    key: Fs.readFileSync('key.pem'),
+    cert: Fs.readFileSync('cert.pem')
   } : null
 
   // Create the hapi server
