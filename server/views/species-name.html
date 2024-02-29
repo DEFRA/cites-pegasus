@@ -5,6 +5,7 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -28,32 +29,57 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-    <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-      {% call govukFieldset({
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        {% call govukFieldset({
           legend: {
             text: pageHeader,
             classes: "govuk-fieldset__legend--l",
             isPageHeading: true
           }
         }) %}
+        <p>
+          {{bodyText1 | safe}}
+        </p>
+        <p>
+          {{bodyText2 | safe}}
+        </p>
+        <p>
+          {{bodyText3 | safe}}
+        </p>
+        <div id="divSpeciesName" class="govuk-form-group">
+          <label for="speciesName" class="govuk-label">Scientific name</label>
 
-      <p> {{bodyText1 | safe}} </p>
-      <p> {{bodyText2 | safe}} </p>
-      <p> {{bodyText3 | safe}} </p>
+          {% if enableSpeciesNameTypeahead %}
+            <noscript>
+              {{ govukInput(inputSpeciesName) }}
+            </noscript>
+          <input id="inputSpeciesNameError" type="hidden" value="{{errorMessage}}">
+          <input id="inputSpeciesNameOriginalValue" type="hidden" value="{{speciesName}}">
+          {% else %}
+            {{ govukInput(inputSpeciesName) }}
+          {% endif %}
+          <div id="speciesName-container"></div>
+        </div>
+        {% endcall %}
 
-      {{ govukInput(inputSpeciesName) }}
-      
-      {% endcall %}
-      {{ govukButton({
+        {{ govukButton({
           text: saveAndContinueButton,
           classes: 'loading-message-trigger',
-          type: "submit"
+          type: "submit",
+          attributes: {
+            formAction: formActionPage
+          }
         }) }}
-    </form>
+      </form>
     </div>
   </div>
 {% endblock %}
 
 {% block localJS %}
   <script src="{{assetPath}}/js/loading-message.client.js"></script>
+  {% if enableSpeciesNameTypeahead %}
+    <link rel="stylesheet" href="{{assetPath}}/accessible-autocomplete.min.css"/>
+    <script type="text/javascript" src="{{assetPath}}/accessible-autocomplete.min.js"></script>
+    <script src="{{assetPath}}/js/species-name.client.js"></script>
+  {% endif %}
 {% endblock %}

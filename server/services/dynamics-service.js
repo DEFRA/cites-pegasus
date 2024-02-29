@@ -195,6 +195,80 @@ async function getSpecies(server, speciesName) {
   }
 }
 
+
+async function getSpecieses(server, speciesName) {
+
+  const accessToken = await getAccessToken(server)
+
+  try {
+    const top = `$top=15`
+    const select = `$select=cites_name,cites_kingdom,cites_restrictionsapply,cites_warningmessage`
+    const orderBy = `$orderby=cites_name asc`
+    const count = `$count=true`
+    
+    const speciesNameSegments = speciesName.trim().split(/\s+/)
+    const filterParts = speciesNameSegments.map(segment => `contains(cites_name, '${segment}') eq true`)
+    filterParts.push('statecode eq 0') //Removes deactivated species
+
+    const filter = `$filter=${filterParts.join(" and ")}`
+
+    const url = `${apiUrl}cites_specieses?${select}&${orderBy}&${count}&${top}&${filter}`
+
+
+    const options = { json: true, headers: { 'Authorization': `Bearer ${accessToken}` } }
+    console.log(url)
+    const response = await Wreck.get(url, options)
+
+    const { payload } = response
+    
+    if (payload && payload["@odata.count"] > 0) {
+
+      if (Array.isArray(payload.value) && payload.value.length > 0) {
+        return {
+          count: payload["@odata.count"],
+          items: payload.value.map(formatItem)      
+        }
+      }
+    }
+
+    return {
+      count: 0,
+      items: []
+    }
+
+  } catch (err) {
+    if (err.data?.res?.statusCode === 404) {
+      //No species match
+      return {
+      count: 0,
+      items: []
+    }
+    }
+
+    if (err.data?.payload) {
+      console.error(err.data.payload)
+    }
+    console.error(err)
+    throw err
+  }
+}
+
+function formatItem(item) {
+  if (config.enableSpeciesWarning && item.cites_warningmessage) {
+    return {
+      scientificName: item.cites_name,
+      kingdom: item.cites_kingdom,
+      hasRestriction: item.cites_restrictionsapply,
+      warningMessage: item.cites_warningmessage,
+    };
+  } else {
+    return {
+      scientificName: item.cites_name,
+      kingdom: item.cites_kingdom,
+    };
+  }
+}
+
 async function getCountries(server) {
   const accessToken = await getAccessToken(server)
 
@@ -658,4 +732,4 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
   }
 }
 
-module.exports = { getAccessToken, whoAmI, getSpecies, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission, setSubmissionPayment }
+module.exports = { getAccessToken, whoAmI, getSpecies, getSpecieses, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission, setSubmissionPayment }

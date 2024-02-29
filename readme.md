@@ -71,7 +71,7 @@ The following environment variables must be provided, for development this can b
 | ENABLE_TAG_IDENTIFIER                    | Enable the Tag radio option on the unique identification mark page     |    no    | false   |                                  |       |
 | ENABLE_BREEDER_PAGE                      | Enable the breeder page for A10s                       |    no    | false   |                                  |       |
 | ENABLE_DELIVERY_NAME                     | Enable the delivery name field                         |    no    | false   |                                  |       |
-
+| ENABLE_SPECIES_NAME_TYPEAHEAD            | Enables the typeahead on the species+ search page      |    no    | false   |                                  |       |
 
 ## Project structure
 

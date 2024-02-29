@@ -30,6 +30,7 @@ const schema = Joi.object().keys({
   enableTagIdentifier: Joi.boolean(),
   enableBreederPage: Joi.boolean(),
   enableDeliveryName: Joi.boolean(),
+  enableSpeciesNameTypeahead: Joi.boolean(),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -74,6 +75,7 @@ const config = {
   enableTagIdentifier: process.env.ENABLE_TAG_IDENTIFIER || false,
   enableBreederPage: process.env.ENABLE_BREEDER_PAGE || false,
   enableDeliveryName: process.env.ENABLE_DELIVERY_NAME || false,
+  enableSpeciesNameTypeahead: process.env.ENABLE_SPECIES_NAME_TYPEAHEAD || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',

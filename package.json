@@ -31,6 +31,7 @@
     "@hapi/vision": "6.1.0",
     "@hapi/wreck": "^18.0.0",
     "@hapi/yar": "^11.0.0",
+    "accessible-autocomplete": "^2.0.4",
     "applicationinsights": "^2.7.3",
     "blipp": "4.0.2",
     "dotenv": "^16.0.3",

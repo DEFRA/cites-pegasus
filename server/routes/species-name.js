@@ -1,8 +1,8 @@
 const Joi = require("joi")
-const { urlPrefix, enableDeliveryType } = require("../../config/config")
+const { urlPrefix, enableDeliveryType, enableSpeciesNameTypeahead } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { getSpecies } = require("../services/dynamics-service")
+const { getSpecies, getSpecieses } = require("../services/dynamics-service")
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const lodash = require("lodash")
@@ -43,12 +43,32 @@ function createModel(errors, data) {
   const defaultBacklink = data.applicationIndex === 0 ? previousPath : addApplication
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
+  let speciesResultSelectItems
+  if (data.speciesSearchResults && data.speciesSearchResults.count > 0) {
+    speciesResultSelectItems = data.speciesSearchResults.items.map(item => ({ text: item.scientificName, value: item.scientificName }))
+    speciesResultSelectItems.unshift({ text: 'Please select', value: null });
+  }
+
+  // const selectSpecies = {
+  //   id: "selectSpecies",
+  //   name: "selectSpecies",
+  //   label: {
+  //     text: "Select Species"
+  //   },
+  //   items: speciesResultSelectItems,
+  //   classes: "govuk-!-width-two-thirds",
+  //   errorMessage: getFieldError(errorList, '#selectSpecies')
+  // }
+
+  const errorMessage = getFieldError(errorList, "#speciesName")
+
   const model = {
     backLink: backLink,
     pageHeader: pageContent.pageHeader,
     speciesName: data.speciesName,
     containerClasses: 'hide-when-loading',
     formActionPage: `${currentPath}/${data.applicationIndex}`,
+    formActionSearch: `${currentPath}/search/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
@@ -57,16 +77,21 @@ function createModel(errors, data) {
     bodyText1: pageContent.bodyText1,
     bodyText2: pageContent.bodyText2,
     bodyText3: pageContent.bodyText3,
+    speciesSearchResults: data.speciesSearchResults,
+    speciesSearchResultsCount: data.speciesSearchResults?.count,
+    //selectSpecies,
+    errorMessage: errorMessage?.text,
+    enableSpeciesNameTypeahead,
     inputSpeciesName: {
-      label: {
-        text: pageContent.inputLabelSpeciesName
-      },
+      // label: {
+      //   text: pageContent.inputLabelSpeciesName
+      // },
       id: "speciesName",
       name: "speciesName",
       classes: "govuk-!-width-two-thirds",
       autocomplete: "on",
       ...(data.speciesName ? { value: data.speciesName } : {}),
-      errorMessage: getFieldError(errorList, "#speciesName")
+      errorMessage
     }
   }
   return { ...commonContent, ...model }
@@ -108,10 +133,30 @@ module.exports = [
         backLinkOverride: checkChangeRouteExit(request, true),
         speciesName: submission.applications[applicationIndex].species?.speciesSearchData,
         deliveryAddressOption: submission.delivery.addressOption,
-        applicationIndex: applicationIndex
+        applicationIndex: applicationIndex,
+        speciesSearchResults: null
       }
 
       return h.view(pageId, createModel(null, pageData))
+    }
+  },
+  {
+    method: "GET",
+    path: `${currentPath}/search/{query}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          query: Joi.string()
+        })
+      }
+    },
+    handler: async (request, h) => {
+      if(request.params.query.length < 3) {
+        return ''
+      }
+      const speciesSearchResults = await getSpecieses(request.server, request.params.query)
+
+      return h.response(speciesSearchResults.items.map(item => item.scientificName))
     }
   },
   {
@@ -132,7 +177,8 @@ module.exports = [
             backLinkOverride: checkChangeRouteExit(request, true),
             speciesName: request.payload.speciesName,
             deliveryAddressOption: submission?.delivery?.addressOption,
-            applicationIndex: request.params.applicationIndex
+            applicationIndex: request.params.applicationIndex,
+            speciesSearchResults: null
           }
           return h.view(pageId, createModel(err, pageData)).takeover()
         }
