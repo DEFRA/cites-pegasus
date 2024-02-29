@@ -60,14 +60,13 @@ function createSubmitApplicationModel(errors, data) {
     }
 
 
-    let quantity = null
-    if (application.species.specimenType === "animalLiving" && application.species.uniqueIdentificationMarkType === "unmarked" && application.species.numberOfUnmarkedSpecimens) {
+    let quantity = application.species?.quantity
+    if (application.species.specimenType === "animalLiving" && application.species.numberOfUnmarkedSpecimens) {
       quantity = application.species.numberOfUnmarkedSpecimens
     } else if (application.species.specimenType === "animalLiving") {
       quantity = 1
-    } else {
-      quantity = application.species?.quantity
     }
+
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
     const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
 
