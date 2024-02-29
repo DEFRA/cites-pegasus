@@ -54,8 +54,8 @@
             <noscript>
               {{ govukInput(inputSpeciesName) }}
             </noscript>
-          <input id="inputSpeciesNameError" type="hidden" value="{{errorMessage}}">
-          <input id="inputSpeciesNameOriginalValue" type="hidden" value="{{speciesName}}">
+          <input id="inputSpeciesNameError" type="hidden" value="{{errorMessage}}" aria-hidden="true">
+          <input id="inputSpeciesNameOriginalValue" type="hidden" value="{{speciesName}}" aria-hidden="true">
           {% else %}
             {{ govukInput(inputSpeciesName) }}
           {% endif %}
