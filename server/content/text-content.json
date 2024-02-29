@@ -461,12 +461,19 @@
   "speciesName": {
     "defaultTitle": "What is the scientific name of the species?",
     "pageHeader": "What is the scientific name of the species?",
-    "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
-    "bodyText2": "If you are applying for a hybrid species that is not listed, enter 'plant hybrid' or 'animal hybrid'.",
-    "bodyText3": "Applications made using this description will be rejected if the species name is listed.",
     "inputLabelSpeciesName": "Scientific name",
     "errorMessages": {
       "error.speciesName.string.empty": "Enter the scientific name"
+    },
+    "javascriptBody": {
+      "bodyText1": "Start typing to see a list of scientific names. Select the correct one for your specimen before continuing.",
+      "bodyText2": "You can also <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
+      "bodyText3": ""
+    },
+    "noJavascriptBody": {
+      "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
+      "bodyText2": "If you are applying for a hybrid species that is not listed, enter 'plant hybrid' or 'animal hybrid'.",
+      "bodyText3": "Applications made using this description will be rejected if the species name is listed."
     }
   },
   "couldNotConfirm": {

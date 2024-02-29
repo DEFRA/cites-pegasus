@@ -236,3 +236,11 @@ div:has(a[data-disabled]:hover) {
 .uppercase {
     text-transform: uppercase
 }
+
+ul.autocomplete__menu {
+    font-family: GDS Transport,arial,sans-serif;
+}
+
+.js-enabled-only {
+    display: none
+}

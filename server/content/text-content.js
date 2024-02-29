@@ -430,13 +430,20 @@ const schema = Joi.object().keys({
   speciesName: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    bodyText1: Joi.string().required(),
-    bodyText2: Joi.string().required(),
-    bodyText3: Joi.string().required(),
     inputLabelSpeciesName: Joi.string().required(),
     errorMessages: Joi.object({
       "error.speciesName.string.empty": Joi.string().required()
-    }).required()
+    }).required(),
+    javascriptBody: Joi.object({
+      bodyText1: Joi.string().required(),
+      bodyText2: Joi.string().allow("", null),
+      bodyText3: Joi.string().allow("", null),
+    }).required(),
+    noJavascriptBody: Joi.object({
+      bodyText1: Joi.string().required(),
+      bodyText2: Joi.string().allow("", null),
+      bodyText3: Joi.string().allow("", null),
+    }).required(),
   }).required(),
   couldNotConfirm: Joi.object({
     pageTitle: Joi.string().required(),
