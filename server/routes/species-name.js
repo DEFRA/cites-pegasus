@@ -49,17 +49,6 @@ function createModel(errors, data) {
     speciesResultSelectItems.unshift({ text: 'Please select', value: null });
   }
 
-  // const selectSpecies = {
-  //   id: "selectSpecies",
-  //   name: "selectSpecies",
-  //   label: {
-  //     text: "Select Species"
-  //   },
-  //   items: speciesResultSelectItems,
-  //   classes: "govuk-!-width-two-thirds",
-  //   errorMessage: getFieldError(errorList, '#selectSpecies')
-  // }
-
   const errorMessage = getFieldError(errorList, "#speciesName")
 
   const model = {
@@ -74,18 +63,14 @@ function createModel(errors, data) {
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text
       : pageContent.defaultTitle,
     inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
-    bodyText1: pageContent.bodyText1,
-    bodyText2: pageContent.bodyText2,
-    bodyText3: pageContent.bodyText3,
+    javascriptBody: pageContent.javascriptBody,
+    noJavascriptBody: pageContent.noJavascriptBody,    
     speciesSearchResults: data.speciesSearchResults,
     speciesSearchResultsCount: data.speciesSearchResults?.count,
     //selectSpecies,
     errorMessage: errorMessage?.text,
     enableSpeciesNameTypeahead,
     inputSpeciesName: {
-      // label: {
-      //   text: pageContent.inputLabelSpeciesName
-      // },
       id: "speciesName",
       name: "speciesName",
       classes: "govuk-!-width-two-thirds",
@@ -189,11 +174,6 @@ module.exports = [
         const speciesData = await getSpecies(request.server, request.payload.speciesName)
         const submission = getSubmission(request)
         const application = submission.applications[applicationIndex]
-
-        //const previousSubmission = getSubmission(request)
-        // const newSubmission = lodash.cloneDeep(previousSubmission)
-        // const newSubmissionApplication = newSubmission.applications[applicationIndex]
-        // const previousSubmissionApplication = previousSubmission.applications[applicationIndex]
 
         if (submission.applications.length < applicationIndex + 1) {
           return h.redirect(invalidSubmissionPath)

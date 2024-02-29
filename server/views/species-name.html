@@ -37,15 +37,16 @@
             isPageHeading: true
           }
         }) %}
-        <p>
-          {{bodyText1 | safe}}
-        </p>
-        <p>
-          {{bodyText2 | safe}}
-        </p>
-        <p>
-          {{bodyText3 | safe}}
-        </p>
+        <noscript>
+          <p>{{noJavascriptBody.bodyText1 | safe}}</p>
+          <p>{{noJavascriptBody.bodyText2 | safe}}</p>
+          <p>{{noJavascriptBody.bodyText3 | safe}}</p>
+        </noscript>
+        <div class="js-enabled-only">
+          <p>{{javascriptBody.bodyText1 | safe}}</p>
+          <p>{{javascriptBody.bodyText2 | safe}}</p>
+          <p>{{javascriptBody.bodyText3 | safe}}</p>
+        </div>
         <div id="divSpeciesName" class="govuk-form-group">
           <label for="speciesName" class="govuk-label">Scientific name</label>
 
