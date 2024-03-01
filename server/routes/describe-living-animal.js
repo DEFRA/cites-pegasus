@@ -340,21 +340,15 @@ module.exports = [
           return failAction(request, h, result.error)
         }
 
-        
-
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
         species.maleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
         species.femaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
         species.sex = request.payload.sex
-        species.dateOfBirth = { 
-          day: parseInt(request.payload["dateOfBirth-day"]), 
-          month: parseInt(request.payload["dateOfBirth-month"]), 
-          year: parseInt(request.payload["dateOfBirth-year"]),
-          isExactDateUnknown: request.payload.isExactDateUnknown,
-          approximateDate: request.payload.approximateDate
-        }
-        // species.undeterminedSexReason = request.payload.sex === 'U' ? request.payload.undeterminedSexReason : null
+
+        species.dateOfBirth = request.payload.isExactDateUnknown
+        ? { day: null, month: null, year: null, isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: request.payload.approximateDate }
+        : { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]), isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: null }
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
