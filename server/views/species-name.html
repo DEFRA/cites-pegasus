@@ -42,7 +42,13 @@
           <p>{{noJavascriptBody.bodyText2 | safe}}</p>
           <p>{{noJavascriptBody.bodyText3 | safe}}</p>
         </noscript>
-        <div class="js-enabled-only">
+
+        <div class="js-enabled-only typeaheadDisabled">
+          <p>{{noJavascriptBody.bodyText1 | safe}}</p>
+          <p>{{noJavascriptBody.bodyText2 | safe}}</p>
+          <p>{{noJavascriptBody.bodyText3 | safe}}</p>
+        </div>
+        <div class="js-enabled-only typeaheadEnabled">
           <p>{{javascriptBody.bodyText1 | safe}}</p>
           <p>{{javascriptBody.bodyText2 | safe}}</p>
           <p>{{javascriptBody.bodyText3 | safe}}</p>
@@ -50,12 +56,13 @@
         <div id="divSpeciesName" class="govuk-form-group">
           <label for="speciesName" class="govuk-label">Scientific name</label>
 
+          <input id="inputEnableSpeciesNameTypeahead" type="hidden" value="{{enableSpeciesNameTypeahead}}" aria-hidden="true">
           {% if enableSpeciesNameTypeahead %}
             <noscript>
               {{ govukInput(inputSpeciesName) }}
             </noscript>
-          <input id="inputSpeciesNameError" type="hidden" value="{{errorMessage}}" aria-hidden="true">
-          <input id="inputSpeciesNameOriginalValue" type="hidden" value="{{speciesName}}" aria-hidden="true">
+            <input id="inputSpeciesNameError" type="hidden" value="{{errorMessage}}" aria-hidden="true">
+            <input id="inputSpeciesNameOriginalValue" type="hidden" value="{{speciesName}}" aria-hidden="true">
           {% else %}
             {{ govukInput(inputSpeciesName) }}
           {% endif %}
@@ -78,9 +85,7 @@
 
 {% block localJS %}
   <script src="{{assetPath}}/js/loading-message.client.js"></script>
-  {% if enableSpeciesNameTypeahead %}
-    <link rel="stylesheet" href="{{assetPath}}/accessible-autocomplete.min.css"/>
-    <script type="text/javascript" src="{{assetPath}}/accessible-autocomplete.min.js"></script>
-    <script src="{{assetPath}}/js/species-name.client.js"></script>
-  {% endif %}
+  <link rel="stylesheet" href="{{assetPath}}/accessible-autocomplete.min.css"/>
+  <script type="text/javascript" src="{{assetPath}}/accessible-autocomplete.min.js"></script>
+  <script src="{{assetPath}}/js/species-name.client.js"></script>
 {% endblock %}
