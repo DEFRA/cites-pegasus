@@ -7,7 +7,8 @@ trigger:
 - main
 
 pool:
-  name: DEFRA-COMMON-windows2019-SSV3
+  #name: DEFRA-COMMON-windows2019-SSV3
+  vmImage: 'ubuntu-latest'
 
 steps:
 - checkout: self
