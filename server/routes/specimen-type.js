@@ -201,7 +201,6 @@ module.exports = [
 
         if(isChange){
           species.specimenOrigin = null
-          species.useCertificateFor = null
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
