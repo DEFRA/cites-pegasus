@@ -163,7 +163,6 @@ module.exports = [
 
         try {
           setSubmission(request, submission, `${pageId}/${applicationIndex}`)
-          //mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

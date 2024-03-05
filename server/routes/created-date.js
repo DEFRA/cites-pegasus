@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { dateValidator } = require("../lib/validators")
 const textContent = require("../content/text-content")
@@ -258,8 +258,7 @@ module.exports = [
           : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
-          )
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
