@@ -23,6 +23,7 @@ const routes = [].concat(
   require('../routes/created-date'),
   require('../routes/acquired-date'),
   require('../routes/multiple-specimens'),
+  require('../routes/has-unique-identification-mark'),
   require('../routes/unique-identification-mark'),
   require('../routes/describe-specimen'),
   require('../routes/describe-living-animal'),
