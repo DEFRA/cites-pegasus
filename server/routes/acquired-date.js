@@ -99,7 +99,7 @@ function createModel(errors, data) {
   })
 
   let previousPath = data.sex ? previousPathBreeder : previousPathDescribeSpecimen
-  if (!enableBreederPage){
+  if (!enableBreederPage) {
     previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
   }
 
@@ -168,6 +168,10 @@ function acquiredDateValidator(value, helpers) {
     "acquiredDate-month": month,
     "acquiredDate-year": year,
     isExactDateUnknown } = value
+
+  if (value.isExactDateUnknown && day || month || year) {
+    return helpers.error("any.both", { customLabel: 'acquiredDate' })
+  }
 
   if (!isExactDateUnknown) {
     const dateValidatorResponse = dateValidator(day, month, year, false, 'acquiredDate', helpers)

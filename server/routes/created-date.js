@@ -162,6 +162,10 @@ function createdDateValidator(value, helpers) {
     "createdDate-year": year,
     isExactDateUnknown } = value
 
+  if (value.isExactDateUnknown && day || month || year) {
+    return helpers.error("any.both", { customLabel: 'createdDate' })
+  }
+
   if (!isExactDateUnknown) {
     const dateValidatorResponse = dateValidator(day, month, year, false, 'createdDate', helpers)
     if (dateValidatorResponse) {
@@ -185,14 +189,14 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      
+
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
-      
+
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
@@ -263,7 +267,7 @@ module.exports = [
           console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
-        
+
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
@@ -273,7 +277,7 @@ module.exports = [
         const redirectTo = `${nextPath}/${applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-        
+
       }
     }
   }
