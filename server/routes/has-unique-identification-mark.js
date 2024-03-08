@@ -6,11 +6,12 @@ const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const nunjucks = require("nunjucks")
-const pageId = 'unique-identification-mark'
+const pageId = 'has-unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpecimenType = `${urlPrefix}/specimen-type`
 const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
 const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
+const nextPathUniqueIdentificationMark = `${urlPrefix}/unique-identification-mark`
 const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
@@ -127,12 +128,12 @@ module.exports = [
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
 
-      // try {
-      //   validateSubmission(submission, `${pageId}/${applicationIndex}`)
-      // } catch (err) {
-      //   console.error(err)
-      //   return h.redirect(invalidSubmissionPath)
-      // }
+      try {
+        validateSubmission(submission, `${pageId}/${applicationIndex}`)
+      } catch (err) {
+        console.error(err)
+        return h.redirect(invalidSubmissionPath)
+      }
 
       const species = submission.applications[applicationIndex].species
 
@@ -165,26 +166,15 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        const uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
-        const uniqueIdentificationMark = request.payload['input' + uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
-
-        if (uniqueIdentificationMarkType !== 'unmarked') {
-          const schema = Joi.object({
-            uniqueIdentificationMark: Joi.string().required(),
-            uniqueIdentificationMarkType: Joi.string().required(),
-          }).custom((value, helpers) => isDuplicateValidator(value, helpers, submission, applicationIndex), 'Custom validation example')
-
-          const result = schema.validate({ uniqueIdentificationMark, uniqueIdentificationMarkType: uniqueIdentificationMarkType }, { abortEarly: false })
-
-          if (result.error) {
-            return failAction(request, h, result.error)
-          }
-        }
-
+        const hasUniqueIdentificationMark = request.payload.hasUniqueIdentificationMark
         const species = submission.applications[applicationIndex].species
-        species.uniqueIdentificationMarkType = uniqueIdentificationMarkType
-        species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
 
+        if (!hasUniqueIdentificationMark) {
+          species.uniqueIdentificationMarkType = 'unmarked'
+          species.uniqueIdentificationMark = null//TODO Update this to also clear out the saved unique IDs from the new data structure
+          species.numberOfUniqueIdentificationMarks = null  
+        }
+        species.hasUniqueIdentificationMark = hasUniqueIdentificationMark
 
         try {
           mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
@@ -199,9 +189,14 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        let redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
-        if (species.specimenType === 'animalLiving') {
-          redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
+        let redirectTo = `${nextPathUniqueIdentificationMark}/${applicationIndex}`
+
+        if (!hasUniqueIdentificationMark) {
+          if (species.specimenType === 'animalLiving') {
+            redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
+          } else {
+            redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
+          }
         }
 
         saveDraftSubmission(request, redirectTo)

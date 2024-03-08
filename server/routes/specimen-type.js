@@ -8,7 +8,7 @@ const textContent = require("../content/text-content")
 const pageId = "specimen-type"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathQuantity = `${urlPrefix}/quantity`
-const nextPathUniqueId = `${urlPrefix}/unique-identification-mark`
+const nextPathUniqueId = `${urlPrefix}/has-unique-identification-mark`
 const nextPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -201,7 +201,6 @@ module.exports = [
 
         if(isChange){
           species.specimenOrigin = null
-          species.useCertificateFor = null
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null

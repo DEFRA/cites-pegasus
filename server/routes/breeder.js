@@ -36,7 +36,7 @@ function createModel(errors, data) {
   const { common: commonContent, breeder: pageContent } = textContent
   const errorList = getErrors(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
 
-  const defaultBacklink = data.uniqueIdentificationMarkType === 'unmarked' ? `${previousPathDescribeSpecimen}/${data.applicationIndex}` : `${previousPathDescribeLivingAnimal}/${data.applicationIndex}`
+  const defaultBacklink = data.isMultipleSpecimens && data.numberOfUnmarkedSpecimens > 1 ? `${previousPathDescribeSpecimen}/${data.applicationIndex}` : `${previousPathDescribeLivingAnimal}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -104,7 +104,9 @@ module.exports = [
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         isBreeder: application.isBreeder,
-        uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType
+        uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType,
+        isMultipleSpecimens: application.species.isMultipleSpecimens,
+        numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -142,7 +144,9 @@ module.exports = [
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             isBreeder,
-            uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType
+            uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType,
+            isMultipleSpecimens: application.species.isMultipleSpecimens,
+            numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()

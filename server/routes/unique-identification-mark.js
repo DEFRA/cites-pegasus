@@ -8,9 +8,7 @@ const { permitType: pt } = require('../lib/permit-type-helper')
 const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathSpecimenType = `${urlPrefix}/specimen-type`
-const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
-const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
+const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
 const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
@@ -41,38 +39,64 @@ function createModel(errors, data) {
     })
   }
 
-  let radioOptions = [
-    { text: pageContent.radioOptionMicrochipNumber, value: 'MC', hasInput: true },
-    { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasInput: true },
-    { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasInput: true },
-    { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasInput: true },
-    { text: pageContent.radioOptionCableTie, value: 'CB', hasInput: true },
-    { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasInput: true },
-    { text: pageContent.radioOptionLabel, value: 'LB', hasInput: true },
-    { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasInput: true },
-    { text: pageContent.radioOptionSerialNumber, value: 'SN', hasInput: true },
-    { text: pageContent.radioOptionDivider, value: null, hasInput: false },
-    { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasInput: false }
+  let selectItems = [
+    { text: 'Select mark', value: '' },
+    { text: pageContent.radioOptionMicrochipNumber, value: 'MC' },
+    { text: pageContent.radioOptionClosedRingNumber, value: 'CR' },
+    { text: pageContent.radioOptionSplitRingNumber, value: 'SR' },
+    { text: pageContent.radioOptionOtherRingNumber, value: 'OT' },
+    { text: pageContent.radioOptionCableTie, value: 'CB' },
+    { text: pageContent.radioOptionHuntingTrophy, value: 'HU' },
+    { text: pageContent.radioOptionLabel, value: 'LB' },
+    { text: pageContent.radioOptionSwissInstitue, value: 'SI' },
+    { text: pageContent.radioOptionSerialNumber, value: 'SN' }
   ]
 
   if (enableTagIdentifier) {
-    const insertIndex = radioOptions.length - 2
-    radioOptions.splice(insertIndex, 0, { text: pageContent.radioOptionTag, value: 'TG', hasInput: true });
+    selectItems.push({ text: pageContent.radioOptionTag, value: 'TG' })
   }
 
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
+  // nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
+  // const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
 
-  let previousPath = previousPathTradeTermCode
+  const maxNumberOfUniqueIdentificationMarks = 3
 
-  if (data.specimenType === 'animalLiving') {
-    previousPath = previousPathMultipleSpecimens
-    if (data.permitType === pt.ARTICLE_10) {
-      previousPath = previousPathSpecimenType
-    }
+  const marks = []
+
+  for (let i = 0; i < data.numberOfUniqueIdentificationMarks && i < maxNumberOfUniqueIdentificationMarks; i++) {
+    marks.push({
+      markIndex: i,
+      showAddMarkButton: i < (maxNumberOfUniqueIdentificationMarks-1),
+      fieldsetMark: {
+        legend: {
+          text: 'Mark ' + (i + 1),
+          classes: "govuk-fieldset__legend--m",
+          isPageHeading: false
+        }
+      },
+      selectUniqueIdentificationMarkType: {
+        id: "uniqueIdentificationMarkType" + i,
+        name: "uniqueIdentificationMarkType" + i,
+        label: {
+          text: "Select the identification mark"
+        },
+        items: selectItems,
+        errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType" + i)
+      },
+      inputUniqueIdentificationMark: {
+        id: "uniqueIdentificationMark" + i,
+        name: "uniqueIdentificationMark" + i,
+        label: {
+          text: "Enter the mark number or reference",
+
+          isPageHeading: false
+        },
+        errorMessage: getFieldError(errorList, "#uniqueIdentificationMark" + i)
+      }
+    })
   }
 
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const defaultBacklink = `${previousPathHasUniqueMark}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -80,20 +104,8 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-
-    inputUniqueIdentificationMark: {
-      idPrefix: "uniqueIdentificationMarkType",
-      name: "uniqueIdentificationMarkType",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
-      items: radioItems,
-      errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType")
-    }
+    pageHeader: "Add unique identification marks",
+    marks
   }
   return { ...commonContent, ...model }
 }
@@ -140,7 +152,7 @@ function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, err
 function getUniqueIdentificationMarkInputSchema(uniqueIdentificationMarkType) {
   return Joi.when('uniqueIdentificationMarkType', {
     is: uniqueIdentificationMarkType,
-    then: Joi.string().required().min(3).max(150)    
+    then: Joi.string().required().min(3).max(150)
   })
 }
 
@@ -155,8 +167,8 @@ function isDuplicateValidator(value, helpers, submission, applicationIndex) {
 }
 
 function getExistingUniqueIdentifiersForSpeciesAndMarkType(submission, uniqueIdentificationMarkType, applicationIndex) {
-  return submission.applications.filter(app => 
-    app.applicationIndex !== applicationIndex 
+  return submission.applications.filter(app =>
+    app.applicationIndex !== applicationIndex
     && app.species.speciesName === submission.applications[applicationIndex].species.speciesName
     && app.species.uniqueIdentificationMarkType === uniqueIdentificationMarkType
   ).map(app => app.species.uniqueIdentificationMark)
@@ -169,12 +181,14 @@ function failAction(request, h, err) {
 
   const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
   const pageData = {
+    formActionPage:  `${currentPath}/{applicationIndex}`,
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: request.params.applicationIndex,
     specimenType: species.specimenType,
     uniqueIdentificationMark: uniqueIdentificationMark,
     uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
-    permitType: submission.permitType
+    permitType: submission.permitType,
+    numberOfUniqueIdentificationMarks: species.numberOfUniqueIdentificationMarks || 1
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
@@ -204,15 +218,96 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        formActionPage:  `${currentPath}/{applicationIndex}`,
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         specimenType: species.specimenType,
         uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
         uniqueIdentificationMark: species.uniqueIdentificationMark,
-        permitType: submission.permitType
+        permitType: submission.permitType,
+        numberOfUniqueIdentificationMarks: species.numberOfUniqueIdentificationMarks || 1
       }
 
       return h.view(pageId, createModel(null, pageData))
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/{applicationIndex}/addMark`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required()
+        }),
+        options: { abortEarly: false },        
+        failAction,
+      },
+      handler: async (request, h) => {
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
+
+        if (!species.numberOfUniqueIdentificationMarks) {
+          species.numberOfUniqueIdentificationMarks = 2
+        } else {
+          species.numberOfUniqueIdentificationMarks++
+        }
+
+        try {
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+        } catch (err) {
+          console.error(err)
+          return h.redirect(invalidSubmissionPath)
+        }
+
+        const pageData = {
+          formActionPage: `${currentPath}/{applicationIndex}`,
+          backLinkOverride: checkChangeRouteExit(request, true),
+          applicationIndex: applicationIndex,
+          specimenType: species.specimenType,
+          uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
+          uniqueIdentificationMark: species.uniqueIdentificationMark,
+          permitType: submission.permitType,
+          numberOfUniqueIdentificationMarks: species.numberOfUniqueIdentificationMarks
+        }
+  
+        return h.view(pageId, createModel(null, pageData))//.takeover()
+        // const hasUniqueIdentificationMark = request.payload.hasUniqueIdentificationMark
+        // const species = submission.applications[applicationIndex].species
+
+        // if (!hasUniqueIdentificationMark) {
+        //   species.uniqueIdentificationMarkType = 'unmarked'
+        //   species.uniqueIdentificationMark = null
+        // }
+        // species.hasUniqueIdentificationMark = hasUniqueIdentificationMark
+
+        // try {
+        //   mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+        // } catch (err) {
+        //   console.error(err)
+        //   return h.redirect(invalidSubmissionPath)
+        // }
+
+        // const exitChangeRouteUrl = checkChangeRouteExit(request, false)
+        // if (exitChangeRouteUrl) {
+        //   saveDraftSubmission(request, exitChangeRouteUrl)
+        //   return h.redirect(exitChangeRouteUrl)
+        // }
+
+        // let redirectTo = `${nextPathUniqueIdentificationMark}/${applicationIndex}`
+
+        // if (!hasUniqueIdentificationMark) {
+        //   if (species.specimenType === 'animalLiving') {
+        //     redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
+        //   } else {
+        //     redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
+        //   }
+        // }
+
+        // saveDraftSubmission(request, redirectTo)
+        // return h.redirect(redirectTo)
+
+      }
     }
   },
   {
@@ -244,20 +339,20 @@ module.exports = [
         const submission = getSubmission(request)
         const uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
         const uniqueIdentificationMark = request.payload['input' + uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
-        
+
         if (uniqueIdentificationMarkType !== 'unmarked') {
           const schema = Joi.object({
             uniqueIdentificationMark: Joi.string().required(),
             uniqueIdentificationMarkType: Joi.string().required(),
           }).custom((value, helpers) => isDuplicateValidator(value, helpers, submission, applicationIndex), 'Custom validation example')
-          
+
           const result = schema.validate({ uniqueIdentificationMark, uniqueIdentificationMarkType: uniqueIdentificationMarkType }, { abortEarly: false })
-          
+
           if (result.error) {
             return failAction(request, h, result.error)
           }
         }
-        
+
         const species = submission.applications[applicationIndex].species
         species.uniqueIdentificationMarkType = uniqueIdentificationMarkType
         species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")

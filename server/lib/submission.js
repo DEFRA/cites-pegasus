@@ -456,7 +456,12 @@ function getSubmissionProgress(submission, includePageData) {
             }
 
             if (submission.permitType === permitType.ARTICLE_10 || species.numberOfUnmarkedSpecimens === 1 || species.isMultipleSpecimens === false) {
-                submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+                submissionProgress.push(getPageProgess(`has-unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('hasUniqueIdentificationMark', species.hasUniqueIdentificationMark)))
+
+                if (species.hasUniqueIdentificationMark) {
+                    submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+                }
+                
                 if (!species.uniqueIdentificationMarkType) {
                     return { submissionProgress, applicationStatuses }
                 }
@@ -488,7 +493,11 @@ function getSubmissionProgress(submission, includePageData) {
                 return { submissionProgress, applicationStatuses }
             }
 
-            submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+            submissionProgress.push(getPageProgess(`has-unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('hasUniqueIdentificationMark', species.hasUniqueIdentificationMark)))
+
+            if (species.hasUniqueIdentificationMark) {
+                submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+            }
 
             if (!species.uniqueIdentificationMarkType) {
                 return { submissionProgress, applicationStatuses }
@@ -554,7 +563,7 @@ function getSubmissionProgress(submission, includePageData) {
 
         submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
         submissionProgress.push(getPageProgess(`application-summary/view/${applicationIndex}`, applicationIndex))
-        
+
         completeApplications++
         applicationStatuses[applicationIndex].status = 'complete'
     })

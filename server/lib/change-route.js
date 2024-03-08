@@ -94,7 +94,8 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
             startUrls.push(`${urlPrefix}/trade-term-code/${applicationIndex}`)
             break
         case "uniqueIdentificationMark":
-            startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
+            startUrls.push(`${urlPrefix}/has-unique-identification-mark/${applicationIndex}`)            
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)            
             break
         case "specimenOrigin":
             startUrls.push(`${urlPrefix}/specimen-origin/${applicationIndex}`)

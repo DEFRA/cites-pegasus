@@ -9,6 +9,7 @@ const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "describe-specimen"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
+const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
 const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
@@ -40,7 +41,7 @@ function createModel(errors, data) {
     })
   }
 
-  let previousPath = previousPathUniqueId
+  let previousPath = data.uniqueIdentificationMarkType === 'unmarked' ? previousPathHasUniqueMark : previousPathUniqueId
   if (data.specimenType === 'animalLiving' && data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens
   }
@@ -85,6 +86,7 @@ function failAction(request, h, err) {
     isMultipleSpecimens: species.isMultipleSpecimens,
     numberOfSpecimens: species.numberOfUnmarkedSpecimens,
     specimenType: species.specimenType,
+    uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
     ...request.payload
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -121,7 +123,8 @@ module.exports = [
         isMultipleSpecimens: species.isMultipleSpecimens,
         numberOfSpecimens: species.numberOfUnmarkedSpecimens,
         specimenType: species.specimenType,
-        specimenDescriptionGeneric: species.specimenDescriptionGeneric
+        specimenDescriptionGeneric: species.specimenDescriptionGeneric,
+        uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
       }
 
       return h.view(pageId, createModel(null, pageData))

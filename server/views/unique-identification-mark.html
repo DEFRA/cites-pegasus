@@ -1,7 +1,9 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block beforeContent %}
@@ -26,13 +28,34 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {{ govukRadios(inputUniqueIdentificationMark) }}
-
+      <h2 class="govuk-heading-l moj-add-another__heading" tabindex="-1">{{pageHeader}}</h2>
+      <p>You can add up to three marks. They must relate to the specimen you are completing this application for.</p>
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        {% for mark in marks %}
+          {% call govukFieldset(mark.fieldsetMark) %}
+          {{ govukSelect(mark.selectUniqueIdentificationMarkType) }}
+          {{ govukInput(mark.inputUniqueIdentificationMark) }}
+          {% endcall %}
+          {% if mark.showAddMarkButton %}
+            {{ govukButton({
+            text: "Add another mark",
+            type: "submit",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+            attributes: {
+              formAction: formActionPage + '/addMark'
+            }
+          }) }}
+          {% endif %}
+        {% endfor %}
+        <br/>
         {{ govukButton({
-        text: saveAndContinueButton,
-        type: "submit"
-      }) }}
+          text: saveAndContinueButton,
+          type: "submit",
+          attributes: {
+              formAction: formActionPage
+            }
+        }) }}
+
       </form>
     </div>
   </div>
