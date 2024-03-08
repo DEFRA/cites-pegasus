@@ -169,7 +169,7 @@ function acquiredDateValidator(value, helpers) {
     "acquiredDate-year": year,
     isExactDateUnknown } = value
 
-  if (value.isExactDateUnknown && day || month || year) {
+  if (value.isExactDateUnknown && (day || month || year)) {
     return helpers.error("any.both", { customLabel: 'acquiredDate' })
   }
 

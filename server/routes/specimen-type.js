@@ -200,7 +200,6 @@ module.exports = [
         species.specimenType = request.payload.specimenType
 
         if(isChange){
-          species.specimenOrigin = null
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
