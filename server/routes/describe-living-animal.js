@@ -219,7 +219,7 @@ function dateOfBirthValidator(value, helpers) {
     "dateOfBirth-year": year
   } = value
 
-  if(value.isExactDateUnknown && day || month || year) {
+  if(value.isExactDateUnknown && (day || month || year)) {
     return helpers.error("any.both", { customLabel: 'dateOfBirth' })
   }
 

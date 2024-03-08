@@ -162,7 +162,7 @@ function createdDateValidator(value, helpers) {
     "createdDate-year": year,
     isExactDateUnknown } = value
 
-  if (value.isExactDateUnknown && day || month || year) {
+  if (value.isExactDateUnknown && (day || month || year)) {
     return helpers.error("any.both", { customLabel: 'createdDate' })
   }
 
