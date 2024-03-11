@@ -11,8 +11,9 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
 const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
-
 const invalidSubmissionPath = `${urlPrefix}/`
+
+const maxNumberOfMarks = 5
 
 function createModel(errors, data) {
 
@@ -59,14 +60,19 @@ function createModel(errors, data) {
   // nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
   // const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
 
-  const maxNumberOfUniqueIdentificationMarks = 3
+
 
   const marks = []
 
-  for (let i = 0; i < data.numberOfUniqueIdentificationMarks && i < maxNumberOfUniqueIdentificationMarks; i++) {
+  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfMarks; i++) {
+    let markPair = null
+    if (i < data.markPairs.length) {
+      markPair = data.markPairs[i]
+    }
     marks.push({
       markIndex: i,
-      showAddMarkButton: i < (maxNumberOfUniqueIdentificationMarks-1),
+      showAddMarkButton: i === (data.numberOfMarks - 1) && i < (maxNumberOfMarks - 1),
+      showRemoveMarkButton: data.numberOfMarks > 1,
       fieldsetMark: {
         legend: {
           text: 'Mark ' + (i + 1),
@@ -81,6 +87,7 @@ function createModel(errors, data) {
           text: "Select the identification mark"
         },
         items: selectItems,
+        value: markPair?.uniqueIdentificationMarkType,
         errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType" + i)
       },
       inputUniqueIdentificationMark: {
@@ -91,6 +98,7 @@ function createModel(errors, data) {
 
           isPageHeading: false
         },
+        value: markPair?.uniqueIdentificationMark,
         errorMessage: getFieldError(errorList, "#uniqueIdentificationMark" + i)
       }
     })
@@ -105,6 +113,7 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
     pageHeader: "Add unique identification marks",
+    numberOfMarks: data.numberOfMarks,
     marks
   }
   return { ...commonContent, ...model }
@@ -181,16 +190,30 @@ function failAction(request, h, err) {
 
   const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
   const pageData = {
-    formActionPage:  `${currentPath}/{applicationIndex}`,
+    formActionPage: `${currentPath}/{applicationIndex}`,
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: request.params.applicationIndex,
     specimenType: species.specimenType,
     uniqueIdentificationMark: uniqueIdentificationMark,
     uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
     permitType: submission.permitType,
-    numberOfUniqueIdentificationMarks: species.numberOfUniqueIdentificationMarks || 1
+    numberOfMarks: request.payload.numberOfMarks || 1
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
+}
+
+function generatePayloadSchema(numMarks) {
+  const schema = {};
+  for (let i = 0; i < numMarks; i++) {
+    schema[`uniqueIdentificationMarkType${i}`] = Joi.string().allow('', null);
+    schema[`uniqueIdentificationMark${i}`] = Joi.string().allow('', null);
+  }
+  return Joi.object(schema);
+}
+
+function payload(request, h) {
+  const numMarks = request.payload.numberOfMarks || 2; // Default to 2 if numberOfUniqueIdentificationMarks is not defined
+  return generatePayloadSchema(numMarks);
 }
 
 module.exports = [
@@ -218,14 +241,15 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
-        formActionPage:  `${currentPath}/{applicationIndex}`,
+        formActionPage: `${currentPath}/{applicationIndex}`,
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         specimenType: species.specimenType,
         uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
         uniqueIdentificationMark: species.uniqueIdentificationMark,
         permitType: submission.permitType,
-        numberOfUniqueIdentificationMarks: species.numberOfUniqueIdentificationMarks || 1
+        numberOfMarks: 1,//TODO Pull this from session and default to 1 if nothing
+        markPairs: [] 
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -239,25 +263,23 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required()
         }),
-        options: { abortEarly: false },        
+        options: {
+          payload: payload,
+          abortEarly: false
+        },
         failAction,
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
-
-        if (!species.numberOfUniqueIdentificationMarks) {
-          species.numberOfUniqueIdentificationMarks = 2
-        } else {
-          species.numberOfUniqueIdentificationMarks++
-        }
-
-        try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
-        } catch (err) {
-          console.error(err)
-          return h.redirect(invalidSubmissionPath)
+        
+        const markPairs = []
+        for (let i = 0; i < request.payload.numberOfMarks && i < maxNumberOfMarks; i++) {
+          markPairs.push({
+            uniqueIdentificationMarkType: request.payload[`uniqueIdentificationMarkType${i}`],
+            uniqueIdentificationMark: request.payload[`uniqueIdentificationMark${i}`]
+          })
         }
 
         const pageData = {
@@ -268,45 +290,59 @@ module.exports = [
           uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
           uniqueIdentificationMark: species.uniqueIdentificationMark,
           permitType: submission.permitType,
-          numberOfUniqueIdentificationMarks: species.numberOfUniqueIdentificationMarks
+          numberOfMarks: markPairs.length + 1,
+          markPairs
         }
-  
-        return h.view(pageId, createModel(null, pageData))//.takeover()
-        // const hasUniqueIdentificationMark = request.payload.hasUniqueIdentificationMark
-        // const species = submission.applications[applicationIndex].species
 
-        // if (!hasUniqueIdentificationMark) {
-        //   species.uniqueIdentificationMarkType = 'unmarked'
-        //   species.uniqueIdentificationMark = null
-        // }
-        // species.hasUniqueIdentificationMark = hasUniqueIdentificationMark
+        return h.view(pageId, createModel(null, pageData))//.takeover()      
 
-        // try {
-        //   mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
-        // } catch (err) {
-        //   console.error(err)
-        //   return h.redirect(invalidSubmissionPath)
-        // }
+      }
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/{applicationIndex}/removeMark/{markIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+          markIndex: Joi.number().required()
+        }),
+        options: {
+          payload: payload,
+          abortEarly: false
+        },
+        failAction,
+      },
+      handler: async (request, h) => {
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
+        
+        const markPairs = []
+        for (let i = 0; i < request.payload.numberOfMarks && i < maxNumberOfMarks; i++) {
+          if (i !== request.params.markIndex) {
+            markPairs.push({
+              uniqueIdentificationMarkType: request.payload[`uniqueIdentificationMarkType${i}`],
+              uniqueIdentificationMark: request.payload[`uniqueIdentificationMark${i}`]
+            })
+          }
+        }
 
-        // const exitChangeRouteUrl = checkChangeRouteExit(request, false)
-        // if (exitChangeRouteUrl) {
-        //   saveDraftSubmission(request, exitChangeRouteUrl)
-        //   return h.redirect(exitChangeRouteUrl)
-        // }
 
-        // let redirectTo = `${nextPathUniqueIdentificationMark}/${applicationIndex}`
+        const pageData = {
+          formActionPage: `${currentPath}/{applicationIndex}`,
+          backLinkOverride: checkChangeRouteExit(request, true),
+          applicationIndex: applicationIndex,
+          specimenType: species.specimenType,
+          uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
+          uniqueIdentificationMark: species.uniqueIdentificationMark,
+          permitType: submission.permitType,
+          numberOfMarks: markPairs.length,
+          markPairs
+        }
 
-        // if (!hasUniqueIdentificationMark) {
-        //   if (species.specimenType === 'animalLiving') {
-        //     redirectTo = `${nextPathDescLivingAnimal}/${applicationIndex}`
-        //   } else {
-        //     redirectTo = `${nextPathDescGeneric}/${applicationIndex}`
-        //   }
-        // }
-
-        // saveDraftSubmission(request, redirectTo)
-        // return h.redirect(redirectTo)
-
+        return h.view(pageId, createModel(null, pageData))
       }
     }
   },

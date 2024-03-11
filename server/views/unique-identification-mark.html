@@ -31,6 +31,7 @@
       <h2 class="govuk-heading-l moj-add-another__heading" tabindex="-1">{{pageHeader}}</h2>
       <p>You can add up to three marks. They must relate to the specimen you are completing this application for.</p>
       <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" id="numberOfMarks" name="numberOfMarks" min="1" value="{{ numberOfMarks }}">
         {% for mark in marks %}
           {% call govukFieldset(mark.fieldsetMark) %}
           {{ govukSelect(mark.selectUniqueIdentificationMarkType) }}
@@ -46,6 +47,17 @@
             }
           }) }}
           {% endif %}
+            {% if mark.showRemoveMarkButton %}
+            {{ govukButton({
+            text: "Remove",
+            type: "submit",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+            attributes: {
+              formAction: formActionPage + '/removeMark/' + mark.markIndex
+            }
+          }) }}
+          {% endif %}
+          
         {% endfor %}
         <br/>
         {{ govukButton({
