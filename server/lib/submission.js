@@ -460,11 +460,10 @@ function getSubmissionProgress(submission, includePageData) {
 
                 if (species.hasUniqueIdentificationMark) {
                     submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
-                }
-                
-                if (!species.uniqueIdentificationMarkType) {
-                    return { submissionProgress, applicationStatuses }
-                }
+                    if (!species.uniqueIdentificationMarks?.length) {
+                        return { submissionProgress, applicationStatuses }
+                    }
+                }                
             }
 
             if (species.isMultipleSpecimens && species.numberOfUnmarkedSpecimens > 1) {

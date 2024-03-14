@@ -36,7 +36,6 @@
           {% call govukFieldset(mark.fieldsetMark) %}
           {{ govukSelect(mark.selectUniqueIdentificationMarkType) }}
           {{ govukInput(mark.inputUniqueIdentificationMark) }}
-          {% endcall %}
           {% if mark.showAddMarkButton %}
             {{ govukButton({
             text: "Add another mark",
@@ -47,24 +46,25 @@
             }
           }) }}
           {% endif %}
-            {% if mark.showRemoveMarkButton %}
+          {% if mark.showRemoveMarkButton %}
             {{ govukButton({
             text: "Remove",
             type: "submit",
-            classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-4 add-another__remove",
             attributes: {
               formAction: formActionPage + '/removeMark/' + mark.markIndex
             }
           }) }}
           {% endif %}
-          
+          {% endcall %}
+
         {% endfor %}
         <br/>
         {{ govukButton({
           text: saveAndContinueButton,
           type: "submit",
           attributes: {
-              formAction: formActionPage
+              formAction: formActionPage + '/continue'
             }
         }) }}
 

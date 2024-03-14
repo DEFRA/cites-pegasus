@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableTagIdentifier } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -54,9 +54,9 @@ function createModel(errors, data) {
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
-  if (!data.hasUniqueIdentificationMark && data.uniqueIdentificationMarkType) {
-    data.hasUniqueIdentificationMark = data.uniqueIdentificationMarkType !== 'unmarked'
-  }
+  // if (!data.hasUniqueIdentificationMark && data.uniqueIdentificationMarkType) {
+  //   data.hasUniqueIdentificationMark = data.uniqueIdentificationMarkType !== 'unmarked'
+  // }
 
   const model = {
     backLink: backLink,
@@ -170,14 +170,14 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         if (!hasUniqueIdentificationMark) {
-          species.uniqueIdentificationMarkType = 'unmarked'
-          species.uniqueIdentificationMark = null//TODO Update this to also clear out the saved unique IDs from the new data structure
-          species.numberOfUniqueIdentificationMarks = null  
+          //species.uniqueIdentificationMarkType = 'unmarked'
+          //species.uniqueIdentificationMark = null//TODO Update this to also clear out the saved unique IDs from the new data structure
+          species.uniqueIdentificationMarks = null  
         }
         species.hasUniqueIdentificationMark = hasUniqueIdentificationMark
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+          setSubmission(request, submission.applications, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

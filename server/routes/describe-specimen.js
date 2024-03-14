@@ -41,7 +41,7 @@ function createModel(errors, data) {
     })
   }
 
-  let previousPath = data.uniqueIdentificationMarkType === 'unmarked' ? previousPathHasUniqueMark : previousPathUniqueId
+  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
   if (data.specimenType === 'animalLiving' && data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens
   }
@@ -86,7 +86,7 @@ function failAction(request, h, err) {
     isMultipleSpecimens: species.isMultipleSpecimens,
     numberOfSpecimens: species.numberOfUnmarkedSpecimens,
     specimenType: species.specimenType,
-    uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
+    hasUniqueIdentificationMark: species.hasUniqueIdentificationMark,
     ...request.payload
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -124,7 +124,7 @@ module.exports = [
         numberOfSpecimens: species.numberOfUnmarkedSpecimens,
         specimenType: species.specimenType,
         specimenDescriptionGeneric: species.specimenDescriptionGeneric,
-        uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
+        hasUniqueIdentificationMark: species.hasUniqueIdentificationMark,
       }
 
       return h.view(pageId, createModel(null, pageData))

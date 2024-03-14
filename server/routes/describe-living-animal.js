@@ -121,7 +121,7 @@ function createModel(errors, data) {
     ],
     errorMessage: getFieldError(errorList, "#isExactDateUnknown")
   }
-  let previousPath = data.uniqueIdentificationMarkType === 'unmarked' ? previousPathHasUniqueMark : previousPathUniqueId
+  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
   if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens
   }
@@ -254,7 +254,7 @@ function failAction(request, h, err) {
     sex: request.payload.sex,
     isMultipleSpecimens: application.species.isMultipleSpecimens,
     numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens,
-    uniqueIdentificationMarkType: application.species.uniqueIdentificationMarkType
+    hasUniqueIdentificationMark: application.species.hasUniqueIdentificationMark
     //undeterminedSexReason: request.payload.undeterminedSexReason
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -298,7 +298,7 @@ module.exports = [
         sex: species.sex,
         isMultipleSpecimens: species.isMultipleSpecimens,
         numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
-        uniqueIdentificationMarkType: species.uniqueIdentificationMarkType
+        hasUniqueIdentificationMark: species.hasUniqueIdentificationMark
       }
 
       return h.view(pageId, createModel(null, pageData))
