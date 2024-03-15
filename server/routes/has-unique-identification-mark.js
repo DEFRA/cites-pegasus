@@ -177,7 +177,7 @@ module.exports = [
         species.hasUniqueIdentificationMark = hasUniqueIdentificationMark
 
         try {
-          setSubmission(request, submission.applications, `${pageId}/${applicationIndex}`)
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
