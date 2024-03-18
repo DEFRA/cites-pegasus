@@ -176,8 +176,8 @@ module.exports = [
         
         if (isMajorChange) {
           //If changing between 1 specimen and > 1 specimen, remove unique identifier and description details
-          species.uniqueIdentificationMarkType = null
-          species.uniqueIdentificationMark = null
+          species.hasUniqueIdentificationMark = null
+          species.uniqueIdentificationMarks = null
           species.specimenDescriptionGeneric = null
           species.specimenDescriptionLivingAnimal = null
           species.maleParentDetails = null

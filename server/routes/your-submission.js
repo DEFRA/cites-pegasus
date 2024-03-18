@@ -71,8 +71,8 @@ function createSubmitApplicationModel(errors, data) {
     const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
 
     let labelUniqueIdentificationMark
-    if (commonContent.uniqueIdentfierMarkTypes.hasOwnProperty(application.species.uniqueIdentificationMarkType)) {
-      labelUniqueIdentificationMark = commonContent.uniqueIdentfierMarkTypes[application.species.uniqueIdentificationMarkType]
+    if (commonContent.uniqueIdentificationMarkTypes.hasOwnProperty(application.species.uniqueIdentificationMarkType)) {
+      labelUniqueIdentificationMark = commonContent.uniqueIdentificationMarkTypes[application.species.uniqueIdentificationMarkType]
     }
 
     return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, labelUniqueIdentificationMark, uniqueIdentificationMark, internalReference, formActionCopy, formActionRemove }

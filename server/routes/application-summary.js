@@ -274,8 +274,19 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   if (allowPageNavigation(data.submissionProgress, "trade-term-code/" + data.applicationIndex) || (isReadOnly && data.tradeTermCode)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["isTradeTermCode", "tradeTermCode"], pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode || ""} ${data.species.tradeTermCodeDesc || ""}` : pageContent.rowTextNotKnown, "/tradeTermCode", "trade term code"))
   }
-  if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarkType)) {
+  if (isReadOnly && data.species.uniqueIdentificationMarkType) {//Only for viewing old applications with single unique identifiction mark
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMarkType === "unmarked" ? pageContent.rowTextSpecimenIsNotMarked : data.species.uniqueIdentificationMark, "/uniqueIdentificationMark", "unique identification mark"))
+  }
+  if (allowPageNavigation(data.submissionProgress, "has-unique-identification-mark/" + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "hasUniqueIdentificationMarkType", pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/hasUniqueIdentificationMark", "has unique identification mark"))
+  }
+  if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark)) {
+    let i = 0
+    data.species.uniqueIdentificationMarks.forEach(mark => {
+      const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', `${markTypeText}: ${mark.uniqueIdentificationMark}`, "/uniqueIdentificationMark", "unique identification mark"))
+      i++
+    })
   }
   if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, "/describeLivingAnimal", "sex"))

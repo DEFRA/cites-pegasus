@@ -48,7 +48,7 @@
     "statusDescriptionRefused": "Refused",
     "statusDescriptionCancelled": "Cancelled",
     "statusDescriptionClosed": "Closed",
-    "uniqueIdentfierMarkTypes": {
+    "uniqueIdentificationMarkTypes": {
       "MC": "Microchip number",
       "CR": "Closed ring number",
       "SR": "Split ring number",
@@ -1158,6 +1158,7 @@
     "rowTextPurposeCode": "Purpose code",
     "rowTextTradeTermCode": "Trade term code",
     "rowTextUniqueIdentificationMark": "Unique identification mark",
+    "rowTextHasUniqueIdentificationMark": "Specimen has unique identification mark",
     "rowTextSpecimenIsNotMarked": "The specimen is not marked",
     "rowTextSex": "Sex",
     "rowTextDateOfBirth": "Birth or hatch date",

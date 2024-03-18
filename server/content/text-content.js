@@ -240,7 +240,7 @@ const schema = Joi.object().keys({
     statusDescriptionRefused: Joi.string().required(),
     statusDescriptionCancelled: Joi.string().required(),
     statusDescriptionClosed: Joi.string().required(),
-    uniqueIdentfierMarkTypes: Joi.object({
+    uniqueIdentificationMarkTypes: Joi.object({
       MC: Joi.string().required(),
       CR: Joi.string().required(),
       SR: Joi.string().required(),
@@ -909,6 +909,7 @@ const schema = Joi.object().keys({
     rowTextPurposeCode: Joi.string().required(),
     rowTextTradeTermCode: Joi.string().required(),
     rowTextUniqueIdentificationMark: Joi.string().required(),
+    rowTextHasUniqueIdentificationMark: Joi.string().required(),
     rowTextSpecimenIsNotMarked: Joi.string().required(),
     rowTextSex: Joi.string().required(),
     rowTextDateOfBirth: Joi.string().required(),

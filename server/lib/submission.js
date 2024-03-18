@@ -496,10 +496,10 @@ function getSubmissionProgress(submission, includePageData) {
 
             if (species.hasUniqueIdentificationMark) {
                 submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
-            }
-
-            if (!species.uniqueIdentificationMarkType) {
-                return { submissionProgress, applicationStatuses }
+                
+                if (!species.uniqueIdentificationMarkTypes) {
+                    return { submissionProgress, applicationStatuses }
+                }
             }
 
             submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))
@@ -661,14 +661,14 @@ function getPageDataMultipleSpecimens(species) {
 function getPageDataUniqueIdentificationMark(species) {
     return [
         {
-            fieldId: 'uniqueIdentificationMarkType',
+            fieldId: 'hasUniqueIdentificationMarkType',
             isMandatory: true,
-            hasData: Boolean(species?.uniqueIdentificationMarkType)
+            hasData: Boolean(species?.hasUniqueIdentificationMark)
         },
         {
-            fieldId: 'uniqueIdentificationMark',
-            isMandatory: Boolean(species?.uniqueIdentificationMarkType) && species?.uniqueIdentificationMarkType !== 'unmarked',
-            hasData: Boolean(species?.uniqueIdentificationMark)
+            fieldId: 'uniqueIdentificationMarks',
+            isMandatory: Boolean(species?.hasUniqueIdentificationMark),
+            hasData: species?.uniqueIdentificationMarks?.length > 0
         }
     ]
 }

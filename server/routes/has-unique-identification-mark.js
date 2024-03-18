@@ -101,13 +101,11 @@ function failAction(request, h, err) {
   const submission = getSubmission(request)
   const species = submission.applications[applicationIndex].species
 
-  const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
   const pageData = {
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: request.params.applicationIndex,
     specimenType: species.specimenType,
     hasUniqueIdentificationMark: request.payload.hasUniqueIdentificationMark,
-    uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
     permitType: submission.permitType
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -142,7 +140,6 @@ module.exports = [
         applicationIndex: applicationIndex,
         specimenType: species.specimenType,
         hasUniqueIdentificationMark: species.hasUniqueIdentificationMark,
-        uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
         permitType: submission.permitType
       }
 

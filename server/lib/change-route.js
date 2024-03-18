@@ -26,6 +26,7 @@ const changeTypes = [
     'importerExporterDetails',
     'permitDetails',
     'additionalInfo',
+    'hasUniqueIdentificationMark',
     'uniqueIdentificationMark',
     'everImportedExported',
     'specimenOrigin',
@@ -93,9 +94,14 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
         case "tradeTermCode":
             startUrls.push(`${urlPrefix}/trade-term-code/${applicationIndex}`)
             break
-        case "uniqueIdentificationMark":
+        case "hasUniqueIdentificationMark":
             startUrls.push(`${urlPrefix}/has-unique-identification-mark/${applicationIndex}`)            
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)            
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`) 
+            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)           
+            break
+        case "uniqueIdentificationMark":
+            startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
             break
         case "specimenOrigin":
             startUrls.push(`${urlPrefix}/specimen-origin/${applicationIndex}`)
