@@ -11,8 +11,8 @@ function createModel(paymentRoute) {
   const pageContent = textContent.paymentSuccess;
   const notificationHeader = pageContent.pageHeader
   const notificationContent = `<a class='govuk-notification-banner__link' href='${returnToYourApplicationsUrl}'>${pageContent.returnToYourApplicationsLinkText}</a>`
-
-  return { ...commonContent, ...pageContent, notificationHeader, notificationContent }
+  const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix
+  return { ...commonContent, ...pageContent, notificationHeader, notificationContent, pageTitle }
 }
 
 module.exports = [{

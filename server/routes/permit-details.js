@@ -290,9 +290,7 @@ function createModel(errors, data) {
     assetPath,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     hintImportReexportA10: pageContent.hintImportReexportA10,
     hintCountryOfOrigin: pageContent.hintCountryOfOrigin,

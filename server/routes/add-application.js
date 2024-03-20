@@ -41,9 +41,7 @@ function createModel(errors, data) {
     backLink: previousPath,
     formActionPage: currentPath,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
     inputAddApplication: {
       idPrefix: "addApplication",

@@ -9,7 +9,8 @@ function createModel(){
   const commonContent = textContent.common;
   const pageContent = textContent.cannotUseService;
   let backLink = enableOtherPermitTypes ? previousPathOtherPermitType : previousPathPermitType
-  return { ...commonContent, ...pageContent, backLink }
+  const pageTitle = pageContent.pageTitle + commonContent.pageTitleSuffix
+  return { ...commonContent, ...pageContent, backLink, pageTitle }
 }
 
 module.exports = [{

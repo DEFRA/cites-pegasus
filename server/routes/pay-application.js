@@ -40,7 +40,7 @@ function createModel(errors, data) {
     pageBody2: pageContent.pageBody2,
     headingPaymentAmount: pageContent.headingPaymentAmount,
     costingValue: `£${data}`,
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputPayNow: {
       id: "payNow",
       name: "payNow",

@@ -61,7 +61,7 @@ function createModel(errors, data) {
     pageBody1: pageContent.pageBody1,
     pageBody2: pageContent.pageBody2,
     bulletListItems: pageContent.bulletListItems,
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputIsAgent: {
       id: "isAgent",
       name: "isAgent",

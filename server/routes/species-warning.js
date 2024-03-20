@@ -17,7 +17,7 @@ function createModel(errors, data) {
   const model = {
     backLink: `${previousPath}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
-    pageTitle: pageContent.defaultTitle,
+    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     warningMessage: data.warningMessage
   }

@@ -99,7 +99,7 @@ function createModel(errors, data) {
         enterManualAddressLinkText: pageContent.enterManualAddressLinkText,
         enterManualAddressUrl: `/enter-address/${data.contactType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
         selectAddress,
         inputDeliveryName,
         showDeliveryName: data.contactType === 'delivery' && enableDeliveryName

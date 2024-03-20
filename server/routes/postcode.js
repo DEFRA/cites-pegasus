@@ -89,7 +89,7 @@ function createModel(errors, data) {
         containerClasses: 'hide-when-loading',
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
         linkTextEnterAddress: pageContent.linkTextEnterAddress,
         linkUrlEnterAddress: `/enter-address/${data.contactType}`,
         buttonFindAddress: pageContent.buttonFindAddress,

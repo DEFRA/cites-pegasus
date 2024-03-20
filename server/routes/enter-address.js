@@ -98,7 +98,7 @@ function createModel(errors, data) {
         pageBody: pageBody,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
         internationalAddress: data.contactType !== 'delivery',
         showDeliveryName: data.contactType === 'delivery' && enableDeliveryName,
         inputDeliveryName: {
