@@ -145,7 +145,7 @@ module.exports = [
           applicationIndex: Joi.number().required()
         }),
         payload: Joi.object({
-          quantity: Joi.any().custom(quantity),
+          quantity: Joi.number().custom(quantity),
           unitOfMeasurement: Joi.string().valid(...unitOfMeasurementValues).required()
         }),
         failAction: (request, h, err) => {
