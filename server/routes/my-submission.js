@@ -56,7 +56,7 @@ function createModel(errors, data) {
     notificationHeader: notificationHeader,
     notificationContent: notificationContent,
     enableInternalReference,
-    pageTitle: data.submissionRef,
+    pageTitle: data.submissionRef + commonContent.pageTitleSuffix,
     pageHeader: data.submissionRef,
     tableHeadReferenceNumber: pageContent.tableHeadReferenceNumber,
     tableHeadScientificName: pageContent.tableHeadScientificName,

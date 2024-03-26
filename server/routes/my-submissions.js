@@ -66,7 +66,7 @@ function createModel(errors, data) {
   const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
 
   const model = {
-    pageTitle: pageContent.defaultTitle,
+    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
     draftNotificationTitle: pageContent.draftNotificationTitle,
     draftNotificationHeader: pageContent.draftNotificationHeader,
@@ -201,9 +201,7 @@ function createAreYouSureModel(errors) {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
     pageBody: pageBody,
   

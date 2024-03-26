@@ -211,6 +211,7 @@ const schema = Joi.object().keys({
     confirmAndContinueButton: Joi.string().required(),
     returnYourApplicationsButton: Joi.string().required(),
     copyAsNewApplicationButton: Joi.string().required(),
+    pageTitleSuffix: Joi.string().required(),
     errorSummaryTitlePrefix: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),

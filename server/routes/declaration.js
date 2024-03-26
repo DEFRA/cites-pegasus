@@ -40,9 +40,7 @@ function createModel(errors, data) {
     formActionPage: currentPath,
     containerClasses: 'hide-when-loading',
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     pageBodyText1: pageContent.pageBodyText1,
     pageBodyText2: pageContent.pageBodyText2,

@@ -13,8 +13,8 @@ function createModel(paymentRoute) {
   const submitApplicationAndPayLaterUrl = `${urlPrefix}/application-complete`
   const returnToYourApplicationsUrl = `${urlPrefix}/`
   const goBackAndTryPaymentAgainUrl = `${urlPrefix}/govpay/create-payment/${paymentRoute}`
-
-  return { ...commonContent, ...pageContent, goBackAndTryPaymentAgainUrl, submitApplicationAndPayLaterUrl, returnToYourApplicationsUrl, paymentRoute }
+  const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix
+  return { ...commonContent, ...pageContent, goBackAndTryPaymentAgainUrl, submitApplicationAndPayLaterUrl, returnToYourApplicationsUrl, paymentRoute, pageTitle }
 }
 
 module.exports = [{

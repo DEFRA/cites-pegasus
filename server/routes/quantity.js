@@ -52,9 +52,7 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
     inputQuantity: {
       id: "quantity",

@@ -30,7 +30,7 @@ function createModel(errors, data) {
     formActionPage: currentPath,
     defaultTitle: pageContent.defaultTitle,
     pageBody: pageContent.pageBody,
-    pageTitle: pageContent.defaultTitle,
+    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
     panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
     pageBody1: pageBodyContent.pageBody1,

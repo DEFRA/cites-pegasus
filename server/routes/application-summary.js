@@ -83,7 +83,7 @@ function createApplicationSummaryModel(errors, data) {
     backLink,
     breadcrumbs: ['view-submitted', 'copy-as-new'].includes(summaryType) ? breadcrumbs : "",
     pageHeader: appContent.pageHeader,
-    pageTitle: appContent.pageTitle,
+    pageTitle: appContent.pageTitle + commonContent.pageTitleSuffix,
     buttonText: appContent.buttonText,
     showConfirmButton: appContent.showConfirmButton,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
@@ -824,9 +824,7 @@ function createAreYouSureModel(errors, data) {
     backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
 

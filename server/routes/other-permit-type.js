@@ -43,7 +43,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputOtherPermitType: {
       idPrefix: "otherPermitTypeOption",
       name: "otherPermitTypeOption",

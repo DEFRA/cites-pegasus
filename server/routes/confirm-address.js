@@ -60,7 +60,7 @@ function createModel(errors, data) {
         backLink: previousPath,
         pageHeader: pageHeader,
         formActionPage: `${currentPath}/${data.contactType}`,
-        pageTitle: defaultTitle,
+        pageTitle: defaultTitle + commonContent.pageTitleSuffix,
         deliveryName: data.selectedAddress.deliveryName,
         showDeliveryName: data.selectedAddress.deliveryName && data.contactType === 'delivery',
         addressLine1: data.selectedAddress.addressLine1,
