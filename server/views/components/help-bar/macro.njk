@@ -1,0 +1,10 @@
+{% macro helpBar(params) %}
+    <div class="govuk-width-container">
+        <div class="help-bar">
+            <p class="govuk-body">
+                <strong class="help-bar__question">{{params.helpBarQuestion}}</strong>
+                <a class="govuk-link--inverse" href="../help">{{params.helpBarLinkText}}</a>
+            </p>
+        </div>
+    </div>
+{% endmacro %}

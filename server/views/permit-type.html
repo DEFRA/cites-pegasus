@@ -3,6 +3,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "components/help-bar/macro.njk" import helpBar %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -33,6 +34,7 @@
         text: saveAndContinueButton,
         type: "submit"
       }) }}
+        {# {{ helpBar(helpBarContent) }} #}
       </form>
     </div>
   </div>

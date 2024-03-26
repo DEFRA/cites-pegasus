@@ -1,6 +1,7 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/footer/macro.njk" import govukFooter %}
+{% from "components/help-bar/macro.njk" import helpBar %}
 
 {% block head %}
   <!--[if !IE 8]><!-->
@@ -62,8 +63,8 @@
   <script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
   <h1 class="govuk-heading-xl">Default page template</h1>
 {% endblock %}
-
 {% block footer %}
+{{ helpBar(helpBarContent) }}
 {{ govukFooter({
   meta: {
     items: [

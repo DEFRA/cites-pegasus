@@ -48,6 +48,8 @@
     "statusDescriptionRefused": "Refused",
     "statusDescriptionCancelled": "Cancelled",
     "statusDescriptionClosed": "Closed",
+    "helpBarQuestion": "Need help using this service?",
+    "helpBarLinkText": "Get help",
     "uniqueIdentfierMarkTypes": {
       "MC": "Microchip number",
       "CR": "Closed ring number",
