@@ -501,7 +501,7 @@ function getSubmissionProgress(submission, includePageData) {
             if (species.hasUniqueIdentificationMark) {
                 submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
                 
-                if (!species.uniqueIdentificationMarkTypes) {
+                if (!species.uniqueIdentificationMarks?.length) {
                     return { submissionProgress, applicationStatuses }
                 }
             }

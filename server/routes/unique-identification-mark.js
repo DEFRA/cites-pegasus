@@ -96,26 +96,16 @@ function createModel(errors, data) {
 
   const defaultBacklink = `${previousPathHasUniqueMark}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  const pageTitle = errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix
 
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-
-    inputUniqueIdentificationMark: {
-      idPrefix: "uniqueIdentificationMarkType",
-      name: "uniqueIdentificationMarkType",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
-      items: radioItems,
-      errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType")
-    }
+    pageTitle,
+    pageHeader: "Add unique identification marks",
+    numberOfMarks: data.numberOfMarks,
+    marks
   }
   return { ...commonContent, ...model }
 }

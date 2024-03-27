@@ -51,7 +51,7 @@
     "statusDescriptionClosed": "Closed",
     "helpBarQuestion": "Need help using this service?",
     "helpBarLinkText": "Get help",
-    "uniqueIdentfierMarkTypes": {
+    "uniqueIdentificationMarkTypes": {
       "MC": "Microchip number",
       "CR": "Closed ring number",
       "SR": "Split ring number",
