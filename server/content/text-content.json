@@ -1704,5 +1704,12 @@
     "errorMessages": {
       "error.areYouSure.any.required": "Select yes if you want to continue"
     }
+  },
+  "help": {
+    "defaultTitle": "Endangered plant and animal species (CITES)",
+    "pageHeader": "Endangered plant and animal species (CITES)",
+    "pageBody1": "If you need help completing your CITES application, call 0117 372 3700.",
+    "pageBody2": "For any other queries about importing or exporting endangered animal and plant species listed by the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES), call 0117 372 3700 or email <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'>wildlife.licensing@apha.gov.uk</a>.",
+    "pageBody3": "Find out more about how to <a target='_blank' href='https://www.gov.uk/guidance/apply-for-cites-permits-and-certificates-to-trade-endangered-species'>apply to import, export or re-export endangered animal and plant species</a>."
   }
 }
