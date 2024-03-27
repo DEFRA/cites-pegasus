@@ -211,6 +211,7 @@ const schema = Joi.object().keys({
     confirmAndContinueButton: Joi.string().required(),
     returnYourApplicationsButton: Joi.string().required(),
     copyAsNewApplicationButton: Joi.string().required(),
+    pageTitleSuffix: Joi.string().required(),
     errorSummaryTitlePrefix: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     radioOptionYes: Joi.string().required(),
@@ -240,7 +241,9 @@ const schema = Joi.object().keys({
     statusDescriptionRefused: Joi.string().required(),
     statusDescriptionCancelled: Joi.string().required(),
     statusDescriptionClosed: Joi.string().required(),
-    uniqueIdentificationMarkTypes: Joi.object({
+    helpBarQuestion: Joi.string().required(),
+    helpBarLinkText: Joi.string().required(),
+    uniqueIdentfierMarkTypes: Joi.object({
       MC: Joi.string().required(),
       CR: Joi.string().required(),
       SR: Joi.string().required(),
@@ -563,7 +566,8 @@ const schema = Joi.object().keys({
       "error.createdDate-month-year.any.empty": Joi.string().required(),
       "error.createdDate-year.any.empty": Joi.string().required(),
       "error.approximateDate.string.empty": Joi.string().required(),
-      "error.approximateDate.string.max": Joi.string().required()
+      "error.approximateDate.string.max": Joi.string().required(),
+      "error.createdDate.any.both": Joi.string().required(),
     }).required()
   }).required(),
   acquiredDate: Joi.object({
@@ -584,6 +588,7 @@ const schema = Joi.object().keys({
       "error.acquiredDate-month.any.empty": Joi.string().required(),
       "error.acquiredDate-month-year.any.empty": Joi.string().required(),
       "error.acquiredDate-year.any.empty": Joi.string().required(),
+      "error.acquiredDate.any.both": Joi.string().required(),
       "error.approximateDate.string.empty": Joi.string().required(),
       "error.approximateDate.string.max": Joi.string().required()
     }).required()
@@ -670,7 +675,8 @@ const schema = Joi.object().keys({
         "error.dateOfBirth-day-month.any.empty": Joi.string().required(),
         "error.dateOfBirth-day-year.any.empty": Joi.string().required(),
         "error.dateOfBirth-month-year.any.empty": Joi.string().required(),
-        "error.dateOfBirth.any.beforeMinDate": Joi.string().required()
+        "error.dateOfBirth.any.beforeMinDate": Joi.string().required(),
+        "error.dateOfBirth.any.both": Joi.string().required()
       })
       .required()
   }).required(),
@@ -1249,6 +1255,13 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       "error.areYouSure.any.required": Joi.string().required(),
     }).required()
+  }).required(),
+  help: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),    
+    pageBody2: Joi.string().required(),   
+    pageBody3: Joi.string().required()    
   }).required()
 })
 

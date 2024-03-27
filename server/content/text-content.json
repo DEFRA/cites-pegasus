@@ -19,6 +19,7 @@
     "confirmAndContinueButton": "Confirm and continue",
     "returnYourApplicationsButton": "Return to your applications",
     "copyAsNewApplicationButton": "Copy as a new application",
+    "pageTitleSuffix": " - Apply for a CITES Permit - GOV.UK",
     "errorSummaryTitlePrefix": "Error: ",
     "errorSummaryTitle": "There is a problem",
     "radioOptionYes": "Yes",
@@ -48,7 +49,9 @@
     "statusDescriptionRefused": "Refused",
     "statusDescriptionCancelled": "Cancelled",
     "statusDescriptionClosed": "Closed",
-    "uniqueIdentificationMarkTypes": {
+    "helpBarQuestion": "Need help using this service?",
+    "helpBarLinkText": "Get help",
+    "uniqueIdentfierMarkTypes": {
       "MC": "Microchip number",
       "CR": "Closed ring number",
       "SR": "Split ring number",
@@ -738,7 +741,8 @@
       "error.createdDate-month-year.any.empty": "The date the worked item or finished product was created must include a month and year",
       "error.createdDate-year.any.empty": "The date the worked item or finished product was created must include a year",
       "error.approximateDate.string.empty": "Enter an approximate date or period of time",
-      "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
+      "error.approximateDate.string.max": "Approximate date must be 150 characters or less",
+      "error.createdDate.any.both": "Enter a full date, or enter an approximate date"
     }
   },
   "acquiredDate": {
@@ -759,6 +763,7 @@
       "error.acquiredDate-month.any.empty": "The date that you acquired the specimen must include a month",
       "error.acquiredDate-month-year.any.empty": "The date that you acquired the specimen must include a month and year",
       "error.acquiredDate-year.any.empty": "The date that you acquired the specimen must include a year",
+      "error.acquiredDate.any.both": "Enter a date, or enter an approximate date",
       "error.approximateDate.string.empty": "Enter an approximate date or period of time",
       "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
     }
@@ -843,7 +848,8 @@
       "error.dateOfBirth-day-month.any.empty": "Date of birth must include a day and month",
       "error.dateOfBirth-day-year.any.empty": "Date of birth must include a day and year",
       "error.dateOfBirth-month-year.any.empty": "Date of birth must include a month and year",
-      "error.dateOfBirth.any.beforeMinDate": "Date of birth must be on or after 01/01/1753"
+      "error.dateOfBirth.any.beforeMinDate": "Date of birth must be on or after 01/01/1753",
+      "error.dateOfBirth.any.both": "Enter a birth or hatch date, or enter an approximate date"
     }
   },
   "importerExporter": {
@@ -1665,5 +1671,12 @@
     "errorMessages": {
       "error.areYouSure.any.required": "Select yes if you want to continue"
     }
+  },
+  "help": {
+    "defaultTitle": "Endangered plant and animal species (CITES)",
+    "pageHeader": "Endangered plant and animal species (CITES)",
+    "pageBody1": "If you need help completing your CITES application, call 0117 372 3700.",
+    "pageBody2": "For any other queries about importing or exporting endangered animal and plant species listed by the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES), call 0117 372 3700 or email <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'>wildlife.licensing@apha.gov.uk</a>.",
+    "pageBody3": "Find out more about how to <a target='_blank' href='https://www.gov.uk/guidance/apply-for-cites-permits-and-certificates-to-trade-endangered-species'>apply to import, export or re-export endangered animal and plant species</a>."
   }
 }

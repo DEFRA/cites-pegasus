@@ -9,8 +9,8 @@ function createModel(previousPath){
   const commonContent = textContent.common;
   const pageContent = textContent.accessibility;
   const backLink = previousPath || previousPathMySubmissions
-
-  return { ...commonContent, ...pageContent, backLink }
+  const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix
+  return { ...commonContent, ...pageContent, backLink, pageTitle }
 }
 
 module.exports = [{

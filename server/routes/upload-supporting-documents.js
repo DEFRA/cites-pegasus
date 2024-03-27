@@ -71,7 +71,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}`,
     ...(errorList ? { errorList } : {}),
     supportingDocuments: paginatedDocuments,
-    pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     isAgent: data.isAgent,
     inputFile: {
       id: "fileUpload",

@@ -42,9 +42,10 @@ function createModel(errors, data) {
 
   const model = {
     backLink: backLink,
+    // helpBarContent: { helpBarQuestion: commonContent.helpBarQuestion, helpBarLinkText: commonContent.helpBarLinkText },
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputPermitType: {
       idPrefix: "permitTypeOption",
       name: "permitTypeOption",

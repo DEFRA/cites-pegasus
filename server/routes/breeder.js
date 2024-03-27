@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "breeder"
@@ -44,8 +44,8 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+      ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix
+      : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
     inputBreeder: {
       idPrefix: "isBreeder",
@@ -129,7 +129,7 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const application = submission.applications[applicationIndex]
-          
+
           let isBreeder = null
           switch (request.payload.isBreeder) {
             case "true":
@@ -156,23 +156,17 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
         const application = submission.applications[applicationIndex]
-        
+
         const isChange = typeof application.isBreeder === 'boolean' && application.isBreeder !== request.payload.isBreeder
 
         application.isBreeder = request.payload.isBreeder
 
-        if (isChange) {
-          if (application.isBreeder) {
-            application.species.acquiredDate = null
-          }          
+        if (application.isBreeder) {
+          application.species.acquiredDate = null
         }
 
         try {
-          mergeSubmission(
-            request,
-            { applications: submission.applications },
-            `${pageId}/${applicationIndex}`
-          )
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
@@ -185,15 +179,15 @@ module.exports = [
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           const changeData = getChangeRouteData(request)
-          
-          if (application.isBreeder === true || !changeData.dataRemoved ) {
+
+          if (application.isBreeder === true || !changeData.dataRemoved) {
             saveDraftSubmission(request, exitChangeRouteUrl)
             return h.redirect(exitChangeRouteUrl)
           }
         }
 
         const redirectTo = request.payload.isBreeder ? `${nextPathAlreadyHaveA10}/${applicationIndex}` : `${nextPathAcquiredDate}/${applicationIndex}`
-        
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
       }

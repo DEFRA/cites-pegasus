@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { dateValidator } = require("../lib/validators")
 const textContent = require("../content/text-content")
@@ -103,7 +103,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
     inputCreatedDate: {
       id: "createdDate",
@@ -162,6 +162,10 @@ function createdDateValidator(value, helpers) {
     "createdDate-year": year,
     isExactDateUnknown } = value
 
+  if (value.isExactDateUnknown && (day || month || year)) {
+    return helpers.error("any.both", { customLabel: 'createdDate' })
+  }
+
   if (!isExactDateUnknown) {
     const dateValidatorResponse = dateValidator(day, month, year, false, 'createdDate', helpers)
     if (dateValidatorResponse) {
@@ -185,14 +189,14 @@ module.exports = [
     handler: async (request, h) => {
       const { applicationIndex } = request.params
       const submission = getSubmission(request)
-      
+
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
       }
-      
+
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
@@ -258,13 +262,12 @@ module.exports = [
           : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
-          )
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
-        
+
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           saveDraftSubmission(request, exitChangeRouteUrl)
@@ -274,7 +277,7 @@ module.exports = [
         const redirectTo = `${nextPath}/${applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-        
+
       }
     }
   }

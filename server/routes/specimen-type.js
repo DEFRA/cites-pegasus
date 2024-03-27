@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -89,9 +89,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
     inputSpecimenType: {
       idPrefix: "specimenType",
@@ -200,7 +198,6 @@ module.exports = [
         species.specimenType = request.payload.specimenType
 
         if(isChange){
-          species.specimenOrigin = null
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
@@ -225,7 +222,8 @@ module.exports = [
         }
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${request.params.applicationIndex}`)
+          setSubmission(request, submission, `${pageId}/${request.params.applicationIndex}`)
+          //mergeSubmission(request, { applications: submission.applications }, `${pageId}/${request.params.applicationIndex}`)
         }
         catch (err) {
           console.error(err);

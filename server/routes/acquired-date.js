@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { dateValidator } = require("../lib/validators")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -99,7 +99,7 @@ function createModel(errors, data) {
   })
 
   let previousPath = data.sex ? previousPathBreeder : previousPathDescribeSpecimen
-  if (!enableBreederPage){
+  if (!enableBreederPage) {
     previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
   }
 
@@ -111,7 +111,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputAcquiredDate: {
       id: "acquiredDate",
       name: "acquiredDate",
@@ -168,6 +168,10 @@ function acquiredDateValidator(value, helpers) {
     "acquiredDate-month": month,
     "acquiredDate-year": year,
     isExactDateUnknown } = value
+
+  if (value.isExactDateUnknown && (day || month || year)) {
+    return helpers.error("any.both", { customLabel: 'acquiredDate' })
+  }
 
   if (!isExactDateUnknown) {
     const dateValidatorResponse = dateValidator(day, month, year, false, 'acquiredDate', helpers)
@@ -268,8 +272,7 @@ module.exports = [
           : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
-          )
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

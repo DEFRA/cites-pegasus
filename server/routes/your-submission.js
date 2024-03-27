@@ -80,7 +80,7 @@ function createSubmitApplicationModel(errors, data) {
 
 
   const model = {
-    pageTitle: pageContent.defaultTitle,
+    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
     captionText: pageContent.pageHeader,
     tableHeadScientificName: pageContent.tableHeadScientificName,
     tableHeadQuantity: pageContent.tableHeadQuantity,
@@ -145,9 +145,7 @@ function createAreYouSureModel(errors, data) {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
     pageBody: pageBody,
 

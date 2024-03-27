@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked, getErrorList } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -133,7 +133,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     caption: data.speciesName,
     inputLabelSex: pageContent.inputLabelSex,
@@ -223,6 +223,10 @@ function dateOfBirthValidator(value, helpers) {
     "dateOfBirth-month": month,
     "dateOfBirth-year": year
   } = value
+
+  if(value.isExactDateUnknown && (day || month || year)) {
+    return helpers.error("any.both", { customLabel: 'dateOfBirth' })
+  }
 
   if ((day + month + year).length === 0){
     return value
@@ -359,8 +363,7 @@ module.exports = [
         : { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]), isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: null }
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`
-          )
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

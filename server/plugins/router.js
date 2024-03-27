@@ -56,7 +56,8 @@ const routes = [].concat(
   require('../routes/draft-submission-warning'),
   require('../routes/add-application'),
   require('../routes/specimen-origin'),
-  require('../routes/delivery-type')
+  require('../routes/delivery-type'),
+  require('../routes/help')
 )
 
 module.exports = {

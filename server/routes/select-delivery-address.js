@@ -74,7 +74,7 @@ function createModel(errors, data) {
         pageHeader: pageContent.pageHeader,
         formActionPage: currentPath,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
         changeAddressLinkText: pageContent.changeAddressLinkText,
         changeAddressLink: `/postcode/delivery`,
         inputDeliveryAddressOptions: {

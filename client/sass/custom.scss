@@ -238,11 +238,32 @@ div:has(a[data-disabled]:hover) {
 }
 
 ul.autocomplete__menu {
-    font-family: GDS Transport,arial,sans-serif;
+    font-family: GDS Transport, arial, sans-serif;
 }
 
 .js-enabled-only {
     display: none
+}
+
+.help-bar {
+    margin: 60px 0 0 0;
+    padding: 10px 15px 0;
+    background-color: #1D70B8;
+    color: #fff;
+}
+
+.help-bar .govuk-body {
+    font-size: 1rem;
+    margin-bottom: 0;
+    color: #fff;
+}
+
+.help-bar .help-bar__question {
+    margin-right: 10px;
+}
+
+.govuk-footer {
+    border-top: 10px solid #1d70b8;
 }
 
 .add-another__item {

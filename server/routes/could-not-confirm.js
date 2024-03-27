@@ -10,8 +10,8 @@ function createModel(unknownSpeciesName, applicationIndex){
   const commonContent = textContent.common;
   const pageContent = textContent.couldNotConfirm;
   const previousPath = `${urlPrefix}/species-name/${applicationIndex}`
-
-  return { ...commonContent, ...pageContent, backLink: previousPath, unknownSpeciesName: unknownSpeciesName }
+  const pageTitle = pageContent.pageTitle + commonContent.pageTitleSuffix
+  return { ...commonContent, ...pageContent, backLink: previousPath, unknownSpeciesName, pageTitle }
 }
 
 module.exports = [{

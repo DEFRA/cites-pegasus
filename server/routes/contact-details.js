@@ -87,7 +87,7 @@ function createModel(errors, data) {
         isAgent: data.isAgent,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : defaultTitle,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
 
         inputFullName: {
             label: {

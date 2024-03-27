@@ -59,9 +59,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     formActionSearch: `${currentPath}/search/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList
-      ? commonContent.errorSummaryTitlePrefix + errorList[0].text
-      : pageContent.defaultTitle,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
     javascriptBody: pageContent.javascriptBody,
     noJavascriptBody: pageContent.noJavascriptBody,    
