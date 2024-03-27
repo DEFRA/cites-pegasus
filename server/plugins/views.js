@@ -3,6 +3,7 @@ const nunjucks = require('nunjucks')
 const config = require('../../config/config')
 const pkg = require('../../package.json')
 const analyticsAccount = config.analyticsAccount
+const { common: commonContent } = require('../content/text-content')
 
 module.exports = {
   plugin: require('@hapi/vision'),
@@ -37,7 +38,11 @@ module.exports = {
       assetPath: '/assets',
       serviceName: 'Apply for a CITES permit',
       pageTitle: 'Apply for a CITES permit - GOV.UK',
-      analyticsAccount: analyticsAccount
+      analyticsAccount: analyticsAccount,
+      helpBarContent: {
+        helpBarQuestion: commonContent.helpBarQuestion,
+        helpBarLinkText: commonContent.helpBarLinkText
+      }
     }
   }
 }

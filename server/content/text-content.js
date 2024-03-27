@@ -241,6 +241,8 @@ const schema = Joi.object().keys({
     statusDescriptionRefused: Joi.string().required(),
     statusDescriptionCancelled: Joi.string().required(),
     statusDescriptionClosed: Joi.string().required(),
+    helpBarQuestion: Joi.string().required(),
+    helpBarLinkText: Joi.string().required(),
     uniqueIdentfierMarkTypes: Joi.object({
       MC: Joi.string().required(),
       CR: Joi.string().required(),
@@ -1288,6 +1290,13 @@ const schema = Joi.object().keys({
     errorMessages: Joi.object({
       "error.areYouSure.any.required": Joi.string().required(),
     }).required()
+  }).required(),
+  help: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),    
+    pageBody2: Joi.string().required(),   
+    pageBody3: Joi.string().required()    
   }).required()
 })
 

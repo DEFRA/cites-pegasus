@@ -66,7 +66,8 @@ async function createServer() {
   server.app.countries = countries;
   server.app.tradeTermCodes = tradeTermCodes;
 
-
+  
+  
   console.log('###### CITES PORTAL STARTUP: Registering plugins ######')
   // Register the plugins
   await server.register(require('@hapi/inert'))
@@ -77,10 +78,7 @@ async function createServer() {
   await server.register(require('./plugins/logging'))
   await server.register(require('./plugins/yar'))
   await server.register(require('blipp'))
-
-
-
-
+  
   console.log(`###### CITES PORTAL STARTUP: Ready to start server on port ${config.port} ######`)
   return server
 }
