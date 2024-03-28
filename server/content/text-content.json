@@ -912,7 +912,7 @@
       }
     },
     "importerDetails": {
-      "defaultTitle": "Importer’s contact details ",
+      "defaultTitle": "Importer’s details ",
       "pageHeader": "Importer’s details",
       "heading": "Country of import",
       "errorMessages": {
@@ -920,7 +920,7 @@
       }
     },
     "exporterDetails": {
-      "defaultTitle": "Exporter or re-exporter’s contact details",
+      "defaultTitle": "Exporter or re-exporter’s details",
       "pageHeader": "Exporter or re-exporter’s details",
       "heading": "Country of export or re-export",
       "errorMessages": {
