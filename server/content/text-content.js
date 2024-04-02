@@ -241,8 +241,8 @@ const schema = Joi.object().keys({
     statusDescriptionRefused: Joi.string().required(),
     statusDescriptionCancelled: Joi.string().required(),
     statusDescriptionClosed: Joi.string().required(),
-    helpBarQuestion: Joi.string().required(),
-    helpBarLinkText: Joi.string().required(),
+    helpBarQuestion: Joi.string().allow('', null),
+    helpBarLinkText: Joi.string().allow('', null),
     uniqueIdentfierMarkTypes: Joi.object({
       MC: Joi.string().required(),
       CR: Joi.string().required(),
