@@ -80,8 +80,26 @@ async function createServer() {
   await server.register(require('./plugins/yar'))
   await server.register(require('blipp'))
   
-  console.log(`###### CITES PORTAL STARTUP: Ready to start server on port ${config.port} ######`)
+  await server.initialize();
+  console.log(`###### CITES PORTAL STARTUP: Server initialized - Ready to start ######`)
   return server
 }
 
-module.exports = createServer
+const init = async () => {
+  const server = await createServer()
+  return server;
+};
+
+const start = async () => {
+  const server = await createServer()
+  await server.start();
+  console.log(`###### CITES PORTAL STARTUP: Server started on port ${server.info.uri} ######`)  
+  return server;
+};
+
+process.on('unhandledRejection', (err) => {
+  console.log(err);
+  process.exit(1);
+})
+
+module.exports = { init, start }
