@@ -9,6 +9,7 @@ const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/
 
 async function createServer() {
   console.log('###### CITES PORTAL STARTUP: Creating server config ######')
+  console.log('Environment: ' + config.env)
   const cacheConfig = await getCacheConfig()
   const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
 
