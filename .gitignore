@@ -13,3 +13,4 @@ lcov.info
 .env test
 .env tst
 *.pem
+stdout
