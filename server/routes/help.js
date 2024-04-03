@@ -6,7 +6,8 @@ const currentPath = `${urlPrefix}/${pageId}`
 function createModel(){
   const commonContent = textContent.common
   const pageContent = textContent.help
-  return { ...commonContent, ...pageContent }
+  const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix
+  return { ...commonContent, ...pageContent, pageTitle }
 }
 
 module.exports = [{

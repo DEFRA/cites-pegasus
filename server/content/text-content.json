@@ -1464,6 +1464,7 @@
     "draftContinue": "Continue the application",
     "draftDelete": "Delete this application",
     "defaultTitle": "Your applications",
+    "defaultTitleOrganisation": "Your applications for ##ORGANISATION_NAME##",
     "pageHeader": "Your applications",
     "pageHeaderOrganisation": "Your applications for ##ORGANISATION_NAME##",
     "inputLabelSearch": "Search",
