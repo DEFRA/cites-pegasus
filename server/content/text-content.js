@@ -1098,6 +1098,7 @@ const schema = Joi.object().keys({
     draftContinue: Joi.string().required(),
     draftDelete: Joi.string().required(),
     defaultTitle: Joi.string().required(),
+    defaultTitleOrganisation: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageHeaderOrganisation: Joi.string().required(),
     inputLabelSearch: Joi.string().required(),
