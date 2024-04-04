@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix, enableTagIdentifier } = require("../../config/config")
+const { urlPrefix, enableTagIdentifier, maxNumberOfUniqueIdentifiers } = require("../../config/config")
 const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
@@ -11,8 +11,6 @@ const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-const maxNumberOfMarks = 3
-
 function createModel(errors, data) {
 
 
@@ -21,7 +19,7 @@ function createModel(errors, data) {
 
   const fields = []
   let pageContentErrorMessages = {}
-  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfMarks; i++) {
+  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
     fields.push(`uniqueIdentificationMarkType${i}`)
     fields.push(`uniqueIdentificationMark${i}`)
 
@@ -53,14 +51,14 @@ function createModel(errors, data) {
 
   const marks = []
 
-  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfMarks; i++) {
+  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
     let markPair = null
     if (i < data.uniqueIdentificationMarks.length) {
       markPair = data.uniqueIdentificationMarks[i]
     }
     marks.push({
       markIndex: i,
-      showAddMarkButton: i === (data.numberOfMarks - 1) && i < (maxNumberOfMarks - 1),
+      showAddMarkButton: i === (data.numberOfMarks - 1) && i < (maxNumberOfUniqueIdentifiers - 1),
       showRemoveMarkButton: data.numberOfMarks > 1,
       fieldsetMark: {
         classes: "add-another__item",
@@ -154,7 +152,7 @@ function getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIde
 
 function getUniqueIdentificationMarksFromPayload(payload) {
   const uniqueIdentificationMarks = []
-  for (let i = 0; i < payload.numberOfMarks && i < maxNumberOfMarks; i++) {
+  for (let i = 0; i < payload.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
     uniqueIdentificationMarks.push({
       index: i,
       uniqueIdentificationMarkType: payload[`uniqueIdentificationMarkType${i}`],

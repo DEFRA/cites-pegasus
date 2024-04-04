@@ -102,6 +102,11 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
             break
         case "uniqueIdentificationMark":
             startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/addMark`)                        
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/0`)                        
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/1`)                        
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/2`)                        
             break
         case "specimenOrigin":
             startUrls.push(`${urlPrefix}/specimen-origin/${applicationIndex}`)
