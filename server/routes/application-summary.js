@@ -277,8 +277,7 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   }
   if (isReadOnly && data.species.uniqueIdentificationMarkType) {//Only for viewing old applications with single unique identifiction mark
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMarkType === "unmarked" ? pageContent.rowTextSpecimenIsNotMarked : data.species.uniqueIdentificationMark, "/uniqueIdentificationMark", "unique identification mark"))
-  }
-  if (allowPageNavigation(data.submissionProgress, "has-unique-identification-mark/" + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
+  } else if (allowPageNavigation(data.submissionProgress, "has-unique-identification-mark/" + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "hasUniqueIdentificationMarkType", pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/hasUniqueIdentificationMark", "has unique identification mark"))
   }
   if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark)) {

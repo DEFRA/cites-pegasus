@@ -173,15 +173,27 @@ function migrateSubmissionToNewSchema(submission) {
 function migrateApplicationToNewSchema(app) {
 
     if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
-        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1        
+        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1
     }
-    
+
     if (app.species.numberOfUnmarkedSpecimens && typeof app.species.numberOfUnmarkedSpecimens === "string") {
         app.species.numberOfUnmarkedSpecimens = parseInt(app.species.numberOfUnmarkedSpecimens)
     }
-    
-    if (app.species.uniqueIdentificationMarkType === 'unmarked') {
-        app.species.uniqueIdentificationMark = null
+
+    if (app.species.uniqueIdentificationMarkType) {
+        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
+            app.species.hasUniqueIdentificationMark = false
+            app.species.uniqueIdentificationMarks = null
+        } else {
+            app.species.hasUniqueIdentificationMark = true
+            app.species.uniqueIdentificationMarks = [{
+                index: 0,
+                uniqueIdentificationMark: app.species.uniqueIdentificationMark,
+                uniqueIdentificationMarkType: app.species.uniqueIdentificationMarkType
+            }]                   
+        }
+        delete app.species.uniqueIdentificationMark
+        delete app.species.uniqueIdentificationMarkType
     }
 
     if (app.permitDetails) {
@@ -467,7 +479,7 @@ function getSubmissionProgress(submission, includePageData) {
                     if (!species.uniqueIdentificationMarks?.length) {
                         return { submissionProgress, applicationStatuses }
                     }
-                }                
+                }
             }
 
             if (species.isMultipleSpecimens && species.numberOfUnmarkedSpecimens > 1) {
@@ -500,7 +512,7 @@ function getSubmissionProgress(submission, includePageData) {
 
             if (species.hasUniqueIdentificationMark) {
                 submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
-                
+
                 if (!species.uniqueIdentificationMarks?.length) {
                     return { submissionProgress, applicationStatuses }
                 }
