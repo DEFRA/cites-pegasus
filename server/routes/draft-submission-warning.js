@@ -16,8 +16,6 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.draftSubmissionWarning
 
-
-
   let errorList = null
   if (errors) {
     errorList = []
@@ -109,13 +107,24 @@ module.exports = [{
           then: Joi.number().required(),
           otherwise: Joi.number().optional().allow(null, '')
         })
-      })
+      }),
+      payload: Joi.object({
+        areYouSure: Joi.boolean().required()
+      }),
+      failAction: (request, h, err) => {
+        const pageData = {
+          newSubmissionType: request.params.newSubmissionType,
+          applicationIndex: request.params.applicationIndex
+        }
+        
+        return h.view('are-you-sure', createModel(err, pageData)).takeover()        
+      }
     }
   },
   handler: async (request, h) => {
     const { newSubmissionType, applicationIndex } = request.params
 
-    if (request.payload.areYouSure === 'true') {
+    if (request.payload.areYouSure) {
       if (newSubmissionType === 'copy-as-new') {
         cloneSubmission(request, applicationIndex)
         saveDraftSubmission(request, `${nextPathCopyAsNewApplication}/0`)

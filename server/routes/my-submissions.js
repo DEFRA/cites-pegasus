@@ -64,10 +64,10 @@ function createModel(errors, data) {
   }
 
   const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
-
+  const pageTitle = (data.organisationName ? pageContent.defaultTitleOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.defaultTitle) + commonContent.pageTitleSuffix
   const model = {
-    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    pageHeader: pageHeader,
+    pageTitle,
+    pageHeader,
     draftNotificationTitle: pageContent.draftNotificationTitle,
     draftNotificationHeader: pageContent.draftNotificationHeader,
     draftNotificationBody: pageContent.draftNotificationBody,
