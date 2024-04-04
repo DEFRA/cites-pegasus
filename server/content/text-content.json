@@ -2,7 +2,7 @@
   "common": {
     "serviceName": "Apply for a CITES permit",
     "phaseBannerPhase": "beta",
-    "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:emily.penry@apha.gov.uk'>feedback</a> will help us to improve it.",
+    "phaseBannerHTML": "This is a new service – your <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'>feedback</a> will help us to improve it.",
     "navigationSignOut": "Sign out",
     "navigationAccountManagement": "Account management",
     "backLinkButton": "Back",
@@ -877,7 +877,7 @@
       }
     },
     "importerDetails": {
-      "defaultTitle": "Importer’s contact details ",
+      "defaultTitle": "Importer’s details ",
       "pageHeader": "Importer’s details",
       "heading": "Country of import",
       "errorMessages": {
@@ -885,7 +885,7 @@
       }
     },
     "exporterDetails": {
-      "defaultTitle": "Exporter or re-exporter’s contact details",
+      "defaultTitle": "Exporter or re-exporter’s details",
       "pageHeader": "Exporter or re-exporter’s details",
       "heading": "Country of export or re-export",
       "errorMessages": {

@@ -7,7 +7,17 @@ const { whoAmI } = require('../services/dynamics-service')
 module.exports = [
   {
     method: 'GET',
-    path: `${urlPrefix}/test`,
+    path: `${urlPrefix}/healthcheck-basic`,
+    config: {
+      auth: false
+    },
+    handler: async (request, h) => {
+      return h.response('Success').code(200);
+    }
+  },
+  {
+    method: 'GET',
+    path: `${urlPrefix}/healthcheck-detailed`,
     config: {
       auth: false
     },
