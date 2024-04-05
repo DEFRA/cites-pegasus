@@ -229,10 +229,7 @@ function cloneApplication(request, applicationIndex) {
     const applications = submission.applications
     const clonedApplication = lodash.cloneDeep(applications[applicationIndex])
     clonedApplication.applicationIndex = applications.length
-    clonedApplication.species.uniqueIdentificationMark = null
-    if (clonedApplication.species.uniqueIdentificationMarkType != 'unmarked') {
-        clonedApplication.species.uniqueIdentificationMarkType = null
-    }
+    clonedApplication.species.uniqueIdentificationMarks = null
     applications.push(clonedApplication)
     mergeSubmission(request, { applications })
     return clonedApplication.applicationIndex

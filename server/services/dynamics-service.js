@@ -134,6 +134,11 @@ function mapSubmissionToPayload(submission) {
 
   if (payload.applications) {
     payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+    payload.applications.forEach(application => {
+      if(application.species && application.species.uniqueIdentificationMarks){
+        application.species["uniqueIdentificationMarks@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)" 
+      }
+    })
   }
 
   return { Payload: payload }

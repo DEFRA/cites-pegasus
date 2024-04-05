@@ -75,7 +75,7 @@ function createApplicationSummaryModel(errors, data) {
   }, {})
 
   let hintIncomplete = ''
-  if(data.mandatoryFieldIssues.length > 0 && !['view-submitted'].includes(summaryType)) {
+  if (data.mandatoryFieldIssues.length > 0 && !['view-submitted'].includes(summaryType)) {
     hintIncomplete = pageContent.hintIncomplete
   }
 
@@ -263,10 +263,10 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   //Old logic if (data.species.specimenType !== "animalLiving") {
   if (allowPageNavigation(data.submissionProgress, "quantity/" + data.applicationIndex) || (isReadOnly && data.species.quantity)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, data.species.quantity, "/quantity", "quantity"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, "/quantity", "unit of measurement"))    
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, "/quantity", "unit of measurement"))
   }
   if (allowPageNavigation(data.submissionProgress, "multiple-specimens/" + data.applicationIndex) || (isReadOnly && typeof data.isMultipleSpecimens === 'boolean')) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, "/multipleSpecimens", "multipleSpecimens"))    
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, "/multipleSpecimens", "multipleSpecimens"))
   }
   //Old logic if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
   if (allowPageNavigation(data.submissionProgress, "created-date/" + data.applicationIndex) || (isReadOnly && data.createdDate)) {
@@ -281,12 +281,18 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "hasUniqueIdentificationMarkType", pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/hasUniqueIdentificationMark", "has unique identification mark"))
   }
   if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark)) {
-    let i = 0
-    data.species.uniqueIdentificationMarks.forEach(mark => {
-      const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', `${markTypeText}: ${mark.uniqueIdentificationMark}`, "/uniqueIdentificationMark", "unique identification mark"))
-      i++
-    })
+    if (data.species.hasUniqueIdentificationMark) {
+      let markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
+      for (i = 0; i < markCount; i++) {
+        let markDetails = ''
+        if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
+          const mark = data.species.uniqueIdentificationMarks[i]
+          const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
+          markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
+        }
+        summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark", "uniqueIdentificationMarks"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', markDetails, "/uniqueIdentificationMark", "unique identification mark"))
+      }
+    }
   }
   if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, "/describeLivingAnimal", "sex"))
@@ -372,7 +378,7 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
   }
 }
 
-function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {  
+function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
   const summaryListRemarksRows = []
   if (allowPageNavigation(data.submissionProgress, "additional-info/" + data.applicationIndex) || isReadOnly) {
     summaryListRemarksRows.push(createSummaryListRow(summaryData, "comments", pageContent.rowTextRemarks, data.comments, "/additionalInfo", "remarks"))
@@ -434,7 +440,7 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
 }
 
 function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly) {
-  
+
   const summaryListPermitDetailsExportOrReexportRows = []
 
   const permitIssueDate = {
