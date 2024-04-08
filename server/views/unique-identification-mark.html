@@ -29,7 +29,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-l moj-add-another__heading" tabindex="-1">{{pageHeader}}</h2>
-      <p>You can add up to three marks. They must relate to the specimen you are completing this application for.</p>
+      <p>{{pageBody}}</p>
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" id="numberOfMarks" name="numberOfMarks" min="1" value="{{ numberOfMarks }}">
         {% for mark in marks %}
@@ -38,7 +38,7 @@
           {{ govukInput(mark.inputUniqueIdentificationMark) }}
           {% if mark.showAddMarkButton %}
             {{ govukButton({
-            text: "Add another mark",
+            text: buttonAdd,
             type: "submit",
             classes: "govuk-button--secondary govuk-!-margin-bottom-4",
             attributes: {
@@ -48,7 +48,7 @@
           {% endif %}
           {% if mark.showRemoveMarkButton %}
             {{ govukButton({
-            text: "Remove",
+            text: buttonRemove,
             type: "submit",
             classes: "govuk-button--secondary govuk-!-margin-bottom-4 add-another__remove",
             attributes: {

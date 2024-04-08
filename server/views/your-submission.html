@@ -6,10 +6,9 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-
 {% block beforeContent %}
 
-{% if errorList %}
+  {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         {{govukErrorSummary ({
@@ -19,34 +18,39 @@
       </div>
     </div>
   {% endif %}
-  {% endblock %}
+{% endblock %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-l">{{captionText}}</h1>
-        <form method="POST"  autocomplete="off" novalidate="novalidate">
-          <table class="govuk-table" aria-describedby="your applications">
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-!-width-one-half">{{tableHeadScientificName}}</th>
-                <th scope="col" class="govuk-table__header">{{tableHeadQuantity}}</th>
-                <th scope="col" class="govuk-table__header">{{tableHeadUnitOfMeasurement}}</th>
-                <th scope="col" class="govuk-table__header"></th>
-                <th scope="col" class="govuk-table__header"></th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-              {% for application in applicationsData %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">{{captionText}}</h1>
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <table class="govuk-table" aria-describedby="your applications">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header govuk-!-width-one-half">{{tableHeadScientificName}}</th>
+              <th scope="col" class="govuk-table__header">{{tableHeadQuantity}}</th>
+              <th scope="col" class="govuk-table__header">{{tableHeadUnitOfMeasurement}}</th>
+              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header"></th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for application in applicationsData %}
               <tr class="govuk-table__row">
 
                 <td class="govuk-table__cell">
                   <a href="{{application.speciesNameUrl}}">{{application.speciesName}}</a>
-                  {% if application.uniqueIdentificationMark %}
-                  <p class="margin-bottom-0">{{application.labelUniqueIdentificationMark}}: {{application.uniqueIdentificationMark}}</p>
+                  {% if application.marks %}
+                    {% for mark in application.marks %}
+                      <p class="margin-bottom-0">{{mark.labelMark}}:
+                        {{mark.mark}}</p>
+                    {% endfor %}
                   {% endif %}
+
                   {% if application.internalReference %}
-                  <p class="margin-bottom-0">{{labelInternalReference}}: {{application.internalReference}}</p>
+                    <p class="margin-bottom-0">{{labelInternalReference}}:
+                      {{application.internalReference}}</p>
                   {% endif %}
                 </td>
                 <td class="govuk-table__cell">{{application.quantity}}</td>
@@ -73,22 +77,17 @@
                     }
                   }) }}
                 </td>
-              </tr> 
-              {% endfor %}         
-            </tbody>
-          </table>   
-        
-          {{ govukButton({
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {{ govukButton({
           text: continueButton,
           type: "submit"
         }) }}
 
-        </form>
-      </div>
+      </form>
     </div>
+  </div>
 {% endblock %}
-
-
-
-
-

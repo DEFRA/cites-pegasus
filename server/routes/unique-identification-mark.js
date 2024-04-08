@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix, enableTagIdentifier, maxNumberOfUniqueIdentifiers } = require("../../config/config")
+const { urlPrefix, maxNumberOfUniqueIdentifiers } = require("../../config/config")
 const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
@@ -32,22 +32,14 @@ function createModel(errors, data) {
 
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentErrorMessages }, fields)
 
-  let selectItems = [
-    { text: 'Select mark', value: '' },
-    { text: pageContent.radioOptionMicrochipNumber, value: 'MC' },
-    { text: pageContent.radioOptionClosedRingNumber, value: 'CR' },
-    { text: pageContent.radioOptionSplitRingNumber, value: 'SR' },
-    { text: pageContent.radioOptionOtherRingNumber, value: 'OT' },
-    { text: pageContent.radioOptionCableTie, value: 'CB' },
-    { text: pageContent.radioOptionHuntingTrophy, value: 'HU' },
-    { text: pageContent.radioOptionLabel, value: 'LB' },
-    { text: pageContent.radioOptionSwissInstitue, value: 'SI' },
-    { text: pageContent.radioOptionSerialNumber, value: 'SN' }
-  ]
+  const selectItems = Object.entries(commonContent.uniqueIdentificationMarkTypes)
+    .filter(([key, value]) => key !== 'unmarked')
+    .map(([key, value]) => ({
+      text: value,
+      value: key
+    }));
 
-  if (enableTagIdentifier) {
-    selectItems.push({ text: pageContent.radioOptionTag, value: 'TG' })
-  }
+  selectItems.unshift({ text: pageContent.inputSelectDefaultUniqueIdentificationMarkType, value: '' });
 
   const marks = []
 
@@ -63,7 +55,7 @@ function createModel(errors, data) {
       fieldsetMark: {
         classes: "add-another__item",
         legend: {
-          text: 'Mark ' + (i + 1),
+          text: pageContent.markHeader.replace('##MARK_NUMBER##', (i + 1)),
           classes: "govuk-fieldset__legend--m add-another__title",
           isPageHeading: false
         }
@@ -72,7 +64,7 @@ function createModel(errors, data) {
         id: "uniqueIdentificationMarkType" + i,
         name: "uniqueIdentificationMarkType" + i,
         label: {
-          text: "Select the identification mark"
+          text: pageContent.inputLabelUniqueIdentificationMarkType
         },
         items: selectItems,
         value: markPair?.uniqueIdentificationMarkType,
@@ -82,8 +74,7 @@ function createModel(errors, data) {
         id: "uniqueIdentificationMark" + i,
         name: "uniqueIdentificationMark" + i,
         label: {
-          text: "Enter the mark number or reference",
-
+          text: pageContent.inputLabelUniqueIdentificationMark,
           isPageHeading: false
         },
         value: markPair?.uniqueIdentificationMark,
@@ -101,7 +92,10 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle,
-    pageHeader: "Add unique identification marks",
+    pageHeader: pageContent.pageHeader,
+    pageBody: pageContent.pageBody,
+    buttonAdd: pageContent.buttonAdd,
+    buttonRemove: pageContent.buttonRemove,
     numberOfMarks: data.numberOfMarks,
     marks
   }
@@ -112,7 +106,7 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
 
   const uniqueIdentificationMarkType = uniqueIdentificationMarks[markIndex].uniqueIdentificationMarkType
 
-  if(!uniqueIdentificationMark || !uniqueIdentificationMarkType) {
+  if (!uniqueIdentificationMark || !uniqueIdentificationMarkType) {
     return uniqueIdentificationMark
   }
 
@@ -127,8 +121,8 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
   }
 
   // //TODO - Test that this validation works correctly
-  const submissionDuplicates = getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex)
-  if (submissionDuplicates.length) {
+  const submissionDuplicate = getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex)
+  if (submissionDuplicate.length) {
     return helpers.error('any.submissionDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
   }
 
@@ -138,16 +132,22 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
 function getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark) {
   return uniqueIdentificationMarks.filter(markPair =>
     uniqueIdentificationMarkType === markPair.uniqueIdentificationMarkType
-    && uniqueIdentificationMark === markPair.uniqueIdentificationMark)
+    && uniqueIdentificationMark.toLowerCase() === markPair.uniqueIdentificationMark.toLowerCase())
 }
 
 function getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex) {
-  return submission.applications.filter(app =>
+  const otherAppsWithSameSpecies = submission.applications.filter(app =>
     app.applicationIndex !== applicationIndex
-    && app.species.speciesName === submission.applications[applicationIndex].species.speciesName
-    && app.species.uniqueIdentificationMarkType === uniqueIdentificationMarkType
-    && app.species.uniqueIdentificationMark === uniqueIdentificationMark
-  ).map(app => app.species.uniqueIdentificationMark)
+    && app.species.speciesName.toLowerCase() === submission.applications[applicationIndex].species.speciesName.toLowerCase()
+    && app.species?.uniqueIdentificationMarks
+    && app.species?.hasUniqueIdentificationMark
+  )
+  return otherAppsWithSameSpecies.filter(app => {
+    return app.species?.uniqueIdentificationMarks.find(mark =>
+      mark.uniqueIdentificationMarkType === uniqueIdentificationMarkType
+      && mark.uniqueIdentificationMark.toLowerCase() === uniqueIdentificationMark.toLowerCase()
+    )
+  })
 }
 
 function getUniqueIdentificationMarksFromPayload(payload) {
@@ -352,7 +352,7 @@ module.exports = [
         const schemaObject = {
           numberOfMarks: Joi.number().required()
         }
-        
+
         for (let i = 0; i < request.payload.numberOfMarks; i++) {
           schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG"),
             schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(3).max(150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')

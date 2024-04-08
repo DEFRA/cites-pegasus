@@ -1,5 +1,5 @@
 const { parseTwoDigitYear } = require("moment")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, maxNumberOfUniqueIdentifiers } = require("../../config/config")
 const { setYarValue, getYarValue } = require("../lib/session")
 const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const changeTypes = [
@@ -103,10 +103,9 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
         case "uniqueIdentificationMark":
             startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
             endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/addMark`)                        
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/0`)                        
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/1`)                        
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/2`)                        
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/addMark`)  
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/continue`)
+            generateRemoveMarkEndUrls(endUrls, applicationIndex)
             break
         case "specimenOrigin":
             startUrls.push(`${urlPrefix}/specimen-origin/${applicationIndex}`)
@@ -170,6 +169,12 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
     setYarValue(request, "changeRouteData", changeRouteData)
 
     return changeRouteData
+}
+
+function generateRemoveMarkEndUrls(endUrls, applicationIndex) {
+    for(i = 0; i < maxNumberOfUniqueIdentifiers; i++) {
+        endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/${i}`)                        
+    }    
 }
 
 function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
