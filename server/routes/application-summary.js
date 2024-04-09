@@ -49,12 +49,18 @@ function createApplicationSummaryModel(errors, data) {
 
   const breadcrumbs = getBreadcrumbs(pageContent, data, summaryType)
 
-  let backLink = null;
-  if (!['view-submitted', 'copy-as-new'].includes(summaryType)) {
-    backLink = nextPathYourSubmission
-    if (summaryType === 'check') {
+  let backLink = null
+
+  switch (summaryType) {
+    case 'check':
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
-    }
+      break
+    case 'view-submitted':
+    case 'copy-as-new':
+      backLink = null
+      break
+    default:
+      backLink = nextPathYourSubmission
   }
 
   summaryListSections.forEach(item => applyBorderClasses(item.value))
@@ -283,7 +289,7 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark)) {
     if (data.species.hasUniqueIdentificationMark) {
       let markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
-      for (i = 0; i < markCount; i++) {
+      for (let i = 0; i < markCount; i++) {
         let markDetails = ''
         if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
           const mark = data.species.uniqueIdentificationMarks[i]
