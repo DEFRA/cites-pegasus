@@ -167,8 +167,6 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         if (!hasUniqueIdentificationMark) {
-          //species.uniqueIdentificationMarkType = 'unmarked'
-          //species.uniqueIdentificationMark = null//TODO Update this to also clear out the saved unique IDs from the new data structure
           species.uniqueIdentificationMarks = null  
         }
         species.hasUniqueIdentificationMark = hasUniqueIdentificationMark

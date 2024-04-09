@@ -120,7 +120,6 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
     }
   }
 
-  // //TODO - Test that this validation works correctly
   const submissionDuplicate = getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex)
   if (submissionDuplicate.length) {
     return helpers.error('any.submissionDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
@@ -215,48 +214,6 @@ module.exports = [
       }
 
       return h.view(pageId, createModel(null, pageData))
-    }
-  },
-  {//TODO REMOVE THIS HANDLER - IT WAS JUST FOR ASSISTING DEV WORK
-    method: "GET",
-    path: `${currentPath}/{applicationIndex}/delete`,
-    options: {
-      validate: {
-        params: Joi.object({
-          applicationIndex: Joi.number().required()
-        })
-      }
-    },
-    handler: async (request, h) => {
-      const { applicationIndex } = request.params
-      const submission = getSubmission(request)
-      const species = submission.applications[applicationIndex].species
-
-      if (species.hasOwnProperty('hasUniqueIdentificationMark')) {
-        delete species.hasUniqueIdentificationMark
-      }
-      if (species.hasOwnProperty('uniqueIdentificationMark')) {
-        delete species.uniqueIdentificationMark
-      }
-      if (species.hasOwnProperty('uniqueIdentificationMarkType')) {
-        delete species.uniqueIdentificationMarkType
-      }
-      if (species.hasOwnProperty('uniqueIdentificationMarks')) {
-        delete species.uniqueIdentificationMarks
-      }
-
-      if (species.hasOwnProperty('numberOfUniqueIdentificationMarks')) {
-        delete species.numberOfUniqueIdentificationMarks
-      }
-
-      try {
-        setSubmission(request, submission)
-      } catch (err) {
-        console.error(err)
-        return h.redirect(invalidSubmissionPath)
-      }
-
-      return h.redirect(`${previousPathHasUniqueMark}/${applicationIndex}`)
     }
   },
   {
