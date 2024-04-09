@@ -994,7 +994,7 @@ module.exports = [
       if (changeRouteData.showConfirmationPage) {
         return h.redirect(`${currentPath}/are-you-sure/${summaryType}/${applicationIndex}`)
       } else {
-        return h.redirect(changeRouteData.startUrls[0])
+        return h.redirect(changeRouteData.startUrls[0].url)
       }
     }
   },
@@ -1123,7 +1123,7 @@ module.exports = [
         const changeRouteData = getChangeRouteData(request)
 
         if (request.payload.areYouSure) {
-          return h.redirect(changeRouteData.startUrls[0])
+          return h.redirect(changeRouteData.startUrls[0].url)
         } else {
           return h.redirect(`${currentPath}/${summaryType}/${applicationIndex}`)
         }

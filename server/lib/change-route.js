@@ -41,111 +41,108 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
 
     switch (changeType) {
         case "permitType"://Change flow
-            startUrls.push(`${urlPrefix}/permit-type`)
+            startUrls.push({ url: `${urlPrefix}/permit-type` })
             if (permitTypeOption === pto.OTHER) {
-                startUrls.push(`${urlPrefix}/other-permit-type`)//This is the only case so far for 2 start urls and it's because it's 2 pages that are basically capturing the same thing
+                startUrls.push({ url: `${urlPrefix}/other-permit-type` })//This is the only case so far for 2 start urls and it's because it's 2 pages that are basically capturing the same thing
             }
-            endUrls.push(`${urlPrefix}/additional-info/${applicationIndex}`)//You must go all the way through the flow                        
+            endUrls.push({ url: `${urlPrefix}/additional-info/${applicationIndex}` })//You must go all the way through the flow                        
             confirm = true
             break
         case "applicantContactDetails":
-            startUrls.push(`${urlPrefix}/contact-details/applicant`)
+            startUrls.push({ url: `${urlPrefix}/contact-details/applicant` })
             confirm = true
             break
         case "applicantAddress":      //Change flow
-            startUrls.push(`${urlPrefix}/postcode/applicant`)
-            endUrls.push(`${urlPrefix}/confirm-address/applicant`)
+            startUrls.push({ url: `${urlPrefix}/postcode/applicant` })
+            endUrls.push({ url: `${urlPrefix}/confirm-address/applicant` })
             confirm = true
             break
         case "deliveryAddress":       //Change flow
-            startUrls.push(`${urlPrefix}/postcode/delivery`)
-            endUrls.push(`${urlPrefix}/confirm-address/delivery`)
+            startUrls.push({ url: `${urlPrefix}/postcode/delivery` })
+            endUrls.push({ url: `${urlPrefix}/confirm-address/delivery` })
             confirm = true
             break
         case "deliveryType":       //Change flow
-            startUrls.push(`${urlPrefix}/delivery-type`)
+            startUrls.push({ url: `${urlPrefix}/delivery-type` })
             break
         case "speciesName":           //Change flow
-            startUrls.push(`${urlPrefix}/species-name/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/species-name/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-specimen/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-living-animal/${applicationIndex}` })
             confirm = true
             break
         case "quantity":
-            startUrls.push(`${urlPrefix}/quantity/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/quantity/${applicationIndex}` })
             break
         case "multipleSpecimens":
-            startUrls.push(`${urlPrefix}/multiple-specimens/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/multiple-specimens/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-specimen/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-living-animal/${applicationIndex}` })
             confirm = true
             break
         case "sourceCode":
-            startUrls.push(`${urlPrefix}/source-code/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/source-code/${applicationIndex}` })
             break
         case "purposeCode":
-            startUrls.push(`${urlPrefix}/purpose-code/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/purpose-code/${applicationIndex}` })
             break
         case "specimenType"://Change flow   
-            startUrls.push(`${urlPrefix}/specimen-type/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/specimen-type/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-specimen/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-living-animal/${applicationIndex}` })
             break
         case "tradeTermCode":
-            startUrls.push(`${urlPrefix}/trade-term-code/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/trade-term-code/${applicationIndex}` })
             break
         case "hasUniqueIdentificationMark":
-            startUrls.push(`${urlPrefix}/has-unique-identification-mark/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/has-unique-identification-mark/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/unique-identification-mark/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-specimen/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/describe-living-animal/${applicationIndex}` })
             break
         case "uniqueIdentificationMark":
-            startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/addMark`)
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/continue`)
-            generateRemoveMarkEndUrls(endUrls, applicationIndex)
+            startUrls.push({ url: `${urlPrefix}/unique-identification-mark/${applicationIndex}`, matchType: 'includes' })
+            endUrls.push({ url: `${urlPrefix}/unique-identification-mark/${applicationIndex}`, matchType: 'includes' })
             break
         case "specimenOrigin":
-            startUrls.push(`${urlPrefix}/specimen-origin/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/specimen-origin/${applicationIndex}` })
             break
         case "useCertificateFor":
-            startUrls.push(`${urlPrefix}/use-certificate-for/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/use-certificate-for/${applicationIndex}` })
             break
         case "describeLivingAnimal":
-            startUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/describe-living-animal/${applicationIndex}` })
             break
         case "breeder":
-            startUrls.push(`${urlPrefix}/breeder/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/acquired-date/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/already-have-a10/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/breeder/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/acquired-date/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/already-have-a10/${applicationIndex}` })
             break
         case "acquiredDate":
-            startUrls.push(`${urlPrefix}/acquired-date/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/acquired-date/${applicationIndex}` })
             break
         case "a10CertificateNumber":
-            startUrls.push(`${urlPrefix}/already-have-a10/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/already-have-a10/${applicationIndex}` })
             break
         case "createdDate":
-            startUrls.push(`${urlPrefix}/created-date/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/created-date/${applicationIndex}` })
             break
         case "descriptionGeneric":
-            startUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/describe-specimen/${applicationIndex}` })
             break
         case "everImportedExported"://CHANGE FLOW
-            startUrls.push(`${urlPrefix}/ever-imported-exported/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/ever-imported-exported/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/permit-details/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/ever-imported-exported/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/ever-imported-exported/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/permit-details/${applicationIndex}` })
             break
         case "importerExporterDetails":
-            startUrls.push(`${urlPrefix}/importer-exporter/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/importer-exporter/${applicationIndex}` })
             break
         case "permitDetails":
-            startUrls.push(`${urlPrefix}/permit-details/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/permit-details/${applicationIndex}` })
             break
         case "additionalInfo":
-            startUrls.push(`${urlPrefix}/additional-info/${applicationIndex}`)
+            startUrls.push({ url: `${urlPrefix}/additional-info/${applicationIndex}` })
             break
         default:
             throw new Error(`Invalid change type: ${changeType}`)
@@ -161,7 +158,7 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
     // Scientific name
 
     if (endUrls.length === 0) {
-        endUrls.push(startUrls[0])
+        endUrls.push({ url: startUrls[0] })
     }
 
     const changeRouteData = { changeType, showConfirmationPage: confirm, startUrls, endUrls, applicationIndex, returnUrl }
@@ -171,27 +168,26 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
     return changeRouteData
 }
 
-function generateRemoveMarkEndUrls(endUrls, applicationIndex) {
-    for (i = 0; i < maxNumberOfUniqueIdentifiers; i++) {
-        endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/${i}`)
-    }
-}
-
 function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
     const changeData = getYarValue(request, "changeRouteData")
-    const referer = request.headers.referer?.split('#')[0]
-    const path = request.path.split('#')[0]
-
+    
     if (changeData) {
-        const matchesEndUrl = changeData.endUrls.some(endUrl => referer?.endsWith(endUrl))
-        const matchesFirstStartUrl = path.endsWith(changeData.startUrls[0])
-        const matchesLastStartUrl = path.endsWith(changeData.startUrls[changeData.startUrls.length - 1])
+        const firstStartUrl = changeData.startUrls[0]
+        const lastStartUrl = changeData.startUrls[changeData.startUrls.length - 1]
+        
+        const matchesEndUrl = changeData.endUrls.some(endUrl => urlCompare(request.headers.referer, endUrl.url, endUrl.matchType) )
+        const matchesFirstStartUrl = urlCompare(request.path, firstStartUrl.url, firstStartUrl.matchType)
+        const matchesLastStartUrl = urlCompare(request.path, lastStartUrl.url, lastStartUrl.matchType)
 
         if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesLastStartUrl) || (isBack && !changeData.dataRemoved && matchesFirstStartUrl)) {
             return changeData.returnUrl
         }
     }
     return null
+}
+
+function urlCompare(fullUrl, partialUrl, matchType) {
+    return matchType === 'includes' ? fullUrl?.includes(partialUrl) : fullUrl?.endsWith(partialUrl) 
 }
 
 function setDataRemoved(request) { //This is used to stop the back button taking a user back to the check your answers page
