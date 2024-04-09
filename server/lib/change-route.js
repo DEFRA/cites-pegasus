@@ -95,15 +95,15 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
             startUrls.push(`${urlPrefix}/trade-term-code/${applicationIndex}`)
             break
         case "hasUniqueIdentificationMark":
-            startUrls.push(`${urlPrefix}/has-unique-identification-mark/${applicationIndex}`)            
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`) 
+            startUrls.push(`${urlPrefix}/has-unique-identification-mark/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
             endUrls.push(`${urlPrefix}/describe-specimen/${applicationIndex}`)
-            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)           
+            endUrls.push(`${urlPrefix}/describe-living-animal/${applicationIndex}`)
             break
         case "uniqueIdentificationMark":
-            startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)                        
-            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/addMark`)  
+            startUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}`)
+            endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/addMark`)
             endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/continue`)
             generateRemoveMarkEndUrls(endUrls, applicationIndex)
             break
@@ -172,25 +172,23 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
 }
 
 function generateRemoveMarkEndUrls(endUrls, applicationIndex) {
-    for(i = 0; i < maxNumberOfUniqueIdentifiers; i++) {
-        endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/${i}`)                        
-    }    
+    for (i = 0; i < maxNumberOfUniqueIdentifiers; i++) {
+        endUrls.push(`${urlPrefix}/unique-identification-mark/${applicationIndex}/removeMark/${i}`)
+    }
 }
 
 function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
     const changeData = getYarValue(request, "changeRouteData")
+    const referer = request.headers.referer?.split('#')[0]
+    const path = request.path.split('#')[0]
+
     if (changeData) {
-        const matchesEndUrl = changeData.endUrls.some(endUrl => request.headers.referer?.endsWith(endUrl))
-
-        //const matchesStartUrl = request.path.endsWith(changeData.startUrl)
-        const matchesFirstStartUrl = request.path.endsWith(changeData.startUrls[0])
-        const matchesLastStartUrl = request.path.endsWith(changeData.startUrls[changeData.startUrls.length - 1])
-        //const matchesStartUrl = changeData.startUrls.some(startUrl => request.path.endsWith(startUrl))
-
+        const matchesEndUrl = changeData.endUrls.some(endUrl => referer?.endsWith(endUrl))
+        const matchesFirstStartUrl = path.endsWith(changeData.startUrls[0])
+        const matchesLastStartUrl = path.endsWith(changeData.startUrls[changeData.startUrls.length - 1])
 
         if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesLastStartUrl) || (isBack && !changeData.dataRemoved && matchesFirstStartUrl)) {
             return changeData.returnUrl
-            //return `${applicationSummaryCheckUrl}/${changeData.applicationIndex}`
         }
     }
     return null
