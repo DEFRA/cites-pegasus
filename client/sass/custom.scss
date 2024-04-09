@@ -265,3 +265,23 @@ ul.autocomplete__menu {
 .govuk-footer {
     border-top: 10px solid #1d70b8;
 }
+
+.add-another__item {
+    margin: 0;
+    margin-top: 30px;
+    padding: 0;
+    position: relative;
+}
+
+.add-another__remove {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
+.add-another__title {
+    float: left;
+    padding: 4px 100px 4px 0;
+    width: 100%;
+}

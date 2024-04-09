@@ -1,19 +1,14 @@
 const Joi = require('joi')
-const { urlPrefix, enableTagIdentifier } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { urlPrefix, maxNumberOfUniqueIdentifiers } = require("../../config/config")
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
-const { permitType: pt } = require('../lib/permit-type-helper')
-const nunjucks = require("nunjucks")
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathSpecimenType = `${urlPrefix}/specimen-type`
-const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
-const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
+const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
 const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
-
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -22,159 +17,164 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.uniqueIdentificationMark
 
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
+  const fields = []
+  let pageContentErrorMessages = {}
+  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
+    fields.push(`uniqueIdentificationMarkType${i}`)
+    fields.push(`uniqueIdentificationMark${i}`)
+
+    for (const property in pageContent.errorMessages) {
+      const propertyParts = property.split(".")
+      const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]
+      pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
     }
-    const fields = ["uniqueIdentificationMarkType", "inputCB", "inputCR", "inputHU", "inputLB", "inputMC", "inputOT", "inputSN", "inputSR", "inputSI", "inputTG"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
+  }
+
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentErrorMessages }, fields)
+
+  const selectItems = Object.entries(commonContent.uniqueIdentificationMarkTypes)
+    .filter(([key, value]) => key !== 'unmarked')
+    .map(([key, value]) => ({
+      text: value,
+      value: key
+    }));
+
+  selectItems.unshift({ text: pageContent.inputSelectDefaultUniqueIdentificationMarkType, value: '' });
+
+  const marks = []
+
+  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
+    let markPair = null
+    if (i < data.uniqueIdentificationMarks.length) {
+      markPair = data.uniqueIdentificationMarks[i]
+    }
+    marks.push({
+      markIndex: i,
+      showAddMarkButton: i === (data.numberOfMarks - 1) && i < (maxNumberOfUniqueIdentifiers - 1),
+      showRemoveMarkButton: data.numberOfMarks > 1,
+      fieldsetMark: {
+        classes: "add-another__item",
+        legend: {
+          text: pageContent.markHeader.replace('##MARK_NUMBER##', (i + 1)),
+          classes: "govuk-fieldset__legend--m add-another__title",
+          isPageHeading: false
+        }
+      },
+      selectUniqueIdentificationMarkType: {
+        id: "uniqueIdentificationMarkType" + i,
+        name: "uniqueIdentificationMarkType" + i,
+        label: {
+          text: pageContent.inputLabelUniqueIdentificationMarkType
+        },
+        items: selectItems,
+        value: markPair?.uniqueIdentificationMarkType,
+        errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType" + i)
+      },
+      inputUniqueIdentificationMark: {
+        id: "uniqueIdentificationMark" + i,
+        name: "uniqueIdentificationMark" + i,
+        label: {
+          text: pageContent.inputLabelUniqueIdentificationMark,
+          isPageHeading: false
+        },
+        value: markPair?.uniqueIdentificationMark,
+        errorMessage: getFieldError(errorList, "#uniqueIdentificationMark" + i)
       }
     })
   }
 
-  let radioOptions = [
-    { text: pageContent.radioOptionMicrochipNumber, value: 'MC', hasInput: true },
-    { text: pageContent.radioOptionClosedRingNumber, value: 'CR', hasInput: true },
-    { text: pageContent.radioOptionSplitRingNumber, value: 'SR', hasInput: true },
-    { text: pageContent.radioOptionOtherRingNumber, value: 'OT', hasInput: true },
-    { text: pageContent.radioOptionCableTie, value: 'CB', hasInput: true },
-    { text: pageContent.radioOptionHuntingTrophy, value: 'HU', hasInput: true },
-    { text: pageContent.radioOptionLabel, value: 'LB', hasInput: true },
-    { text: pageContent.radioOptionSwissInstitue, value: 'SI', hasInput: true },
-    { text: pageContent.radioOptionSerialNumber, value: 'SN', hasInput: true },
-    { text: pageContent.radioOptionDivider, value: null, hasInput: false },
-    { text: pageContent.radioOptionUnmarked, value: 'unmarked', hasInput: false }
-  ]
-
-  if (enableTagIdentifier) {
-    const insertIndex = radioOptions.length - 2
-    radioOptions.splice(insertIndex, 0, { text: pageContent.radioOptionTag, value: 'TG', hasInput: true });
-  }
-
-  nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => getRadioItem(data.uniqueIdentificationMarkType, data.uniqueIdentificationMark, x, errorList))
-
-  let previousPath = previousPathTradeTermCode
-
-  if (data.specimenType === 'animalLiving') {
-    previousPath = previousPathMultipleSpecimens
-    if (data.permitType === pt.ARTICLE_10) {
-      previousPath = previousPathSpecimenType
-    }
-  }
-
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  const defaultBacklink = `${previousPathHasUniqueMark}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+  const pageTitle = errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix
 
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-
-    inputUniqueIdentificationMark: {
-      idPrefix: "uniqueIdentificationMarkType",
-      name: "uniqueIdentificationMarkType",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
-      items: radioItems,
-      errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType")
-    }
+    pageTitle,
+    pageHeader: pageContent.pageHeader,
+    pageBody: pageContent.pageBody,
+    buttonAdd: pageContent.buttonAdd,
+    buttonRemove: pageContent.buttonRemove,
+    numberOfMarks: data.numberOfMarks,
+    marks
   }
   return { ...commonContent, ...model }
 }
 
+function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniqueIdentificationMarks, submission, applicationIndex) {
 
-function getRadioItem(uniqueIdentificationMarkType, uniqueIdentificationMark, radioOption, errorList) {
+  const uniqueIdentificationMarkType = uniqueIdentificationMarks[markIndex].uniqueIdentificationMarkType
 
-  if (!radioOption.value) {
-    return {
-      divider: radioOption.text
+  if (!uniqueIdentificationMark || !uniqueIdentificationMarkType) {
+    return uniqueIdentificationMark
+  }
+
+  const applicationDuplicates = getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark)
+
+  if (applicationDuplicates.length > 1) {
+    const duplicateIndex = applicationDuplicates.findIndex(obj => obj.index === markIndex)
+
+    if (duplicateIndex !== 0) {//Only show the error if it's the second or more instance of that mark
+      return helpers.error('any.applicationDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
     }
   }
 
-  const checked = uniqueIdentificationMarkType ? isChecked(uniqueIdentificationMarkType, radioOption.value) : false
-  const checkedMarkOrNull = checked ? uniqueIdentificationMark : null
-  const html = radioOption.hasInput ? getInputUniqueIdentificationMark('input' + radioOption.value, checkedMarkOrNull, errorList) : ""
-
-  return {
-    value: radioOption.value,
-    text: radioOption.text,
-    checked: checked,
-    conditional: {
-      html: html
-    }
+  const submissionDuplicate = getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex)
+  if (submissionDuplicate.length) {
+    return helpers.error('any.submissionDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
   }
+
+  return uniqueIdentificationMark;
 }
 
-function getInputUniqueIdentificationMark(inputId, uniqueIdentificationMark, errorList) {
-  const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
-  const inputModel = {
-    input: {
-      id: inputId,
-      name: inputId,
-      classes: "govuk-input govuk-input--width-10",
-      label: { text: textContent.uniqueIdentificationMark.inputLabelUniqueIdentificationMark },
-      ...(uniqueIdentificationMark ? { value: uniqueIdentificationMark } : {}),
-      errorMessage: getFieldError(errorList, "#" + inputId)
-    }
-  }
-
-  return nunjucks.renderString(renderString, inputModel)
+function getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark) {
+  return uniqueIdentificationMarks.filter(markPair =>
+    uniqueIdentificationMarkType === markPair.uniqueIdentificationMarkType
+    && uniqueIdentificationMark.toLowerCase() === markPair.uniqueIdentificationMark.toLowerCase())
 }
 
-function getUniqueIdentificationMarkInputSchema(uniqueIdentificationMarkType) {
-  return Joi.when('uniqueIdentificationMarkType', {
-    is: uniqueIdentificationMarkType,
-    then: Joi.string().required().min(3).max(150)    
+function getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex) {
+  const otherAppsWithSameSpecies = submission.applications.filter(app =>
+    app.applicationIndex !== applicationIndex
+    && app.species.speciesName.toLowerCase() === submission.applications[applicationIndex].species.speciesName.toLowerCase()
+    && app.species?.uniqueIdentificationMarks
+    && app.species?.hasUniqueIdentificationMark
+  )
+  return otherAppsWithSameSpecies.filter(app => {
+    return app.species?.uniqueIdentificationMarks.find(mark =>
+      mark.uniqueIdentificationMarkType === uniqueIdentificationMarkType
+      && mark.uniqueIdentificationMark.toLowerCase() === uniqueIdentificationMark.toLowerCase()
+    )
   })
 }
 
-function isDuplicateValidator(value, helpers, submission, applicationIndex) {
-
-  const uniqueIdentifiers = getExistingUniqueIdentifiersForSpeciesAndMarkType(submission, value.uniqueIdentificationMarkType, applicationIndex)
-
-  if (uniqueIdentifiers.includes(value.uniqueIdentificationMark)) {
-    return helpers.error('any.duplicate', { customLabel: 'input' + value.uniqueIdentificationMarkType });
+function getUniqueIdentificationMarksFromPayload(payload) {
+  const uniqueIdentificationMarks = []
+  for (let i = 0; i < payload.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
+    uniqueIdentificationMarks.push({
+      index: i,
+      uniqueIdentificationMarkType: payload[`uniqueIdentificationMarkType${i}`],
+      uniqueIdentificationMark: payload[`uniqueIdentificationMark${i}`]?.toUpperCase().replace(/ /g, '')
+    })
   }
-  return value;
-}
-
-function getExistingUniqueIdentifiersForSpeciesAndMarkType(submission, uniqueIdentificationMarkType, applicationIndex) {
-  return submission.applications.filter(app => 
-    app.applicationIndex !== applicationIndex 
-    && app.species.speciesName === submission.applications[applicationIndex].species.speciesName
-    && app.species.uniqueIdentificationMarkType === uniqueIdentificationMarkType
-  ).map(app => app.species.uniqueIdentificationMark)
+  return uniqueIdentificationMarks
 }
 
 function failAction(request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
   const species = submission.applications[applicationIndex].species
+  const uniqueIdentificationMarks = getUniqueIdentificationMarksFromPayload(request.payload)
 
-  const uniqueIdentificationMark = request.payload['input' + request.payload.uniqueIdentificationMarkType] || null
   const pageData = {
+    formActionPage: `${currentPath}/{applicationIndex}`,
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: request.params.applicationIndex,
     specimenType: species.specimenType,
-    uniqueIdentificationMark: uniqueIdentificationMark,
-    uniqueIdentificationMarkType: request.payload.uniqueIdentificationMarkType,
-    permitType: submission.permitType
+    permitType: submission.permitType,
+    numberOfMarks: parseInt(request.payload.numberOfMarks) || 1,
+    uniqueIdentificationMarks
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
@@ -204,12 +204,13 @@ module.exports = [
       const species = submission.applications[applicationIndex].species
 
       const pageData = {
+        formActionPage: `${currentPath}/{applicationIndex}`,
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
         specimenType: species.specimenType,
-        uniqueIdentificationMarkType: species.uniqueIdentificationMarkType,
-        uniqueIdentificationMark: species.uniqueIdentificationMark,
-        permitType: submission.permitType
+        permitType: submission.permitType,
+        numberOfMarks: species.uniqueIdentificationMarks?.length || 1,
+        uniqueIdentificationMarks: species.uniqueIdentificationMarks || []
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -217,54 +218,115 @@ module.exports = [
   },
   {
     method: "POST",
-    path: `${currentPath}/{applicationIndex}`,
+    path: `${currentPath}/{applicationIndex}/addMark`,
     options: {
       validate: {
         params: Joi.object({
           applicationIndex: Joi.number().required()
         }),
-        options: { abortEarly: false },
-        payload: Joi.object({
-          uniqueIdentificationMarkType: Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG", "unmarked"),
-          inputCB: getUniqueIdentificationMarkInputSchema("CB"),
-          inputCR: getUniqueIdentificationMarkInputSchema("CR"),
-          inputHU: getUniqueIdentificationMarkInputSchema("HU"),
-          inputLB: getUniqueIdentificationMarkInputSchema("LB"),
-          inputMC: getUniqueIdentificationMarkInputSchema("MC"),
-          inputOT: getUniqueIdentificationMarkInputSchema("OT"),
-          inputSN: getUniqueIdentificationMarkInputSchema("SN"),
-          inputTG: getUniqueIdentificationMarkInputSchema("TG"),
-          inputSR: getUniqueIdentificationMarkInputSchema("SR"),
-          inputSI: getUniqueIdentificationMarkInputSchema("SI"),
-        }),
+        options: {
+          abortEarly: false
+        },
         failAction,
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
-        const uniqueIdentificationMarkType = request.payload.uniqueIdentificationMarkType
-        const uniqueIdentificationMark = request.payload['input' + uniqueIdentificationMarkType]?.toUpperCase().replace(/ /g, '')
-        
-        if (uniqueIdentificationMarkType !== 'unmarked') {
-          const schema = Joi.object({
-            uniqueIdentificationMark: Joi.string().required(),
-            uniqueIdentificationMarkType: Joi.string().required(),
-          }).custom((value, helpers) => isDuplicateValidator(value, helpers, submission, applicationIndex), 'Custom validation example')
-          
-          const result = schema.validate({ uniqueIdentificationMark, uniqueIdentificationMarkType: uniqueIdentificationMarkType }, { abortEarly: false })
-          
-          if (result.error) {
-            return failAction(request, h, result.error)
-          }
-        }
-        
         const species = submission.applications[applicationIndex].species
-        species.uniqueIdentificationMarkType = uniqueIdentificationMarkType
-        species.uniqueIdentificationMark = species.uniqueIdentificationMarkType === 'unmarked' ? null : (uniqueIdentificationMark || "")
 
+        const uniqueIdentificationMarks = getUniqueIdentificationMarksFromPayload(request.payload)
+
+        const pageData = {
+          formActionPage: `${currentPath}/{applicationIndex}`,
+          backLinkOverride: checkChangeRouteExit(request, true),
+          applicationIndex: applicationIndex,
+          specimenType: species.specimenType,
+          permitType: submission.permitType,
+          numberOfMarks: parseInt(request.payload.numberOfMarks) + 1,
+          uniqueIdentificationMarks
+        }
+
+        return h.view(pageId, createModel(null, pageData))//.takeover()      
+
+      }
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/{applicationIndex}/removeMark/{markIndex}`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required(),
+          markIndex: Joi.number().required()
+        }),
+        options: {
+          abortEarly: false
+        },
+        failAction,
+      },
+      handler: async (request, h) => {
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+        const species = submission.applications[applicationIndex].species
+
+        const uniqueIdentificationMarks = getUniqueIdentificationMarksFromPayload(request.payload).filter(markPair => markPair.index !== request.params.markIndex)
+
+        const pageData = {
+          formActionPage: `${currentPath}/{applicationIndex}`,
+          backLinkOverride: checkChangeRouteExit(request, true),
+          applicationIndex: applicationIndex,
+          specimenType: species.specimenType,
+          permitType: submission.permitType,
+          numberOfMarks: uniqueIdentificationMarks.length,
+          uniqueIdentificationMarks
+        }
+
+        return h.view(pageId, createModel(null, pageData))
+      }
+    }
+  },
+  {
+    method: "POST",
+    path: `${currentPath}/{applicationIndex}/continue`,
+    options: {
+      validate: {
+        params: Joi.object({
+          applicationIndex: Joi.number().required()
+        }),
+        //payload: payloadValidation,
+        options: {
+          abortEarly: false
+        },
+        failAction,
+      },
+      handler: async (request, h) => {
+        const { applicationIndex } = request.params
+        const submission = getSubmission(request)
+
+        const uniqueIdentificationMarks = getUniqueIdentificationMarksFromPayload(request.payload)
+
+        const schemaObject = {
+          numberOfMarks: Joi.number().required()
+        }
+
+        for (let i = 0; i < request.payload.numberOfMarks; i++) {
+          schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG"),
+            schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(3).max(150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')
+        }
+
+
+        const result = Joi.object(schemaObject).validate(request.payload, { abortEarly: false })
+
+        if (result.error) {
+          return failAction(request, h, result.error)
+        }
+
+        const species = submission.applications[applicationIndex].species
+        species.uniqueIdentificationMarks = uniqueIdentificationMarks
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

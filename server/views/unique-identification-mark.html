@@ -1,7 +1,9 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block beforeContent %}
@@ -26,13 +28,47 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {{ govukRadios(inputUniqueIdentificationMark) }}
-
+      <h2 class="govuk-heading-l moj-add-another__heading" tabindex="-1">{{pageHeader}}</h2>
+      <p>{{pageBody}}</p>
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" id="numberOfMarks" name="numberOfMarks" min="1" value="{{ numberOfMarks }}">
+        {% for mark in marks %}
+          <div id="mark{{mark.markIndex}}">
+            {% call govukFieldset(mark.fieldsetMark) %}
+            {{ govukSelect(mark.selectUniqueIdentificationMarkType) }}
+            {{ govukInput(mark.inputUniqueIdentificationMark) }}
+            {% if mark.showAddMarkButton %}
+              {{ govukButton({
+            text: buttonAdd,
+            type: "submit",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-4",
+            attributes: {
+              formAction: formActionPage + '/addMark' + '#mark' + (mark.markIndex + 1)
+            }
+          }) }}
+            {% endif %}
+            {% if mark.showRemoveMarkButton %}
+              {{ govukButton({
+            text: buttonRemove,
+            type: "submit",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-4 add-another__remove",
+            attributes: {
+              formAction: formActionPage + '/removeMark/' + mark.markIndex + '#mark' + (mark.markIndex - 1)
+            }
+          }) }}
+            {% endif %}
+            {% endcall %}
+          </div>
+        {% endfor %}
+        <br/>
         {{ govukButton({
-        text: saveAndContinueButton,
-        type: "submit"
-      }) }}
+          text: saveAndContinueButton,
+          type: "submit",
+          attributes: {
+              formAction: formActionPage + '/continue'
+            }
+        }) }}
+
       </form>
     </div>
   </div>

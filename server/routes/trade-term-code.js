@@ -10,7 +10,7 @@ const pageId = "trade-term-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathQuantity = `${urlPrefix}/quantity`
 const previousPathCreatedDate = `${urlPrefix}/created-date`
-const nextPath = `${urlPrefix}/unique-identification-mark`
+const nextPath = `${urlPrefix}/has-unique-identification-mark`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownTradeTermCodeValue = 'UKN'
 

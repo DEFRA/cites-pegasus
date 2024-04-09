@@ -8,7 +8,7 @@ const nunjucks = require("nunjucks")
 const pageId = 'multiple-specimens'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
-const nextPathUniqueIdentifier = `${urlPrefix}/unique-identification-mark`
+const nextPathUniqueIdentifier = `${urlPrefix}/has-unique-identification-mark`
 const nextPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -176,8 +176,8 @@ module.exports = [
         
         if (isMajorChange) {
           //If changing between 1 specimen and > 1 specimen, remove unique identifier and description details
-          species.uniqueIdentificationMarkType = null
-          species.uniqueIdentificationMark = null
+          species.hasUniqueIdentificationMark = null
+          species.uniqueIdentificationMarks = null
           species.specimenDescriptionGeneric = null
           species.specimenDescriptionLivingAnimal = null
           species.maleParentDetails = null

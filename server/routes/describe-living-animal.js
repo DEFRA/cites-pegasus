@@ -10,7 +10,8 @@ const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathUniqueIdentifier = `${urlPrefix}/unique-identification-mark`
+const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
+const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
 const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const nextPathPermitDetails = `${urlPrefix}/permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
@@ -120,8 +121,12 @@ function createModel(errors, data) {
     ],
     errorMessage: getFieldError(errorList, "#isExactDateUnknown")
   }
+  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
+  if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
+    previousPath = previousPathMultipleSpecimens
+  }
   
-  const defaultBacklink = data.isMultipleSpecimens && data.numberOfUnmarkedSpecimens > 1 ? `${previousPathMultipleSpecimens}/${data.applicationIndex}` : `${previousPathUniqueIdentifier}/${data.applicationIndex}`
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -238,10 +243,11 @@ function dateOfBirthValidator(value, helpers) {
 function failAction(request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
+  const application = submission.applications[applicationIndex]
   const pageData = {
     backLinkOverride: checkChangeRouteExit(request, true),
     applicationIndex: request.params.applicationIndex,
-    speciesName: submission.applications[applicationIndex].species.speciesName,
+    speciesName: application.species.speciesName,
     permitType: submission.permitType,
     description: request.payload.description,
     maleParentDetails: request.payload.maleParentDetails,
@@ -250,8 +256,9 @@ function failAction(request, h, err) {
     approximateDate: request.payload.approximateDate,
     dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
     sex: request.payload.sex,
-    isMultipleSpecimens: submission.applications[applicationIndex].species.isMultipleSpecimens,
-    numberOfUnmarkedSpecimens: submission.applications[applicationIndex].species.numberOfUnmarkedSpecimens
+    isMultipleSpecimens: application.species.isMultipleSpecimens,
+    numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens,
+    hasUniqueIdentificationMark: application.species.hasUniqueIdentificationMark
     //undeterminedSexReason: request.payload.undeterminedSexReason
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
@@ -294,7 +301,8 @@ module.exports = [
         approximateDate: species.dateOfBirth?.approximateDate,
         sex: species.sex,
         isMultipleSpecimens: species.isMultipleSpecimens,
-        numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens
+        numberOfUnmarkedSpecimens: species.numberOfUnmarkedSpecimens,
+        hasUniqueIdentificationMark: species.hasUniqueIdentificationMark
       }
 
       return h.view(pageId, createModel(null, pageData))

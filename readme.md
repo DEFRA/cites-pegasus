@@ -68,11 +68,10 @@ The following environment variables must be provided, for development this can b
 | ENABLE_DELIVERY_TYPE                     | Enable the delivery type page for special delivery     |    no    | false   |                                  |       |
 | ENABLE_INTERNAL_REFERENCE                | Enable the internal referece field                     |    no    | false   |                                  |       |
 | ENABLE_OTHER_PERMIT_TYPES                | Enable the additional non standard permit types        |    no    | false   |                                  |       |
-| ENABLE_TAG_IDENTIFIER                    | Enable the Tag radio option on the unique identification mark page     |    no    | false   |                                  |       |
 | ENABLE_BREEDER_PAGE                      | Enable the breeder page for A10s                       |    no    | false   |                                  |       |
 | ENABLE_DELIVERY_NAME                     | Enable the delivery name field                         |    no    | false   |                                  |       |
 | ENABLE_SPECIES_NAME_TYPEAHEAD            | Enables the typeahead on the species+ search page      |    no    | false   |                                  |       |
-
+| MAX_NUMBER_OF_UNIQUE_IDENTIFIERS         | Set the max number of unique identification marks that can be entered|    no    | 3   |                                  |       |
 ## Project structure
 
 Here's the default structure for your project files.

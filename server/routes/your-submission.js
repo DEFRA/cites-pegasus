@@ -43,7 +43,16 @@ function createSubmitApplicationModel(errors, data) {
   const applicationsTableData = applicationsData.map(application => {
     const speciesNameUrl = `${nextPathCheckApplication}/${application.applicationIndex}`
     const internalReference = application.internalReference
-    const uniqueIdentificationMark = application.species.uniqueIdentificationMark
+    let marks = []
+    if (application.species.hasUniqueIdentificationMark && application.species.uniqueIdentificationMarks) {
+      marks = application.species.uniqueIdentificationMarks.map(mark => {
+        let labelMark
+        if (commonContent.uniqueIdentificationMarkTypes.hasOwnProperty(mark.uniqueIdentificationMarkType)) {
+          labelMark = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
+        }
+        return { mark: mark.uniqueIdentificationMark, labelMark }
+      })
+    }
     let unitsOfMeasurementText = null
     if (application.species.specimenType === "animalLiving") {
       if (application.species.numberOfUnmarkedSpecimens > 1) {
@@ -70,12 +79,7 @@ function createSubmitApplicationModel(errors, data) {
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
     const formActionRemove = `${currentPath}/remove/${application.applicationIndex}`
 
-    let labelUniqueIdentificationMark
-    if (commonContent.uniqueIdentfierMarkTypes.hasOwnProperty(application.species.uniqueIdentificationMarkType)) {
-      labelUniqueIdentificationMark = commonContent.uniqueIdentfierMarkTypes[application.species.uniqueIdentificationMarkType]
-    }
-
-    return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, labelUniqueIdentificationMark, uniqueIdentificationMark, internalReference, formActionCopy, formActionRemove }
+    return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, marks, internalReference, formActionCopy, formActionRemove }
   })
 
 

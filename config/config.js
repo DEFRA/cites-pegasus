@@ -27,10 +27,10 @@ const schema = Joi.object().keys({
   enableDeliveryType: Joi.boolean(),
   enableOtherPermitTypes: Joi.boolean(),
   enableInternalReference: Joi.boolean(),
-  enableTagIdentifier: Joi.boolean(),
   enableBreederPage: Joi.boolean(),
   enableDeliveryName: Joi.boolean(),
   enableSpeciesNameTypeahead: Joi.boolean(),
+  maxNumberOfUniqueIdentifiers: Joi.number().min(1),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
     //encoding: Joi.string().valid('base64json').default('base64json'),
@@ -72,10 +72,10 @@ const config = {
   enableDeliveryType: process.env.ENABLE_DELIVERY_TYPE || false,
   enableOtherPermitTypes: process.env.ENABLE_OTHER_PERMIT_TYPES || false,
   enableInternalReference: process.env.ENABLE_INTERNAL_REFERENCE || false,
-  enableTagIdentifier: process.env.ENABLE_TAG_IDENTIFIER || false,
   enableBreederPage: process.env.ENABLE_BREEDER_PAGE || false,
   enableDeliveryName: process.env.ENABLE_DELIVERY_NAME || false,
   enableSpeciesNameTypeahead: process.env.ENABLE_SPECIES_NAME_TYPEAHEAD || false,
+  maxNumberOfUniqueIdentifiers: process.env.MAX_NUMBER_OF_UNIQUE_IDENTIFIERS || 3,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
     //encoding: 'base64json',
