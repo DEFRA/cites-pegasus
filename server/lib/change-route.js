@@ -102,7 +102,6 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
             break
         case "uniqueIdentificationMark":
             startUrls.push({ url: `${urlPrefix}/unique-identification-mark/${applicationIndex}`, matchType: 'includes' })
-            endUrls.push({ url: `${urlPrefix}/unique-identification-mark/${applicationIndex}`, matchType: 'includes' })
             break
         case "specimenOrigin":
             startUrls.push({ url: `${urlPrefix}/specimen-origin/${applicationIndex}` })
@@ -158,7 +157,7 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
     // Scientific name
 
     if (endUrls.length === 0) {
-        endUrls.push({ url: startUrls[0] })
+        endUrls.push(startUrls[0])
     }
 
     const changeRouteData = { changeType, showConfirmationPage: confirm, startUrls, endUrls, applicationIndex, returnUrl }
@@ -174,7 +173,7 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
     if (changeData) {
         const firstStartUrl = changeData.startUrls[0]
         const lastStartUrl = changeData.startUrls[changeData.startUrls.length - 1]
-        
+
         const matchesEndUrl = changeData.endUrls.some(endUrl => urlCompare(request.headers.referer, endUrl.url, endUrl.matchType) )
         const matchesFirstStartUrl = urlCompare(request.path, firstStartUrl.url, firstStartUrl.matchType)
         const matchesLastStartUrl = urlCompare(request.path, lastStartUrl.url, lastStartUrl.matchType)
