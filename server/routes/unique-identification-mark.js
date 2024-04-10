@@ -311,10 +311,9 @@ module.exports = [
         }
 
         for (let i = 0; i < request.payload.numberOfMarks; i++) {
-          schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG"),
-            schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(3).max(150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')
+          schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG")
+          schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(3).max(150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')
         }
-
 
         const result = Joi.object(schemaObject).validate(request.payload, { abortEarly: false })
 

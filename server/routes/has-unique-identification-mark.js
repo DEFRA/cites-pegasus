@@ -54,10 +54,6 @@ function createModel(errors, data) {
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
-  // if (!data.hasUniqueIdentificationMark && data.uniqueIdentificationMarkType) {
-  //   data.hasUniqueIdentificationMark = data.uniqueIdentificationMarkType !== 'unmarked'
-  // }
-
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
