@@ -35,4 +35,13 @@ describe('Healthcheck Route', () => {
         expect(response.result).to.equal('Success'); // Or whatever content you expect
         expect(response.headers['content-type']).to.include('text/html')
     });
+    it('test of failing test in sonarcloud', async () => {
+        const response = await server.inject({
+            method: 'GET',
+            url: '/healthcheck-detailed'
+        })
+
+        expect(response.statusCode).to.equal(500)        
+    });
+
 });
