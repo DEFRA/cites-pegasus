@@ -766,6 +766,14 @@
       "error.acquiredDate.any.both": "Enter a date, or enter an approximate date",
       "error.approximateDate.string.empty": "Enter an approximate date or period of time",
       "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
+    }  
+  },
+  "hasUniqueIdentificationMark": {
+    "defaultTitle": "Does the specimen have any unique identification marks?",
+    "pageHeader": "Does the specimen have any unique identification marks?",
+    "inputHint": "These must be unique to the specimen you're completing this application for.",
+    "errorMessages": {
+      "error.hasUniqueIdentificationMark.any.required": "Select yes if the specimen has any unique identification marks"
     }
   },
   "uniqueIdentificationMark": {

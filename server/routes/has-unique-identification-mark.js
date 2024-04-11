@@ -20,7 +20,7 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
 
   const commonContent = textContent.common
-  const pageContent = textContent.uniqueIdentificationMark
+  const pageContent = textContent.hasUniqueIdentificationMark
 
   let errorList = null
   if (errors) {
@@ -58,20 +58,19 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text : pageContent.defaultTitle,
-
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputUniqueIdentificationMark: {
       idPrefix: "hasUniqueIdentificationMark",
       name: "hasUniqueIdentificationMark",
       fieldset: {
         legend: {
-          text: 'Does the specimen have any unique identification marks?',
+          text: pageContent.pageHeader,
           isPageHeading: true,
           classes: "govuk-fieldset__legend--l"
         }
       },
       hint: {
-        text: "This must be unique to the specimen you're completing this application for."
+        text: pageContent.inputHint
       },
       items: [
         {
