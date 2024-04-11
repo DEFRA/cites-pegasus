@@ -52,7 +52,7 @@ const contactDetailsSchema = Joi.object({
     "error.businessName.string.max": Joi.string().optional(),
     "error.email.string.email": Joi.string().optional(),
     "error.email.string.max": Joi.string().optional()
-  }).optional()  
+  }).optional()
 })
 
 const enterAddressSchema = Joi.object({
@@ -591,6 +591,14 @@ const schema = Joi.object().keys({
       "error.acquiredDate.any.both": Joi.string().required(),
       "error.approximateDate.string.empty": Joi.string().required(),
       "error.approximateDate.string.max": Joi.string().required()
+    }).required()
+  }).required(),
+  hasUniqueIdentificationMark: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.hasUniqueIdentificationMark.any.required": Joi.string().required(),
     }).required()
   }).required(),
   uniqueIdentificationMark: Joi.object({
@@ -1254,9 +1262,9 @@ const schema = Joi.object().keys({
   help: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBody1: Joi.string().required(),    
-    pageBody2: Joi.string().required(),   
-    pageBody3: Joi.string().required()    
+    pageBody1: Joi.string().required(),
+    pageBody2: Joi.string().required(),
+    pageBody3: Joi.string().required()
   }).required()
 })
 
