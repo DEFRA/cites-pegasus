@@ -1,6 +1,6 @@
 window.onload = function () {
 
-    var helpBar = document.querySelector('.help-bar');
+    const helpBar = document.querySelector('.help-bar');
 
     if (helpBar) {
         // Hide the helpBar div

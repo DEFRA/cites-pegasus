@@ -45,7 +45,7 @@ module.exports = [
       }
       
       try {
-        response = await whoAmI(request.server);
+        await whoAmI(request.server);
       }
       catch (err) {
         return h.response('Error calling dynamics service').code(500)

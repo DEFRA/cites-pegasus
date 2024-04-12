@@ -49,12 +49,18 @@ function createApplicationSummaryModel(errors, data) {
 
   const breadcrumbs = getBreadcrumbs(pageContent, data, summaryType)
 
-  let backLink = null;
-  if (!['view-submitted', 'copy-as-new'].includes(summaryType)) {
-    backLink = nextPathYourSubmission
-    if (summaryType === 'check') {
+  let backLink = null
+
+  switch (summaryType) {
+    case 'check':
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
-    }
+      break
+    case 'view-submitted':
+    case 'copy-as-new':
+      backLink = null
+      break
+    default:
+      backLink = nextPathYourSubmission
   }
 
   summaryListSections.forEach(item => applyBorderClasses(item.value))
@@ -75,7 +81,7 @@ function createApplicationSummaryModel(errors, data) {
   }, {})
 
   let hintIncomplete = ''
-  if(data.mandatoryFieldIssues.length > 0 && !['view-submitted'].includes(summaryType)) {
+  if (data.mandatoryFieldIssues.length > 0 && !['view-submitted'].includes(summaryType)) {
     hintIncomplete = pageContent.hintIncomplete
   }
 
@@ -83,7 +89,8 @@ function createApplicationSummaryModel(errors, data) {
     backLink,
     breadcrumbs: ['view-submitted', 'copy-as-new'].includes(summaryType) ? breadcrumbs : "",
     pageHeader: appContent.pageHeader,
-    pageTitle: appContent.pageTitle + commonContent.pageTitleSuffix,
+    //pageTitle: appContent.pageTitle + commonContent.pageTitleSuffix,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : appContent.pageTitle + commonContent.pageTitleSuffix,
     buttonText: appContent.buttonText,
     showConfirmButton: appContent.showConfirmButton,
     formActionPage: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
@@ -262,10 +269,10 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   //Old logic if (data.species.specimenType !== "animalLiving") {
   if (allowPageNavigation(data.submissionProgress, "quantity/" + data.applicationIndex) || (isReadOnly && data.species.quantity)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, data.species.quantity, "/quantity", "quantity"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, "/quantity", "unit of measurement"))    
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, "/quantity", "unit of measurement"))
   }
   if (allowPageNavigation(data.submissionProgress, "multiple-specimens/" + data.applicationIndex) || (isReadOnly && typeof data.isMultipleSpecimens === 'boolean')) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, "/multipleSpecimens", "multipleSpecimens"))    
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, "/multipleSpecimens", "multipleSpecimens"))
   }
   //Old logic if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
   if (allowPageNavigation(data.submissionProgress, "created-date/" + data.applicationIndex) || (isReadOnly && data.createdDate)) {
@@ -274,8 +281,24 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   if (allowPageNavigation(data.submissionProgress, "trade-term-code/" + data.applicationIndex) || (isReadOnly && data.tradeTermCode)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["isTradeTermCode", "tradeTermCode"], pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode || ""} ${data.species.tradeTermCodeDesc || ""}` : pageContent.rowTextNotKnown, "/tradeTermCode", "trade term code"))
   }
-  if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarkType)) {
+  if (isReadOnly && data.species.uniqueIdentificationMarkType) {//Only for viewing old applications with single unique identifiction mark
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMarkType === "unmarked" ? pageContent.rowTextSpecimenIsNotMarked : data.species.uniqueIdentificationMark, "/uniqueIdentificationMark", "unique identification mark"))
+  } else if (allowPageNavigation(data.submissionProgress, "has-unique-identification-mark/" + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "hasUniqueIdentificationMarkType", pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/hasUniqueIdentificationMark", "has unique identification mark"))
+  }
+  if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark)) {
+    if (data.species.hasUniqueIdentificationMark) {
+      let markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
+      for (let i = 0; i < markCount; i++) {
+        let markDetails = ''
+        if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
+          const mark = data.species.uniqueIdentificationMarks[i]
+          const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
+          markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
+        }
+        summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark", "uniqueIdentificationMarks"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', markDetails, "/uniqueIdentificationMark", "unique identification mark"))
+      }
+    }
   }
   if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, "/describeLivingAnimal", "sex"))
@@ -361,7 +384,7 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
   }
 }
 
-function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {  
+function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
   const summaryListRemarksRows = []
   if (allowPageNavigation(data.submissionProgress, "additional-info/" + data.applicationIndex) || isReadOnly) {
     summaryListRemarksRows.push(createSummaryListRow(summaryData, "comments", pageContent.rowTextRemarks, data.comments, "/additionalInfo", "remarks"))
@@ -423,7 +446,7 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
 }
 
 function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly) {
-  
+
   const summaryListPermitDetailsExportOrReexportRows = []
 
   const permitIssueDate = {
@@ -977,7 +1000,7 @@ module.exports = [
       if (changeRouteData.showConfirmationPage) {
         return h.redirect(`${currentPath}/are-you-sure/${summaryType}/${applicationIndex}`)
       } else {
-        return h.redirect(changeRouteData.startUrls[0])
+        return h.redirect(changeRouteData.startUrls[0].url)
       }
     }
   },
@@ -1106,7 +1129,7 @@ module.exports = [
         const changeRouteData = getChangeRouteData(request)
 
         if (request.payload.areYouSure) {
-          return h.redirect(changeRouteData.startUrls[0])
+          return h.redirect(changeRouteData.startUrls[0].url)
         } else {
           return h.redirect(`${currentPath}/${summaryType}/${applicationIndex}`)
         }

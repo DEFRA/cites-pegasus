@@ -52,7 +52,7 @@ const contactDetailsSchema = Joi.object({
     "error.businessName.string.max": Joi.string().optional(),
     "error.email.string.email": Joi.string().optional(),
     "error.email.string.max": Joi.string().optional()
-  }).optional()  
+  }).optional()
 })
 
 const enterAddressSchema = Joi.object({
@@ -241,9 +241,9 @@ const schema = Joi.object().keys({
     statusDescriptionRefused: Joi.string().required(),
     statusDescriptionCancelled: Joi.string().required(),
     statusDescriptionClosed: Joi.string().required(),
-    helpBarQuestion: Joi.string().allow('', null),
-    helpBarLinkText: Joi.string().allow('', null),
-    uniqueIdentfierMarkTypes: Joi.object({
+    helpBarQuestion: Joi.string().required(),
+    helpBarLinkText: Joi.string().required(),
+    uniqueIdentificationMarkTypes: Joi.object({
       MC: Joi.string().required(),
       CR: Joi.string().required(),
       SR: Joi.string().required(),
@@ -593,66 +593,32 @@ const schema = Joi.object().keys({
       "error.approximateDate.string.max": Joi.string().required()
     }).required()
   }).required(),
+  hasUniqueIdentificationMark: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    inputHint: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.hasUniqueIdentificationMark.any.required": Joi.string().required(),
+    }).required()
+  }).required(),
   uniqueIdentificationMark: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    markHeader: Joi.string().required(),
+    buttonAdd: Joi.string().required(),
+    buttonRemove: Joi.string().required(),
+    inputSelectDefaultUniqueIdentificationMarkType: Joi.string().required(),
+    inputLabelUniqueIdentificationMarkType: Joi.string().required(),
     inputLabelUniqueIdentificationMark: Joi.string().required(),
-    radioOptionMicrochipNumber: Joi.string().required(),
-    radioOptionClosedRingNumber: Joi.string().required(),
-    radioOptionSplitRingNumber: Joi.string().required(),
-    radioOptionOtherRingNumber: Joi.string().required(),
-    radioOptionCableTie: Joi.string().required(),
-    radioOptionHuntingTrophy: Joi.string().required(),
-    radioOptionLabel: Joi.string().required(),
-    radioOptionSwissInstitue: Joi.string().required(),
-    radioOptionSerialNumber: Joi.string().required(),
-    radioOptionTag: Joi.string().required(),
-    radioOptionDivider: Joi.string().required(),
-    radioOptionUnmarked: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.uniqueIdentificationMarkType.any.required":
-        Joi.string().required(),
+      "error.uniqueIdentificationMarkType.any.required": Joi.string().required(),
       "error.uniqueIdentificationMarkType.any.only": Joi.string().required(),
-      "error.inputCR.string.empty": Joi.string().required(),
-      "error.inputCR.string.max": Joi.string().required(),
-      "error.inputCR.string.min": Joi.string().required(),
-      "error.inputCR.any.duplicate": Joi.string().required(),
-      "error.inputCB.string.empty": Joi.string().required(),
-      "error.inputCB.string.max": Joi.string().required(),
-      "error.inputCB.string.min": Joi.string().required(),
-      "error.inputCB.any.duplicate": Joi.string().required(),
-      "error.inputHU.string.empty": Joi.string().required(),
-      "error.inputHU.string.max": Joi.string().required(),
-      "error.inputHU.string.min": Joi.string().required(),
-      "error.inputHU.any.duplicate": Joi.string().required(),
-      "error.inputLB.string.empty": Joi.string().required(),
-      "error.inputLB.string.max": Joi.string().required(),
-      "error.inputLB.string.min": Joi.string().required(),
-      "error.inputLB.any.duplicate": Joi.string().required(),
-      "error.inputMC.string.empty": Joi.string().required(),
-      "error.inputMC.string.max": Joi.string().required(),
-      "error.inputMC.string.min": Joi.string().required(),
-      "error.inputMC.any.duplicate": Joi.string().required(),
-      "error.inputOT.string.empty": Joi.string().required(),
-      "error.inputOT.string.max": Joi.string().required(),
-      "error.inputOT.string.min": Joi.string().required(),
-      "error.inputOT.any.duplicate": Joi.string().required(),
-      "error.inputSN.string.empty": Joi.string().required(),
-      "error.inputSN.string.max": Joi.string().required(),
-      "error.inputSN.string.min": Joi.string().required(),
-      "error.inputSN.any.duplicate": Joi.string().required(),
-      "error.inputTG.string.empty": Joi.string().required(),
-      "error.inputTG.string.max": Joi.string().required(),
-      "error.inputTG.string.min": Joi.string().required(),
-      "error.inputTG.any.duplicate": Joi.string().required(),
-      "error.inputSR.string.empty": Joi.string().required(),
-      "error.inputSR.string.max": Joi.string().required(),
-      "error.inputSR.string.min": Joi.string().required(),
-      "error.inputSR.any.duplicate": Joi.string().required(),
-      "error.inputSI.string.empty": Joi.string().required(),
-      "error.inputSI.string.max": Joi.string().required(),
-      "error.inputSI.string.min": Joi.string().required(),
-      "error.inputSI.any.duplicate": Joi.string().required(),
+      "error.uniqueIdentificationMark.string.empty": Joi.string().required(),
+      "error.uniqueIdentificationMark.string.max": Joi.string().required(),
+      "error.uniqueIdentificationMark.string.min": Joi.string().required(),
+      "error.uniqueIdentificationMark.any.applicationDuplicate": Joi.string().required(),
+      "error.uniqueIdentificationMark.any.submissionDuplicate": Joi.string().required()
     }).required()
   }).required(),
   specimenDescriptionGeneric: Joi.object({
@@ -951,6 +917,7 @@ const schema = Joi.object().keys({
     rowTextPurposeCode: Joi.string().required(),
     rowTextTradeTermCode: Joi.string().required(),
     rowTextUniqueIdentificationMark: Joi.string().required(),
+    rowTextHasUniqueIdentificationMark: Joi.string().required(),
     rowTextSpecimenIsNotMarked: Joi.string().required(),
     rowTextSex: Joi.string().required(),
     rowTextDateOfBirth: Joi.string().required(),
@@ -1098,6 +1065,7 @@ const schema = Joi.object().keys({
     draftContinue: Joi.string().required(),
     draftDelete: Joi.string().required(),
     defaultTitle: Joi.string().required(),
+    defaultTitleOrganisation: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageHeaderOrganisation: Joi.string().required(),
     inputLabelSearch: Joi.string().required(),
@@ -1294,9 +1262,9 @@ const schema = Joi.object().keys({
   help: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBody1: Joi.string().required(),    
-    pageBody2: Joi.string().required(),   
-    pageBody3: Joi.string().required()    
+    pageBody1: Joi.string().required(),
+    pageBody2: Joi.string().required(),
+    pageBody3: Joi.string().required()
   }).required()
 })
 

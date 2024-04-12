@@ -1,0 +1,119 @@
+{% extends 'layout.html' %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: backLinkButton,
+    href: backLink,
+	  attributes: {id: 'linkBack'}
+  }) }}
+
+  {% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+        "titleText": errorSummaryTitle,
+        "errorList": errorList
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        {% call govukFieldset({
+          legend: {
+            text: pageHeader,
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+        <p>
+          Enter the scientific name of your specimen's species
+        </p>
+        <p>
+          You can also <a target="_blank" href="https://speciesplus.net/">search for the scientific name on Species+</a> (opens in a new tab).
+        </p>
+        {{ govukInput(inputSpeciesName) }}
+
+        {{ govukButton({
+          text: 'Search',
+          classes: 'loading-message-trigger',
+          type: "submit",
+          attributes: {
+            formAction: formActionSearch
+          }
+        }) }}
+        {% if speciesSearchResultsCount === 0 %}
+          <p>No results</p>
+        {% endif %}
+        {% if speciesSearchResultsCount === 1 %}
+          <p>1 result found</p>
+        {% endif %}
+        {% if speciesSearchResultsCount > 1 %}
+          <p>{{speciesSearchResultsCount}} results found</p>
+        {% endif %}
+        {% if speciesSearchResultsCount > 15 %}
+          {{ govukWarningText({
+            text: "Your search has returned more results than can be shown, please enter more details in the search if your species name does not appear",
+            iconFallbackText: "Warning"
+          }) }}
+        {% endif %}
+
+        {% if speciesSearchResultsCount > 0 %}
+          {{ govukSelect(selectSpecies) }}
+        {% endif %}
+
+        {# {% if speciesSearchResults.items %}
+          <table class="govuk-table" aria-describedby="species search results">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">Scientific name</th>
+                <th scope="col" class="govuk-table__header"></th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for result in speciesSearchResults.items %}
+                <tr class="govuk-table__row">
+
+                  <td class="govuk-table__cell">{{result.scientificName}}</td>
+                  <td class="govuk-table__cell flex-end">
+                    {{ govukButton({
+                    text: 'Select',
+                    type: "submit",
+                    classes: "govuk-button"                    
+                  }) }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %} #}
+        {% endcall %}
+
+        {{ govukButton({
+          text: saveAndContinueButton,
+          classes: 'loading-message-trigger',
+          type: "submit",
+          attributes: {
+            formAction: formActionPage
+          }
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block localJS %}
+  <script src="{{assetPath}}/js/loading-message.client.js"></script>
+{% endblock %}

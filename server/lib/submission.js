@@ -173,15 +173,27 @@ function migrateSubmissionToNewSchema(submission) {
 function migrateApplicationToNewSchema(app) {
 
     if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
-        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1        
+        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1
     }
-    
+
     if (app.species.numberOfUnmarkedSpecimens && typeof app.species.numberOfUnmarkedSpecimens === "string") {
         app.species.numberOfUnmarkedSpecimens = parseInt(app.species.numberOfUnmarkedSpecimens)
     }
-    
-    if (app.species.uniqueIdentificationMarkType === 'unmarked') {
-        app.species.uniqueIdentificationMark = null
+
+    if (app.species.uniqueIdentificationMarkType) {
+        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
+            app.species.hasUniqueIdentificationMark = false
+            app.species.uniqueIdentificationMarks = null
+        } else {
+            app.species.hasUniqueIdentificationMark = true
+            app.species.uniqueIdentificationMarks = [{
+                index: 0,
+                uniqueIdentificationMark: app.species.uniqueIdentificationMark,
+                uniqueIdentificationMarkType: app.species.uniqueIdentificationMarkType
+            }]                   
+        }
+        delete app.species.uniqueIdentificationMark
+        delete app.species.uniqueIdentificationMarkType
     }
 
     if (app.permitDetails) {
@@ -217,10 +229,7 @@ function cloneApplication(request, applicationIndex) {
     const applications = submission.applications
     const clonedApplication = lodash.cloneDeep(applications[applicationIndex])
     clonedApplication.applicationIndex = applications.length
-    clonedApplication.species.uniqueIdentificationMark = null
-    if (clonedApplication.species.uniqueIdentificationMarkType != 'unmarked') {
-        clonedApplication.species.uniqueIdentificationMarkType = null
-    }
+    clonedApplication.species.uniqueIdentificationMarks = null
     applications.push(clonedApplication)
     mergeSubmission(request, { applications })
     return clonedApplication.applicationIndex
@@ -460,9 +469,13 @@ function getSubmissionProgress(submission, includePageData) {
             }
 
             if (submission.permitType === permitType.ARTICLE_10 || species.numberOfUnmarkedSpecimens === 1 || species.isMultipleSpecimens === false) {
-                submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
-                if (!species.uniqueIdentificationMarkType) {
-                    return { submissionProgress, applicationStatuses }
+                submissionProgress.push(getPageProgess(`has-unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('hasUniqueIdentificationMark', species.hasUniqueIdentificationMark)))
+
+                if (species.hasUniqueIdentificationMark) {
+                    submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+                    if (!species.uniqueIdentificationMarks?.length) {
+                        return { submissionProgress, applicationStatuses }
+                    }
                 }
             }
 
@@ -492,10 +505,14 @@ function getSubmissionProgress(submission, includePageData) {
                 return { submissionProgress, applicationStatuses }
             }
 
-            submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+            submissionProgress.push(getPageProgess(`has-unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('hasUniqueIdentificationMark', species.hasUniqueIdentificationMark)))
 
-            if (!species.uniqueIdentificationMarkType) {
-                return { submissionProgress, applicationStatuses }
+            if (species.hasUniqueIdentificationMark) {
+                submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
+
+                if (!species.uniqueIdentificationMarks?.length) {
+                    return { submissionProgress, applicationStatuses }
+                }
             }
 
             submissionProgress.push(getPageProgess(`describe-specimen/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenDescriptionGeneric', species.specimenDescriptionGeneric)))
@@ -657,14 +674,14 @@ function getPageDataMultipleSpecimens(species) {
 function getPageDataUniqueIdentificationMark(species) {
     return [
         {
-            fieldId: 'uniqueIdentificationMarkType',
+            fieldId: 'hasUniqueIdentificationMarkType',
             isMandatory: true,
-            hasData: Boolean(species?.uniqueIdentificationMarkType)
+            hasData: Boolean(species?.hasUniqueIdentificationMark)
         },
         {
-            fieldId: 'uniqueIdentificationMark',
-            isMandatory: Boolean(species?.uniqueIdentificationMarkType) && species?.uniqueIdentificationMarkType !== 'unmarked',
-            hasData: Boolean(species?.uniqueIdentificationMark)
+            fieldId: 'uniqueIdentificationMarks',
+            isMandatory: Boolean(species?.hasUniqueIdentificationMark),
+            hasData: species?.uniqueIdentificationMarks?.length > 0
         }
     ]
 }
