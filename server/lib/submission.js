@@ -80,7 +80,7 @@ async function checkDraftSubmissionExists(request) {
     }
     const containerName = getContainerName(request)
     const submissionFileName = getSubmissionFileName(request)
-    return await checkFileExists(containerName, submissionFileName)
+    return await checkFileExists(request.server, containerName, submissionFileName)
 }
 
 async function saveDraftSubmission(request, savePointUrl) {
@@ -93,18 +93,18 @@ async function saveDraftSubmission(request, savePointUrl) {
     submission.savePointDate = new Date()
     const containerName = getContainerName(request)
     const submissionFileName = getSubmissionFileName(request)
-    const containerExists = await checkContainerExists(containerName)
+    const containerExists = await checkContainerExists(request.server, containerName)
     if (!containerExists) {
-        await createContainer(containerName)
+        await createContainer(request.server, containerName)
     }
-    await saveObjectToContainer(containerName, submissionFileName, submission)
+    await saveObjectToContainer(request.server, containerName, submissionFileName, submission)
 }
 
 async function loadDraftSubmission(request) {
     try {
         const containerName = getContainerName(request)
         const submissionFileName = getSubmissionFileName(request)
-        const draftSubmission = await getObjectFromContainer(containerName, submissionFileName)
+        const draftSubmission = await getObjectFromContainer(request.server, containerName, submissionFileName)
         setSubmission(request, draftSubmission, null)
         return draftSubmission
     }
@@ -120,7 +120,7 @@ async function deleteDraftSubmission(request) {
     }
     const containerName = getContainerName(request)
     const submissionFileName = getSubmissionFileName(request)
-    await deleteFileFromContainer(containerName, submissionFileName)
+    await deleteFileFromContainer(request.server, containerName, submissionFileName)
 }
 
 function cloneSubmission(request, applicationIndex) {

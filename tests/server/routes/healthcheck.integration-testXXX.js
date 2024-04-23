@@ -36,8 +36,8 @@ describe('Healthcheck Routes', () => {
             url: '/healthcheck-basic'
         };
         const data = await server.inject(options);
-        expect(data.statusCode).toBe(200);
-        expect(data.payload).toBe('Success')
+        expect(data.statusCode).toEqual(200);
+        expect(data.payload).toEqual('Success')
     });
 
     test('should success with server connection', async function () {
@@ -46,8 +46,8 @@ describe('Healthcheck Routes', () => {
             url: '/healthcheck-detailed'
         };
         const data = await server.inject(options);
-        expect(data.statusCode).toBe(200);
-        expect(data.payload).toBe('Success')
+        expect(data.statusCode).toEqual(200);
+        expect(data.payload).toEqual('Success')
     });
 //     it('should return success for healthcheck-basic', async () => {
 //         const request = {};

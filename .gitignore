@@ -14,4 +14,4 @@ lcov.info
 .env tst
 *.pem
 stdout
-coverage.html
+tests/coverage

@@ -167,7 +167,7 @@ module.exports = [
 
       //Check that the container is still in azure
       if (submission.supportingDocuments?.containerName) {
-        const exists = await checkContainerExists(submission.supportingDocuments.containerName)
+        const exists = await checkContainerExists(request.server, submission.supportingDocuments.containerName)
         if (!exists) {
           submission.supportingDocuments = { files: [] }
           try {
@@ -269,7 +269,7 @@ module.exports = [
 
         try {
           if (!docs.containerName) {
-            const containerName = await createContainerWithTimestamp('cites-submission')
+            const containerName = await createContainerWithTimestamp(request.server, 'cites-submission')
             console.log(`Blob container created with name ${containerName}`)
             docs.containerName = containerName
             try {
@@ -280,7 +280,7 @@ module.exports = [
             }
           }
 
-          const blobUrl = await saveFileToContainer(docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
+          const blobUrl = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
           console.log(`File added to blob container with url ${blobUrl}`)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl, uploadTimestamp: Date.now() })
 
@@ -341,7 +341,7 @@ module.exports = [
         }
 
         try {
-          await deleteFileFromContainer(docs.containerName, existingFile.fileName)
+          await deleteFileFromContainer(request.server, docs.containerName, existingFile.fileName)
           docs.files.splice(docs.files.indexOf(existingFile), 1)
 
           try {

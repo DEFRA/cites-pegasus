@@ -23,28 +23,27 @@ module.exports = [
     },
     handler: async (request, h) => {
 
-      console.log(1)
       try {
         await keyVault.readSecret('REDIS-PASSWORD')
       }
       catch (err) {
         return h.response('Error calling key vault').code(500)
       }
-      console.log(2)
+      
       try {
         session.setYarValue(request, 'test', Date.now())
       }
       catch (err) {
         return h.response('Error calling redis session').code(500)
       }
-      console.log(3)
+      
       try {
-        await blobStorageService.checkContainerExists('test')        
+        await blobStorageService.checkContainerExists(request.server, 'test')        
       }
       catch (err) {
         return h.response('Error calling blob storage').code(500)
       }
-      console.log(4)
+      
       try {        
         await dynamicsService.whoAmI(request.server)
       }
