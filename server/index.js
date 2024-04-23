@@ -3,7 +3,8 @@ const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
 const Fs = require('fs');
 const { getOpenIdClient } = require('./services/oidc-client');
-const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service');
+const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service')
+const { getBlobServiceClient } = require('./services/blob-storage-service')
 //Run this command line to create certs
 //openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
@@ -56,6 +57,9 @@ async function createServer() {
   console.log('###### CITES PORTAL STARTUP: Getting dynamics access token ######')
   await getAccessToken(server)
 
+  console.log('###### CITES PORTAL STARTUP: Getting blob service client ######')
+  await getBlobServiceClient(server)
+
   console.log('###### CITES PORTAL STARTUP: Getting dynamics ref data ######')
   const [oidcClient, countries, tradeTermCodes] = await Promise.all([
     getOpenIdClient(),
@@ -94,9 +98,9 @@ const start = async () => {
   const server = await createServer()
   await server.start();
   console.log(`###### CITES PORTAL STARTUP: Server started on port ${server.info.uri} ######`)  
+  
   return server;
 };
-
 process.on('unhandledRejection', (err) => {
   console.log(err);
   process.exit(1);

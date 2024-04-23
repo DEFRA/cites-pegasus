@@ -1,20 +1,24 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const { readSecret } = require('../lib/key-vault')
-let blobServiceClient = null
 
-readSecret('BLOB-STORAGE-CONNECTION-STRING')
-    .then(secret => {
-        blobServiceClient = BlobServiceClient.fromConnectionString(secret.value);
-    })
-    .catch(err => {
-        console.error(err)
-        throw err
-    })
 
-async function createContainer(containerName, attemptNo = 1) {
+async function getBlobServiceClient(server) {
+    if (!server.app.blobServiceClient) {
+        readSecret('BLOB-STORAGE-CONNECTION-STRING')
+            .then(secret => {
+                server.app.blobServiceClient = BlobServiceClient.fromConnectionString(secret.value);
+            })
+            .catch(err => {
+                console.error(err)
+                throw err
+            })
+    }    
+}
+
+async function createContainer(server, containerName, attemptNo = 1) {
 
     try {
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
         await containerClient.create();
     }
     catch (err) {
@@ -25,11 +29,11 @@ async function createContainer(containerName, attemptNo = 1) {
     return containerName
 }
 
-async function createContainerWithTimestamp(name, attemptNo = 1) {
+async function createContainerWithTimestamp(server, name, attemptNo = 1) {
     const containerName = `${name}-${new Date().getTime()}`;
 
     try {
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
         await containerClient.create();
     }
 
@@ -43,7 +47,7 @@ async function createContainerWithTimestamp(name, attemptNo = 1) {
 
             await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
 
-            return await createContainerWithTimestamp(name, attemptNo + 1)
+            return await createContainerWithTimestamp(server, name, attemptNo + 1)
         }
         throw err
     }
@@ -51,9 +55,9 @@ async function createContainerWithTimestamp(name, attemptNo = 1) {
     return containerName
 }
 
-async function saveFileToContainer(containerName, filename, data) {
+async function saveFileToContainer(server, containerName, filename, data) {
     try {
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
         const blockBlobClient = containerClient.getBlockBlobClient(filename);
         await blockBlobClient.uploadData(data);
         return blockBlobClient.url
@@ -64,12 +68,12 @@ async function saveFileToContainer(containerName, filename, data) {
     }
 }
 
-async function saveObjectToContainer(containerName, filename, object) {
+async function saveObjectToContainer(server, containerName, filename, object) {
     let blockBlobClient = null
     try {
 
         const data = JSON.stringify(object)
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
         blockBlobClient = containerClient.getBlockBlobClient(filename);
         await blockBlobClient.upload(data, data.length, {
             blobHTTPHeaders: {
@@ -85,11 +89,11 @@ async function saveObjectToContainer(containerName, filename, object) {
     return blockBlobClient.url
 }
 
-async function deleteFileFromContainer(containerName, fileName) {
+async function deleteFileFromContainer(server, containerName, fileName) {
     try {
-        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
         const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-        if(await checkContainerExists(containerName)) {
+        if (await checkContainerExists(server, containerName)) {
             await blockBlobClient.deleteIfExists({ deleteSnapshots: 'include' });
         }
     }
@@ -99,9 +103,9 @@ async function deleteFileFromContainer(containerName, fileName) {
     }
 }
 
-async function checkFileExists(containerName, fileName) {
-    if (await checkContainerExists(containerName)) {
-        const containerClient = blobServiceClient.getContainerClient(containerName)
+async function checkFileExists(server, containerName, fileName) {
+    if (await checkContainerExists(server, containerName)) {
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
         const blockBlobClient = containerClient.getBlockBlobClient(fileName)
         return await blockBlobClient.exists()
     }
@@ -109,14 +113,14 @@ async function checkFileExists(containerName, fileName) {
 }
 
 
-async function getObjectFromContainer(containerName, filename) {
-    if (!await checkContainerExists(containerName)) {
+async function getObjectFromContainer(server, containerName, filename) {
+    if (!await checkContainerExists(server, containerName)) {
         const err = 'Container does not exist'
         console.log(err)
         throw err
     }
     try {
-        const containerClient = blobServiceClient.getContainerClient(containerName)
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
         const blockBlobClient = containerClient.getBlockBlobClient(filename)
         const downloadResponse = await blockBlobClient.download(0)
         const downloadedData = await streamToBuffer(downloadResponse.readableStreamBody)
@@ -141,18 +145,19 @@ function streamToBuffer(readableStream) {
     });
 }
 
-async function checkContainerExists(containerName) {
-    const containerClient = blobServiceClient.getContainerClient(containerName)
+async function checkContainerExists(server, containerName) {
+    const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
     return await containerClient.exists()
 }
 
-module.exports = { 
-    createContainer, 
-    saveFileToContainer, 
+module.exports = {
+    getBlobServiceClient,
+    createContainer,
+    saveFileToContainer,
     deleteFileFromContainer,
-    createContainerWithTimestamp, 
-    checkContainerExists, 
-    saveObjectToContainer, 
+    createContainerWithTimestamp,
+    checkContainerExists,
+    saveObjectToContainer,
     checkFileExists,
     getObjectFromContainer
- }
+}
