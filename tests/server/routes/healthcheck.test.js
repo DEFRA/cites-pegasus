@@ -30,7 +30,7 @@ describe('Healthcheck Routes', () => {
             route = routes.find(controller => controller.path === '/healthcheck-basic')            
         })
         test('has a method of GET', () => {
-            expect(route.method).toEqual('GET')            
+            expect(route.method).toEqual('TESTING FAILED TEST')            
         })
         test('has no authentication', () => {
             expect(route.config.auth).toEqual(false)
