@@ -29,7 +29,7 @@ steps:
 
 - script: |
     npm install
-    npm run unit-test
+    npm run unit-test || exit 1
     npm run build
   displayName: 'npm install and build'
 
