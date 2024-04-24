@@ -31,7 +31,7 @@ steps:
     npm install
     npm run unit-test || exit 1
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'npm install, test and build'
 
 - task: SonarCloudAnalyze@1
   inputs:
