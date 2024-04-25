@@ -39,6 +39,7 @@ module.exports = {
       serviceName: 'Apply for a CITES permit',
       pageTitle: 'Apply for a CITES permit - GOV.UK',
       analyticsAccount: analyticsAccount,
+      googleTagId: config.googleTagId,
       helpBarContent: {
         helpBarQuestion: commonContent.helpBarQuestion,
         helpBarLinkText: commonContent.helpBarLinkText

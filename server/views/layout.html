@@ -5,22 +5,27 @@
 
 {% block head %}
   <!--[if !IE 8]><!-->
-    <link href="{{ assetPath }}/stylesheets/application.css" rel="stylesheet" />
-    <link href="{{ assetPath }}/stylesheets/custom.css" rel="stylesheet" />
+  <link href="{{ assetPath }}/stylesheets/application.css" rel="stylesheet"/>
+  <link href="{{ assetPath }}/stylesheets/custom.css" rel="stylesheet"/>
   <!--<![endif]-->
-
+  {% if googleTagId %}
+  <script async="async" src="https://www.googletagmanager.com/gtag/js?id={{googleTagId}}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', '{{googleTagId}}');
+  </script>
+  {% endif %}
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
   {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
-  <!--[if IE 8]>
-    <link href="{{ assetPath }}/govuk-frontend/all-ie8.css" rel="stylesheet" />
-  <![endif]-->
+  <!--[if IE 8]> <link href="{{ assetPath }}/govuk-frontend/all-ie8.css" rel="stylesheet" /> <![endif]-->
 
   {# For older browsers to allow them to recognise HTML5 elements such as `<header>` #}
-  <!--[if lt IE 9]>
-    <script src="/html5-shiv/html5shiv.js"></script>
-  <![endif]-->
+  <!--[if lt IE 9]> <script src="/html5-shiv/html5shiv.js"></script> <![endif]-->
 {% endblock %}
-
 
 {% block header %}
   {{ govukHeader({
@@ -45,7 +50,7 @@
     }    
     ]
   }) }}
-{% if phaseBannerPhase != null %} 
+  {% if phaseBannerPhase != null %}
     {{  govukPhaseBanner({
       tag: {
         text: phaseBannerPhase
@@ -53,19 +58,24 @@
       html: phaseBannerHTML,
       classes: 'govuk-width-container'
     }) }}
-{% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block pageTitle %}
   {{ pageTitle }}
 {% endblock %}
 {% block content %}
-  <script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
+  <script>
+    document.body.className += ' js-enabled' + (
+      'noModule' in HTMLScriptElement.prototype
+      ? ' govuk-frontend-supported'
+      : '');
+  </script>
   <h1 class="govuk-heading-xl">Default page template</h1>
 {% endblock %}
 {% block footer %}
-{{ helpBar(helpBarContent) }}
-{{ govukFooter({
+  {{ helpBar(helpBarContent) }}
+  {{ govukFooter({
   meta: {
     items: [
       {
@@ -93,11 +103,14 @@
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
   <script src="{{ assetPath }}/all.js"></script>
-  <script>window.GOVUKFrontend.initAll()</script>
+  <script>
+    window
+      .GOVUKFrontend
+      .initAll()
+  </script>
   {# <script type="module">
     import { initAll } from '{{ assetPath }}/all.js'
     initAll()
   </script> #}
-  {% block localJS %}
-  {% endblock %}  
+  {% block localJS %}{% endblock %}
 {% endblock %}
