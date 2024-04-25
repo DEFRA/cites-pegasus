@@ -72,6 +72,7 @@ The following environment variables must be provided, for development this can b
 | ENABLE_DELIVERY_NAME                     | Enable the delivery name field                         |    no    | false   |                                  |       |
 | ENABLE_SPECIES_NAME_TYPEAHEAD            | Enables the typeahead on the species+ search page      |    no    | false   |                                  |       |
 | MAX_NUMBER_OF_UNIQUE_IDENTIFIERS         | Set the max number of unique identification marks that can be entered|    no    | 3   |                                  |       |
+| GOOGLE_TAG_ID                            | Sets the tag ID for Google Analytics                   |    no    | null    |                                  |       |
 ## Project structure
 
 Here's the default structure for your project files.
