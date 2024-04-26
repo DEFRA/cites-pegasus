@@ -72,7 +72,7 @@ describe('Healthcheck Routes', () => {
             beforeEach(async () => {
                 keyVault.readSecret = jest.fn()
                 session.setYarValue = jest.fn()
-                blobStorageService.checkContainerExists = jest.fn()
+                blobStorageService.listContainerNames = jest.fn().mockReturnValue([])
                 dynamicsService.whoAmI = jest.fn()
                 request =  {
                     server: { mockServer: 'mock server'}
@@ -99,10 +99,10 @@ describe('Healthcheck Routes', () => {
                 expect(keyVault.readSecret.mock.calls.length).toEqual(1)
                 expect(keyVault.readSecret.mock.calls[0][0]).toEqual('REDIS-PASSWORD')
             })
-            test('calls blobStorageService.checkContainerExists', async () => {
+            test('calls blobStorageService.listContainerNames', async () => {
                 await route.handler(request, h)
-                expect(blobStorageService.checkContainerExists.mock.calls.length).toEqual(1)
-                expect(blobStorageService.checkContainerExists.mock.calls[0][0]).toBe(request.server)
+                expect(blobStorageService.listContainerNames.mock.calls.length).toEqual(1)
+                expect(blobStorageService.listContainerNames.mock.calls[0][0]).toBe(request.server)
             })
             test('calls session.setYarValue', async () => {
                 await route.handler(request, h)
@@ -126,8 +126,8 @@ describe('Healthcheck Routes', () => {
                 expect(h.response.mock.calls[0][0]).toEqual('Error calling redis session')
                 expect(code.mock.calls[0][0]).toEqual(500)
             })
-            test('returns error message for blobStorageService.checkContainerExists exception', async () => {
-                blobStorageService.checkContainerExists.mockImplementation(() => { throw new Error('BlobStorage Error') })
+            test('returns error message for blobStorageService.listContainerNames exception', async () => {
+                blobStorageService.listContainerNames.mockImplementation(() => { throw new Error('BlobStorage Error') })
                 await route.handler(request, h)
                 expect(h.response.mock.calls[0][0]).toEqual('Error calling blob storage')
                 expect(code.mock.calls[0][0]).toEqual(500)
