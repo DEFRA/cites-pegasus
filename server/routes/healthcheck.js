@@ -29,8 +29,8 @@ module.exports = [
         console.log('#### HEALTHCHECK #### - Key vault connection successful')
       }
       catch (err) {
-        console.log('#### HEALTHCHECK #### - Key vault connection error')
-        console.log(err)
+        console.error('#### HEALTHCHECK #### - Key vault connection error')
+        console.error(err)
         return h.response('Error calling key vault').code(500)
       }
       
@@ -40,19 +40,24 @@ module.exports = [
         console.log('#### HEALTHCHECK #### - Redis connection successful')
       }
       catch (err) {
-        console.log('#### HEALTHCHECK #### - Redis connection error')
-        console.log(err)
+        console.error('#### HEALTHCHECK #### - Redis connection error')
+        console.error(err)
         return h.response('Error calling redis session').code(500)
       }
       
       try {
         console.log('#### HEALTHCHECK #### - Testing storage connection...')
-        await blobStorageService.checkContainerExists(request.server, 'test')        
+        //await blobStorageService.checkContainerExists(request.server, 'test')        
+        console.log('Getting first 10 container names...')
+        const containers = await blobStorageService.listContainerNames(request.server, 10)
+        containers.forEach(container => {
+          console.log('Container name: ' + container)
+        });
         console.log('#### HEALTHCHECK #### - Storage connection successful')
       }
       catch (err) {
-        console.log('#### HEALTHCHECK #### - Storage connection error')
-        console.log(err)
+        console.error('#### HEALTHCHECK #### - Storage connection error')
+        console.error(err)
         return h.response('Error calling blob storage').code(500)
       }
       
@@ -62,8 +67,8 @@ module.exports = [
         console.log('#### HEALTHCHECK #### - Dynamics connection successful')        
       }
       catch (err) {
-        console.log('#### HEALTHCHECK #### - Dynamics connection error')
-        console.log(err)
+        console.error('#### HEALTHCHECK #### - Dynamics connection error')
+        console.error(err)
         return h.response('Error calling dynamics service').code(500)
       }
       

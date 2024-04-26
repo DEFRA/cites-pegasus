@@ -12,7 +12,7 @@ async function getBlobServiceClient(server) {
                 console.error(err)
                 throw err
             })
-    }    
+    }
 }
 
 async function createContainer(server, containerName, attemptNo = 1) {
@@ -150,6 +150,21 @@ async function checkContainerExists(server, containerName) {
     return await containerClient.exists()
 }
 
+async function listContainerNames(server, maxPageSize) {
+    const options = {
+        includeDeleted: false,
+        includeMetadata: true,
+        includeSystem: true
+        //prefix: containerNamePrefix
+    }
+    const iterator = server.app.blobServiceClient.listContainers(options).byPage({ maxPageSize })
+    let response = (await iterator.next()).value
+    if (response.containerItems) {
+        return response.containerItems.map(container => container.name)
+    }
+    return []
+}
+
 module.exports = {
     getBlobServiceClient,
     createContainer,
@@ -159,5 +174,6 @@ module.exports = {
     checkContainerExists,
     saveObjectToContainer,
     checkFileExists,
-    getObjectFromContainer
+    getObjectFromContainer,
+    listContainerNames
 }
