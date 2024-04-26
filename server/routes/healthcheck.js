@@ -24,30 +24,46 @@ module.exports = [
     handler: async (request, h) => {
 
       try {
+        console.log('#### HEALTHCHECK #### - Testing key vault connection...')
         await keyVault.readSecret('REDIS-PASSWORD')
+        console.log('#### HEALTHCHECK #### - Key vault connection successful')
       }
       catch (err) {
+        console.log('#### HEALTHCHECK #### - Key vault connection error')
+        console.log(err)
         return h.response('Error calling key vault').code(500)
       }
       
       try {
+        console.log('#### HEALTHCHECK #### - Testing redis connection...')
         session.setYarValue(request, 'test', Date.now())
+        console.log('#### HEALTHCHECK #### - Redis connection successful')
       }
       catch (err) {
+        console.log('#### HEALTHCHECK #### - Redis connection error')
+        console.log(err)
         return h.response('Error calling redis session').code(500)
       }
       
       try {
+        console.log('#### HEALTHCHECK #### - Testing storage connection...')
         await blobStorageService.checkContainerExists(request.server, 'test')        
+        console.log('#### HEALTHCHECK #### - Storage connection successful')
       }
       catch (err) {
+        console.log('#### HEALTHCHECK #### - Storage connection error')
+        console.log(err)
         return h.response('Error calling blob storage').code(500)
       }
       
       try {        
+        console.log('#### HEALTHCHECK #### - Testing dynamics connection...')
         await dynamicsService.whoAmI(request.server)
+        console.log('#### HEALTHCHECK #### - Dynamics connection successful')        
       }
       catch (err) {
+        console.log('#### HEALTHCHECK #### - Dynamics connection error')
+        console.log(err)
         return h.response('Error calling dynamics service').code(500)
       }
       
