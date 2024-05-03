@@ -42,6 +42,7 @@
     "permitTypeDescriptionArticle9Movement": "Article 9 Movement certificate",
     "permitTypeDescriptionLegalAcquisition": "Certificate of legal acquisition ",
     "statusDescriptionReceived": "Received",
+    "statusDescriptionAwaitingAdditionalPayment": "Awaiting additional payment",
     "statusDescriptionAwaitingPayment": "Awaiting payment",
     "statusDescriptionAwaitingReply": "Awaiting reply",
     "statusDescriptionInProgress": "In progress",
@@ -1467,6 +1468,7 @@
     "tableHeadScientificName": "Scientific name",
     "tableHeadInternalReference": "Internal reference",
     "notificationHeader": "The fee for this application is £##COST##",
+    "notificationHeaderAdditionalPayment": "The additional fee for this application is £##COST##",
     "notificationContent": "<a class='govuk-notification-banner__link' href='##PAYMENT_LINK##'>Pay now</a> to complete your application.",
     "pendingApplicationsBodyText": "Someone from the team will be in touch shortly if your pending application requires further attention."
   },

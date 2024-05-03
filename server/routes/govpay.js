@@ -61,8 +61,13 @@ module.exports = [
       const submission = getSubmission(request)
       let name = cidmAuth.user.firstName + ' ' + cidmAuth.user.lastName
       let email = cidmAuth.user.email
+      let amount = submission.paymentDetails.costingValue
+      
+      if(submission.paymentDetails.feePaid && submission.paymentDetails.remainingAdditionalAmount > 0) {
+        amount = submission.paymentDetails.remainingAdditionalAmount
+      }
 
-      const response = await createPayment(submission.paymentDetails.costingValue, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
+      const response = await createPayment(amount, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
 
       submission.paymentDetails = { paymentId: response.paymentId }
 
@@ -98,10 +103,12 @@ module.exports = [
       }
 
       const paymentId = submission.paymentDetails.paymentId
+      const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid
+      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0         
 
       const paymentStatus = await getFinishedPaymentStatus(paymentId)
 
-      submission.paymentDetails = { paymentStatus }
+      submission.paymentDetails.paymentStatus = paymentStatus
 
       try {
         mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
@@ -122,7 +129,8 @@ module.exports = [
         contactIdFilter = null
       }
 
-      await setSubmissionPayment(request.server, contactIdFilter, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100)      
+
+      await setSubmissionPayment(request.server, contactIdFilter, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100, isAdditionalPayment, previousAdditionalAmountPaid)      
       
       if(paymentRoute === 'new-application') {
         return h.redirect(nextPathSuccessNewApplication)

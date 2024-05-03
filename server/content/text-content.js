@@ -235,6 +235,7 @@ const schema = Joi.object().keys({
     permitTypeDescriptionLegalAcquisition: Joi.string().required(),
     statusDescriptionReceived: Joi.string().required(),
     statusDescriptionAwaitingPayment: Joi.string().required(),
+    statusDescriptionAwaitingAdditionalPayment: Joi.string().required(),
     statusDescriptionAwaitingReply: Joi.string().required(),
     statusDescriptionInProgress: Joi.string().required(),
     statusDescriptionIssued: Joi.string().required(),
@@ -1106,6 +1107,7 @@ const schema = Joi.object().keys({
     tableHeadScientificName: Joi.string().required(),
     tableHeadInternalReference: Joi.string().required(),
     notificationHeader: Joi.string().required(),
+    notificationHeaderAdditionalPayment: Joi.string().required(),
     notificationContent: Joi.string().required(),
     pendingApplicationsBodyText: Joi.string().required()
   }).required(),
