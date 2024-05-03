@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableNotKnownTradeTermCode } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { ALPHA_REGEX } = require("../lib/regex-validation")
@@ -45,11 +45,13 @@ function createModel(errors, data) {
     selected: false
   })
 
+if(enableNotKnownTradeTermCode){
   tradeTermCodes.push({
     text: pageContent.tradeTermCodeUnknown,
     value: unknownTradeTermCodeValue,
     selected: data.isTradeTermCode === false
   })  
+}
 
   tradeTermCodes.push(...data.tradeTermCodes.map(tradeTermCode => {
     return {
