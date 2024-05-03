@@ -207,6 +207,12 @@ function migrateApplicationToNewSchema(app) {
             app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
         }
     }
+
+    if (!config.enableNotKnownTradeTermCode && !app.species.tradeTermCode) {
+        app.species.tradeTermCode = null
+        app.species.isTradeTermCode = null
+        app.species.isTradeTermCodeDesc = null
+    }
 }
 
 function createApplication(request) {
