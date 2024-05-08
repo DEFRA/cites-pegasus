@@ -12,14 +12,12 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationComplete
   let pageBodyContent
-  
-  if(data.paid) {
+
+  if (data.paid) {
     pageBodyContent = pageContent.paid
-   } else {
+  } else {
     pageBodyContent = data.costingType === 'simple' ? pageContent.notPaid.simple : pageContent.notPaid.complex
-   }
-
-
+  }
 
   const panelContent = {
     titleText: pageContent.panelHeading,
@@ -54,10 +52,8 @@ module.exports = [{
     const submission = getSubmission(request) || null
 
     const pageData = {
-      submissionRef: submission.submissionRef, 
+      submissionRef: submission.submissionRef,
       costingType: submission.paymentDetails.costingType,
-      //email,
-      costingValue: submission.paymentDetails.costingValue,
       paid: submission.paymentDetails.paymentStatus?.status === 'success'
     }
 

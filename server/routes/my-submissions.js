@@ -17,7 +17,7 @@ const draftDeletePath = `${currentPath}/draft-delete`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/new`
 const invalidSubmissionPath = `${urlPrefix}/`
 const permitTypes = [pt.IMPORT, pt.EXPORT, pt.REEXPORT, pt.ARTICLE_10]
-const statuses = ['awaitingPayment', 'inProgress', 'closed']
+const statuses = ['awaitingPayment', 'awaitingAdditionalPayment', 'inProgress', 'closed']
 
 const pageSize = 15
 
@@ -31,6 +31,7 @@ function createModel(errors, data) {
   const statusTextMap = {
     received: commonContent.statusDescriptionReceived,
     awaitingPayment: commonContent.statusDescriptionAwaitingPayment,
+    awaitingAdditionalPayment: commonContent.statusDescriptionAwaitingAdditionalPayment,
     awaitingReply: commonContent.statusDescriptionAwaitingReply,
     inProgress: commonContent.statusDescriptionInProgress,
     issued: commonContent.statusDescriptionIssued,
@@ -144,6 +145,11 @@ function createModel(errors, data) {
           value: "awaitingPayment",
           text: commonContent.statusDescriptionAwaitingPayment,
           checked: isChecked(data.statuses, "awaitingPayment")
+        },
+        {
+          value: "awaitingAdditionalPayment",
+          text: commonContent.statusDescriptionAwaitingAdditionalPayment,
+          checked: isChecked(data.statuses, "awaitingAdditionalPayment")
         },
         {
           value: "closed",

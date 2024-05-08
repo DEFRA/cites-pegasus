@@ -38,7 +38,7 @@
       </p>
       {% endset %}
 
-      {% if showPayNowNotification %}
+      {% if showPayNowNotification or showAdditionalPayNowNotification %}
         {{ govukNotificationBanner({
         html: html
       }) }}

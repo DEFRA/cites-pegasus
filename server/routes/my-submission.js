@@ -48,13 +48,21 @@ function createModel(errors, data) {
   }
   const paymentLink = `${urlPrefix}/govpay/create-payment/account`  
 
-  const notificationHeader = pageContent.notificationHeader.replace('##COST##', data.cost)
-  const notificationContent = pageContent.notificationContent.replace('##PAYMENT_LINK##', paymentLink)
+  let notificationHeader = ''
+  let notificationContent = ''
+  if(data.showPayNowNotification){
+    notificationHeader = pageContent.notificationHeader.replace('##COST##', data.cost.toFixed(2))
+    notificationContent = pageContent.notificationContent.replace('##PAYMENT_LINK##', paymentLink)  
+  } else if(data.showAdditionalPayNowNotification){
+    notificationHeader = pageContent.notificationHeaderAdditionalPayment.replace('##COST##', data.remainingAdditionalAmount.toFixed(2))
+    notificationContent = pageContent.notificationContent.replace('##PAYMENT_LINK##', paymentLink)  
+  }
+
 
   const model = {
-    breadcrumbs: breadcrumbs,
-    notificationHeader: notificationHeader,
-    notificationContent: notificationContent,
+    breadcrumbs,
+    notificationHeader,
+    notificationContent,
     enableInternalReference,
     pageTitle: data.submissionRef + commonContent.pageTitleSuffix,
     pageHeader: data.submissionRef,
@@ -64,6 +72,7 @@ function createModel(errors, data) {
     pendingApplicationsBodyText: pageContent.pendingApplicationsBodyText,
     applicationsData : applicationsTableData,
     showPayNowNotification: data.showPayNowNotification,
+    showAdditionalPayNowNotification: data.showAdditionalPayNowNotification,
     inputPagination: data.totalApplications > pageSize ? paginate(data.submissionRef, data.totalApplications, data.pageNo, textPagination) : "",
     hasPendingApplications: hasPendingApplications
   }
@@ -134,10 +143,15 @@ module.exports = [
       const slicedApplications = applications.slice(startIndex, endIndex)
 
       let showPayNowNotification = false
-      
+      let showAdditionalPayNowNotification = false
       if(submission.paymentDetails.feePaid === false && submission.submissionStatus === 'awaitingPayment' && submission.paymentDetails.costingValue > 0){
            showPayNowNotification = true
       }
+
+      if(submission.submissionStatus === 'awaitingAdditionalPayment' && submission.paymentDetails.remainingAdditionalAmount > 0){
+        showAdditionalPayNowNotification = true
+      }
+      
       
       const pageData = {
         submissionRef,
@@ -147,7 +161,9 @@ module.exports = [
         endIndex,
         totalApplications: submission.applications.length,
         showPayNowNotification,
-        cost: submission.paymentDetails?.costingValue
+        showAdditionalPayNowNotification,
+        cost: submission.paymentDetails?.costingValue,
+        remainingAdditionalAmount: submission.paymentDetails?.remainingAdditionalAmount
       }
 
       setYarValue(request, 'submission', submission)

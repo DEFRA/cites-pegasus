@@ -328,43 +328,6 @@ async function getTradeTermCodes(server) {
   }
 }
 
-function getPortalApplicationStatus(dynamicsStatus) {
-  switch (dynamicsStatus) {
-    case 1: // Not evaluated
-    case 149900007: // To be evaluated
-      return 'received'
-
-    case 2: // Awaiting Payment
-      return 'awaitingPayment'
-
-    case 3: // Awaiting Reply
-      return 'awaitingReply'
-
-    case 149900000: // Referred to Kew Garden's
-    case 149900001: // Referred to JNCC
-    case 149900002: // Being Assessed
-    case 149900003: // Authorised
-    case 4: // Evaluated
-      return 'inProgress'
-
-    case 5: // Issued
-      return 'issued'
-
-    case 1000: // Refused
-      return 'refused'
-
-    case 149900005: // Closed
-    case 149900006: // Ready to print
-      return 'closed'
-
-    case 6: //Cancelled by Applicant
-      return 'cancelled'
-
-    default:
-      return ''
-  }
-}
-
 function getPortalSubmissionStatus(dynamicsStatuscode, dynamicsStatecode) {
   if (dynamicsStatecode !== 0) {
     return 'closed'
@@ -375,53 +338,11 @@ function getPortalSubmissionStatus(dynamicsStatuscode, dynamicsStatecode) {
       return 'awaitingPayment'
     case 149900002:
       return 'inProgress'
-
+    case 149900003:
+      return 'awaitingAdditionalPayment'
     default:
       return ''
   }
-}
-
-function getDynamicsApplicationStatuses(portalStatuses) {
-  const statuses = [];
-
-  if (portalStatuses.includes('received')) {
-    statuses.push(1)
-    statuses.push(149900007)
-  }
-
-  if (portalStatuses.includes('awaitingPayment')) {
-    statuses.push(2)
-  }
-
-  if (portalStatuses.includes('awaitingReply')) {
-    statuses.push(3)
-  }
-
-  if (portalStatuses.includes('inProgress') || portalStatuses.includes('inProcess')) {
-    statuses.push(149900000)
-    statuses.push(149900001)
-    statuses.push(149900002)
-    statuses.push(149900003)
-    statuses.push(4)
-  }
-
-  if (portalStatuses.includes('issued')) {
-    statuses.push(5)
-  }
-
-  if (portalStatuses.includes('refused')) {
-    statuses.push(1000)
-  }
-
-  if (portalStatuses.includes('closed')) {
-    statuses.push(149900005)
-    statuses.push(149900006)
-  }
-
-  if (portalStatuses.includes('cancelled')) {
-    statuses.push(6)
-  }
-  return statuses
 }
 
 function getDynamicsSubmissionStatuses(portalStatuses) {
@@ -429,6 +350,10 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
 
   if (portalStatuses.includes('awaitingPayment')) {
     statuses.push(1)
+  }
+
+  if (portalStatuses.includes('awaitingAdditionalPayment')) {
+    statuses.push(149900003)
   }
   
   if (portalStatuses.includes('inProgress')) {
@@ -577,7 +502,7 @@ function updateSubmissionSchema(jsonContent) {
 
 async function getSubmission(server, contactId, organisationId, submissionRef) {
   const top = "$top=1"
-  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,statuscode,statecode"
+  const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,cites_remainingadditionalamount,cites_additionalamountpaid,statuscode,statecode"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
   const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
       
@@ -623,7 +548,9 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
       jsonContent.paymentDetails = {
         costingType: getPaymentCalculationType(submission.cites_paymentcalculationtype),
         costingValue: submission.cites_totalfeecalculation,
-        feePaid: submission.cites_feehasbeenpaid
+        feePaid: submission.cites_feehasbeenpaid,
+        remainingAdditionalAmount: submission.cites_remainingadditionalamount,
+        additionalAmountPaid: submission.cites_additionalamountpaid
       }
 
       jsonContent.applications.forEach(jsonApplication => {
@@ -701,7 +628,7 @@ function getDynamicsSubmissionStatus(portalStatus){
   return results[0]
 }
 
-async function setSubmissionPayment(server, contactId, organisationId, submissionId, paymentRef, paymentValue) {
+async function setSubmissionPayment(server, contactId, organisationId, submissionId, paymentRef, paymentValue, isAdditionalPayment, previousAdditionalAmountPaid) {
   const accessToken = await getAccessToken(server)
   await validateSubmission(accessToken, contactId, organisationId, null, submissionId)//Not necessary as we are using submissionId which is server side
 
@@ -710,10 +637,18 @@ async function setSubmissionPayment(server, contactId, organisationId, submissio
     const url = `${apiUrl}cites_submissions(${submissionId})`
 
     const requestPayload = {
-      cites_paymentmethod: 149900000, // Gov Pay
-      cites_paymentreference: paymentRef,
-      cites_totalfeeamount: paymentValue,
-      statuscode: getDynamicsSubmissionStatus('inProgress')
+      statuscode: 149900002
+    }
+
+    if(isAdditionalPayment) {
+      requestPayload.cites_additionalpaymentmethod = 149900000, // Gov Pay
+      requestPayload.cites_additionalpaymentreference = paymentRef,
+      requestPayload.cites_additionalamountpaid = paymentValue + previousAdditionalAmountPaid
+      //requestPayload.cites_additionalammounttobepaid = paymentValue + previousAdditionalAmountPaid
+    } else {
+      requestPayload.cites_paymentmethod = 149900000, // Gov Pay
+      requestPayload.cites_paymentreference = paymentRef,
+      requestPayload.cites_totalfeeamount = paymentValue      
     }
 
     const options = {
