@@ -38,7 +38,9 @@
         }) %}
 
         <p>{{ pageBody | safe }}</p>
+        {% if enableNotKnownTradeTermCode %}
         <p>{{ pageBody2 | safe }}</p>
+        {% endif %}
         {{ govukSelect(selectTradeTermCode) }}
 
         {{ govukButton({
