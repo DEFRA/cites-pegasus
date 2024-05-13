@@ -395,9 +395,9 @@ function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly)
     }
 
     if (allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData.importerDetails)) {
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextCountry, data.a10ExportData.importerDetails?.countryDesc, "/importerDetails", "importer country"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextFullName, data.a10ExportData.importerDetails?.name, "/importerDetails", "importer name"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextAddress, addressDataValue, "/importerExporterDetails", "importer contact details"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData.importerDetails?.countryDesc, "/importerDetails", "importer country"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData.importerDetails?.name, "/importerDetails", "importer name"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, "/importerExporterDetails", "importer contact details"))
     }
   }
   return {

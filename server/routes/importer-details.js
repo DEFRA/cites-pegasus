@@ -42,6 +42,9 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     heading: pageContent.heading,
     headingAddress: pageContent.headingAddress,
+    insetText: { 
+      text: pageContent.insetText
+    },
     selectCountry: {
       label: {
         text: pageContent.inputLabelCountry
@@ -155,7 +158,7 @@ module.exports = [
         countries: request.server.app.countries,
       }
 
-      return h.view('importer-exporter', createModel(null, pageData))//This view is shared with the importer-exporter page
+      return h.view(pageId, createModel(null, pageData))//This view is shared with the importer-exporter page
 
     }
   },
@@ -186,7 +189,7 @@ module.exports = [
             ...request.payload,
             countries: request.server.app.countries,
           }
-          return h.view('importer-exporter', createModel(err, pageData)).takeover()//This view is shared with the importer-exporter page
+          return h.view(pageId, createModel(err, pageData)).takeover()//This view is shared with the importer-exporter page
         }
       },
       handler: async (request, h) => {
