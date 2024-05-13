@@ -68,6 +68,12 @@
           {{ govukSummaryList (summaryListRemarks) }}
         {% endif %}
 
+        {% if showA10ExportDetails %}
+          <h2 class="govuk-heading-m">{{headerA10ExportDetails}}</h2>
+          {{ govukSummaryList (summaryListA10ExportData) }}
+        {% endif %}
+        
+
         {% if showConfirmButton %}
           {{ govukButton({
               text: buttonText,

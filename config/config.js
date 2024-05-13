@@ -31,6 +31,7 @@ const schema = Joi.object().keys({
   enableDeliveryName: Joi.boolean(),
   enableSpeciesNameTypeahead: Joi.boolean(),
   enableNotKnownTradeTermCode: Joi.boolean(),
+  enableGenerateExportPermitsFromA10s: Joi.boolean(),
   maxNumberOfUniqueIdentifiers: Joi.number().min(1),
   cookieOptions: Joi.object({
     ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
@@ -76,6 +77,7 @@ const config = {
   enableBreederPage: process.env.ENABLE_BREEDER_PAGE || false,
   enableDeliveryName: process.env.ENABLE_DELIVERY_NAME || false,
   enableSpeciesNameTypeahead: process.env.ENABLE_SPECIES_NAME_TYPEAHEAD || false,
+  enableGenerateExportPermitsFromA10s: process.env.ENABLE_GENERATE_EXPORT_PERMITS_FROM_A10S || false,
   maxNumberOfUniqueIdentifiers: process.env.MAX_NUMBER_OF_UNIQUE_IDENTIFIERS || 3,
   enableNotKnownTradeTermCode: process.env.ENABLE_NOT_KNOWN_TRADE_TERM_CODE || false,
   cookieOptions: {

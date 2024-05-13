@@ -30,7 +30,9 @@ const changeTypes = [
     'uniqueIdentificationMark',
     'everImportedExported',
     'specimenOrigin',
-    'breeder']
+    'breeder',
+    'addExportPermit',
+    'importerDetails']
 
 const applicationSummaryCheckUrl = `${urlPrefix}/application-summary/check`
 
@@ -142,6 +144,13 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
             break
         case "additionalInfo":
             startUrls.push({ url: `${urlPrefix}/additional-info/${applicationIndex}` })
+            break
+        case "addExportPermit":
+            startUrls.push({ url: `${urlPrefix}/add-export-permit/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/importer-details/${applicationIndex}` })
+            break
+        case "importerDetails":
+            startUrls.push({ url: `${urlPrefix}/importer-details/${applicationIndex}` })
             break
         default:
             throw new Error(`Invalid change type: ${changeType}`)

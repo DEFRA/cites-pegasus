@@ -530,6 +530,8 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
+            submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportPermitRequired', application.a10ExportData?.isExportPermitRequired))) //TODO Add the relevant route restriction to these
+            submissionProgress.push(getPageProgess(`importer-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterDetails(application.a10ExportData)))//TODO Add the relevant route restriction to these
 
             if (config.enableBreederPage && application.species.specimenType === 'animalLiving') {
                 submissionProgress.push(getPageProgess(`breeder/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isBreeder', application.isBreeder)))
@@ -773,6 +775,46 @@ function getPageDataImporterExporter(importerExporterDetails) {
             fieldId: 'importerExporter-postcode',
             isMandatory: false,
             hasData: Boolean(importerExporterDetails?.postcode)
+        },
+    ]
+}
+
+function getPageDataImporterDetails(a10ExportData) {
+    return [
+        {
+            fieldId: 'importerDetails-country',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.country)
+        },
+        {
+            fieldId: 'importerDetails-name',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.name)
+        },
+        {
+            fieldId: 'importerDetails-addressLine1',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine1)
+        },
+        {
+            fieldId: 'importerDetails-addressLine2',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine2)
+        },
+        {
+            fieldId: 'importerDetails-addressLine3',
+            isMandatory: false,
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine3)
+        },
+        {
+            fieldId: 'importerDetails-addressLine4',
+            isMandatory: false,
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine4)
+        },
+        {
+            fieldId: 'importerDetails-postcode',
+            isMandatory: false,
+            hasData: Boolean(a10ExportData?.importerDetails?.postcode)
         },
     ]
 }

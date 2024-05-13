@@ -767,7 +767,7 @@
       "error.acquiredDate.any.both": "Enter a date, or enter an approximate date",
       "error.approximateDate.string.empty": "Enter an approximate date or period of time",
       "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
-    }  
+    }
   },
   "hasUniqueIdentificationMark": {
     "defaultTitle": "Does the specimen have any unique identification marks?",
@@ -894,6 +894,33 @@
       "errorMessages": {
         "error.name.string.empty": "Enter the exporter’s full name"
       }
+    }
+  },
+  "importerDetails": {
+    "defaultTitle": "Importer’s details ",
+    "pageHeader": "Importer’s details",
+    "heading": "Country of import",
+    "inputLabelCountry": "Country",
+    "headingAddress": "Address",
+    "inputLabelFullName": "Full name",
+    "inputLabelAddressLine1": "Address line 1",
+    "inputLabelAddressLine2": "Address line 2",
+    "inputLabelAddressLine3": "Address line 3 (optional)",
+    "inputLabelAddressLine4": "Address line 4 (optional)",
+    "inputLabelPostcode": "Postal or zip code (if your country has one)",
+    "errorMessages": {
+      "error.name.string.max": "Full name must be 150 characters or less",
+      "error.name.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
+      "error.name.string.empty": "Enter the importer’s full name",
+      "error.addressLine1.string.empty": "Enter the address line 1",
+      "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+      "error.addressLine2.string.empty": "Enter the address line 2",
+      "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+      "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+      "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+      "error.postcode.string.max": "Postal or zip code must be 50 characters or less",
+      "error.country.string.empty": "Select a country",
+      "error.country.string.max": "Country must be 150 characters or less"
     }
   },
   "alreadyHaveA10": {
@@ -1128,6 +1155,13 @@
       "error.internalReference.string.pattern.base": "Internal reference must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
     }
   },
+  "addExportPermit": {
+    "defaultTitle": "Are you intending to export this specimen on this application?",
+    "pageHeader": "Are you intending to export this specimen on this application?",
+    "errorMessages": {
+      "error.isExportPermitRequired.any.required": "Select yes if you want to add an export permit"
+    }
+  },
   "applicationSummary": {
     "defaultTitleCheck": "Check and confirm application details",
     "pageHeaderCheck": "Check and confirm application details",
@@ -1146,6 +1180,7 @@
     "headerExporterContactDetails": "Exporter’s contact details",
     "headerReexporterContactDetails": "Reexporter’s contact details",
     "headerArticle10ContactDetails": "Applicant's contact details",
+    "headerA10ExportDetails": "Details for your Export permit",
     "hintIncomplete": "You must answer any question marked 'Incomplete' before submitting your application.",
     "errorSummaryTitle": "Answer the questions marked 'Incomplete' before submitting your application",
     "rowTextFullName": "Full name",
@@ -1243,6 +1278,7 @@
     "rowTextSameAsCountryOfOrigin": "Same as country of origin",
     "rowTextShowHide": "Show/Hide",
     "rowTextOtherSourceCode": "Other source code",
+    "rowTextIsExportPermitRequired": "Is Export Permit Required",
     "returnToYourApplicationsLinkText": "Return to your applications",
     "areYouSure": {
       "permitType": {
