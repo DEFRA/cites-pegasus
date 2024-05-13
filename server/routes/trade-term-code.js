@@ -75,6 +75,7 @@ if(enableNotKnownTradeTermCode){
 
   const model = {
     backLink: backLink,
+    enableNotKnownTradeTermCode,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
