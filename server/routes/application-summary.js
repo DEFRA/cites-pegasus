@@ -9,9 +9,12 @@ const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = re
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const { config } = require("dotenv")
+const permitDetails = require("./permit-details")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
+const previousPathAddExportPermit = `${urlPrefix}/add-export-permit`
+const previousPathImporterDetails = `${urlPrefix}/importer-details`
 const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
@@ -52,9 +55,19 @@ function createApplicationSummaryModel(errors, data) {
 
   let backLink = null
 
+  let endOfApplicationPage =`${previousPathAdditionalInfo}/${data.applicationIndex}`
+  
+  if(data.permitType === pt.ARTICLE_10) {
+    if (data.a10ExportData?.isExportPermitRequired) {
+      endOfApplicationPage = `${previousPathImporterDetails}/${data.applicationIndex}`
+    } else {
+      endOfApplicationPage = `${previousPathAddExportPermit}/${data.applicationIndex}`
+    }
+  }
+
   switch (summaryType) {
     case 'check':
-      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
+      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
       break
     case 'view-submitted':
     case 'copy-as-new':

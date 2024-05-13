@@ -190,7 +190,7 @@ function migrateApplicationToNewSchema(app) {
                 index: 0,
                 uniqueIdentificationMark: app.species.uniqueIdentificationMark,
                 uniqueIdentificationMarkType: app.species.uniqueIdentificationMarkType
-            }]                   
+            }]
         }
         delete app.species.uniqueIdentificationMark
         delete app.species.uniqueIdentificationMarkType
@@ -530,9 +530,6 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
-            submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportPermitRequired', application.a10ExportData?.isExportPermitRequired))) //TODO Add the relevant route restriction to these
-            submissionProgress.push(getPageProgess(`importer-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterDetails(application.a10ExportData)))//TODO Add the relevant route restriction to these
-
             if (config.enableBreederPage && application.species.specimenType === 'animalLiving') {
                 submissionProgress.push(getPageProgess(`breeder/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isBreeder', application.isBreeder)))
 
@@ -582,6 +579,20 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
+
+        if (submission.permitType === pt.ARTICLE_10) {
+            submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportPermitRequired', application.a10ExportData?.isExportPermitRequired))) 
+            if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean"){
+                return { submissionProgress, applicationStatuses }
+            }
+            if (application.a10ExportData?.isExportPermitRequired) {
+                submissionProgress.push(getPageProgess(`importer-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterDetails(application.a10ExportData)))
+                if (!application.a10ExportData?.importerDetails?.country) {
+                    return { submissionProgress, applicationStatuses }
+                }
+            }
+        }
+
         submissionProgress.push(getPageProgess(`application-summary/view/${applicationIndex}`, applicationIndex))
 
         completeApplications++

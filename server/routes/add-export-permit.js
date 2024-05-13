@@ -25,27 +25,29 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix
       : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-
+    pageHeader: pageContent.pageHeader,
+    pageBody1: pageContent.pageBody1,
+    pageBody2: pageContent.pageBody2,
     inputIsExportPermitRequired: {
       idPrefix: "isExportPermitRequired",
       name: "isExportPermitRequired",
       classes: "govuk-radios--inline",
       fieldset: {
         legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          text: pageContent.inputIsExportPermitRequiredHeading,
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--m"
         }
       },
       items: [
         {
           value: true,
-          text: commonContent.radioOptionYes,
+          text: pageContent.inputIsExportPermitRequiredYes,
           checked: data.isExportPermitRequired
         },
         {
           value: false,
-          text: commonContent.radioOptionNo,
+          text: pageContent.inputIsExportPermitRequiredNo,
           checked: data.isExportPermitRequired === false
         }
       ],
@@ -141,7 +143,7 @@ module.exports = [
         }
 
         try {
-          setSubmission(request, submission, `${pageId}/${applicationIndex}`)          
+          setSubmission(request, submission, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
