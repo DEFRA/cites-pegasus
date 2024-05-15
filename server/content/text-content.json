@@ -1474,6 +1474,7 @@
   "mySubmissions": {
     "draftNotificationTitle": "Reminder",
     "draftNotificationHeader": "You have a saved application.",
+    "draftNotificationHeaderExportSubmission": "Complete your matching export application.",
     "draftNotificationBody": "You will not be able to start another application while this application is still being worked on",
     "draftContinue": "Continue the application",
     "draftDelete": "Delete this application",
@@ -1546,6 +1547,8 @@
     "panelHeading": "Application complete",
     "panelText": "Reference number",
     "pageHeader": "What happens next",
+    "buttonGoToExportSubmission": "Go to export application",
+    "exportSubmissionBody1": "You can now complete your matching export application.",
     "paid": {
       "pageBody1": "We have received your application fee and have sent you a confirmation email.",
       "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",

@@ -1107,6 +1107,7 @@ const schema = Joi.object().keys({
   mySubmissions: Joi.object({
     draftNotificationTitle: Joi.string().required(),
     draftNotificationHeader: Joi.string().required(),
+    draftNotificationHeaderExportSubmission: Joi.string().required(),
     draftNotificationBody: Joi.string().required(),
     draftContinue: Joi.string().required(),
     draftDelete: Joi.string().required(),
@@ -1161,6 +1162,8 @@ const schema = Joi.object().keys({
     panelHeading: Joi.string().required(),
     panelText: Joi.string().required(),
     pageHeader: Joi.string().required(),
+    buttonGoToExportSubmission: Joi.string().required(),
+    exportSubmissionBody1: Joi.string().required(),
     paid: Joi.object({
       pageBody1: Joi.string().required(),
       pageBody2: Joi.string().required(),

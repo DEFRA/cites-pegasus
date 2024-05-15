@@ -84,6 +84,26 @@ async function checkDraftSubmissionExists(request) {
     return await checkFileExists(request.server, containerName, submissionFileName)
 }
 
+async function getDraftSubmissionDetails(request) {
+    if (!config.enableDraftSubmission) {
+        return false
+    }
+
+    const draftSubmissionDetail = { draftExists: false }
+    const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
+    draftSubmissionDetail.draftExists = await checkFileExists(request.server, containerName, submissionFileName)
+
+    if (draftSubmissionDetail.draftExists){
+        const draftSubmission = await getObjectFromContainer(request.server, containerName, submissionFileName)
+        if (draftSubmission.a10SourceSubmissionRef) {
+            draftSubmissionDetail.a10SourceSubmissionRef = draftSubmission.a10SourceSubmissionRef
+        }
+    }
+
+    return draftSubmissionDetail
+}
+
 async function saveDraftSubmission(request, savePointUrl) {
     if (!config.enableDraftSubmission) {
         return
@@ -1035,6 +1055,7 @@ module.exports = {
     saveDraftSubmission,
     saveGeneratedDraftSubmission,
     checkDraftSubmissionExists,
+    getDraftSubmissionDetails,
     deleteDraftSubmission,
     loadDraftSubmission,
     moveApplicationToEndOfList,
