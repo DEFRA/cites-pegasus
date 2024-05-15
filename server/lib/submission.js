@@ -2,6 +2,7 @@ const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, permitSubType: pst, permitType } = require('../lib/permit-type-helper')
+const { deleteIfExists } = require("../lib/helper-functions")
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -100,6 +101,22 @@ async function saveDraftSubmission(request, savePointUrl) {
     await saveObjectToContainer(request.server, containerName, submissionFileName, submission)
 }
 
+async function saveGeneratedDraftSubmission(request, savePointUrl, submission) {
+    if (!config.enableDraftSubmission) {
+        return
+    }
+
+    submission.savePointUrl = savePointUrl
+    submission.savePointDate = new Date()
+    const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
+    const containerExists = await checkContainerExists(request.server, containerName)
+    if (!containerExists) {
+        await createContainer(request.server, containerName)
+    }
+    await saveObjectToContainer(request.server, containerName, submissionFileName, submission)
+}
+
 async function loadDraftSubmission(request) {
     try {
         const containerName = getContainerName(request)
@@ -121,6 +138,46 @@ async function deleteDraftSubmission(request) {
     const containerName = getContainerName(request)
     const submissionFileName = getSubmissionFileName(request)
     await deleteFileFromContainer(request.server, containerName, submissionFileName)
+}
+
+function generateExportSubmissionFromA10(submission, submissionRef) {
+    const exportSubmission = {
+        a10SourceSubmissionRef: submissionRef,
+        permitType: pt.EXPORT,
+        permitTypeOption: pto.EXPORT,
+        contactId: submission.contactId,
+        organisationId: submission.organisationId,
+        applications: [],
+        isAgent: submission.isAgent,
+        applicant: submission.applicant,
+        delivery: submission.delivery
+    }
+    submission.applications.forEach(a10App => { 
+        if(a10App.a10ExportData.isExportPermitRequired){
+            exportSubmission.applications.push(generateExportApplicationFromA10(a10App))
+        }
+    })
+    return exportSubmission
+}
+
+function generateExportApplicationFromA10(a10App) {
+    const exportApp = lodash.cloneDeep(a10App)
+    exportApp.species.purposeCode = exportApp.a10ExportData.purposeCode
+    exportApp.importerExporterDetails = exportApp.a10ExportData.importerDetails
+    exportApp.a10SourceApplicationIndex = exportApp.applicationIndex
+
+    deleteIfExists(exportApp, 'a10ExportData')
+    deleteIfExists(exportApp, 'permitDetails')
+    deleteIfExists(exportApp, 'permitSubType')
+    deleteIfExists(exportApp.species, 'specimenOrigin')
+    deleteIfExists(exportApp.species, 'useCertificateFor')
+    deleteIfExists(exportApp.species, 'isA10CertificateNumberKnown')
+    deleteIfExists(exportApp.species, 'a10CertificateNumber')
+    deleteIfExists(exportApp.species, 'isEverImportedExported')
+    deleteIfExists(exportApp.species, 'acquiredDate')
+    deleteIfExists(exportApp, 'isBreeder')
+
+    return exportApp
 }
 
 function cloneSubmission(request, applicationIndex) {
@@ -976,11 +1033,13 @@ module.exports = {
     getCompletedApplications,
     getApplicationIndex,
     saveDraftSubmission,
+    saveGeneratedDraftSubmission,
     checkDraftSubmissionExists,
     deleteDraftSubmission,
     loadDraftSubmission,
     moveApplicationToEndOfList,
     reIndexApplications,
-    allowPageNavigation
+    allowPageNavigation,
+    generateExportSubmissionFromA10
 }
 

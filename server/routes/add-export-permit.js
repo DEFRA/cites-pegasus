@@ -131,7 +131,7 @@ module.exports = [
         const submission = getSubmission(request)
         const application = submission.applications[applicationIndex]
 
-        const isChange = typeof application.a10ExportData?.isExportPermitRequired === 'boolean' && application.a10ExportData?.isExportPermitRequired !== request.payload.isExportPermitRequired //TODO TEST THIS
+        const isChange = typeof application.a10ExportData?.isExportPermitRequired === 'boolean' && application.a10ExportData?.isExportPermitRequired !== request.payload.isExportPermitRequired
 
         if (!application.hasOwnProperty('a10ExportData')) {
           application.a10ExportData = { purposeCode: 'T' }
