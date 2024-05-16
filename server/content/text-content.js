@@ -190,6 +190,18 @@ const yourSubmissionSchema = Joi.object({
   removeAriaLabel: Joi.string().required()
 }).required()
 
+const applicationCompleteBodySchema = Joi.object({
+  pageBody1: Joi.string().required(),
+  pageBodyWarning1: Joi.string().allow("", null),
+  pageBody2: Joi.string().allow("", null),
+  pageBodyWarning2: Joi.string().allow("", null),
+  pageBody3: Joi.string().allow("", null),
+  pageBody4: Joi.string().allow("", null),
+  pageBody5: Joi.string().allow("", null),
+  pageBody6: Joi.string().allow("", null),
+  pageHeader2: Joi.string().allow("", null)
+}).required()
+
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
@@ -1163,28 +1175,21 @@ const schema = Joi.object().keys({
     panelText: Joi.string().required(),
     pageHeader: Joi.string().required(),
     buttonGoToExportSubmission: Joi.string().required(),
-    exportSubmissionBody1: Joi.string().required(),
-    paid: Joi.object({
-      pageBody1: Joi.string().required(),
-      pageBody2: Joi.string().required(),
-      pageBody3: Joi.string().required()
+    buttonGoToMyAccount: Joi.string().required(),
+    noExportSubmission: Joi.object({
+      paid: applicationCompleteBodySchema,
+      notPaid: Joi.object({
+        simple: applicationCompleteBodySchema,
+        complex: applicationCompleteBodySchema
+      }).required()
     }).required(),
-    notPaid: Joi.object({
-      simple: Joi.object({
-        pageBody1: Joi.string().required(),
-        pageBodyWarning: Joi.string().allow("", null),
-        pageBody2: Joi.string().allow("", null),
-        pageBody3: Joi.string().allow("", null),
-        pageBody4: Joi.string().allow("", null)
-      }).required(),
-      complex: Joi.object({
-        pageBody1: Joi.string().required(),
-        pageBodyWarning: Joi.string().allow("", null),
-        pageBody2: Joi.string().allow("", null),
-        pageBody3: Joi.string().allow("", null),
-        pageBody4: Joi.string().allow("", null)
-      }).required(),
-    }).required()
+    exportSubmission: Joi.object({
+      paid: applicationCompleteBodySchema,
+      notPaid: Joi.object({
+        simple: applicationCompleteBodySchema,
+        complex: applicationCompleteBodySchema,
+      }).required()
+    }).required(),
   }).required(),
   paymentProblem: Joi.object({
     defaultTitle: Joi.string().required(),

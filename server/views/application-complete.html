@@ -17,16 +17,25 @@
         <h2 class="govuk-heading-m">{{pageHeader}}</h2>
 
         <p>{{pageBody1 | safe}}</p>
-        {% if pageBodyWarning %}
+        {% if pageBodyWarning1 %}
           {{ govukWarningText({
-          text: pageBodyWarning,
+          text: pageBodyWarning1,
           iconFallbackText: "Warning"
         }) }}
         {% endif %}
         <p>{{pageBody2 | safe}}</p>
+        {% if pageBodyWarning2 %}
+          {{ govukWarningText({
+          text: pageBodyWarning2,
+          iconFallbackText: "Warning"
+        }) }}
+        {% endif %}
         <p>{{pageBody3 | safe}}</p>
         <p>{{pageBody4 | safe}}</p>
-
+        {% if pageHeader2 %}
+          <h2 class="govuk-heading-m">{{pageHeader2}}</h2>
+        {% endif %}
+        <p>{{pageBody5 | safe}}</p>
         {% if isExportSubmissionWaiting %}
           {{ govukButton({
                     text: buttonGoToExportSubmission,
@@ -37,13 +46,14 @@
                 }) }}
         {% else %}
           {{ govukButton({
-                    text: finishButton,
+                    text: buttonGoToMyAccount,
                     type: "submit",
                     attributes: {        
-                      formAction: formActionFinish
+                      formAction: formActionGoToAccount
                     }
                 }) }}
         {% endif %}
+        <p>{{pageBody6 | safe}}</p>
       </form>
     </div>
   </div>
