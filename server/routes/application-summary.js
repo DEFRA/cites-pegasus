@@ -9,9 +9,12 @@ const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = re
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const { config } = require("dotenv")
+const permitDetails = require("./permit-details")
 const pageId = "application-summary"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
+const previousPathAddExportPermit = `${urlPrefix}/add-export-permit`
+const previousPathImporterDetails = `${urlPrefix}/importer-details`
 const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 const previousPathMySubmission = `${urlPrefix}/my-submission`
 const nextPathYourSubmission = `${urlPrefix}/your-submission`
@@ -46,14 +49,25 @@ function createApplicationSummaryModel(errors, data) {
   summaryListSections.push(getSummaryListRemarks(summaryData, pageContent, data, isReadOnly))
   summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly))
   summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly))
+  summaryListSections.push(getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly))
 
   const breadcrumbs = getBreadcrumbs(pageContent, data, summaryType)
 
   let backLink = null
 
+  let endOfApplicationPage =`${previousPathAdditionalInfo}/${data.applicationIndex}`
+  
+  if(data.permitType === pt.ARTICLE_10) {
+    if (data.a10ExportData?.isExportPermitRequired) {
+      endOfApplicationPage = `${previousPathImporterDetails}/${data.applicationIndex}`
+    } else {
+      endOfApplicationPage = `${previousPathAddExportPermit}/${data.applicationIndex}`
+    }
+  }
+
   switch (summaryType) {
     case 'check':
-      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : `${previousPathAdditionalInfo}/${data.applicationIndex}`
+      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
       break
     case 'view-submitted':
     case 'copy-as-new':
@@ -100,9 +114,11 @@ function createApplicationSummaryModel(errors, data) {
     headerDeliveryAddress: pageContent.headerDeliveryAddress,
     headerSpecimenDetails: pageContent.headerSpecimenDetails,
     headingImporterExporterDetails: appContent.headingImporterExporterDetails,
+    headerA10ExportDetails: pageContent.headerA10ExportDetails,
     showImporterExporterDetails: summaryListSectionsObject.summaryListImporterExporterDetails.rows?.length > 0,
     showPermitDetails: summaryListSectionsObject.summaryListExportOrReexportPermitDetails.rows?.length > 0 || summaryListSectionsObject.summaryListCountryOfOriginPermitDetails.rows?.length > 0,
     showAdditionalInfo: summaryListSectionsObject.summaryListRemarks.rows?.length > 0,
+    showA10ExportDetails: summaryListSectionsObject.summaryListA10ExportData.rows?.length > 0,
     headingPermitDetails: appContent.headingPermitDetails,
     headerCountryOfOriginPermitDetails: pageContent.headerCountryOfOriginPermitDetails,
     headerAdditionalInformation: pageContent.headerAdditionalInformation,
@@ -349,6 +365,48 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
       name: "specimenDetails",
       classes: "govuk-!-margin-bottom-9",
       rows: summaryListSpecimenDetailsRows
+    }
+  }
+}
+function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly) {
+  const summaryListA10ExportDataRows = []
+
+  if (data.a10ExportData) {
+    const addressDataItems = [
+      data.a10ExportData.importerDetails?.addressLine1,
+      data.a10ExportData.importerDetails?.addressLine2,
+      data.a10ExportData.importerDetails?.addressLine3,
+      data.a10ExportData.importerDetails?.addressLine4,
+      data.a10ExportData.importerDetails?.postcode
+    ].filter(Boolean)
+
+    const addressDataValue = addressDataItems.join(', ')
+    
+    let textDescription = ""
+    if (typeof data.a10ExportData.isExportPermitRequired === 'boolean') {
+      if (data.a10ExportData.isExportPermitRequired) {
+        textDescription = commonContent.radioOptionYes
+      } else {
+        textDescription = commonContent.radioOptionNo
+      }
+    }
+    if (allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)) {
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, "/addExportPermit", "is export permit required"))      
+    }
+
+    if (allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData.importerDetails)) {
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData.importerDetails?.countryDesc, "/importerDetails", "importer country"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData.importerDetails?.name, "/importerDetails", "importer name"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, "/importerExporterDetails", "importer contact details"))
+    }
+  }
+  return {
+    key: 'summaryListA10ExportData',
+    value: {
+      id: "importerDetail",
+      name: "importerDetail",
+      classes: "govuk-!-margin-bottom-9",
+      rows: summaryListA10ExportDataRows
     }
   }
 }
@@ -893,6 +951,7 @@ function postFailAction(request, h, err) {
     comments: submission.applications[applicationIndex].comments,
     isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId,
     isBreeder: submission.applications[applicationIndex].isBreeder,
+    a10ExportData: submission.applications[applicationIndex].a10ExportData,
     submissionProgress
   }
 
@@ -969,6 +1028,7 @@ module.exports = [
         internalReference: submission.applications[applicationIndex].internalReference,
         isCurrentUsersApplication: submission.contactId === request.auth.credentials.contactId,
         isBreeder: submission.applications[applicationIndex].isBreeder,
+        a10ExportData: submission.applications[applicationIndex].a10ExportData,
         mandatoryFieldIssues,
         submissionProgress
       }

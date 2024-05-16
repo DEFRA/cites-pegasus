@@ -2,6 +2,7 @@ const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, permitSubType: pst, permitType } = require('../lib/permit-type-helper')
+const { deleteIfExists } = require("../lib/helper-functions")
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -83,12 +84,48 @@ async function checkDraftSubmissionExists(request) {
     return await checkFileExists(request.server, containerName, submissionFileName)
 }
 
+async function getDraftSubmissionDetails(request) {
+    if (!config.enableDraftSubmission) {
+        return false
+    }
+
+    const draftSubmissionDetail = { draftExists: false }
+    const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
+    draftSubmissionDetail.draftExists = await checkFileExists(request.server, containerName, submissionFileName)
+
+    if (draftSubmissionDetail.draftExists){
+        const draftSubmission = await getObjectFromContainer(request.server, containerName, submissionFileName)
+        if (draftSubmission.a10SourceSubmissionRef) {
+            draftSubmissionDetail.a10SourceSubmissionRef = draftSubmission.a10SourceSubmissionRef
+        }
+    }
+
+    return draftSubmissionDetail
+}
+
 async function saveDraftSubmission(request, savePointUrl) {
     if (!config.enableDraftSubmission) {
         return
     }
 
     const submission = getSubmission(request)
+    submission.savePointUrl = savePointUrl
+    submission.savePointDate = new Date()
+    const containerName = getContainerName(request)
+    const submissionFileName = getSubmissionFileName(request)
+    const containerExists = await checkContainerExists(request.server, containerName)
+    if (!containerExists) {
+        await createContainer(request.server, containerName)
+    }
+    await saveObjectToContainer(request.server, containerName, submissionFileName, submission)
+}
+
+async function saveGeneratedDraftSubmission(request, savePointUrl, submission) {
+    if (!config.enableDraftSubmission) {
+        return
+    }
+
     submission.savePointUrl = savePointUrl
     submission.savePointDate = new Date()
     const containerName = getContainerName(request)
@@ -121,6 +158,46 @@ async function deleteDraftSubmission(request) {
     const containerName = getContainerName(request)
     const submissionFileName = getSubmissionFileName(request)
     await deleteFileFromContainer(request.server, containerName, submissionFileName)
+}
+
+function generateExportSubmissionFromA10(submission, submissionRef) {
+    const exportSubmission = {
+        a10SourceSubmissionRef: submissionRef,
+        permitType: pt.EXPORT,
+        permitTypeOption: pto.EXPORT,
+        contactId: submission.contactId,
+        organisationId: submission.organisationId,
+        applications: [],
+        isAgent: submission.isAgent,
+        applicant: submission.applicant,
+        delivery: submission.delivery
+    }
+    submission.applications.forEach(a10App => { 
+        if(a10App.a10ExportData.isExportPermitRequired){
+            exportSubmission.applications.push(generateExportApplicationFromA10(a10App))
+        }
+    })
+    return exportSubmission
+}
+
+function generateExportApplicationFromA10(a10App) {
+    const exportApp = lodash.cloneDeep(a10App)
+    exportApp.species.purposeCode = exportApp.a10ExportData.purposeCode
+    exportApp.importerExporterDetails = exportApp.a10ExportData.importerDetails
+    exportApp.a10SourceApplicationIndex = exportApp.applicationIndex
+
+    deleteIfExists(exportApp, 'a10ExportData')
+    deleteIfExists(exportApp, 'permitDetails')
+    deleteIfExists(exportApp, 'permitSubType')
+    deleteIfExists(exportApp.species, 'specimenOrigin')
+    deleteIfExists(exportApp.species, 'useCertificateFor')
+    deleteIfExists(exportApp.species, 'isA10CertificateNumberKnown')
+    deleteIfExists(exportApp.species, 'a10CertificateNumber')
+    deleteIfExists(exportApp.species, 'isEverImportedExported')
+    deleteIfExists(exportApp.species, 'acquiredDate')
+    deleteIfExists(exportApp, 'isBreeder')
+
+    return exportApp
 }
 
 function cloneSubmission(request, applicationIndex) {
@@ -190,7 +267,7 @@ function migrateApplicationToNewSchema(app) {
                 index: 0,
                 uniqueIdentificationMark: app.species.uniqueIdentificationMark,
                 uniqueIdentificationMarkType: app.species.uniqueIdentificationMarkType
-            }]                   
+            }]
         }
         delete app.species.uniqueIdentificationMark
         delete app.species.uniqueIdentificationMarkType
@@ -530,7 +607,6 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
-
             if (config.enableBreederPage && application.species.specimenType === 'animalLiving') {
                 submissionProgress.push(getPageProgess(`breeder/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isBreeder', application.isBreeder)))
 
@@ -580,6 +656,20 @@ function getSubmissionProgress(submission, includePageData) {
         }
 
         submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
+
+        if (submission.permitType === pt.ARTICLE_10) {
+            submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportPermitRequired', application.a10ExportData?.isExportPermitRequired))) 
+            if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean"){
+                return { submissionProgress, applicationStatuses }
+            }
+            if (application.a10ExportData?.isExportPermitRequired) {
+                submissionProgress.push(getPageProgess(`importer-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterDetails(application.a10ExportData)))
+                if (!application.a10ExportData?.importerDetails?.country) {
+                    return { submissionProgress, applicationStatuses }
+                }
+            }
+        }
+
         submissionProgress.push(getPageProgess(`application-summary/view/${applicationIndex}`, applicationIndex))
 
         completeApplications++
@@ -777,6 +867,46 @@ function getPageDataImporterExporter(importerExporterDetails) {
     ]
 }
 
+function getPageDataImporterDetails(a10ExportData) {
+    return [
+        {
+            fieldId: 'importerDetails-country',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.country)
+        },
+        {
+            fieldId: 'importerDetails-name',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.name)
+        },
+        {
+            fieldId: 'importerDetails-addressLine1',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine1)
+        },
+        {
+            fieldId: 'importerDetails-addressLine2',
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine2)
+        },
+        {
+            fieldId: 'importerDetails-addressLine3',
+            isMandatory: false,
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine3)
+        },
+        {
+            fieldId: 'importerDetails-addressLine4',
+            isMandatory: false,
+            hasData: Boolean(a10ExportData?.importerDetails?.addressLine4)
+        },
+        {
+            fieldId: 'importerDetails-postcode',
+            isMandatory: false,
+            hasData: Boolean(a10ExportData?.importerDetails?.postcode)
+        },
+    ]
+}
+
 function getPageDataPermitDetails(permitDetails) {
     return [
         {
@@ -923,11 +1053,14 @@ module.exports = {
     getCompletedApplications,
     getApplicationIndex,
     saveDraftSubmission,
+    saveGeneratedDraftSubmission,
     checkDraftSubmissionExists,
+    getDraftSubmissionDetails,
     deleteDraftSubmission,
     loadDraftSubmission,
     moveApplicationToEndOfList,
     reIndexApplications,
-    allowPageNavigation
+    allowPageNavigation,
+    generateExportSubmissionFromA10
 }
 

@@ -25,7 +25,7 @@
 {% endblock %}
 {% block content %}
 
-  {% if draftSubmissionExists %}
+  {% if draftSubmissionDetail.draftExists %}
     {% set html %}
     <h3 class="govuk-notification-banner__heading">
       {{draftNotificationHeader}}

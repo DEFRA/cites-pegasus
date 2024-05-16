@@ -190,6 +190,18 @@ const yourSubmissionSchema = Joi.object({
   removeAriaLabel: Joi.string().required()
 }).required()
 
+const applicationCompleteBodySchema = Joi.object({
+  pageBody1: Joi.string().required(),
+  pageBodyWarning1: Joi.string().allow("", null),
+  pageBody2: Joi.string().allow("", null),
+  pageBodyWarning2: Joi.string().allow("", null),
+  pageBody3: Joi.string().allow("", null),
+  pageBody4: Joi.string().allow("", null),
+  pageBody5: Joi.string().allow("", null),
+  pageBody6: Joi.string().allow("", null),
+  pageHeader2: Joi.string().allow("", null)
+}).required()
+
 const schema = Joi.object().keys({
   common: Joi.object({
     serviceName: Joi.string().required(),
@@ -710,6 +722,34 @@ const schema = Joi.object().keys({
     importerDetails: importerExporterDetailsSchema,
     exporterDetails: importerExporterDetailsSchema
   }).required(),
+  importerDetails: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    heading: Joi.string().required(),
+    insetText: Joi.string().required(),
+    inputLabelCountry: Joi.string().required(),
+    headingAddress: Joi.string().required(),
+    inputLabelFullName: Joi.string().required(),
+    inputLabelAddressLine1: Joi.string().required(),
+    inputLabelAddressLine2: Joi.string(),
+    inputLabelAddressLine3: Joi.string(),
+    inputLabelAddressLine4: Joi.string(),
+    inputLabelPostcode: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.name.string.max": Joi.string().required(),
+      "error.name.string.pattern.base": Joi.string().required(),
+      "error.name.string.empty": Joi.string().required(),
+      "error.addressLine1.string.empty": Joi.string().required(),
+      "error.addressLine1.string.max": Joi.string().required(),
+      "error.addressLine2.string.empty": Joi.string().required(),
+      "error.addressLine2.string.max": Joi.string().required(),
+      "error.addressLine3.string.max": Joi.string().required(),
+      "error.addressLine4.string.max": Joi.string().required(),
+      "error.postcode.string.max": Joi.string().required(),
+      "error.country.string.empty": Joi.string().required(),
+      "error.country.string.max": Joi.string().required()
+    }).required()
+  }).required(),
   alreadyHaveA10: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -878,6 +918,18 @@ const schema = Joi.object().keys({
       "error.internalReference.string.pattern.base": Joi.string().required(),
     }).required()
   }).required(),
+  addExportPermit: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody1: Joi.string().required(),
+    pageBody2: Joi.string().required(),
+    inputIsExportPermitRequiredHeading: Joi.string().required(),
+    inputIsExportPermitRequiredYes: Joi.string().required(),
+    inputIsExportPermitRequiredNo: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isExportPermitRequired.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   applicationSummary: Joi.object({
     defaultTitleCheck: Joi.string().required(),
     pageHeaderCheck: Joi.string().required(),
@@ -897,13 +949,16 @@ const schema = Joi.object().keys({
     headerExporterContactDetails: Joi.string().required(),
     headerReexporterContactDetails: Joi.string().required(),
     headerArticle10ContactDetails: Joi.string().required(),
+    headerA10ExportDetails: Joi.string().required(),
     hintIncomplete: Joi.string().required(),
     errorSummaryTitle: Joi.string().required(),
     rowTextFullName: Joi.string().required(),
+    rowTextImporterName: Joi.string().required(),
     rowTextFullNameAgent: Joi.string().required(),
     rowTextBusinessName: Joi.string().required(),
     rowTextEmailAddress: Joi.string().required(),
     rowTextAddress: Joi.string().required(),
+    rowTextImporterAddress: Joi.string().required(),
     rowTextDeliveryType: Joi.string().required(),
     rowTextStandardDelivery: Joi.string().required(),
     rowTextSpecialDelivery: Joi.string().required(),
@@ -948,6 +1003,7 @@ const schema = Joi.object().keys({
     headerExportOrReexportPermitDetails: Joi.string().required(),
     headerPermitDetailsFromExportIntoGreatBritain: Joi.string().required(),
     rowTextCountry: Joi.string().required(),
+    rowTextImporterCountry: Joi.string().required(),
     rowTextPermitNumber: Joi.string().required(),
     rowTextPermitIssueDate: Joi.string().required(),
     headerCountryOfOriginPermitDetails: Joi.string().required(),
@@ -993,6 +1049,7 @@ const schema = Joi.object().keys({
     rowTextShowHide: Joi.string().required(),
     rowTextOtherSourceCode: Joi.string().required(),
     rowTextSameAsCountryOfOrigin: Joi.string().required(),
+    rowTextIsExportPermitRequired: Joi.string().required(),
     returnToYourApplicationsLinkText: Joi.string().required(),
     areYouSure: Joi.object({
       permitType: areYouSureSchema,
@@ -1062,6 +1119,7 @@ const schema = Joi.object().keys({
   mySubmissions: Joi.object({
     draftNotificationTitle: Joi.string().required(),
     draftNotificationHeader: Joi.string().required(),
+    draftNotificationHeaderExportSubmission: Joi.string().required(),
     draftNotificationBody: Joi.string().required(),
     draftContinue: Joi.string().required(),
     draftDelete: Joi.string().required(),
@@ -1116,27 +1174,22 @@ const schema = Joi.object().keys({
     panelHeading: Joi.string().required(),
     panelText: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    paid: Joi.object({
-      pageBody1: Joi.string().required(),
-      pageBody2: Joi.string().required(),
-      pageBody3: Joi.string().required()
+    buttonGoToExportSubmission: Joi.string().required(),
+    buttonGoToMyAccount: Joi.string().required(),
+    noExportSubmission: Joi.object({
+      paid: applicationCompleteBodySchema,
+      notPaid: Joi.object({
+        simple: applicationCompleteBodySchema,
+        complex: applicationCompleteBodySchema
+      }).required()
     }).required(),
-    notPaid: Joi.object({
-      simple: Joi.object({
-        pageBody1: Joi.string().required(),
-        pageBodyWarning: Joi.string().allow("", null),
-        pageBody2: Joi.string().allow("", null),
-        pageBody3: Joi.string().allow("", null),
-        pageBody4: Joi.string().allow("", null)
-      }).required(),
-      complex: Joi.object({
-        pageBody1: Joi.string().required(),
-        pageBodyWarning: Joi.string().allow("", null),
-        pageBody2: Joi.string().allow("", null),
-        pageBody3: Joi.string().allow("", null),
-        pageBody4: Joi.string().allow("", null)
-      }).required(),
-    }).required()
+    exportSubmission: Joi.object({
+      paid: applicationCompleteBodySchema,
+      notPaid: Joi.object({
+        simple: applicationCompleteBodySchema,
+        complex: applicationCompleteBodySchema,
+      }).required()
+    }).required(),
   }).required(),
   paymentProblem: Joi.object({
     defaultTitle: Joi.string().required(),

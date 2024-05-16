@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix, enableInternalReference } = require("../../config/config")
+const { urlPrefix, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt} = require('../lib/permit-type-helper')
@@ -12,7 +12,8 @@ const oldPath = `${urlPrefix}/comments`
 const previousPathPermitDetails = `${urlPrefix}/permit-details`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
-const nextPath = `${urlPrefix}/application-summary/check`
+const nextPathAppSummary = `${urlPrefix}/application-summary/check`
+const nextPathAddExportPermit = `${urlPrefix}/add-export-permit`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 
@@ -200,8 +201,13 @@ module.exports = [
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
+        
+        let redirectTo = `${nextPathAppSummary}/${applicationIndex}`
 
-        const redirectTo = `${nextPath}/${applicationIndex}`
+        if (enableGenerateExportPermitsFromA10s && submission.permitType === pt.ARTICLE_10){
+          redirectTo = `${nextPathAddExportPermit}/${applicationIndex}`
+        }  
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
       }

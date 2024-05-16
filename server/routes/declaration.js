@@ -1,8 +1,9 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { permitType: pt} = require('../lib/permit-type-helper')
 const config = require('../../config/config')
-const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission, setSubmission } = require("../lib/submission")
+const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission, setSubmission, generateExportSubmissionFromA10, saveGeneratedDraftSubmission, reIndexApplications } = require("../lib/submission")
 const { postSubmission } = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "declaration"
@@ -104,7 +105,7 @@ module.exports = [
         deleteInProgressApplications(request)
 
         const submission = getSubmission(request)
-
+        
         let response
         try {
           response = await postSubmission(request.server, submission)
@@ -128,6 +129,14 @@ module.exports = [
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
+        }
+
+        if (submission.permitType === pt.ARTICLE_10){
+          if(submission.applications.some(app => app.a10ExportData.isExportPermitRequired)) {
+            const exportSubmission = generateExportSubmissionFromA10(submission, submission.submissionRef)
+            reIndexApplications(exportSubmission.applications)
+            await saveGeneratedDraftSubmission(request, `${urlPrefix}/your-submission`, exportSubmission)
+          }
         }
 
         return h.redirect(nextPath)

@@ -113,6 +113,12 @@ function toPascalCase(inputString) {
   return ""
 }
 
+function deleteIfExists(object, property) {
+  if(Object.hasOwn(object, property)) {
+       delete object[property]
+  }
+}
+
 module.exports = {
   isChecked,
   setLabelData,
@@ -133,5 +139,6 @@ module.exports = {
   getFieldError,
   getErrorMessage,
   getAddressSummary,
-  toPascalCase
+  toPascalCase,
+  deleteIfExists
 }

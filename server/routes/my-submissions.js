@@ -5,7 +5,7 @@ const { permitType: pt } = require('../lib/permit-type-helper')
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue } = require('../lib/session')
 const user = require('../lib/user')
-const { createSubmission, checkDraftSubmissionExists, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
+const { createSubmission, getDraftSubmissionDetails, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
@@ -70,7 +70,7 @@ function createModel(errors, data) {
     pageTitle,
     pageHeader,
     draftNotificationTitle: pageContent.draftNotificationTitle,
-    draftNotificationHeader: pageContent.draftNotificationHeader,
+    draftNotificationHeader: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationHeaderExportSubmission : pageContent.draftNotificationHeader,
     draftNotificationBody: pageContent.draftNotificationBody,
     draftContinue: pageContent.draftContinue,
     draftDelete: pageContent.draftDelete,
@@ -85,7 +85,7 @@ function createModel(errors, data) {
     pageBodyStatus: pageContent.pageBodyStatus,
     pageBodySubmittedBy: pageContent.pageBodySubmittedBy,
     buttonApplyFilters: pageContent.buttonApplyFilters,
-    draftSubmissionExists: data.draftSubmissionExists,
+    draftSubmissionDetail: data.draftSubmissionDetail,
     submissionsData: submissionsTableData,
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
@@ -337,7 +337,7 @@ module.exports = [
 
       const cidmAuth = getYarValue(request, 'CIDMAuth')
 
-      const draftSubmissionExists = await checkDraftSubmissionExists(request)
+      const draftSubmissionDetail = await getDraftSubmissionDetails(request)
       const submittedByFilterEnabled = user.hasOrganisationWideAccess(request)
 
       const pageData = {
@@ -351,7 +351,7 @@ module.exports = [
         searchTerm: filterData?.searchTerm,
         submittedBy: filterData?.submittedBy,
         organisationName: cidmAuth.user.organisationName,
-        draftSubmissionExists,
+        draftSubmissionDetail,
         submittedByFilterEnabled
       }
       return h.view(pageId, createModel(null, pageData))
@@ -369,8 +369,8 @@ module.exports = [
       },
     },
     handler: async (request, h) => {
-      const draftSubmissionExists = await checkDraftSubmissionExists(request)
-      if (draftSubmissionExists) {
+      const draftSubmissionDetail = await getDraftSubmissionDetails(request)
+      if (draftSubmissionDetail.draftExists) {
         return h.redirect(draftSubmissionWarning)
       }
       clearChangeRoute(request)
@@ -434,7 +434,7 @@ module.exports = [
 
         const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
         const cidmAuth = getYarValue(request, 'CIDMAuth')
-        const draftSubmissionExists = await checkDraftSubmissionExists(request)
+        const draftSubmissionDetail = await getDraftSubmissionDetails(request)
         const submittedByFilterEnabled = user.hasOrganisationWideAccess(request)
 
         const pageData = {
@@ -448,7 +448,7 @@ module.exports = [
           submittedBy: filterData.submittedBy,
           noApplicationFound: submissions.length === 0,
           organisationName: cidmAuth.user.organisationName,
-          draftSubmissionExists,
+          draftSubmissionDetail,
           submittedByFilterEnabled
         }
 

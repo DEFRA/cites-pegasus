@@ -767,7 +767,7 @@
       "error.acquiredDate.any.both": "Enter a date, or enter an approximate date",
       "error.approximateDate.string.empty": "Enter an approximate date or period of time",
       "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
-    }  
+    }
   },
   "hasUniqueIdentificationMark": {
     "defaultTitle": "Does the specimen have any unique identification marks?",
@@ -894,6 +894,34 @@
       "errorMessages": {
         "error.name.string.empty": "Enter the exporter’s full name"
       }
+    }
+  },
+  "importerDetails": {
+    "defaultTitle": "Importer’s details ",
+    "pageHeader": "Importer’s details",
+    "heading": "Country of import",
+    "insetText": "This information is for the matching export permit application only, and will not be included in your a10 certificate application.",
+    "inputLabelCountry": "Country",
+    "headingAddress": "Address",
+    "inputLabelFullName": "Full name",
+    "inputLabelAddressLine1": "Address line 1",
+    "inputLabelAddressLine2": "Address line 2",
+    "inputLabelAddressLine3": "Address line 3 (optional)",
+    "inputLabelAddressLine4": "Address line 4 (optional)",
+    "inputLabelPostcode": "Postal or zip code (if your country has one)",
+    "errorMessages": {
+      "error.name.string.max": "Full name must be 150 characters or less",
+      "error.name.string.pattern.base": "Full name must only include letters a to z, and special characters such as hyphens, spaces and apostrophes",
+      "error.name.string.empty": "Enter the importer’s full name",
+      "error.addressLine1.string.empty": "Enter the address line 1",
+      "error.addressLine1.string.max": "Address line 1 must be 150 characters or less",
+      "error.addressLine2.string.empty": "Enter the address line 2",
+      "error.addressLine2.string.max": "Address line 2 must be 150 characters or less",
+      "error.addressLine3.string.max": "Address line 3 must be 150 characters or less",
+      "error.addressLine4.string.max": "Address line 4 must be 150 characters or less",
+      "error.postcode.string.max": "Postal or zip code must be 50 characters or less",
+      "error.country.string.empty": "Select a country",
+      "error.country.string.max": "Country must be 150 characters or less"
     }
   },
   "alreadyHaveA10": {
@@ -1128,6 +1156,18 @@
       "error.internalReference.string.pattern.base": "Internal reference must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes"
     }
   },
+  "addExportPermit": {
+    "defaultTitle": "Exporting your specimen",
+    "pageHeader": "Exporting your specimen",
+    "pageBody1": "If you are exporting this specimen, you may need an export permit as well as an Article 10 certificate.",
+    "pageBody2": "A matching export permit can be generated based on the information provided in this application. You will need to submit this application first, then you will be directed to complete the export permit application. This application will also then be available as a draft in your account.",
+    "inputIsExportPermitRequiredHeading": "Do you want to generate a matching export permit after this application?",
+    "inputIsExportPermitRequiredYes": "Yes, copy the information I have provided to generate a matching export permit application",
+    "inputIsExportPermitRequiredNo": "No, continue with my application for an Article 10 certificate only",
+    "errorMessages": {
+      "error.isExportPermitRequired.any.required": "Select yes if you want to add an export permit"
+    }
+  },
   "applicationSummary": {
     "defaultTitleCheck": "Check and confirm application details",
     "pageHeaderCheck": "Check and confirm application details",
@@ -1146,13 +1186,16 @@
     "headerExporterContactDetails": "Exporter’s contact details",
     "headerReexporterContactDetails": "Reexporter’s contact details",
     "headerArticle10ContactDetails": "Applicant's contact details",
+    "headerA10ExportDetails": "Matching export permit application details",
     "hintIncomplete": "You must answer any question marked 'Incomplete' before submitting your application.",
     "errorSummaryTitle": "Answer the questions marked 'Incomplete' before submitting your application",
     "rowTextFullName": "Full name",
+    "rowTextImporterName": "Importer name",
     "rowTextFullNameAgent": "Full name and/or organisation name",
     "rowTextBusinessName": "Business name",
     "rowTextEmailAddress": "Email address",
     "rowTextAddress": "Address",
+    "rowTextImporterAddress": "Importer address",
     "rowTextDeliveryType": "Type",
     "rowTextStandardDelivery": "Royal Mail First Class Delivery",
     "rowTextSpecialDelivery": "Royal Mail Special Delivery",
@@ -1198,6 +1241,7 @@
     "headerExportOrReexportPermitDetails": "Export or re-export permit details",
     "headerPermitDetailsFromExportIntoGreatBritain": "Permit details from export into Great Britain",
     "rowTextCountry": "Country",
+    "rowTextImporterCountry": "Importer country",
     "rowTextPermitNumber": "Permit number",
     "rowTextPermitIssueDate": "Permit issue date",
     "headerCountryOfOriginPermitDetails": "Country of origin permit details",
@@ -1243,6 +1287,7 @@
     "rowTextSameAsCountryOfOrigin": "Same as country of origin",
     "rowTextShowHide": "Show/Hide",
     "rowTextOtherSourceCode": "Other source code",
+    "rowTextIsExportPermitRequired": "Export Permit Required",
     "returnToYourApplicationsLinkText": "Return to your applications",
     "areYouSure": {
       "permitType": {
@@ -1429,6 +1474,7 @@
   "mySubmissions": {
     "draftNotificationTitle": "Reminder",
     "draftNotificationHeader": "You have a saved application.",
+    "draftNotificationHeaderExportSubmission": "Complete your matching export application.",
     "draftNotificationBody": "You will not be able to start another application while this application is still being worked on",
     "draftContinue": "Continue the application",
     "draftDelete": "Delete this application",
@@ -1501,23 +1547,53 @@
     "panelHeading": "Application complete",
     "panelText": "Reference number",
     "pageHeader": "What happens next",
-    "paid": {
-      "pageBody1": "We have received your application fee and have sent you a confirmation email.",
-      "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",
-      "pageBody3": "To view the status of your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications."
-    },
-    "notPaid": {
-      "simple": {
-        "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
-        "pageBodyWarning": "Your application will not be processed until payment has been received",
-        "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications.",
-        "pageBody4": ""
+    "buttonGoToExportSubmission": "Go to Export application",
+    "buttonGoToMyAccount": "Go to your account",
+    "noExportSubmission": {
+      "paid": {
+        "pageBody1": "We have received your application fee and have sent you a confirmation email.",
+        "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",
+        "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
       },
-      "complex": {
-        "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
-        "pageBody2": "They will contact you to confirm the amount you need to pay.",
-        "pageBody3": "Your application will not be processed until payment has been received.",
-        "pageBody4": "To view the status of your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+      "notPaid": {
+        "simple": {
+          "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
+          "pageBodyWarning1": "Your application will not be processed until payment has been received",
+          "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+        },
+        "complex": {
+          "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
+          "pageBody2": "They will contact you to confirm the amount you need to pay.",
+          "pageBodyWarning2": "Your application will not be processed until payment has been received.",
+          "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+        }
+      }
+    },
+    "exportSubmission": {
+      "paid": {
+        "pageBody1": "We have received your application fee and have sent you a confirmation email.",
+        "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",
+        "pageBody3": "Your application will show in your account shortly.",
+        "pageHeader2": "Your matching Export permit application",
+        "pageBody5": "A draft matching Export permit application has been generated based on the information provided.",
+        "pageBody6": "To view the status of your application, <a href='/'>go to your CITES account</a>."
+      },
+      "notPaid": {
+        "simple": {
+          "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
+          "pageBodyWarning1": "Your application will not be processed until payment has been received",
+          "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications.",
+          "pageHeader2": "Your matching Export permit application",
+          "pageBody5": "A draft matching Export permit application has been generated based on the information provided."
+        },
+        "complex": {
+          "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
+          "pageBody2": "They will contact you to confirm the amount you need to pay.",
+          "pageBodyWarning2": "Your application will not be processed until payment has been received",
+          "pageHeader2": "Your matching Export permit application",
+          "pageBody5": "A draft matching Export permit application has been generated based on the information provided.",
+          "pageBody6": "To view the status of your application, <a href='/'>go to your CITES account</a>."
+        }
       }
     }
   },
