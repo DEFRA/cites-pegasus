@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix, enableGenerateExportPermitsFromA10s } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { permitType: pt} = require('../lib/permit-type-helper')
 const config = require('../../config/config')
@@ -131,7 +131,7 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        if (submission.permitType === pt.ARTICLE_10){
+        if (submission.permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s){
           if(submission.applications.some(app => app.a10ExportData.isExportPermitRequired)) {
             const exportSubmission = generateExportSubmissionFromA10(submission, submission.submissionRef)
             reIndexApplications(exportSubmission.applications)

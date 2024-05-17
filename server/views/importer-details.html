@@ -33,15 +33,14 @@
         {{pageHeader}}
       </h1>
       <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+        {{ govukInsetText(insetText) }}
+        
         {% call govukFieldset({
           legend: {
             html: '<h2 class="govuk-fieldset__legend--m">' + heading + '</h2>',
             isPageHeading: false
           }
         }) %}
-
-
-        {{ govukInsetText(insetText) }}
 
         {{ govukSelect(selectCountry) }}
         {% endcall %}

@@ -658,11 +658,11 @@ function getSubmissionProgress(submission, includePageData) {
         submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
 
         if (submission.permitType === pt.ARTICLE_10) {
-            submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportPermitRequired', application.a10ExportData?.isExportPermitRequired))) 
-            if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean"){
+            submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataIsExportPermitRequired(application.a10ExportData?.isExportPermitRequired)))
+            if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean" && config.enableGenerateExportPermitsFromA10s){
                 return { submissionProgress, applicationStatuses }
             }
-            if (application.a10ExportData?.isExportPermitRequired) {
+            if (application.a10ExportData?.isExportPermitRequired && config.enableGenerateExportPermitsFromA10s) {
                 submissionProgress.push(getPageProgess(`importer-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterDetails(application.a10ExportData)))
                 if (!application.a10ExportData?.importerDetails?.country) {
                     return { submissionProgress, applicationStatuses }
@@ -867,26 +867,36 @@ function getPageDataImporterExporter(importerExporterDetails) {
     ]
 }
 
+function getPageDataIsExportPermitRequired(isExportPermitRequired) {
+    return [
+        {
+            fieldId: 'isExportPermitRequired',
+            isMandatory: config.enableGenerateExportPermitsFromA10s,
+            hasData: typeof isExportPermitRequired === 'boolean'
+        }
+    ]
+}
+
 function getPageDataImporterDetails(a10ExportData) {
     return [
         {
             fieldId: 'importerDetails-country',
-            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired) && config.enableGenerateExportPermitsFromA10s,
             hasData: Boolean(a10ExportData?.importerDetails?.country)
         },
         {
             fieldId: 'importerDetails-name',
-            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired) && config.enableGenerateExportPermitsFromA10s,
             hasData: Boolean(a10ExportData?.importerDetails?.name)
         },
         {
             fieldId: 'importerDetails-addressLine1',
-            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired) && config.enableGenerateExportPermitsFromA10s,
             hasData: Boolean(a10ExportData?.importerDetails?.addressLine1)
         },
         {
             fieldId: 'importerDetails-addressLine2',
-            isMandatory: Boolean(a10ExportData?.isExportPermitRequired),
+            isMandatory: Boolean(a10ExportData?.isExportPermitRequired) && config.enableGenerateExportPermitsFromA10s,
             hasData: Boolean(a10ExportData?.importerDetails?.addressLine2)
         },
         {
