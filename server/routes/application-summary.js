@@ -1,5 +1,5 @@
 const Joi = require("joi")
-const { urlPrefix, enableDeliveryType, enableInternalReference } = require("../../config/config")
+const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
 const { deliveryType: dt } = require("../lib/constants")
@@ -376,20 +376,22 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
 function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly) {
   const summaryListA10ExportDataRows = []
 
-  if (data.a10ExportData) {
+  const viewingOldApplication = summaryData.summaryType === 'view-submitted' && !data.a10ExportData
+
+  if (data.permitType === pt.ARTICLE_10 && !viewingOldApplication && enableGenerateExportPermitsFromA10s) {
     const addressDataItems = [
-      data.a10ExportData.importerDetails?.addressLine1,
-      data.a10ExportData.importerDetails?.addressLine2,
-      data.a10ExportData.importerDetails?.addressLine3,
-      data.a10ExportData.importerDetails?.addressLine4,
-      data.a10ExportData.importerDetails?.postcode
+      data.a10ExportData?.importerDetails?.addressLine1,
+      data.a10ExportData?.importerDetails?.addressLine2,
+      data.a10ExportData?.importerDetails?.addressLine3,
+      data.a10ExportData?.importerDetails?.addressLine4,
+      data.a10ExportData?.importerDetails?.postcode
     ].filter(Boolean)
 
     const addressDataValue = addressDataItems.join(', ')
     
     let textDescription = ""
-    if (typeof data.a10ExportData.isExportPermitRequired === 'boolean') {
-      if (data.a10ExportData.isExportPermitRequired) {
+    if (typeof data.a10ExportData?.isExportPermitRequired === 'boolean') {
+      if (data.a10ExportData?.isExportPermitRequired) {
         textDescription = commonContent.radioOptionYes
       } else {
         textDescription = commonContent.radioOptionNo
@@ -399,9 +401,9 @@ function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly)
       summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, "/addExportPermit", "is export permit required"))      
     }
 
-    if (allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData.importerDetails)) {
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData.importerDetails?.countryDesc, "/importerDetails", "importer country"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData.importerDetails?.name, "/importerDetails", "importer name"))
+    if (allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)) {
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData?.importerDetails?.countryDesc, "/importerDetails", "importer country"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData?.importerDetails?.name, "/importerDetails", "importer name"))
       summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, "/importerExporterDetails", "importer contact details"))
     }
   }
