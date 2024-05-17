@@ -129,8 +129,18 @@ module.exports = [
         contactIdFilter = null
       }
 
+      const submissionPaymentParams = {
+        server: request.server,
+        contactId: contactIdFilter,
+        organisationId,
+        submissionId: submission.submissionId,
+        paymentRef: paymentStatus.paymentId,
+        paymentValue: paymentStatus.amount / 100,
+        isAdditionalPayment,
+        previousAdditionalAmountPaid
+      }
 
-      await setSubmissionPayment(request.server, contactIdFilter, organisationId, submission.submissionId, paymentStatus.paymentId, paymentStatus.amount / 100, isAdditionalPayment, previousAdditionalAmountPaid)      
+      await setSubmissionPayment(submissionPaymentParams)      
       
       if(paymentRoute === 'new-application') {
         return h.redirect(nextPathSuccessNewApplication)

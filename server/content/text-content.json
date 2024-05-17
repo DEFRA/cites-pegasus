@@ -1186,7 +1186,7 @@
     "headerExporterContactDetails": "Exporter’s contact details",
     "headerReexporterContactDetails": "Reexporter’s contact details",
     "headerArticle10ContactDetails": "Applicant's contact details",
-    "headerA10ExportDetails": "Matching export permit application details",
+    "headerA10ExportDetails": "Matching Export permit application details",
     "hintIncomplete": "You must answer any question marked 'Incomplete' before submitting your application.",
     "errorSummaryTitle": "Answer the questions marked 'Incomplete' before submitting your application",
     "rowTextFullName": "Full name",
@@ -1287,7 +1287,7 @@
     "rowTextSameAsCountryOfOrigin": "Same as country of origin",
     "rowTextShowHide": "Show/Hide",
     "rowTextOtherSourceCode": "Other source code",
-    "rowTextIsExportPermitRequired": "Export Permit Required",
+    "rowTextIsExportPermitRequired": "Export permit required",
     "returnToYourApplicationsLinkText": "Return to your applications",
     "areYouSure": {
       "permitType": {
@@ -1415,28 +1415,28 @@
       "labelInternalReference": "Internal reference"
     },
     "importApplications": {
-      "defaultTitle": "Your import applications",
-      "pageHeader": "Your import applications",
-      "copyAriaLabel": "Copy this import application",
-      "removeAriaLabel": "Remove this import application"
+      "defaultTitle": "Your Import applications",
+      "pageHeader": "Your Import applications",
+      "copyAriaLabel": "Copy this Import application",
+      "removeAriaLabel": "Remove this Import application"
     },
     "exportApplications": {
-      "defaultTitle": "Your export applications",
-      "pageHeader": "Your export applications",
-      "copyAriaLabel": "Copy this export application",
-      "removeAriaLabel": "Remove this export application"
+      "defaultTitle": "Your Export applications",
+      "pageHeader": "Your Export applications",
+      "copyAriaLabel": "Copy this Export application",
+      "removeAriaLabel": "Remove this Export application"
     },
     "reexportApplications": {
-      "defaultTitle": "Your reexport applications",
-      "pageHeader": "Your reexport applications",
-      "copyAriaLabel": "Copy this reexport application",
-      "removeAriaLabel": "Remove this reexport application"
+      "defaultTitle": "Your Re-Export applications",
+      "pageHeader": "Your Re-Export applications",
+      "copyAriaLabel": "Copy this Re-Export application",
+      "removeAriaLabel": "Remove this Re-Export application"
     },
     "article10Applications": {
-      "defaultTitle": "Your article 10 applications",
-      "pageHeader": "Your article 10 applications",
-      "copyAriaLabel": "Copy this article 10 application",
-      "removeAriaLabel": "Remove this article 10 application"
+      "defaultTitle": "Your Article 10 applications",
+      "pageHeader": "Your Article 10 applications",
+      "copyAriaLabel": "Copy this Article 10 application",
+      "removeAriaLabel": "Remove this Article 10 application"
     },
     "areYouSureRemove": {
       "defaultTitlePart1": "Are you sure that you want to remove",
@@ -1474,7 +1474,7 @@
   "mySubmissions": {
     "draftNotificationTitle": "Reminder",
     "draftNotificationHeader": "You have a saved application.",
-    "draftNotificationHeaderExportSubmission": "Complete your matching export application.",
+    "draftNotificationHeaderExportSubmission": "Complete your matching Export permit application.",
     "draftNotificationBody": "You will not be able to start another application while this application is still being worked on",
     "draftContinue": "Continue the application",
     "draftDelete": "Delete this application",
@@ -1559,7 +1559,7 @@
         "simple": {
           "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
           "pageBodyWarning1": "Your application will not be processed until payment has been received",
-          "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+          "pageBody3": "To pay for your application, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
         },
         "complex": {
           "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",

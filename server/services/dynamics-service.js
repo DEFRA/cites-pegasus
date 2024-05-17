@@ -628,27 +628,26 @@ function getDynamicsSubmissionStatus(portalStatus){
   return results[0]
 }
 
-async function setSubmissionPayment(server, contactId, organisationId, submissionId, paymentRef, paymentValue, isAdditionalPayment, previousAdditionalAmountPaid) {
-  const accessToken = await getAccessToken(server)
-  await validateSubmission(accessToken, contactId, organisationId, null, submissionId)//Not necessary as we are using submissionId which is server side
+async function setSubmissionPayment(params) {
+  const accessToken = await getAccessToken(params.server)
+  await validateSubmission(accessToken, params.contactId, params.organisationId, null, params.submissionId)//Not necessary as we are using submissionId which is server side
 
   try {
 
-    const url = `${apiUrl}cites_submissions(${submissionId})`
+    const url = `${apiUrl}cites_submissions(${params.submissionId})`
 
     const requestPayload = {
       statuscode: 149900002
     }
 
-    if(isAdditionalPayment) {
-      requestPayload.cites_additionalpaymentmethod = 149900000, // Gov Pay
-      requestPayload.cites_additionalpaymentreference = paymentRef,
-      requestPayload.cites_additionalamountpaid = paymentValue + previousAdditionalAmountPaid
-      //requestPayload.cites_additionalammounttobepaid = paymentValue + previousAdditionalAmountPaid
+    if(params.isAdditionalPayment) {
+      requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
+      requestPayload.cites_additionalpaymentreference = params.paymentRef
+      requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
     } else {
-      requestPayload.cites_paymentmethod = 149900000, // Gov Pay
-      requestPayload.cites_paymentreference = paymentRef,
-      requestPayload.cites_totalfeeamount = paymentValue      
+      requestPayload.cites_paymentmethod = 149900000 // Gov Pay
+      requestPayload.cites_paymentreference = params.paymentRef
+      requestPayload.cites_totalfeeamount = params.paymentValue      
     }
 
     const options = {
