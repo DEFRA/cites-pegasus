@@ -55,23 +55,14 @@ function createApplicationSummaryModel(errors, data) {
 
   let backLink = null
 
-  let endOfApplicationPage =`${previousPathAdditionalInfo}/${data.applicationIndex}`
+  const endOfApplicationPage = getEndOfApplicationPage(data.applicationIndex, data.permitType, data.a10ExportData)
   
-  if(data.permitType === pt.ARTICLE_10) {
-    if (data.a10ExportData?.isExportPermitRequired) {
-      endOfApplicationPage = `${previousPathImporterDetails}/${data.applicationIndex}`
-    } else {
-      endOfApplicationPage = `${previousPathAddExportPermit}/${data.applicationIndex}`
-    }
-  }
-
   switch (summaryType) {
     case 'check':
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
       break
     case 'view-submitted':
     case 'copy-as-new':
-      backLink = null
       break
     default:
       backLink = nextPathYourSubmission
@@ -129,6 +120,20 @@ function createApplicationSummaryModel(errors, data) {
     errorList
   }
   return { ...commonContent, ...model }
+}
+
+function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData){
+  //This determines which was the page before the application summary ie. the end of the application
+  let endOfApplicationPage =`${previousPathAdditionalInfo}/${applicationIndex}`
+  
+  if(permitType === pt.ARTICLE_10) {
+    if (a10ExportData?.isExportPermitRequired) {
+      endOfApplicationPage = `${previousPathImporterDetails}/${applicationIndex}`
+    } else {
+      endOfApplicationPage = `${previousPathAddExportPermit}/${applicationIndex}`
+    }
+  }
+  return endOfApplicationPage
 }
 
 function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
