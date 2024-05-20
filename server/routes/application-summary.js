@@ -126,7 +126,7 @@ function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData){
   //This determines which was the page before the application summary ie. the end of the application
   let endOfApplicationPage =`${previousPathAdditionalInfo}/${applicationIndex}`
   
-  if(permitType === pt.ARTICLE_10) {
+  if(permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s) {
     if (a10ExportData?.isExportPermitRequired) {
       endOfApplicationPage = `${previousPathImporterDetails}/${applicationIndex}`
     } else {

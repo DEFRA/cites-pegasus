@@ -1553,19 +1553,19 @@
       "paid": {
         "pageBody1": "We have received your application fee and have sent you a confirmation email.",
         "pageBody2": "We have passed your application to the APHA team for endangered plant and animal species (CITES). APHA aims to process your application within 30 days. They may contact you if they require more information. ",
-        "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+        "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your account."
       },
       "notPaid": {
         "simple": {
           "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
           "pageBodyWarning1": "Your application will not be processed until payment has been received",
-          "pageBody3": "To pay for your application, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+          "pageBody3": "To pay for your application, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your account."
         },
         "complex": {
           "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
           "pageBody2": "They will contact you to confirm the amount you need to pay.",
           "pageBodyWarning2": "Your application will not be processed until payment has been received.",
-          "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your list of applications."
+          "pageBody3": "To view the status of your application or create a new one, <a href='/'>go to your CITES account</a>. There may be a short delay before the application appears in your account."
         }
       }
     },
@@ -1582,7 +1582,7 @@
         "simple": {
           "pageBody1": "We have passed your application to the APHA team for endangered plant and animal species (CITES).",
           "pageBodyWarning1": "Your application will not be processed until payment has been received",
-          "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your list of applications.",
+          "pageBody3": "To pay for your application, go to <a href='/'>your CITES account</a>. There may be a short delay before the application appears in your account.",
           "pageHeader2": "Your matching Export permit application",
           "pageBody5": "A draft matching Export permit application has been generated based on the information provided."
         },
