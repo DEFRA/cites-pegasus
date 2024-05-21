@@ -648,6 +648,7 @@ function getSubmissionProgress(submission, includePageData) {
         ) {
             submissionProgress.push(getPageProgess(`permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataPermitDetails(application.permitDetails)))
             submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
+            submissionProgress.push(getPageProgess(`reexport-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataReexportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
         }
 
         if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
@@ -918,17 +919,47 @@ function getPageDataImporterDetails(a10ExportData) {
     ]
 }
 
-function getPageDataImportPermitDetails(permitDetails) {
+function getPageDataReexportPermitDetails(permitDetails) {
     return [
         {
             fieldId: 'importPermitNumber',
-            isMandatory: true,
+            isMandatory: !Boolean(permitDetails?.importPermitDetailsNotKnown),
             hasData: Boolean(permitDetails?.importPermitNumber)
         },
         {
             fieldId: 'importPermitIssueDate',
-            isMandatory: true,
+            isMandatory: !Boolean(permitDetails?.importPermitDetailsNotKnown),
             hasData: Boolean(permitDetails?.importPermitIssueDate?.year)
+        },
+        {
+            fieldId: 'importPermitDetailsNotKnown',
+            isMandatory: true,
+            hasData: typeof permitDetails?.importPermitDetailsNotKnown === 'boolean'
+        }
+    ]
+}
+
+function getPageDataImportPermitDetails(permitDetails) {
+    return [
+        {
+            fieldId: 'exportOrReexportCountry',
+            isMandatory: !Boolean(permitDetails?.exportOrReexportPermitDetailsNotKnown),
+            hasData: Boolean(permitDetails?.exportOrReexportCountry)
+        },
+        {
+            fieldId: 'exportOrReexportPermitNumber',
+            isMandatory: !Boolean(permitDetails?.exportOrReexportPermitDetailsNotKnown),
+            hasData: Boolean(permitDetails?.exportOrReexportPermitNumber)
+        },
+        {
+            fieldId: 'exportOrReexportPermitIssueDate',
+            isMandatory: !Boolean(permitDetails?.exportOrReexportPermitDetailsNotKnown),
+            hasData: Boolean(permitDetails?.exportOrReexportPermitIssueDate?.year)
+        },
+        {
+            fieldId: 'exportOrReexportPermitDetailsNotKnown',
+            isMandatory: true,
+            hasData: typeof permitDetails?.exportOrReexportPermitDetailsNotKnown === 'boolean'
         }
     ]
 }

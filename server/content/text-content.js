@@ -875,6 +875,40 @@ const schema = Joi.object().keys({
       "error.isExportOrReexportSameAsCountryOfOrigin.any.invalid": Joi.string().required()
     }).required()
   }).required(),
+  reexportPermitDetails: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    inputLabelCountry: Joi.string().required(),
+    inputLabelPermitNumber: Joi.string().required(),
+    inputLabelPermitIssueDate: Joi.string().required(),
+    inputLabelHintPermitIssueDate: Joi.string().required(),
+    dividerText: Joi.string().required(),
+    checkboxLabelNotKnown: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.exportOrReexportCountry.string.empty": Joi.string().required(),
+      "error.exportOrReexportCountry.any.empty": Joi.string().required(),
+      "error.exportOrReexportCountry.any.required": Joi.string().required(),
+      "error.exportOrReexportCountry.string.max": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.any.required": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.empty": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.pattern.base": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.min": Joi.string().required(),
+      "error.exportOrReexportPermitNumber.string.max": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.custom": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.future": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.invalid": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate.any.beforeMinDate": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day-month.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-day-year.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-month.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-month-year.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitIssueDate-year.any.empty": Joi.string().required(),
+      "error.exportOrReexportPermitDetailsNotKnown.any.invalid": Joi.string().required()
+    }).required()
+  }).required(),
   importPermitDetails: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

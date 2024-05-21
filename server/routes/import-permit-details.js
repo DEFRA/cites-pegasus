@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator, emptyDateValidator } = require("../lib/validators")
