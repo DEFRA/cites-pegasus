@@ -31,6 +31,7 @@ const routes = [].concat(
   require('../routes/ever-imported-exported'),
   require('../routes/quantity'),
   require('../routes/permit-details'),
+  require('../routes/import-permit-details'),
   require('../routes/additional-info'),
   require('../routes/add-export-permit'),
   require('../routes/importer-details'),

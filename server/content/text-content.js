@@ -875,6 +875,35 @@ const schema = Joi.object().keys({
       "error.isExportOrReexportSameAsCountryOfOrigin.any.invalid": Joi.string().required()
     }).required()
   }).required(),
+  importPermitDetails: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    inputLabelPermitNumber: Joi.string().required(),
+    inputLabelPermitIssueDate: Joi.string().required(),
+    inputLabelHintPermitIssueDate: Joi.string().required(),
+    dividerText: Joi.string().required(),
+    checkboxLabelNotKnown: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.importPermitNumber.any.required": Joi.string().required(),
+      "error.importPermitNumber.string.empty": Joi.string().required(),
+      "error.importPermitNumber.string.pattern.base": Joi.string().required(),
+      "error.importPermitNumber.string.min": Joi.string().required(),
+      "error.importPermitNumber.string.max": Joi.string().required(),
+      "error.importPermitIssueDate.any.empty": Joi.string().required(),
+      "error.importPermitIssueDate.any.custom": Joi.string().required(),
+      "error.importPermitIssueDate.any.future": Joi.string().required(),
+      "error.importPermitIssueDate.any.invalid": Joi.string().required(),
+      "error.importPermitIssueDate.any.beforeMinDate": Joi.string().required(),
+      "error.importPermitIssueDate-day.any.empty": Joi.string().required(),
+      "error.importPermitIssueDate-day-month.any.empty": Joi.string().required(),
+      "error.importPermitIssueDate-day-year.any.empty": Joi.string().required(),
+      "error.importPermitIssueDate-month.any.empty": Joi.string().required(),
+      "error.importPermitIssueDate-month-year.any.empty": Joi.string().required(),
+      "error.importPermitIssueDate-year.any.empty": Joi.string().required(),      
+      "error.importPermitDetailsNotKnown.any.invalid": Joi.string().required()
+    }).required()
+  }).required(),
   uploadSupportingDocuments: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

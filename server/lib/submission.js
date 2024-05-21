@@ -647,6 +647,7 @@ function getSubmissionProgress(submission, includePageData) {
             || species.isEverImportedExported === true
         ) {
             submissionProgress.push(getPageProgess(`permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataPermitDetails(application.permitDetails)))
+            submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
         }
 
         if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
@@ -914,6 +915,21 @@ function getPageDataImporterDetails(a10ExportData) {
             isMandatory: false,
             hasData: Boolean(a10ExportData?.importerDetails?.postcode)
         },
+    ]
+}
+
+function getPageDataImportPermitDetails(permitDetails) {
+    return [
+        {
+            fieldId: 'importPermitNumber',
+            isMandatory: true,
+            hasData: Boolean(permitDetails?.importPermitNumber)
+        },
+        {
+            fieldId: 'importPermitIssueDate',
+            isMandatory: true,
+            hasData: Boolean(permitDetails?.importPermitIssueDate?.year)
+        }
     ]
 }
 

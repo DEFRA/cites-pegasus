@@ -1089,6 +1089,35 @@
       "error.isExportOrReexportSameAsCountryOfOrigin.any.invalid": "You must enter Export or Re-Export permit details"
     }
   },
+  "importPermitDetails": {
+    "defaultTitle": "Import permit details",
+    "pageHeader": "Import permit details",
+    "pageBody": "This is the details of the permit that was used for import into the UK.  We will require a copy of this endorsed permit.  This can be uploaded with the other supporting documents as part of this application.",
+    "inputLabelPermitNumber": "Permit number",
+    "inputLabelPermitIssueDate": "Permit issue date",
+    "inputLabelHintPermitIssueDate": "For example, 27 3 2007",
+    "dividerText": "Or",
+    "checkboxLabelNotKnown": "Country of import permit details are not known",
+    "errorMessages": {
+      "error.importPermitNumber.any.required": "Enter the Import permit number",
+      "error.importPermitNumber.string.empty": "Enter the Import permit number",
+      "error.importPermitNumber.string.pattern.base": "Import permit number must only include letters a to z, numbers 0 to 9, and special characters such as hyphens, spaces and apostrophes",
+      "error.importPermitNumber.string.min": "Import permit number must be 1 character or more",
+      "error.importPermitNumber.string.max": "Import permit number must be 27 characters or less",
+      "error.importPermitIssueDate.any.empty": "Enter the Import permit issue date",
+      "error.importPermitIssueDate.any.custom": "Enter the Import permit issue date",
+      "error.importPermitIssueDate.any.future": "The Import permit issue date must be in the past",
+      "error.importPermitIssueDate.any.invalid": "The Import permit issue date must be a real date",
+      "error.importPermitIssueDate.any.beforeMinDate": "The Import permit issue date must be on or after 1 january 1753",
+      "error.importPermitIssueDate-day.any.empty": "The Import permit issue date must include a day",
+      "error.importPermitIssueDate-day-month.any.empty": "The Import permit issue date must include a day and month",
+      "error.importPermitIssueDate-day-year.any.empty": "The Import permit issue date must include a day and year",
+      "error.importPermitIssueDate-month.any.empty": "The Import permit issue date must include a month",
+      "error.importPermitIssueDate-month-year.any.empty": "The Import permit issue date must include a month and year",
+      "error.importPermitIssueDate-year.any.empty": "The Import permit issue date must include a year",
+      "error.importPermitDetailsNotKnown.any.invalid": "You must enter Import permit details"
+    }
+  },
   "uploadSupportingDocuments": {
     "defaultTitle": "Upload supporting documents",
     "pageHeader": "Upload supporting documents",
