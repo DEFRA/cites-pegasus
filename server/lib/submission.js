@@ -647,8 +647,9 @@ function getSubmissionProgress(submission, includePageData) {
             || species.isEverImportedExported === true
         ) {
             submissionProgress.push(getPageProgess(`permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataPermitDetails(application.permitDetails)))
-            submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
+            submissionProgress.push(getPageProgess(`origin-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataOriginPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
             submissionProgress.push(getPageProgess(`reexport-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataReexportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
+            submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
         }
 
         if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
@@ -919,27 +920,32 @@ function getPageDataImporterDetails(a10ExportData) {
     ]
 }
 
-function getPageDataReexportPermitDetails(permitDetails) {
+function getPageDataOriginPermitDetails(permitDetails) {
     return [
         {
-            fieldId: 'importPermitNumber',
+            fieldId: 'countryOfOrigin',
+            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
+            hasData: Boolean(permitDetails?.countryOfOrigin)
+        },
+        {
+            fieldId: 'countryOfOriginPermitNumber',
             isMandatory: !Boolean(permitDetails?.importPermitDetailsNotKnown),
             hasData: Boolean(permitDetails?.importPermitNumber)
         },
         {
-            fieldId: 'importPermitIssueDate',
+            fieldId: 'countryOfOriginPermitIssueDate',
             isMandatory: !Boolean(permitDetails?.importPermitDetailsNotKnown),
             hasData: Boolean(permitDetails?.importPermitIssueDate?.year)
         },
         {
-            fieldId: 'importPermitDetailsNotKnown',
+            fieldId: 'isCountryOfOriginNotKnown',
             isMandatory: true,
             hasData: typeof permitDetails?.importPermitDetailsNotKnown === 'boolean'
         }
     ]
 }
 
-function getPageDataImportPermitDetails(permitDetails) {
+function getPageDataReexportPermitDetails(permitDetails) {
     return [
         {
             fieldId: 'exportOrReexportCountry',
@@ -964,7 +970,27 @@ function getPageDataImportPermitDetails(permitDetails) {
     ]
 }
 
-function getPageDataPermitDetails(permitDetails) {
+function getPageDataImportPermitDetails(permitDetails) {
+    return [
+        {
+            fieldId: 'importPermitNumber',
+            isMandatory: !Boolean(permitDetails?.importPermitDetailsNotKnown),
+            hasData: Boolean(permitDetails?.importPermitNumber)
+        },
+        {
+            fieldId: 'importPermitIssueDate',
+            isMandatory: !Boolean(permitDetails?.importPermitDetailsNotKnown),
+            hasData: Boolean(permitDetails?.importPermitIssueDate?.year)
+        },
+        {
+            fieldId: 'importPermitDetailsNotKnown',
+            isMandatory: true,
+            hasData: typeof permitDetails?.importPermitDetailsNotKnown === 'boolean'
+        }
+    ]
+}
+
+function getPageDataPermitDetails(permitDetails) {//TODO REMOVE THIS
     return [
         {
             fieldId: 'isCountryOfOriginNotKnown',

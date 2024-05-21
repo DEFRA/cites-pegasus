@@ -30,7 +30,8 @@ const routes = [].concat(
   require('../routes/already-have-a10'),
   require('../routes/ever-imported-exported'),
   require('../routes/quantity'),
-  require('../routes/permit-details'),
+  require('../routes/permit-details'),//TODO REMOVE THIS
+  require('../routes/origin-permit-details'),
   require('../routes/import-permit-details'),
   require('../routes/reexport-permit-details'),
   require('../routes/additional-info'),
