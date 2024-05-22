@@ -875,6 +875,41 @@ const schema = Joi.object().keys({
       "error.isExportOrReexportSameAsCountryOfOrigin.any.invalid": Joi.string().required()
     }).required()
   }).required(),
+  originPermitDetails: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    pageBody: Joi.string().required(),
+    inputLabelCountry: Joi.string().required(),
+    inputLabelPermitNumber: Joi.string().required(),
+    inputLabelPermitIssueDate: Joi.string().required(),
+    inputLabelHintPermitIssueDate: Joi.string().required(),
+    dividerText: Joi.string().required(),
+    checkboxLabelNotKnown: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.countryOfOrigin.string.empty": Joi.string().required(),
+      "error.countryOfOrigin.any.empty": Joi.string().required(),
+      "error.countryOfOrigin.any.required": Joi.string().required(),
+      "error.countryOfOrigin.string.max": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.any.required": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.empty": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.pattern.base": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.min": Joi.string().required(),
+      "error.countryOfOriginPermitNumber.string.max": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.custom": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.future": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.invalid": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.beforeMinDate": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day-month.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-day-year.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-month.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-month-year.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate-year.any.empty": Joi.string().required(),
+      "error.countryOfOriginPermitIssueDate.any.max": Joi.string().required(),
+      "error.isCountryOfOriginNotKnown.any.invalid": Joi.string().required()
+    }).required()
+  }).required(),
   reexportPermitDetails: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
@@ -934,7 +969,7 @@ const schema = Joi.object().keys({
       "error.importPermitIssueDate-day-year.any.empty": Joi.string().required(),
       "error.importPermitIssueDate-month.any.empty": Joi.string().required(),
       "error.importPermitIssueDate-month-year.any.empty": Joi.string().required(),
-      "error.importPermitIssueDate-year.any.empty": Joi.string().required(),      
+      "error.importPermitIssueDate-year.any.empty": Joi.string().required(),
       "error.importPermitDetailsNotKnown.any.invalid": Joi.string().required()
     }).required()
   }).required(),

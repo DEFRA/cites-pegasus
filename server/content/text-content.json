@@ -1098,7 +1098,7 @@
     "inputLabelPermitIssueDate": "Permit issue date",
     "inputLabelHintPermitIssueDate": "For example, 27 3 2007",
     "dividerText": "Or",
-    "checkboxLabelNotKnown": "Country of origin permit details are not known",
+    "checkboxLabelNotKnown": "I do not know the original Export permit details",
     "errorMessages": {
       "error.countryOfOrigin.string.empty": "Enter the country of origin",
       "error.countryOfOrigin.any.empty": "Enter the country of origin",
@@ -1120,19 +1120,20 @@
       "error.countryOfOriginPermitIssueDate-month.any.empty": "The permit issue date must include a month",
       "error.countryOfOriginPermitIssueDate-month-year.any.empty": "The permit issue date must include a month and year",
       "error.countryOfOriginPermitIssueDate-year.any.empty": "The permit issue date must include a year",
+      "error.countryOfOriginPermitIssueDate.any.max": "The permit issue date must be less than a month in the future",
       "error.isCountryOfOriginNotKnown.any.invalid": "You must enter the country of origin permit details"
     }
   },
   "reexportPermitDetails": {
-    "defaultTitle": "Country of Re-Export permit details",
-    "pageHeader": "Country of Re-Export permit details",
-    "pageBody": "This will be on the export / re-export permit from the country you are importing from.",
+    "defaultTitle": "Export permit details",
+    "pageHeader": "Export permit details",
+    "pageBody": "Enter details from the Export or Re-Export permit issued by the country you are importing your specimen from.",
     "inputLabelCountry": "Country",
     "inputLabelPermitNumber": "Permit number",
     "inputLabelPermitIssueDate": "Permit issue date",
     "inputLabelHintPermitIssueDate": "For example, 27 3 2007",
     "dividerText": "Or",
-    "checkboxLabelNotKnown": "Country of Re-export permit details are not known",
+    "checkboxLabelNotKnown": "I do not know the Export or Re-Export permit details",
     "errorMessages": {
       "error.exportOrReexportCountry.string.empty": "Enter the country of Re-Export",
       "error.exportOrReexportCountry.any.empty": "Enter the country of Re-Export",
@@ -1160,12 +1161,12 @@
   "importPermitDetails": {
     "defaultTitle": "Import permit details",
     "pageHeader": "Import permit details",
-    "pageBody": "This is the details of the permit that was used for import into the UK.  We will require a copy of this endorsed permit.  This can be uploaded with the other supporting documents as part of this application.",
+    "pageBody": "Enter details from the permit that was used for import into the UK. We will require a copy of this endorsed permit. This can be uploaded with the other supporting documents as part of this application.",
     "inputLabelPermitNumber": "Permit number",
     "inputLabelPermitIssueDate": "Permit issue date",
     "inputLabelHintPermitIssueDate": "For example, 27 3 2007",
     "dividerText": "Or",
-    "checkboxLabelNotKnown": "Country of import permit details are not known",
+    "checkboxLabelNotKnown": "I do not know the Import permit details",
     "errorMessages": {
       "error.importPermitNumber.any.required": "Enter the permit number",
       "error.importPermitNumber.string.empty": "Enter the permit number",
