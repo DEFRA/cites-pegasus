@@ -32,6 +32,7 @@ const routes = [].concat(
   require('../routes/quantity'),
   require('../routes/permit-details'),//TODO REMOVE THIS
   require('../routes/origin-permit-details'),
+  require('../routes/country-of-origin-import'),
   require('../routes/import-permit-details'),
   require('../routes/reexport-permit-details'),
   require('../routes/additional-info'),

@@ -777,6 +777,13 @@ const schema = Joi.object().keys({
       "error.isEverImportedExported.any.required": Joi.string().required()
     }).required()
   }).required(),
+  countryOfOriginImport: Joi.object({
+    defaultTitle: Joi.string().required(),
+    pageHeader: Joi.string().required(),
+    errorMessages: Joi.object({
+      "error.isImportingFromCountryOfOrigin.any.required": Joi.string().required()
+    }).required()
+  }).required(),
   multipleSpecimens: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),

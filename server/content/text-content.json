@@ -951,6 +951,13 @@
       "error.isEverImportedExported.any.required": "Select yes if the specimen has ever been imported or exported"
     }
   },
+  "countryOfOriginImport": {
+    "defaultTitle": "Are you importing this specimen from ##COUNTRY##?",
+    "pageHeader": "Are you importing this specimen from ##COUNTRY##?",
+    "errorMessages": {
+      "error.isImportingFromCountryOfOrigin.any.required": "Select yes if you are importing from the country of origin"
+    }
+  },
   "multipleSpecimens": {
     "defaultTitle": "Applying for multiple specimens",
     "pageHeader": "Applying for multiple specimens",

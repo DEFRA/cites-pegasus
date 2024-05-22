@@ -650,6 +650,7 @@ function getSubmissionProgress(submission, includePageData) {
             submissionProgress.push(getPageProgess(`origin-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataOriginPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
             submissionProgress.push(getPageProgess(`reexport-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataReexportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
             submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))//TODO Add correct restrictions to this page
+            submissionProgress.push(getPageProgess(`country-of-origin-import/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isImportingFromCountryOfOrigin', application.permitDetails.isImportingFromCountryOfOrigin)))//TODO Add correct restrictions to this page
         }
 
         if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
