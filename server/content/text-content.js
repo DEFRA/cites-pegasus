@@ -781,7 +781,7 @@ const schema = Joi.object().keys({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     errorMessages: Joi.object({
-      "error.isImportingFromCountryOfOrigin.any.required": Joi.string().required()
+      "error.isExportOrReexportSameAsCountryOfOrigin.any.required": Joi.string().required()
     }).required()
   }).required(),
   multipleSpecimens: Joi.object({
@@ -917,7 +917,7 @@ const schema = Joi.object().keys({
       "error.isCountryOfOriginNotKnown.any.invalid": Joi.string().required()
     }).required()
   }).required(),
-  reexportPermitDetails: Joi.object({
+  exportPermitDetails: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
     pageBody: Joi.string().required(),

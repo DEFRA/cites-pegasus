@@ -2,14 +2,16 @@ const Joi = require("joi")
 const { urlPrefix, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { permitType: pt} = require('../lib/permit-type-helper')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const pageId = "additional-info"
 const currentPath = `${urlPrefix}/${pageId}`
 const oldPath = `${urlPrefix}/comments`
-const previousPathPermitDetails = `${urlPrefix}/permit-details`
+const previousPathImportPermitDetails = `${urlPrefix}/import-permit-details`
+const previousPathExportPermitDetails = `${urlPrefix}/export-permit-details`
+const previousPathCountryOfOriginImport = `${urlPrefix}/country-of-origin-import`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAppSummary = `${urlPrefix}/application-summary/check`
@@ -42,16 +44,26 @@ function createModel(errors, data) {
 
   let previousPath = ''
   if (data.permitType === pt.EXPORT) {
-      previousPath = previousPathImporterExporter
-  } else if (!data.isEverImportedExported && data.permitType === pt.ARTICLE_10) {
+    previousPath = previousPathImporterExporter
+  } else if (data.permitType === pt.ARTICLE_10) {
+    if (data.isEverImportedExported) {
+      previousPath = previousPathImportPermitDetails
+    } else {
       previousPath = previousPathEverImportedExported
-  } else if (data.permitDetails) {
-    previousPath = previousPathPermitDetails
+    }
+  } else if (data.permitType === pt.IMPORT) {
+    if (data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin && data.permitDetails?.isCountryOfOriginNotKnown === false) {
+      previousPath = previousPathCountryOfOriginImport
+    } else {
+      previousPath = previousPathExportPermitDetails
+    }
+  } else {
+    previousPath = previousPathImportPermitDetails
   }
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -169,8 +181,8 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-            comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
-            internalReference: Joi.string().optional().allow(null, "").max(30),
+          comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
+          internalReference: Joi.string().optional().allow(null, "").max(30),
         }),
         failAction: failAction
       },
@@ -179,7 +191,7 @@ module.exports = [
 
         const modifiedComments = request.payload.comments.replace(/\r/g, '')
         const schema = Joi.object({ comments: Joi.string().max(500).optional().allow(null, "") })
-        const result = schema.validate({comments: modifiedComments},  { abortEarly: false })
+        const result = schema.validate({ comments: modifiedComments }, { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -201,12 +213,12 @@ module.exports = [
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         let redirectTo = `${nextPathAppSummary}/${applicationIndex}`
 
-        if (enableGenerateExportPermitsFromA10s && submission.permitType === pt.ARTICLE_10){
+        if (enableGenerateExportPermitsFromA10s && submission.permitType === pt.ARTICLE_10) {
           redirectTo = `${nextPathAddExportPermit}/${applicationIndex}`
-        }  
+        }
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

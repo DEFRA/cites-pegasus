@@ -955,7 +955,7 @@
     "defaultTitle": "Are you importing this specimen from ##COUNTRY##?",
     "pageHeader": "Are you importing this specimen from ##COUNTRY##?",
     "errorMessages": {
-      "error.isImportingFromCountryOfOrigin.any.required": "Select yes if you are importing from the country of origin"
+      "error.isExportOrReexportSameAsCountryOfOrigin.any.required": "Select yes if you are importing from the country of origin"
     }
   },
   "multipleSpecimens": {
@@ -1131,7 +1131,7 @@
       "error.isCountryOfOriginNotKnown.any.invalid": "You must enter the country of origin permit details"
     }
   },
-  "reexportPermitDetails": {
+  "exportPermitDetails": {
     "defaultTitle": "Export permit details",
     "pageHeader": "Export permit details",
     "pageBody": "Enter details from the Export or Re-Export permit issued by the country you are importing your specimen from.",

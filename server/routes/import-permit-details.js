@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator, emptyDateValidator } = require("../lib/validators")
@@ -9,10 +9,8 @@ const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "import-permit-details"
 const currentPath = `${urlPrefix}/${pageId}`
-const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
-const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
-const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
-const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
+const previousPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
+const previousPathExportPermitDetails = `${urlPrefix}/export-permit-details`
 const nextPath = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 const assetPath = `${urlPrefix}/assets`
@@ -21,8 +19,8 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.importPermitDetails
 
-
-  let previousPath
+  const defaultBacklink = data.permitType === pt.ARTICLE_10 ? `${previousPathOriginPermitDetails}/${data.applicationIndex}` : `${previousPathExportPermitDetails}/${data.applicationIndex}`
+  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   let importPermitIssueDateErrors = []
 
@@ -68,9 +66,6 @@ function createModel(errors, data) {
     { name: "month", value: data.importPermitIssueDateMonth },
     { name: "year", value: data.importPermitIssueDateYear }
   ]
-
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
-  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const inputPermitNumber = {
     label: {
@@ -242,8 +237,9 @@ module.exports = [
           "importPermitIssueDate-day": importDay,
           "importPermitIssueDate-month": importMonth,
           "importPermitIssueDate-year": importYear,
-          importPermitDetailsNotKnown
         } = request.payload
+        const importPermitDetailsNotKnown = stringToBool(request.payload.importPermitDetailsNotKnown, false)
+        
 
         const requestPayload = {
           importPermitNumber: importPermitNumber,

@@ -1,13 +1,13 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, toPascalCase, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "country-of-origin-import"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/origin-permit-details`
-const nextPathReexportPermitDetails = `${urlPrefix}/reexport-permit-details`
+const nextPathExportPermitDetails = `${urlPrefix}/export-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -15,7 +15,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.countryOfOriginImport
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isImportingFromCountryOfOrigin"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isExportOrReexportSameAsCountryOfOrigin"])
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -28,9 +28,9 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
 
-    inputIsImportingFromCountryOfOrigin: {
-      idPrefix: "isImportingFromCountryOfOrigin",
-      name: "isImportingFromCountryOfOrigin",
+    inputIsExportOrReexportSameAsCountryOfOrigin: {
+      idPrefix: "isExportOrReexportSameAsCountryOfOrigin",
+      name: "isExportOrReexportSameAsCountryOfOrigin",
       classes: "govuk-radios--inline",
       fieldset: {
         legend: {
@@ -43,15 +43,15 @@ function createModel(errors, data) {
         {
           value: true,
           text: commonContent.radioOptionYes,
-          checked: data.isImportingFromCountryOfOrigin
+          checked: data.isExportOrReexportSameAsCountryOfOrigin
         },
         {
           value: false,
           text: commonContent.radioOptionNo,
-          checked: data.isImportingFromCountryOfOrigin === false
+          checked: data.isExportOrReexportSameAsCountryOfOrigin === false
         }
       ],
-      errorMessage: getFieldError(errorList, "#isImportingFromCountryOfOrigin")
+      errorMessage: getFieldError(errorList, "#isExportOrReexportSameAsCountryOfOrigin")
     }
   }
   return { ...commonContent, ...model }
@@ -84,8 +84,8 @@ module.exports = [
       const pageData = {
         backLinkOverride: checkChangeRouteExit(request, true),
         applicationIndex: applicationIndex,
-        countryOfOrigin: permitDetails.countryOfOriginDesc,
-        isImportingFromCountryOfOrigin: permitDetails.isImportingFromCountryOfOrigin
+        countryOfOrigin: permitDetails?.countryOfOriginDesc,
+        isExportOrReexportSameAsCountryOfOrigin: permitDetails?.isExportOrReexportSameAsCountryOfOrigin
       }
       return h.view(pageId, createModel(null, pageData))
     }
@@ -100,7 +100,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isImportingFromCountryOfOrigin: Joi.boolean().required()
+          isExportOrReexportSameAsCountryOfOrigin: Joi.boolean().required()
         }),
 
         failAction: (request, h, err) => {
@@ -108,21 +108,23 @@ module.exports = [
           const submission = getSubmission(request)
           const permitDetails = submission.applications[applicationIndex].permitDetails
 
-          let isImportingFromCountryOfOrigin = null
-          switch (request.payload.isImportingFromCountryOfOrigin) {
-            case "true":
-              isImportingFromCountryOfOrigin = true
-              break
-            case "false":
-              isImportingFromCountryOfOrigin = false
-              break
-          }
+          // let isExportOrReexportSameAsCountryOfOrigin = null
+          // switch (request.payload.isExportOrReexportSameAsCountryOfOrigin) {
+          //   case "true":
+          //     isExportOrReexportSameAsCountryOfOrigin = true
+          //     break
+          //   case "false":
+          //     isExportOrReexportSameAsCountryOfOrigin = false
+          //     break
+          // }
+
+          const isExportOrReexportSameAsCountryOfOrigin = stringToBool(request.payload.isExportOrReexportSameAsCountryOfOrigin, null)
 
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
-            countryOfOrigin: permitDetails.countryOfOriginDesc,
-            isImportingFromCountryOfOrigin
+            countryOfOrigin: permitDetails?.countryOfOriginDesc,
+            isExportOrReexportSameAsCountryOfOrigin
           }
 
           return h.view(pageId, createModel(err, pageData)).takeover()
@@ -133,12 +135,12 @@ module.exports = [
         const submission = getSubmission(request)
         const permitDetails = submission.applications[applicationIndex].permitDetails
 
-        const isChange = (permitDetails.isImportingFromCountryOfOrigin === true || permitDetails.isImportingFromCountryOfOrigin === false) && permitDetails.isImportingFromCountryOfOrigin !== request.payload.isImportingFromCountryOfOrigin
+        const isChange = (permitDetails.isExportOrReexportSameAsCountryOfOrigin === true || permitDetails.isExportOrReexportSameAsCountryOfOrigin === false) && permitDetails.isExportOrReexportSameAsCountryOfOrigin !== request.payload.isExportOrReexportSameAsCountryOfOrigin
 
-        permitDetails.isImportingFromCountryOfOrigin = request.payload.isImportingFromCountryOfOrigin
+        permitDetails.isExportOrReexportSameAsCountryOfOrigin = request.payload.isExportOrReexportSameAsCountryOfOrigin
 
         if (isChange) {
-          if (permitDetails.isImportingFromCountryOfOrigin) {
+          if (permitDetails.isExportOrReexportSameAsCountryOfOrigin) {
             permitDetails.exportOrReexportCountry = null
             permitDetails.exportOrReexportCountryDesc = null
             permitDetails.exportOrReexportPermitNumber = null
@@ -167,7 +169,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = request.payload.isImportingFromCountryOfOrigin ? `${nextPathAdditionalInfo}/${applicationIndex}` : `${nextPathReexportPermitDetails}/${applicationIndex}`
+        const redirectTo = request.payload.isExportOrReexportSameAsCountryOfOrigin ? `${nextPathAdditionalInfo}/${applicationIndex}` : `${nextPathExportPermitDetails}/${applicationIndex}`
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

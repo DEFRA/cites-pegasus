@@ -1,19 +1,23 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator, dateValidatorMaxDate } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
+const permitType = require("./permit-type")
 const pageId = "origin-permit-details"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
-const nextPath = `${urlPrefix}/additional-info`
+const nextPathCountryOfOriginImport = `${urlPrefix}/country-of-origin-import`
+const nextPathExportPermitDetails = `${urlPrefix}/export-permit-details`
+const nextPathImportPermitDetails = `${urlPrefix}/import-permit-details`
+const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 const assetPath = `${urlPrefix}/assets`
 
@@ -22,13 +26,13 @@ function createModel(errors, data) {
   const pageContent = textContent.originPermitDetails
 
   let previousPath
-  // if (data.isEverImportedExported) {
-  //   previousPath = previousPathEverImportedExported
-  // } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
-  //   previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
-  // } else {
-  //   previousPath = previousPathImporterExporter
-  // }
+  if (data.isEverImportedExported) {
+    previousPath = previousPathEverImportedExported
+  } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
+    previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
+  } else {
+    previousPath = previousPathImporterExporter
+  }
 
   let countryOfOriginPermitIssueDateErrors = []
 
@@ -325,13 +329,13 @@ module.exports = [
           "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
           "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
           "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
-          isCountryOfOriginNotKnown
         } = request.payload
+        const isCountryOfOriginNotKnown = stringToBool(request.payload.isCountryOfOriginNotKnown, false)
 
         const requestPayload = {
           countryOfOrigin: countryOfOrigin,
           countryOfOriginPermitNumber: countryOfOriginPermitNumber,
-          isCountryOfOriginNotKnown: isCountryOfOriginNotKnown || false,
+          isCountryOfOriginNotKnown: isCountryOfOriginNotKnown,
           countryOfOriginPermitIssueDate: {
             "countryOfOriginPermitIssueDate-day": countryOfOriginDay,
             "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
@@ -367,7 +371,7 @@ module.exports = [
 
         const permitDetails = submission.applications[applicationIndex].permitDetails || {}
 
-        permitDetails.isCountryOfOriginNotKnown = isCountryOfOriginNotKnown || false
+        permitDetails.isCountryOfOriginNotKnown = isCountryOfOriginNotKnown
 
         if (permitDetails.isCountryOfOriginNotKnown) {
           permitDetails.countryOfOrigin = null
@@ -378,6 +382,7 @@ module.exports = [
             month: null,
             year: null
           }
+          permitDetails.isExportOrReexportSameAsCountryOfOrigin = null
         } else {
           permitDetails.countryOfOrigin = selectedCountryOfOriginCountry.code
           permitDetails.countryOfOriginDesc = selectedCountryOfOriginCountry.name
@@ -408,7 +413,15 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = `${nextPath}/${applicationIndex}`
+        let redirectTo = `${nextPathExportPermitDetails}/${applicationIndex}`
+
+        if(submission.permitType === pt.IMPORT){
+          if(!isCountryOfOriginNotKnown){
+            redirectTo = `${nextPathCountryOfOriginImport}/${applicationIndex}`          
+          }
+        } else if (submission.permitType === pt.ARTICLE_10){
+          redirectTo = `${nextPathImportPermitDetails}/${applicationIndex}`
+        }
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
