@@ -55,12 +55,17 @@
           {{ govukSummaryList (summaryListImporterExporterDetails) }}
         {% endif %}
 
-        {% if showPermitDetails %}
-          <h2 class="govuk-heading-m">{{headerCountryOfOriginPermitDetails}}</h2>
+        {% if showOriginPermitDetails %}
+          <h2 class="govuk-heading-m">{{headingOriginPermitDetails}}</h2>
           {{ govukSummaryList (summaryListCountryOfOriginPermitDetails) }}
-
-          <h2 class="govuk-heading-m">{{headingPermitDetails}}</h2>
-          {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}       
+        {% endif %}
+        {% if showExportPermitDetails %}
+          <h2 class="govuk-heading-m">{{headingExportPermitDetails}}</h2>
+          {{ govukSummaryList (summaryListExportOrReexportPermitDetails) }}
+        {% endif %}
+        {% if showImportPermitDetails %}
+          <h2 class="govuk-heading-m">{{headingImportPermitDetails}}</h2>
+          {{ govukSummaryList (summaryListImportPermitDetails) }}
         {% endif %}
 
         {% if showAdditionalInfo %}
@@ -72,7 +77,6 @@
           <h2 class="govuk-heading-m">{{headerA10ExportDetails}}</h2>
           {{ govukSummaryList (summaryListA10ExportData) }}
         {% endif %}
-        
 
         {% if showConfirmButton %}
           {{ govukButton({

@@ -227,7 +227,7 @@ function migrateSubmissionToNewSchema(submission) {
         submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
-    submission.applications.forEach(migrateApplicationToNewSchema)
+    submission.applications.forEach(application => migrateApplicationToNewSchema(application, submission.permitType))
 
     if (!submission.permitTypeOption) {
         switch (submission.permitType) {
@@ -247,7 +247,7 @@ function migrateSubmissionToNewSchema(submission) {
     }
 }
 
-function migrateApplicationToNewSchema(app) {
+function migrateApplicationToNewSchema(app, permitType) {
 
     if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
         app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1
@@ -274,14 +274,28 @@ function migrateApplicationToNewSchema(app) {
     }
 
     if (app.permitDetails) {
-        delete app.permitDetails.isCountryOfOriginNotApplicable
-        delete app.permitDetails.isExportOrReexportNotApplicable
+        deleteIfExists(app.permitDetails, 'isCountryOfOriginNotApplicable')
+        deleteIfExists(app.permitDetails, 'isExportOrReexportNotApplicable')
+
         if (app.permitDetails.countryOfOrigin) {
             app.permitDetails.isCountryOfOriginNotKnown = false
         }
 
         if (app.permitDetails.exportOrReexportCountry) {
             app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
+            app.permitDetails.exportOrReexportPermitDetailsNotKnown = false
+        }
+        
+        if (permitType !== pt.IMPORT) {
+            deleteIfExists(app.permitDetails, 'isExportOrReexportSameAsCountryOfOrigin')
+        }
+
+        if (permitType === pt.ARTICLE_10){
+            deleteIfExists(app.permitDetails, 'exportOrReexportCountry')
+            deleteIfExists(app.permitDetails, 'exportOrReexportCountryDesc')
+            deleteIfExists(app.permitDetails, 'exportOrReexportPermitNumber')
+            deleteIfExists(app.permitDetails, 'exportOrReexportPermitIssueDate')
+            deleteIfExists(app.permitDetails, 'exportOrReexportPermitDetailsNotKnown')
         }
     }
 
@@ -646,8 +660,6 @@ function getSubmissionProgress(submission, includePageData) {
             || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
             || species.isEverImportedExported === true
         ) {
-
-            //TODO TEST THESE RULES
             submissionProgress.push(getPageProgess(`origin-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataOriginPermitDetails(application.permitDetails)))
             
             if(typeof application.permitDetails?.isCountryOfOriginNotKnown !== 'boolean'){
@@ -674,7 +686,6 @@ function getSubmissionProgress(submission, includePageData) {
                 }
             }
         }
-        console.log(application.permitDetails)//TODO REMOVE THIS
 
         if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
             && (species.isEverImportedExported || submission.permitType !== pt.ARTICLE_10)
@@ -967,7 +978,7 @@ function getPageDataOriginPermitDetails(permitDetails) {
             hasData: typeof permitDetails?.isCountryOfOriginNotKnown === 'boolean'
         }
     ]
-    console.log(result)//TODO REMOVE THIS
+    
     return result
 }
 
@@ -994,7 +1005,7 @@ function getPageDataExportPermitDetails(permitDetails) {
             hasData: typeof permitDetails?.exportOrReexportPermitDetailsNotKnown === 'boolean'
         }
     ]
-    console.log(result)//TODO REMOVE THIS
+    
     return result
 }
 
@@ -1016,7 +1027,7 @@ function getPageDataImportPermitDetails(permitDetails) {
             hasData: typeof permitDetails?.importPermitDetailsNotKnown === 'boolean'
         }
     ]
-    console.log(result)//TODO REMOVE THIS
+    
     return result
 }
 
