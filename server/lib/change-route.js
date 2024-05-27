@@ -24,7 +24,10 @@ const changeTypes = [
     'specimenType',
     'descriptionGeneric',
     'importerExporterDetails',
-    'permitDetails',
+    'originPermitDetails',
+    'countryOfOriginImport',
+    'exportPermitDetails',
+    'importPermitDetails',
     'additionalInfo',
     'hasUniqueIdentificationMark',
     'uniqueIdentificationMark',
@@ -134,13 +137,22 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
         case "everImportedExported"://CHANGE FLOW
             startUrls.push({ url: `${urlPrefix}/ever-imported-exported/${applicationIndex}` })
             endUrls.push({ url: `${urlPrefix}/ever-imported-exported/${applicationIndex}` })
-            endUrls.push({ url: `${urlPrefix}/permit-details/${applicationIndex}` })
+            endUrls.push({ url: `${urlPrefix}/origin-permit-details/${applicationIndex}` })
             break
         case "importerExporterDetails":
             startUrls.push({ url: `${urlPrefix}/importer-exporter/${applicationIndex}` })
             break
-        case "permitDetails":
-            startUrls.push({ url: `${urlPrefix}/permit-details/${applicationIndex}` })
+        case "originPermitDetails":
+            startUrls.push({ url: `${urlPrefix}/origin-permit-details/${applicationIndex}` })
+            break
+        case "countryOfOriginImport":
+            startUrls.push({ url: `${urlPrefix}/country-of-origin-import/${applicationIndex}` })
+            break
+        case "exportPermitDetails":
+            startUrls.push({ url: `${urlPrefix}/export-permit-details/${applicationIndex}` })
+            break
+        case "importPermitDetails":
+            startUrls.push({ url: `${urlPrefix}/import-permit-details/${applicationIndex}` })
             break
         case "additionalInfo":
             startUrls.push({ url: `${urlPrefix}/additional-info/${applicationIndex}` })
@@ -178,12 +190,12 @@ function setChangeRoute(request, changeType, applicationIndex, returnUrl, permit
 
 function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
     const changeData = getYarValue(request, "changeRouteData")
-    
+
     if (changeData) {
         const firstStartUrl = changeData.startUrls[0]
         const lastStartUrl = changeData.startUrls[changeData.startUrls.length - 1]
 
-        const matchesEndUrl = changeData.endUrls.some(endUrl => urlCompare(request.headers.referer, endUrl.url, endUrl.matchType) )
+        const matchesEndUrl = changeData.endUrls.some(endUrl => urlCompare(request.headers.referer, endUrl.url, endUrl.matchType))
         const matchesFirstStartUrl = urlCompare(request.path, firstStartUrl.url, firstStartUrl.matchType)
         const matchesLastStartUrl = urlCompare(request.path, lastStartUrl.url, lastStartUrl.matchType)
 
@@ -195,7 +207,7 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
 }
 
 function urlCompare(fullUrl, partialUrl, matchType) {
-    return matchType === 'includes' ? fullUrl?.includes(partialUrl) : fullUrl?.endsWith(partialUrl) 
+    return matchType === 'includes' ? fullUrl?.includes(partialUrl) : fullUrl?.endsWith(partialUrl)
 }
 
 function setDataRemoved(request) { //This is used to stop the back button taking a user back to the check your answers page
