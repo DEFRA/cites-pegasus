@@ -119,6 +119,23 @@ function deleteIfExists(object, property) {
   }
 }
 
+function stringToBool(string, defaultValue) {
+
+  if(!string) {
+    return defaultValue
+  }
+
+const stringLower = string.toLowerCase()
+
+  if(stringLower === 'true'){
+    return true
+  } else if (stringLower === 'false'){
+    return false
+  } else {
+    return defaultValue
+  }
+}
+
 module.exports = {
   isChecked,
   setLabelData,
@@ -140,5 +157,6 @@ module.exports = {
   getErrorMessage,
   getAddressSummary,
   toPascalCase,
-  deleteIfExists
+  deleteIfExists,
+  stringToBool
 }

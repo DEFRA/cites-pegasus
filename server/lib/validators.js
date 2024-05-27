@@ -29,7 +29,7 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
     if (day === 0 && month === 0 && year === 0) {
         return helpers.error("any.invalid", { customLabel: fieldName })
     }
-    
+
     if (!day && !month && !year) {
         return helpers.error("any.empty", { customLabel: fieldName })
     }
@@ -70,6 +70,21 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
     return null
 }
 
+function dateValidatorMaxDate(day, month, year, allowFuture, maxDate, fieldName, helpers) {
+    const result = dateValidator(day, month, year, allowFuture, fieldName, helpers)
+
+    if (result) {
+        return result
+    }
+
+    const date = new Date(year, month - 1, day)
+    if (date > maxDate) {
+        return helpers.error("any.max", { customLabel: fieldName })
+    }
+
+    return null
+}
+
 function emptyDateValidator(day, month, year, fieldName, helpers) {
 
     if (day && month && year) {
@@ -102,5 +117,6 @@ module.exports = {
     isPastDate,
     isAfterMinDate,
     dateValidator,
+    dateValidatorMaxDate,
     emptyDateValidator
 }

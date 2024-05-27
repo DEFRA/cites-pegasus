@@ -7,7 +7,7 @@ const textContent = require("../content/text-content")
 const pageId = "ever-imported-exported"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/already-have-a10`
-const nextPathPermitDetails = `${urlPrefix}/permit-details`
+const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
@@ -180,7 +180,7 @@ module.exports = [
           }
         }
 
-        const redirectTo = request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
+        const redirectTo = request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
         
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

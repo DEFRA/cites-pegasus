@@ -94,7 +94,7 @@ async function getDraftSubmissionDetails(request) {
     const submissionFileName = getSubmissionFileName(request)
     draftSubmissionDetail.draftExists = await checkFileExists(request.server, containerName, submissionFileName)
 
-    if (draftSubmissionDetail.draftExists){
+    if (draftSubmissionDetail.draftExists) {
         const draftSubmission = await getObjectFromContainer(request.server, containerName, submissionFileName)
         if (draftSubmission.a10SourceSubmissionRef) {
             draftSubmissionDetail.a10SourceSubmissionRef = draftSubmission.a10SourceSubmissionRef
@@ -172,8 +172,8 @@ function generateExportSubmissionFromA10(submission, submissionRef) {
         applicant: submission.applicant,
         delivery: submission.delivery
     }
-    submission.applications.forEach(a10App => { 
-        if(a10App.a10ExportData.isExportPermitRequired){
+    submission.applications.forEach(a10App => {
+        if (a10App.a10ExportData.isExportPermitRequired) {
             exportSubmission.applications.push(generateExportApplicationFromA10(a10App))
         }
     })
@@ -227,7 +227,7 @@ function migrateSubmissionToNewSchema(submission) {
         submission.delivery.deliveryType = dt.STANDARD_DELIVERY
     }
 
-    submission.applications.forEach(migrateApplicationToNewSchema)
+    submission.applications.forEach(application => migrateApplicationToNewSchema(application, submission.permitType))
 
     if (!submission.permitTypeOption) {
         switch (submission.permitType) {
@@ -247,7 +247,7 @@ function migrateSubmissionToNewSchema(submission) {
     }
 }
 
-function migrateApplicationToNewSchema(app) {
+function migrateApplicationToNewSchema(app, permitType) {
 
     if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
         app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1
@@ -274,14 +274,28 @@ function migrateApplicationToNewSchema(app) {
     }
 
     if (app.permitDetails) {
-        delete app.permitDetails.isCountryOfOriginNotApplicable
-        delete app.permitDetails.isExportOrReexportNotApplicable
+        deleteIfExists(app.permitDetails, 'isCountryOfOriginNotApplicable')
+        deleteIfExists(app.permitDetails, 'isExportOrReexportNotApplicable')
+
         if (app.permitDetails.countryOfOrigin) {
             app.permitDetails.isCountryOfOriginNotKnown = false
         }
 
         if (app.permitDetails.exportOrReexportCountry) {
             app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
+            app.permitDetails.exportOrReexportPermitDetailsNotKnown = false
+        }
+        
+        if (permitType !== pt.IMPORT) {
+            deleteIfExists(app.permitDetails, 'isExportOrReexportSameAsCountryOfOrigin')
+        }
+
+        if (permitType === pt.ARTICLE_10){
+            deleteIfExists(app.permitDetails, 'exportOrReexportCountry')
+            deleteIfExists(app.permitDetails, 'exportOrReexportCountryDesc')
+            deleteIfExists(app.permitDetails, 'exportOrReexportPermitNumber')
+            deleteIfExists(app.permitDetails, 'exportOrReexportPermitIssueDate')
+            deleteIfExists(app.permitDetails, 'exportOrReexportPermitDetailsNotKnown')
         }
     }
 
@@ -646,7 +660,31 @@ function getSubmissionProgress(submission, includePageData) {
             || (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE)
             || species.isEverImportedExported === true
         ) {
-            submissionProgress.push(getPageProgess(`permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataPermitDetails(application.permitDetails)))
+            submissionProgress.push(getPageProgess(`origin-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataOriginPermitDetails(application.permitDetails)))
+            
+            if(typeof application.permitDetails?.isCountryOfOriginNotKnown !== 'boolean'){
+                return { submissionProgress, applicationStatuses }
+            }
+
+            if (submission.permitType === pt.IMPORT && !application.permitDetails?.isCountryOfOriginNotKnown && application.permitDetails?.countryOfOrigin) {
+                submissionProgress.push(getPageProgess(`country-of-origin-import/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportOrReexportSameAsCountryOfOrigin', application.permitDetails?.isExportOrReexportSameAsCountryOfOrigin)))
+                if (typeof application.permitDetails.isExportOrReexportSameAsCountryOfOrigin !== 'boolean') {
+                    return { submissionProgress, applicationStatuses }
+                }
+            }
+
+            if (application.permitDetails.isExportOrReexportSameAsCountryOfOrigin !== true && submission.permitType !== pt.ARTICLE_10 ) {
+                submissionProgress.push(getPageProgess(`export-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataExportPermitDetails(application.permitDetails)))
+                if(typeof application.permitDetails.exportOrReexportPermitDetailsNotKnown !== 'boolean'){
+                    return { submissionProgress, applicationStatuses }
+                }
+            }
+            if (submission.permitType !== pt.IMPORT && submission.permitType !== pt.EXPORT) {
+                submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))
+                if(typeof application.permitDetails.importPermitDetailsNotKnown !== 'boolean'){
+                    return { submissionProgress, applicationStatuses }
+                }
+            }
         }
 
         if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
@@ -659,7 +697,7 @@ function getSubmissionProgress(submission, includePageData) {
 
         if (submission.permitType === pt.ARTICLE_10) {
             submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataIsExportPermitRequired(application.a10ExportData?.isExportPermitRequired)))
-            if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean" && config.enableGenerateExportPermitsFromA10s){
+            if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean" && config.enableGenerateExportPermitsFromA10s) {
                 return { submissionProgress, applicationStatuses }
             }
             if (application.a10ExportData?.isExportPermitRequired && config.enableGenerateExportPermitsFromA10s) {
@@ -917,50 +955,80 @@ function getPageDataImporterDetails(a10ExportData) {
     ]
 }
 
-function getPageDataPermitDetails(permitDetails) {
-    return [
-        {
-            fieldId: 'isCountryOfOriginNotKnown',
-            isMandatory: true,
-            hasData: typeof permitDetails?.isCountryOfOriginNotKnown === 'boolean'
-        },
+function getPageDataOriginPermitDetails(permitDetails) {
+    const result = [
         {
             fieldId: 'countryOfOrigin',
-            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
+            isMandatory: !permitDetails?.isCountryOfOriginNotKnown,
             hasData: Boolean(permitDetails?.countryOfOrigin)
         },
         {
             fieldId: 'countryOfOriginPermitNumber',
-            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
+            isMandatory: !permitDetails?.isCountryOfOriginNotKnown,
             hasData: Boolean(permitDetails?.countryOfOriginPermitNumber)
         },
         {
             fieldId: 'countryOfOriginPermitIssueDate',
-            isMandatory: !Boolean(permitDetails?.isCountryOfOriginNotKnown),
+            isMandatory: !permitDetails?.isCountryOfOriginNotKnown,
             hasData: Boolean(permitDetails?.countryOfOriginPermitIssueDate?.year)
         },
-
         {
-            fieldId: 'isExportOrReexportNotApplicable',
+            fieldId: 'isCountryOfOriginNotKnown',
             isMandatory: true,
-            hasData: typeof permitDetails?.isExportOrReexportSameAsCountryOfOrigin === 'boolean'
-        },
+            hasData: typeof permitDetails?.isCountryOfOriginNotKnown === 'boolean'
+        }
+    ]
+    
+    return result
+}
+
+function getPageDataExportPermitDetails(permitDetails) {
+    const result = [
         {
             fieldId: 'exportOrReexportCountry',
-            isMandatory: !Boolean(permitDetails?.isExportOrReexportSameAsCountryOfOrigin),
+            isMandatory: !permitDetails?.exportOrReexportPermitDetailsNotKnown,
             hasData: Boolean(permitDetails?.exportOrReexportCountry)
         },
         {
             fieldId: 'exportOrReexportPermitNumber',
-            isMandatory: !Boolean(permitDetails?.isExportOrReexportSameAsCountryOfOrigin),
+            isMandatory: !permitDetails?.exportOrReexportPermitDetailsNotKnown,
             hasData: Boolean(permitDetails?.exportOrReexportPermitNumber)
         },
         {
             fieldId: 'exportOrReexportPermitIssueDate',
-            isMandatory: !Boolean(permitDetails?.isExportOrReexportSameAsCountryOfOrigin),
+            isMandatory: !permitDetails?.exportOrReexportPermitDetailsNotKnown,
             hasData: Boolean(permitDetails?.exportOrReexportPermitIssueDate?.year)
+        },
+        {
+            fieldId: 'exportOrReexportPermitDetailsNotKnown',
+            isMandatory: true,
+            hasData: typeof permitDetails?.exportOrReexportPermitDetailsNotKnown === 'boolean'
         }
     ]
+    
+    return result
+}
+
+function getPageDataImportPermitDetails(permitDetails) {
+    const result = [
+        {
+            fieldId: 'importPermitNumber',
+            isMandatory: !permitDetails?.importPermitDetailsNotKnown,
+            hasData: Boolean(permitDetails?.importPermitNumber)
+        },
+        {
+            fieldId: 'importPermitIssueDate',
+            isMandatory: !permitDetails?.importPermitDetailsNotKnown,
+            hasData: Boolean(permitDetails?.importPermitIssueDate?.year)
+        },
+        {
+            fieldId: 'importPermitDetailsNotKnown',
+            isMandatory: true,
+            hasData: typeof permitDetails?.importPermitDetailsNotKnown === 'boolean'
+        }
+    ]
+    
+    return result
 }
 
 function getPageDataQuantity(species) {
