@@ -185,6 +185,8 @@ function generateExportApplicationFromA10(a10App) {
     exportApp.species.purposeCode = exportApp.a10ExportData.purposeCode
     exportApp.importerExporterDetails = exportApp.a10ExportData.importerDetails
     exportApp.a10SourceApplicationIndex = exportApp.applicationIndex
+    exportApp.species.isMultipleSpecimens = false
+    exportApp.species.numberOfUnmarkedSpecimens = null
 
     deleteIfExists(exportApp, 'a10ExportData')
     deleteIfExists(exportApp, 'permitDetails')
