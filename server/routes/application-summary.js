@@ -56,7 +56,7 @@ function createApplicationSummaryModel(errors, data) {
   let backLink = null
 
   const endOfApplicationPage = getEndOfApplicationPage(data.applicationIndex, data.permitType, data.a10ExportData)
-  
+
   switch (summaryType) {
     case 'check':
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
@@ -127,11 +127,11 @@ function createApplicationSummaryModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData){
+function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData) {
   //This determines which was the page before the application summary ie. the end of the application
-  let endOfApplicationPage =`${previousPathAdditionalInfo}/${applicationIndex}`
-  
-  if(permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s) {
+  let endOfApplicationPage = `${previousPathAdditionalInfo}/${applicationIndex}`
+
+  if (permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s) {
     if (a10ExportData?.isExportPermitRequired) {
       endOfApplicationPage = `${previousPathImporterDetails}/${applicationIndex}`
     } else {
@@ -393,17 +393,16 @@ function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly)
     ].filter(Boolean)
 
     const addressDataValue = addressDataItems.join(', ')
-    
+
     let textDescription = ""
-    if (typeof data.a10ExportData?.isExportPermitRequired === 'boolean') {
-      if (data.a10ExportData?.isExportPermitRequired) {
-        textDescription = commonContent.radioOptionYes
-      } else {
-        textDescription = commonContent.radioOptionNo
-      }
+    if (data.a10ExportData?.isExportPermitRequired === true) {
+      textDescription = commonContent.radioOptionYes
+    } else if (data.a10ExportData?.isExportPermitRequired === false) {
+      textDescription = commonContent.radioOptionNo
     }
+
     if (allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)) {
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, "/addExportPermit", "is export permit required"))      
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, "/addExportPermit", "is export permit required"))
     }
 
     if (allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)) {
@@ -517,18 +516,18 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
 
 function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly) {
   const summaryListPermitDetailsCountryOfOriginRows = []
-  
+
   const permitIssueDate = {
     day: data.permitDetails?.countryOfOriginPermitIssueDate?.day,
     month: data.permitDetails?.countryOfOriginPermitIssueDate?.month,
     year: data.permitDetails?.countryOfOriginPermitIssueDate?.year
   }
-  
+
 
   let countryOfOriginText = toPascalCase(data.permitDetails?.countryOfOriginDesc)
   let countryOfOriginPermitNumberText = data.permitDetails?.countryOfOriginPermitNumber
   let countryOfOriginPermitIssueDateText = getDateValue(permitIssueDate)
-  
+
   if (data.permitDetails?.isCountryOfOriginNotApplicable) {
     countryOfOriginText = pageContent.rowTextNotApplicable
     countryOfOriginPermitNumberText = pageContent.rowTextNotApplicable
@@ -540,14 +539,14 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, da
     countryOfOriginPermitNumberText = pageContent.rowTextNotKnown
     countryOfOriginPermitIssueDateText = pageContent.rowTextNotKnown
   }
-  
+
   if (allowPageNavigation(data.submissionProgress, "origin-permit-details/" + data.applicationIndex) || (isReadOnly && countryOfOriginText)) {
     summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOrigin', pageContent.rowTextCountry, countryOfOriginText, "/originPermitDetails", "country of origin permit details"))
     summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitNumber', pageContent.rowTextPermitNumber, countryOfOriginPermitNumberText, "/originPermitDetails", "country of origin permit details"))
     summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitIssueDate', pageContent.rowTextPermitIssueDate, countryOfOriginPermitIssueDateText, "/originPermitDetails", "country of origin permit details"))
-    if(data.permitType === pt.IMPORT && typeof data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin === 'boolean' && !data.permitDetails?.isCountryOfOriginNotKnown){
+    if (data.permitType === pt.IMPORT && typeof data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin === 'boolean' && !data.permitDetails?.isCountryOfOriginNotKnown) {
       const isExportOrReexportSameAsCountryOfOrigin = pageContent.rowTextIsExportOrReexportSameAsCountryOfOrigin.replace('##COUNTRY##', toPascalCase(countryOfOriginText))
-      summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'isExportOrReexportSameAsCountryOfOrigin', isExportOrReexportSameAsCountryOfOrigin, data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/countryOfOriginImport", "country of origin import"))  
+      summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'isExportOrReexportSameAsCountryOfOrigin', isExportOrReexportSameAsCountryOfOrigin, data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/countryOfOriginImport", "country of origin import"))
     }
   }
   return {
@@ -611,24 +610,24 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
 
 function getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly) {
   const summaryListPermitDetailsImportRows = []
-  
+
   const permitIssueDate = {
     day: data.permitDetails?.importPermitIssueDate?.day,
     month: data.permitDetails?.importPermitIssueDate?.month,
     year: data.permitDetails?.importPermitIssueDate?.year
   }
-  
+
 
   let importText = data.permitDetails?.importDesc
   let importPermitNumberText = data.permitDetails?.importPermitNumber
   let importPermitIssueDateText = getDateValue(permitIssueDate)
-  
+
   if (data.permitDetails?.importPermitDetailsNotKnown) {
     importText = pageContent.rowTextNotKnown
     importPermitNumberText = pageContent.rowTextNotKnown
     importPermitIssueDateText = pageContent.rowTextNotKnown
   }
-  
+
   if (allowPageNavigation(data.submissionProgress, "import-permit-details/" + data.applicationIndex) || (isReadOnly && importText)) {
     summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitNumber', pageContent.rowTextPermitNumber, importPermitNumberText, "/importPermitDetails", "import permit details"))
     summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitIssueDate', pageContent.rowTextPermitIssueDate, importPermitIssueDateText, "/importPermitDetails", "import permit details"))

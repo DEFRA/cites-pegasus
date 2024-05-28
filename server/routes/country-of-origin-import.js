@@ -107,17 +107,6 @@ module.exports = [
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
           const permitDetails = submission.applications[applicationIndex].permitDetails
-
-          // let isExportOrReexportSameAsCountryOfOrigin = null
-          // switch (request.payload.isExportOrReexportSameAsCountryOfOrigin) {
-          //   case "true":
-          //     isExportOrReexportSameAsCountryOfOrigin = true
-          //     break
-          //   case "false":
-          //     isExportOrReexportSameAsCountryOfOrigin = false
-          //     break
-          // }
-
           const isExportOrReexportSameAsCountryOfOrigin = stringToBool(request.payload.isExportOrReexportSameAsCountryOfOrigin, null)
 
           const pageData = {

@@ -42,24 +42,7 @@ function createModel(errors, data) {
     })
   }
 
-  let previousPath = ''
-  if (data.permitType === pt.EXPORT) {
-    previousPath = previousPathImporterExporter
-  } else if (data.permitType === pt.ARTICLE_10) {
-    if (data.isEverImportedExported) {
-      previousPath = previousPathImportPermitDetails
-    } else {
-      previousPath = previousPathEverImportedExported
-    }
-  } else if (data.permitType === pt.IMPORT) {
-    if (data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin && data.permitDetails?.isCountryOfOriginNotKnown === false) {
-      previousPath = previousPathCountryOfOriginImport
-    } else {
-      previousPath = previousPathExportPermitDetails
-    }
-  } else {
-    previousPath = previousPathImportPermitDetails
-  }
+  const previousPath = getPreviousPath(data.permitType, data.isEverImportedExported, data.permitDetails)
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -104,6 +87,28 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getPreviousPath(permitType, isEverImportedExported, permitDetails) {
+  let previousPath = ''
+  if (permitType === pt.EXPORT) {
+    previousPath = previousPathImporterExporter
+  } else if (permitType === pt.ARTICLE_10) {
+    if (isEverImportedExported) {
+      previousPath = previousPathImportPermitDetails
+    } else {
+      previousPath = previousPathEverImportedExported
+    }
+  } else if (permitType === pt.IMPORT) {
+    if (permitDetails?.isExportOrReexportSameAsCountryOfOrigin && permitDetails?.isCountryOfOriginNotKnown === false) {
+      previousPath = previousPathCountryOfOriginImport
+    } else {
+      previousPath = previousPathExportPermitDetails
+    }
+  } else {
+    previousPath = previousPathImportPermitDetails
+  }
+  return previousPath
 }
 
 function failAction(request, h, err) {
