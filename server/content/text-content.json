@@ -1349,7 +1349,7 @@
     "rowTextPermitIssueDate": "Permit issue date",
     "rowTextIsExportOrReexportSameAsCountryOfOrigin": "Importing specimen from ##COUNTRY##",
     "headingOriginPermitDetails": "Country of origin permit details",
-    "headingExportPermitDetails": "Export or re-export permit details",
+    "headingExportPermitDetails": "Export permit details",
     "headingImportPermitDetails": "Import permit details",    
     "rowTextNotApplicable": "Not applicable",
     "headerAdditionalInformation": "Additional information",
