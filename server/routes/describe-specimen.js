@@ -11,7 +11,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
 const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
 const previousPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
-const nextPathPermitDetails = `${urlPrefix}/permit-details`
+const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const nextPathBreeder = `${urlPrefix}/breeder`
@@ -179,7 +179,7 @@ module.exports = [
 
         let redirectTo
         if (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE) {
-          redirectTo = `${nextPathPermitDetails}/${applicationIndex}`
+          redirectTo = `${nextPathOriginPermitDetails}/${applicationIndex}`
         } else if (submission.permitType === pt.ARTICLE_10) {
           redirectTo = enableBreederPage && species.specimenType === 'animalLiving' ? `${nextPathBreeder}/${applicationIndex}` : `${nextPathAcquiredDate}/${applicationIndex}`
         } else {

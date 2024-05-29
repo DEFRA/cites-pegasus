@@ -10,7 +10,7 @@ const pageId = 'importer-exporter'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
-const nextPathPermitDetails = `${urlPrefix}/permit-details`
+const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const lodash = require('lodash')
 const invalidSubmissionPath = `${urlPrefix}/`
@@ -262,7 +262,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = submission.permitType === pt.EXPORT ? `${nextPathAdditionalInfo}/${applicationIndex}` : `${nextPathPermitDetails}/${applicationIndex}`
+        const redirectTo = submission.permitType === pt.EXPORT ? `${nextPathAdditionalInfo}/${applicationIndex}` : `${nextPathOriginPermitDetails}/${applicationIndex}`
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
