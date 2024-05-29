@@ -592,7 +592,9 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
     exportOrReexportPermitIssueDateText = pageContent.rowTextSameAsCountryOfOrigin
   }
 
-  if (allowPageNavigation(data.submissionProgress, "export-permit-details/" + data.applicationIndex) || (isReadOnly && exportOrReexportCountryText)) {
+  const sameAsCountryOfOriginShownInOriginPermitDetails = data.permitType === pt.IMPORT && data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin && !data.permitDetails?.isCountryOfOriginNotKnown
+
+  if (allowPageNavigation(data.submissionProgress, "export-permit-details/" + data.applicationIndex) || (isReadOnly && exportOrReexportCountryText && !sameAsCountryOfOriginShownInOriginPermitDetails)) {
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportCountryText, "/exportPermitDetails", "export permit details"))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitNumberText, "/exportPermitDetails", "export permit details"))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, "/exportPermitDetails", "export permit details"))
