@@ -154,6 +154,7 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
+    pageBody: pageContent.pageBody,
     divider: pageContent.dividerText,
     selectExportOrReexportCountry,
     inputExportOrReexportPermitNumber,
