@@ -885,7 +885,8 @@ const schema = Joi.object().keys({
   originPermitDetails: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBody: Joi.string().required(),
+    pageBodyImport: Joi.string().required(),
+    pageBodyNotImport: Joi.string().required(),
     inputLabelCountry: Joi.string().required(),
     inputLabelPermitNumber: Joi.string().required(),
     inputLabelPermitIssueDate: Joi.string().required(),

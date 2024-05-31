@@ -1099,7 +1099,8 @@
   "originPermitDetails": {
     "defaultTitle": "Country of origin permit details",
     "pageHeader": "Country of origin permit details",
-    "pageBody": "Enter details from the specimen's original Export permit. ",
+    "pageBodyImport": "Enter details from the specimen's original Export permit. ",
+    "pageBodyNotImport": "Enter details from the specimen's original Import permit.",
     "inputLabelCountry": "Country",
     "inputLabelPermitNumber": "Permit number",
     "inputLabelPermitIssueDate": "Permit issue date",
