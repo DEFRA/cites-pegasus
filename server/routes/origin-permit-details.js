@@ -164,7 +164,7 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
-    pageBody: pageContent.pageBody,
+    pageBody: data.permitType === pt.IMPORT ? pageContent.pageBodyImport : pageContent.pageBodyNotImport,
     divider: pageContent.dividerText,
     selectCountryOfOrigin,
     inputCountryOfOriginPermitNumber,
