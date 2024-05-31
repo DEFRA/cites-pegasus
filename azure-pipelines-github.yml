@@ -4,7 +4,8 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- main
+- none
+#- main
 
 pool:
   #name: DEFRA-COMMON-windows2019-SSV3
