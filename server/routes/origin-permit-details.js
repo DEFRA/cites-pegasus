@@ -151,7 +151,7 @@ function createModel(errors, data) {
     items: [
       {
         value: true,
-        text: pageContent.checkboxLabelNotKnown,
+        text: data.permitType === pt.IMPORT ? pageContent.checkboxLabelNotKnownImport : pageContent.checkboxLabelNotKnownNotImport,
         checked: data.isCountryOfOriginNotKnown
       }
     ]
