@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { getSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const pageId = 'application-complete'
 const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
@@ -15,9 +16,12 @@ function createModel(errors, data) {
   const pageContent = textContent.applicationComplete
   
   const pageBodyContent = getPageBodyContent(pageContent, data)
+  const permitDescription = getPermitDescription(data.permitType, data.permitSubType)
+
+  const permitTypeText = data.permitType === pt.ARTICLE_10 ? permitDescription : permitDescription + ' ' + pageContent.permitTypeSuffix
 
   const panelContent = {
-    titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', data.permitDescription),
+    titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', permitTypeText),
     html: `${pageContent.panelText}<br><strong>${data.submissionRef}</strong>`
   }
 
@@ -26,7 +30,7 @@ function createModel(errors, data) {
     isExportSubmissionWaiting: data.isExportSubmissionWaiting,
     formActionPage: currentPath,
     pageBody: pageContent.pageBody,
-    pageTitle: pageContent.defaultTitle.replace('##PERMIT_TYPE##', data.permitDescription) + commonContent.pageTitleSuffix,
+    pageTitle: pageContent.defaultTitle.replace('##PERMIT_TYPE##', permitTypeText) + commonContent.pageTitleSuffix,
     panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
     pageHeader2: pageBodyContent.pageHeader2,
@@ -81,7 +85,8 @@ module.exports = [{
       costingType: submission.paymentDetails.costingType,
       paid: submission.paymentDetails.paymentStatus?.status === 'success',
       isExportSubmissionWaiting,
-      permitDescription: getPermitDescription(submission.permitType, submission.permitSubType)
+      permitType: submission.permitType,
+      permitSubType: submission.permitSubType      
     }
 
     return h.view(pageId, createModel(null, pageData));

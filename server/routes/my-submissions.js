@@ -71,7 +71,7 @@ function createModel(errors, data) {
     pageHeader,
     draftNotificationTitle: pageContent.draftNotificationTitle,
     draftNotificationHeader: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationHeaderExportSubmission : pageContent.draftNotificationHeader,
-    draftNotificationBody: pageContent.draftNotificationBody,
+    draftNotificationBody: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationBodyExportSubmission :  pageContent.draftNotificationBody,
     draftContinue: pageContent.draftContinue,
     draftDelete: pageContent.draftDelete,
     draftContinuePath: draftContinuePath,

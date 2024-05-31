@@ -186,6 +186,7 @@ const areYouSureSchema = Joi.object({
 const yourSubmissionSchema = Joi.object({
   defaultTitle: Joi.string().required(),
   pageHeader: Joi.string().required(),
+  insetText: Joi.string().allow("", null),
   copyAriaLabel: Joi.string().required(),
   removeAriaLabel: Joi.string().required()
 }).required()
@@ -1170,6 +1171,7 @@ const schema = Joi.object().keys({
     draftNotificationHeader: Joi.string().required(),
     draftNotificationHeaderExportSubmission: Joi.string().required(),
     draftNotificationBody: Joi.string().required(),
+    draftNotificationBodyExportSubmission: Joi.string().required(),
     draftContinue: Joi.string().required(),
     draftDelete: Joi.string().required(),
     defaultTitle: Joi.string().required(),
@@ -1223,6 +1225,7 @@ const schema = Joi.object().keys({
     panelHeading: Joi.string().required(),
     panelText: Joi.string().required(),
     pageHeader: Joi.string().required(),
+    permitTypeSuffix: Joi.string().required(),
     buttonGoToExportSubmission: Joi.string().required(),
     buttonGoToMyAccount: Joi.string().required(),
     noExportSubmission: Joi.object({
