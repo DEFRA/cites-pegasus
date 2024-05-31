@@ -7,6 +7,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
 const nextPathMySubmissions = `${urlPrefix}/`
 const nextPathExportSubmission = `${urlPrefix}/my-submissions/draft-continue`
+const { getPermitDescription } = require("../lib/permit-type-helper")
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -16,7 +17,7 @@ function createModel(errors, data) {
   const pageBodyContent = getPageBodyContent(pageContent, data)
 
   const panelContent = {
-    titleText: pageContent.panelHeading,
+    titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', data.permitDescription),
     html: `${pageContent.panelText}<br><strong>${data.submissionRef}</strong>`
   }
 
@@ -24,9 +25,8 @@ function createModel(errors, data) {
   const model = {
     isExportSubmissionWaiting: data.isExportSubmissionWaiting,
     formActionPage: currentPath,
-    defaultTitle: pageContent.defaultTitle,
     pageBody: pageContent.pageBody,
-    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: pageContent.defaultTitle.replace('##PERMIT_TYPE##', data.permitDescription) + commonContent.pageTitleSuffix,
     panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
     pageHeader2: pageBodyContent.pageHeader2,
@@ -80,7 +80,8 @@ module.exports = [{
       submissionRef: submission.submissionRef,
       costingType: submission.paymentDetails.costingType,
       paid: submission.paymentDetails.paymentStatus?.status === 'success',
-      isExportSubmissionWaiting
+      isExportSubmissionWaiting,
+      permitDescription: getPermitDescription(submission.permitType, submission.permitSubType)
     }
 
     return h.view(pageId, createModel(null, pageData));
