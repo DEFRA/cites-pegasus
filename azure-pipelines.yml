@@ -13,14 +13,14 @@ pool:
 steps:
 - checkout: self
   fetchDepth: 0
-#- task: SonarCloudPrepare@1
-#  displayName: 'Prepare analysis configuration'
-#  inputs:
-#    SonarCloud: 'SC'
-#    organization: 'defragovuk'
-#    scannerMode: 'CLI'
-#    projectKey: 'defragovuk_Defra-APHA-CITES'
-#    projectName: 'Defra-APHA-CITES'
+- task: SonarCloudPrepare@1
+  displayName: 'Prepare analysis configuration'
+  inputs:
+    SonarCloud: 'SC'
+    organization: 'defragovuk'
+    scannerMode: 'CLI'
+    projectKey: 'defragovuk_Defra-APHA-CITES'
+    projectName: 'Defra-APHA-CITES'
 
 - task: NodeTool@0
   inputs:
@@ -33,12 +33,12 @@ steps:
     npm run unit-test-cov || exit 1
   displayName: 'npm install, build and test'
 
-#- task: SonarCloudAnalyze@1
-#  inputs:
-#    jdkversion: 'JAVA_HOME_17_X64'
-#- task: SonarCloudPublish@1
-#  inputs:
-#    pollingTimeoutSec: '300'
+- task: SonarCloudAnalyze@1
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64'
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
 
 - task: CopyFiles@2
   inputs:
