@@ -213,6 +213,9 @@ function cloneSubmission(request, applicationIndex) {
     delete submission.paymentDetails
     delete submission.supportingDocuments
     delete submission.submissionStatus
+    delete submission.a10SourceSubmissionRef
+
+    submission.applications.forEach(app => delete app.a10SourceApplicationIndex)
 
     newApplication.applicationIndex = 0
     delete newApplication.applicationRef

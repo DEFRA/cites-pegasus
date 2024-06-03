@@ -2,11 +2,13 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { getSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
+const { permitType: pt } = require('../lib/permit-type-helper')
 const pageId = 'application-complete'
 const currentPath = `${urlPrefix}/${pageId}`
 //const previousPath = `${urlPrefix}/`
 const nextPathMySubmissions = `${urlPrefix}/`
 const nextPathExportSubmission = `${urlPrefix}/my-submissions/draft-continue`
+const { getPermitDescription } = require("../lib/permit-type-helper")
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createModel(errors, data) {
@@ -14,9 +16,12 @@ function createModel(errors, data) {
   const pageContent = textContent.applicationComplete
   
   const pageBodyContent = getPageBodyContent(pageContent, data)
+  const permitDescription = getPermitDescription(data.permitType, data.permitSubType)
+
+  const permitTypeText = data.permitType === pt.ARTICLE_10 ? permitDescription : permitDescription + ' ' + pageContent.permitTypeSuffix
 
   const panelContent = {
-    titleText: pageContent.panelHeading,
+    titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', permitTypeText),
     html: `${pageContent.panelText}<br><strong>${data.submissionRef}</strong>`
   }
 
@@ -24,9 +29,8 @@ function createModel(errors, data) {
   const model = {
     isExportSubmissionWaiting: data.isExportSubmissionWaiting,
     formActionPage: currentPath,
-    defaultTitle: pageContent.defaultTitle,
     pageBody: pageContent.pageBody,
-    pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: pageContent.defaultTitle.replace('##PERMIT_TYPE##', permitTypeText) + commonContent.pageTitleSuffix,
     panelContent: panelContent,
     pageHeader: pageContent.pageHeader,
     pageHeader2: pageBodyContent.pageHeader2,
@@ -80,7 +84,9 @@ module.exports = [{
       submissionRef: submission.submissionRef,
       costingType: submission.paymentDetails.costingType,
       paid: submission.paymentDetails.paymentStatus?.status === 'success',
-      isExportSubmissionWaiting
+      isExportSubmissionWaiting,
+      permitType: submission.permitType,
+      permitSubType: submission.permitSubType      
     }
 
     return h.view(pageId, createModel(null, pageData));
