@@ -1472,6 +1472,7 @@
     "exportApplications": {
       "defaultTitle": "Your Export applications",
       "pageHeader": "Your Export applications",
+      "insetText": "These matching Export permit applications have been generated using information provided during your Article 10 application. You can now complete these Export applications.",
       "copyAriaLabel": "Copy this Export application",
       "removeAriaLabel": "Remove this Export application"
     },

@@ -28,6 +28,7 @@ function createSubmitApplicationModel(errors, data) {
       break
     case pt.EXPORT:
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.exportApplications)
+      insetText = getExportInsetText(data.permitType, data.a10SourceSubmissionRef, pageContent)
       break
     case pt.MIC:
     case pt.TEC:
@@ -102,6 +103,14 @@ function createSubmitApplicationModel(errors, data) {
     applyForADifferentTypeOfPermitUrl: `${currentPath}/${areYouSurePath}/permit-type`,
   }
   return { ...commonContent, ...model }
+}
+
+function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
+  if (permitType === pt.EXPORT && a10SourceSubmissionRef){
+    return pageContent.insetText
+  } else {
+    return null
+  }
 }
 
 function getA10InsetText(permitType, applications, pageContent) {
@@ -208,7 +217,8 @@ module.exports = [
 
       const pageData = {
         permitType: submission.permitType,
-        applications: completeApplications
+        applications: completeApplications,
+        a10SourceSubmissionRef: submission.a10SourceSubmissionRef
       }
       return h.view(pageId, createSubmitApplicationModel(null, pageData))
     }
@@ -311,7 +321,8 @@ module.exports = [
 
           const pageData = {
             permitType: submission.permitType,
-            applications: completeApplications
+            applications: completeApplications,
+            a10SourceSubmissionRef: submission.a10SourceSubmissionRef
           }
           return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
         }
