@@ -18,7 +18,7 @@ function createModel(errors, data) {
   const pageBodyContent = getPageBodyContent(pageContent, data)
   const permitDescription = getPermitDescription(data.permitType, data.permitSubType)
 
-  const permitTypeText = data.permitType === pt.ARTICLE_10 ? permitDescription : permitDescription + ' ' + pageContent.permitTypeSuffix
+  const permitTypeText = [pt.ARTICLE_10, pt.MIC, pt.TEC, pt.POC].includes(data.permitType) || permitDescription.endsWith(pageContent.permitTypeSuffix) ? permitDescription : permitDescription + ' ' + pageContent.permitTypeSuffix
 
   const panelContent = {
     titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', permitTypeText),
@@ -86,7 +86,7 @@ module.exports = [{
       paid: submission.paymentDetails.paymentStatus?.status === 'success',
       isExportSubmissionWaiting,
       permitType: submission.permitType,
-      permitSubType: submission.permitSubType      
+      permitSubType: submission.applications[0].permitSubType      
     }
 
     return h.view(pageId, createModel(null, pageData));
