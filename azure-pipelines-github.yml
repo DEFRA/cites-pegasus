@@ -17,11 +17,11 @@ steps:
 - task: SonarCloudPrepare@1
   displayName: 'Prepare analysis configuration'
   inputs:
-    SonarCloud: 'SC'
-    organization: 'defragovuk'
+    SonarCloud: 'SonarCloud Github'
+    organization: 'defra'
     scannerMode: 'CLI'
-    projectKey: 'defragovuk_Defra-APHA-CITES'
-    projectName: 'Defra-APHA-CITES'
+    projectKey: 'DEFRA_cites-pegasus'
+    projectName: 'Github-Defra-APHA-CITES'
 
 - task: NodeTool@0
   inputs:

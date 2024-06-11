@@ -1,13 +1,12 @@
 # CITES Application Portal
 
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=bugs&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=sqale_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=code_smells&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=vulnerabilities&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=security_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=reliability_rating&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=defragovuk_Defra-APHA-CITES&metric=duplicated_lines_density&token=dbe3b4423a37991718cea22912c4d7eb04fc0ffb)](https://sonarcloud.io/summary/new_code?id=defragovuk_Defra-APHA-CITES)
-
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=bugs)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_cites-pegasus&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=DEFRA_cites-pegasus)
 
 ## Prerequisites
 
