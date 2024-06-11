@@ -14,7 +14,7 @@ pool:
 steps:
 - checkout: self
   fetchDepth: 0
-- task: SonarCloudPrepare@1
+- task: SonarCloudPrepare@2
   displayName: 'Prepare analysis configuration'
   inputs:
     SonarCloud: 'SonarCloud Github'
