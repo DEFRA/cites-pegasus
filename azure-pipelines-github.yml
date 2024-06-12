@@ -34,7 +34,7 @@ steps:
     npm run unit-test-cov || exit 1
   displayName: 'npm install, build and test'
 
-- task: SonarCloudAnalyze@1
+- task: SonarCloudAnalyze@2
   inputs:
     jdkversion: 'JAVA_HOME_17_X64'
 - task: SonarCloudPublish@1
