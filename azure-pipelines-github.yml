@@ -22,6 +22,8 @@ steps:
     scannerMode: 'CLI'
     projectKey: 'DEFRA_cites-pegasus'
     projectName: 'Github-Defra-APHA-CITES'
+    extraProperties: |
+      sonar.projectBaseDir=$(Build.SourcesDirectory)/sonar-cloud-github
 
 - task: NodeTool@0
   inputs:
