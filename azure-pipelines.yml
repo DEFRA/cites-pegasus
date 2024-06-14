@@ -22,7 +22,7 @@ steps:
 - script: |
     npm install
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'Run npm install and build'
 
 - script: |
     npm run unit-test-cov || exit 1
@@ -41,7 +41,7 @@ steps:
       sonar.projectName=Defra-APHA-CITES
       sonar.tests=./tests
       sonar.javascript.lcov.reportPaths=./tests/coverage/lcov.info
-      sonar.testExecutionReportPaths=$(Build.SourcesDirectory)/test-report.xml
+      sonar.testExecutionReportPaths=$(Build.SourcesDirectory)/tests/coverage/clover.xml
 
 - task: SonarCloudAnalyze@2
   inputs:
