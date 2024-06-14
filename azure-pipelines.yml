@@ -21,9 +21,7 @@ steps:
     scannerMode: 'CLI'
     projectKey: 'defragovuk_Defra-APHA-CITES'
     projectName: 'Defra-APHA-CITES'
-    extraProperties: |
-      sonar.projectBaseDir=$(Build.SourcesDirectory)/sonar-cloud-ado
-      sonar.projectKey=defragovuk_Defra-APHA-CITES
+        
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
