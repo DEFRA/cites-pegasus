@@ -41,7 +41,8 @@ steps:
       sonar.projectName=Defra-APHA-CITES
       sonar.tests=./tests
       sonar.javascript.lcov.reportPaths=./tests/coverage/lcov.info
-      sonar.testExecutionReportPaths=$(Build.SourcesDirectory)/tests/coverage/clover.xml
+
+# sonar.testExecutionReportPaths=$(Build.SourcesDirectory)/tests/coverage/clover.xml
 
 - task: SonarCloudAnalyze@2
   inputs:
