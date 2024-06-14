@@ -21,6 +21,8 @@ steps:
     scannerMode: 'CLI'
     projectKey: 'defragovuk_Defra-APHA-CITES'
     projectName: 'Defra-APHA-CITES'
+    extraProperties: |
+      sonar.propertiesFile=$(Build.SourcesDirectory)/sonar-project-ado.properties
 
 - task: NodeTool@0
   inputs:
