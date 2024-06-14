@@ -36,7 +36,7 @@ steps:
 - task: SonarCloudAnalyze@2
   inputs:
     jdkversion: 'JAVA_HOME_17_X64'
-- task: SonarCloudPublish@1
+- task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
 
@@ -47,7 +47,7 @@ steps:
     targetFolder: $(Build.ArtifactStagingDirectory)/npm
   displayName: 'Copy npm package'
 
-- task: PublishPipelineArtifact@2
+- task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)/npm'
     artifactName: npm
