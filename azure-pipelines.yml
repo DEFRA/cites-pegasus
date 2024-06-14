@@ -24,13 +24,6 @@ steps:
     extraProperties: |
       sonar.projectBaseDir=$(Build.SourcesDirectory)/sonar-cloud-ado
       sonar.projectKey=defragovuk_Defra-APHA-CITES
-      sonar.organization=defragovuk
-      sonar.projectName=Defra-APHA-CITES
-      sonar.projectVersion=1.0
-      sonar.exclusions=**/node_modules/**,coverage.html,logs/**,config/server.json,**/server/public/gft/**,**/server/public/gtm/**,**/server/public/build/**,**/public/css/**,**/gulpfile/**,**/client/sass/components/**,**/client/sass/patterns/**,**/client/sass/application-ie6.scss,**/client/sass/application-ie7.scss,**/client/sass/application-ie8.scss,**/client/sass/patterns/_check-your-answers.scss,**/client/sass/patterns/_task-list.scss,**/client/sass/core/_template.scss,**/stylesheets/**,out/**,public/javascripts/libs/**,bin/**,docs/**,**/*test.js,**/test/**
-      sonar.coverage.exclusions =**/**/public/javascripts/**, **/**/**/static/**, **/gulpfile/**, **/bin/**
-      sonar.host.url=https://sonarcloud.io
-      sonar.javascript.lcov.reportPaths=./coverage/lcov.info
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
