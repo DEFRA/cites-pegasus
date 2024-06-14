@@ -13,6 +13,21 @@ pool:
 steps:
 - checkout: self
   fetchDepth: 0
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
+
+- script: |
+    npm run unit-test-cov || exit 1
+  displayName: 'Run Unit Tests'
+
 - task: SonarCloudPrepare@2
   displayName: 'Prepare analysis configuration'
   inputs:
@@ -23,22 +38,16 @@ steps:
     projectName: 'Defra-APHA-CITES'
     extraProperties: |
       sonar.projectKey=defragovuk_Defra-APHA-CITES
-      sonar.propertiesFile=$(Build.SourcesDirectory)/sonar-project-ado.properties
-
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
-
-- script: |
-    npm install
-    npm run build
-    npm run unit-test-cov || exit 1
-  displayName: 'npm install, build and test'
+      sonar.projectName=Defra-APHA-CITES
+      sonar.sources=./src
+      sonar.tests=./tests
+      sonar.javascript.lcov.reportPaths=./tests/coverage/lcov.info
+      sonar.testExecutionReportPaths=$(Build.SourcesDirectory)/test-report.xml
 
 - task: SonarCloudAnalyze@2
   inputs:
     jdkversion: 'JAVA_HOME_17_X64'
+
 - task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
@@ -59,3 +68,4 @@ steps:
 - script: |
     git branch main
     git push https://$(GITHUB_PAT)@github.com/$REPO_NAME main
+  displayName: 'Push to GitHub'
