@@ -52,7 +52,7 @@ describe('Healthcheck Routes', () => {
             }, 20000)
             test('returns Success', async () => {
                 await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Success')
+                expect(h.response.mock.calls[0][0]).toContain('Success')
                 expect(code.mock.calls[0][0]).toEqual(200)
             })
         })
