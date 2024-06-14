@@ -40,6 +40,7 @@ steps:
       sonar.projectKey=defragovuk_Defra-APHA-CITES
       sonar.projectName=Defra-APHA-CITES
       sonar.sources=./
+      sonar.exclusions=**/tests/**
       sonar.tests=./tests
       sonar.javascript.lcov.reportPaths=./tests/coverage/lcov.info
 
