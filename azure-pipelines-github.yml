@@ -22,9 +22,9 @@ steps:
     scannerMode: 'CLI'
     projectKey: 'DEFRA_cites-pegasus'
     projectName: 'Github-Defra-APHA-CITES'
-    extraProperties: |
-      sonar.projectBaseDir=$(Build.SourcesDirectory)/sonar-cloud-github
+    extraProperties: |      
       sonar.projectKey=DEFRA_cites-pegasus
+      sonar.propertiesFile=$(Build.SourcesDirectory)/sonar-project-github.properties
 
 - task: NodeTool@0
   inputs:
