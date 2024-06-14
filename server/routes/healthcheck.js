@@ -12,7 +12,7 @@ module.exports = [
       auth: false
     },
     handler: async (request, h) => {
-      return h.response('Success').code(200);
+      return h.response('Success v2').code(200);
     }
   },
   {
