@@ -39,7 +39,6 @@ steps:
     extraProperties: |
       sonar.projectKey=defragovuk_Defra-APHA-CITES
       sonar.projectName=Defra-APHA-CITES
-      sonar.sources=./src
       sonar.tests=./tests
       sonar.javascript.lcov.reportPaths=./tests/coverage/lcov.info
       sonar.testExecutionReportPaths=$(Build.SourcesDirectory)/test-report.xml
