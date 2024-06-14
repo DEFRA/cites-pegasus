@@ -23,6 +23,9 @@ steps:
     projectName: 'Defra-APHA-CITES'
     extraProperties: |
       sonar.projectBaseDir=$(Build.SourcesDirectory)/sonar-cloud-ado
+      sonar.projectKey=defragovuk_Defra-APHA-CITES
+      sonar.organization=defragovuk
+      sonar.projectName=Defra-APHA-CITES
 
 - task: NodeTool@0
   inputs:
