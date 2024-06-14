@@ -22,6 +22,7 @@ steps:
     projectKey: 'defragovuk_Defra-APHA-CITES'
     projectName: 'Defra-APHA-CITES'
     extraProperties: |
+      sonar.projectKey=defragovuk_Defra-APHA-CITES
       sonar.propertiesFile=$(Build.SourcesDirectory)/sonar-project-ado.properties
 
 - task: NodeTool@0
