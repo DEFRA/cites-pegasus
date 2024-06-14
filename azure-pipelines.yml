@@ -29,7 +29,7 @@ steps:
   displayName: 'Run Unit Tests'
 
 - task: SonarCloudPrepare@2
-  displayName: 'Prepare analysis configuration'
+  displayName: 'SonarCloudPrepare'
   inputs:
     SonarCloud: 'SC'
     organization: 'defragovuk'
