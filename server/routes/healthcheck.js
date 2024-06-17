@@ -37,7 +37,7 @@ module.exports = [
       try {
         console.log('#### HEALTHCHECK #### - Testing redis connection...')
         session.setYarValue(request, 'test', Date.now())
-        console.log('#### HEALTHCHECK #### - Redis connection successful')
+        console.log('#### HEALTHCHECK #### - Redis connection is successful')
       }
       catch (err) {
         console.error('#### HEALTHCHECK #### - Redis connection error')
@@ -53,7 +53,7 @@ module.exports = [
         containers.forEach(container => {
           console.log('Container name: ' + container)
         });
-        console.log('#### HEALTHCHECK #### - Storage connection successful')
+        console.log('#### HEALTHCHECK #### - Storage connection is successful')
       }
       catch (err) {
         console.error('#### HEALTHCHECK #### - Storage connection error')
@@ -64,7 +64,7 @@ module.exports = [
       try {        
         console.log('#### HEALTHCHECK #### - Testing dynamics connection...')
         await dynamicsService.whoAmI(request.server)
-        console.log('#### HEALTHCHECK #### - Dynamics connection successful')        
+        console.log('#### HEALTHCHECK #### - Dynamics connection is successful')        
       }
       catch (err) {
         console.error('#### HEALTHCHECK #### - Dynamics connection error')
