@@ -104,13 +104,15 @@ function createModel(errors, data) {
 
 function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniqueIdentificationMarks, submission, applicationIndex) {
 
+  const markCapsNoSpaces = uniqueIdentificationMark?.toUpperCase().replace(/ /g, '')
+
   const uniqueIdentificationMarkType = uniqueIdentificationMarks[markIndex].uniqueIdentificationMarkType
 
-  if (!uniqueIdentificationMark || !uniqueIdentificationMarkType) {
-    return uniqueIdentificationMark
+  if (!markCapsNoSpaces || !uniqueIdentificationMarkType) {
+    return markCapsNoSpaces
   }
 
-  const applicationDuplicates = getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark)
+  const applicationDuplicates = getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, markCapsNoSpaces)
 
   if (applicationDuplicates.length > 1) {
     const duplicateIndex = applicationDuplicates.findIndex(obj => obj.index === markIndex)
@@ -120,12 +122,12 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
     }
   }
 
-  const submissionDuplicate = getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex)
+  const submissionDuplicate = getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, markCapsNoSpaces, applicationIndex)
   if (submissionDuplicate.length) {
     return helpers.error('any.submissionDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
   }
 
-  return uniqueIdentificationMark;
+  return markCapsNoSpaces;
 }
 
 function getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark) {
