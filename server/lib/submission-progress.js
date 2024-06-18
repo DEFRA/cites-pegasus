@@ -1,14 +1,19 @@
-const { permitType: pt, permitTypeOption: pto, permitType } = require('../lib/permit-type-helper')
+const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const config = require('../../config/config')
 
+let applicationStatuses
+let submissionProgress
+let completeApplications
 
 function getSubmissionProgress(submission, includePageData) {
-
-    let applicationStatuses = []
-    let submissionProgress = []
     if (!submission) {
         return { submissionProgress, applicationStatuses }
     }
+
+    applicationStatuses = []
+    submissionProgress = []
+    completeApplications = 0
+
     if (submission.submissionRef) {
         submissionProgress.push(getPageProgess('pay-application'))
         if (submission.paymentDetails) {
@@ -105,9 +110,9 @@ function getSubmissionProgress(submission, includePageData) {
         return { submissionProgress, applicationStatuses }
     }
 
-    let completeApplications = 0
-
-    submission.applications.forEach(getApplicationProgress)
+    submission.applications.forEach((application, applicationIndex) => {
+        getApplicationProgress(application, applicationIndex, includePageData, submission)
+    })
 
     if (completeApplications > 0 && !submission.submissionRef) {
         submissionProgress.push(getPageProgess(`your-submission`))
@@ -122,7 +127,7 @@ function getSubmissionProgress(submission, includePageData) {
     return { submissionProgress, applicationStatuses }
 }
 
-function getApplicationProgress(application, applicationIndex) {
+function getApplicationProgress(application, applicationIndex, includePageData, submission) {
     applicationStatuses.push({ applicationIndex: applicationIndex, status: 'in-progress' })
 
     submissionProgress.push(getPageProgess(`application-summary/check/${applicationIndex}`, applicationIndex))
@@ -172,14 +177,14 @@ function getApplicationProgress(application, applicationIndex) {
     }
 
     if (species.specimenType === 'animalLiving') {//Living animal flow
-        if (submission.permitType !== permitType.ARTICLE_10) {
+        if (submission.permitType !== pt.ARTICLE_10) {
             submissionProgress.push(getPageProgess(`multiple-specimens/${applicationIndex}`, applicationIndex, includePageData, getPageDataMultipleSpecimens(species)))
             if (typeof species.isMultipleSpecimens !== 'boolean') {
                 return { submissionProgress, applicationStatuses }
             }
         }
 
-        if (submission.permitType === permitType.ARTICLE_10 || species.numberOfUnmarkedSpecimens === 1 || species.isMultipleSpecimens === false) {
+        if (submission.permitType === pt.ARTICLE_10 || species.numberOfUnmarkedSpecimens === 1 || species.isMultipleSpecimens === false) {
             submissionProgress.push(getPageProgess(`has-unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('hasUniqueIdentificationMark', species.hasUniqueIdentificationMark)))
 
             if (species.hasUniqueIdentificationMark) {
