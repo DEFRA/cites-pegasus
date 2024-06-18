@@ -20,7 +20,14 @@ const nextPathYourSubmission = `${urlPrefix}/your-submission`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/copy-as-new`
 const invalidSubmissionPath = `${urlPrefix}/`
-const summaryTypes = ['check', 'view', 'copy', 'view-submitted', 'copy-as-new']
+const summaryTypeConst = {
+  CHECK: 'check',
+  VIEW: 'view',
+  COPY: 'copy',
+  VIEW_SUBMITTED: 'view-submitted',
+  COPY_AS_NEW: 'copy-as-new'
+}
+const summaryTypes = Object.values(summaryTypeConst)
 
 const pageContent = textContent.applicationSummary
 const commonContent = textContent.common
@@ -38,7 +45,7 @@ function createApplicationSummaryModel(errors, data) {
   const appContent = lookupAppContent(data, applicationRef)
 
   const summaryListSections = []
-  const isReadOnly = data.summaryType === 'view-submitted'
+  const isReadOnly = data.summaryType === summaryTypeConst.VIEW_SUBMITTED
 
   summaryListSections.push(getSummaryListAboutThePermit(summaryData, pageContent, appContent))
   summaryListSections.push(getSummaryListDeliveryAddress(summaryData, pageContent, data))
@@ -58,11 +65,11 @@ function createApplicationSummaryModel(errors, data) {
   const endOfApplicationPage = getEndOfApplicationPage(data.applicationIndex, data.permitType, data.a10ExportData)
 
   switch (summaryType) {
-    case 'check':
+    case summaryTypeConst.CHECK:
       backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
       break
-    case 'view-submitted':
-    case 'copy-as-new':
+    case summaryTypeConst.VIEW_SUBMITTED:
+    case summaryTypeConst.COPY_AS_NEW:
       break
     default:
       backLink = nextPathYourSubmission
@@ -86,15 +93,15 @@ function createApplicationSummaryModel(errors, data) {
   }, {})
 
   let hintIncomplete = ''
-  if (data.mandatoryFieldIssues.length > 0 && !['view-submitted'].includes(summaryType)) {
+  if (data.mandatoryFieldIssues.length > 0 && ![summaryTypeConst.VIEW_SUBMITTED].includes(summaryType)) {
     hintIncomplete = pageContent.hintIncomplete
   }
 
-  const showImportPermitDetails = summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== 'view-submitted' || summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text)
+  const showImportPermitDetails = summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== summaryTypeConst.VIEW_SUBMITTED || summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text)
 
   const model = {
     backLink,
-    breadcrumbs: ['view-submitted', 'copy-as-new'].includes(summaryType) ? breadcrumbs : "",
+    breadcrumbs: [summaryTypeConst.VIEW_SUBMITTED, summaryTypeConst.COPY_AS_NEW].includes(summaryType) ? breadcrumbs : "",
     pageHeader: appContent.pageHeader,
     //pageTitle: appContent.pageTitle + commonContent.pageTitleSuffix,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : appContent.pageTitle + commonContent.pageTitleSuffix,
@@ -118,8 +125,8 @@ function createApplicationSummaryModel(errors, data) {
     headingExportPermitDetails: pageContent.headingExportPermitDetails,
     headingImportPermitDetails: pageContent.headingImportPermitDetails,
     headerAdditionalInformation: pageContent.headerAdditionalInformation,
-    returnToYourApplicationsLinkText: summaryType === 'view-submitted' ? pageContent.returnToYourApplicationsLinkText : "",
-    returnToYourApplicationsLinkUrl: summaryType === 'view-submitted' ? `${urlPrefix}/my-submissions` : "",
+    returnToYourApplicationsLinkText: summaryType === summaryTypeConst.VIEW_SUBMITTED ? pageContent.returnToYourApplicationsLinkText : "",
+    returnToYourApplicationsLinkUrl: summaryType === summaryTypeConst.VIEW_SUBMITTED ? `${urlPrefix}/my-submissions` : "",
     ...summaryListSectionsObject,
     errorSummaryTitle: pageContent.errorSummaryTitle,
     errorList
@@ -143,8 +150,8 @@ function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData) {
 
 function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
   const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
-  let submissionLink = `${previousPathMySubmission}/${data.cloneSource ? data.cloneSource.submissionRef : data.submissionRef}`
-  let applicationLink = `${currentPath}/view-submitted/${data.cloneSource ? data.cloneSource.applicationIndex : data.applicationIndex}`
+  const submissionLink = `${previousPathMySubmission}/${data.cloneSource ? data.cloneSource.submissionRef : data.submissionRef}`
+  const applicationLink = `${currentPath}/view-submitted/${data.cloneSource ? data.cloneSource.applicationIndex : data.applicationIndex}`
   const breadcrumbs = {
     items: [
       {
@@ -164,11 +171,11 @@ function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
   if (applicationRef) {
     breadcrumbs.items.push({
       text: applicationRef,
-      href: summaryType === 'copy-as-new' ? applicationLink : "#"
+      href: summaryType === summaryTypeConst.COPY_AS_NEW ? applicationLink : "#"
     })
   }
 
-  if (summaryType === 'copy-as-new') {
+  if (summaryType === summaryTypeConst.COPY_AS_NEW) {
     breadcrumbs.items.push({
       text: pageContent.pageHeaderCopy,
       href: "#"
@@ -178,18 +185,24 @@ function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
   return breadcrumbs
 }
 
-function getSummaryListAboutThePermit(summaryData, pageContent, appContent) {
+function createSummaryList(key, id, rows){
   return {
-    key: 'summaryListAboutThePermit',
+    key,
     value: {
-      id: "permitType",
-      name: "permitType",
+      id,
+      name: id,
       classes: "govuk-!-margin-bottom-9",
-      rows: [
-        createSummaryListRow(summaryData, ["permitTypeOption", "otherPermitTypeOption"], pageContent.rowTextPermitType, appContent.permitTypeValue, "/permitType", "permit type"),
-      ]
+      rows
     }
   }
+}
+
+function getSummaryListAboutThePermit(summaryData, pageContent, appContent) {
+  return createSummaryList(
+    'summaryListAboutThePermit', 
+    'permitType', 
+    [createSummaryListRow(summaryData, ["permitTypeOption", "otherPermitTypeOption"], pageContent.rowTextPermitType, appContent.permitTypeValue, "/permitType", "permit type")]
+  )  
 }
 
 
@@ -225,15 +238,11 @@ function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
     summaryListDeliveryAddressRows.push(createSummaryListRow(summaryData, "deliveryType", pageContent.rowTextDeliveryType, deliveryTypeDataValue, "/deliveryType", "delivery type"))
   }
 
-  return {
-    key: 'summaryListDeliveryAddress',
-    value: {
-      id: "deliveryAddress",
-      name: "deliveryAddress",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListDeliveryAddressRows
-    }
-  }
+  return createSummaryList(
+    'summaryListDeliveryAddress', 
+    'deliveryAddress', 
+    summaryListDeliveryAddressRows
+  )
 }
 
 function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, data, isReadOnly) {
@@ -368,20 +377,16 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['a10CertificateNumber', 'isA10CertificateNumberKnown'], pageContent.rowTextExistingArticle10Certificate, textDescription, "/a10CertificateNumber", "existing a10 certificate"))
   }
 
-  return {
-    key: 'summaryListSpecimenDetails',
-    value: {
-      id: "specimenDetails",
-      name: "specimenDetails",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListSpecimenDetailsRows
-    }
-  }
+  return createSummaryList(
+    'summaryListSpecimenDetails', 
+    'specimenDetails', 
+    summaryListSpecimenDetailsRows
+  )
 }
 function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly) {
   const summaryListA10ExportDataRows = []
 
-  const viewingOldApplication = summaryData.summaryType === 'view-submitted' && !data.a10ExportData
+  const viewingOldApplication = summaryData.summaryType === summaryTypeConst.VIEW_SUBMITTED && !data.a10ExportData
 
   if (data.permitType === pt.ARTICLE_10 && !viewingOldApplication && enableGenerateExportPermitsFromA10s) {
     const addressDataItems = [
@@ -411,15 +416,12 @@ function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly)
       summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, "/importerDetails", "importer address"))
     }
   }
-  return {
-    key: 'summaryListA10ExportData',
-    value: {
-      id: "importerDetail",
-      name: "importerDetail",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListA10ExportDataRows
-    }
-  }
+
+  return createSummaryList(
+    'summaryListA10ExportData', 
+    'importerDetail', 
+    summaryListA10ExportDataRows
+  )
 }
 
 function getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly) {
@@ -442,15 +444,12 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, "/importerExporterDetails", "contact details"))
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, "/importerExporterDetails", "contact details"))
   }
-  return {
-    key: 'summaryListImporterExporterDetails',
-    value: {
-      id: "importerExporterDetail",
-      name: "importerExporterDetail",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListImporterExporterDetailsRows
-    }
-  }
+  
+  return createSummaryList(
+    'summaryListImporterExporterDetails', 
+    'importerExporterDetail', 
+    summaryListImporterExporterDetailsRows
+  )  
 }
 
 function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
@@ -462,16 +461,12 @@ function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
       summaryListRemarksRows.push(createSummaryListRow(summaryData, "internalReference", pageContent.rowTextInternalReference, data.internalReference, "/additionalInfo", "internal reference"))
     }
   }
-
-  return {
-    key: 'summaryListRemarks',
-    value: {
-      id: "remarks",
-      name: "remarks",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListRemarksRows
-    }
-  }
+  
+  return createSummaryList(
+    'summaryListRemarks', 
+    'remarks', 
+    summaryListRemarksRows
+  )  
 }
 
 function getSummaryListContactDetails(summaryData, pageContent, data) {
@@ -503,15 +498,11 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
   summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-email', pageContent.rowTextEmailAddress, contactDetailsData.email, contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
   summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-address', pageContent.rowTextAddress, addressDataValue, contactDetailsData.hrefPathSuffixAddress, "address"))
 
-  return {
-    key: 'summaryListApplicantContactDetails',
-    value: {
-      id: "contactDetails",
-      name: "contactDetails",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListContactDetailsRows
-    }
-  }
+  return createSummaryList(
+    'summaryListApplicantContactDetails', 
+    'contactDetails', 
+    summaryListContactDetailsRows
+  )  
 }
 
 function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly) {
@@ -549,15 +540,12 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, da
       summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'isExportOrReexportSameAsCountryOfOrigin', isExportOrReexportSameAsCountryOfOrigin, data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/countryOfOriginImport", "country of origin import"))
     }
   }
-  return {
-    key: 'summaryListCountryOfOriginPermitDetails',
-    value: {
-      id: "permitDetails",
-      name: "permitDetails",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListPermitDetailsCountryOfOriginRows
-    }
-  }
+
+  return createSummaryList(
+    'summaryListCountryOfOriginPermitDetails', 
+    'permitDetails', 
+    summaryListPermitDetailsCountryOfOriginRows
+  )
 }
 
 function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly) {
@@ -599,15 +587,11 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitNumberText, "/exportPermitDetails", "export permit details"))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, "/exportPermitDetails", "export permit details"))
   }
-  return {
-    key: 'summaryListExportOrReexportPermitDetails',
-    value: {
-      id: "permitDetails",
-      name: "permitDetails",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListPermitDetailsExportOrReexportRows
-    }
-  }
+  return createSummaryList(
+    'summaryListExportOrReexportPermitDetails', 
+    'permitDetails', 
+    summaryListPermitDetailsExportOrReexportRows
+  )
 }
 
 function getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly) {
@@ -634,15 +618,12 @@ function getSummaryListImportPermitDetails(summaryData, pageContent, data, isRea
     summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitNumber', pageContent.rowTextPermitNumber, importPermitNumberText, "/importPermitDetails", "import permit details"))
     summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitIssueDate', pageContent.rowTextPermitIssueDate, importPermitIssueDateText, "/importPermitDetails", "import permit details"))
   }
-  return {
-    key: 'summaryListImportPermitDetails',
-    value: {
-      id: "permitDetails",
-      name: "permitDetails",
-      classes: "govuk-!-margin-bottom-9",
-      rows: summaryListPermitDetailsImportRows
-    }
-  }
+
+  return createSummaryList(
+    'summaryListImportPermitDetails', 
+    'permitDetails', 
+    summaryListPermitDetailsImportRows
+  )
 }
 
 function applyBorderClasses(summaryList) {
@@ -682,7 +663,7 @@ function createSummaryListRow(summaryData, fieldIds, label, value, href, hiddenT
 
   const fieldIdArray = Array.isArray(fieldIds) ? fieldIds : [fieldIds]
 
-  if (href && summaryData.summaryType !== 'view' && summaryData.summaryType !== 'view-submitted') {
+  if (href && summaryData.summaryType !== summaryTypeConst.VIEW && summaryData.summaryType !== summaryTypeConst.VIEW_SUBMITTED) {
     const actionItems = []
     if (summaryData.mandatoryFieldIssues.some(issue => fieldIdArray.includes(issue))) {
       actionItems.push({
@@ -740,23 +721,23 @@ function lookupAppContent(data, applicationRef) {
   let showConfirmButton = true
 
   switch (data.summaryType) {
-    case "check":
+    case summaryTypeConst.CHECK:
       pageTitle = pageContent.defaultTitleCheck
       pageHeader = pageContent.pageHeaderCheck
       buttonText = commonContent.confirmAndContinueButton
       break
-    case "copy":
-    case "copy-as-new":
+    case summaryTypeConst.COPY:
+    case summaryTypeConst.COPY_AS_NEW:
       pageTitle = pageContent.defaultTitleCopy
       pageHeader = pageContent.pageHeaderCopy
       buttonText = commonContent.confirmAndContinueButton
       break
-    case "view":
+    case summaryTypeConst.VIEW:
       pageTitle = pageContent.defaultTitleView
       pageHeader = pageContent.pageHeaderView
       buttonText = commonContent.returnYourApplicationsButton
       break
-    case "view-submitted":
+    case summaryTypeConst.VIEW_SUBMITTED:
       pageTitle = data.applicationRef
       pageHeader = data.applicationRef
       buttonText = commonContent.copyAsNewApplicationButton
@@ -786,6 +767,8 @@ function lookupAppContent(data, applicationRef) {
     case pt.ARTICLE_10:
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       break
+    default:
+      throw new Error(`Invalid permit type: ${permitType}`)
   }
 
   const purposeCodeValueText = {
@@ -1036,11 +1019,11 @@ module.exports = [
       let submission = getSubmission(request)
 
       let cloneSource = null
-      if (summaryType === 'copy-as-new' || (!submission.submissionRef && summaryType === 'view-submitted')) {
+      if (summaryType === summaryTypeConst.COPY_AS_NEW || (!submission.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED)) {
         cloneSource = getYarValue(request, 'cloneSource')
       }
 
-      if (cloneSource?.submissionRef && summaryType === 'view-submitted') {
+      if (cloneSource?.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED) {
         //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
         const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
         submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
@@ -1170,7 +1153,7 @@ module.exports = [
 
         const { submissionProgress } = validateSubmission(submission, null, true)
 
-        if (summaryType === 'view-submitted') {
+        if (summaryType === summaryTypeConst.VIEW_SUBMITTED) {
           const draftSubmissionExists = await checkDraftSubmissionExists(request)
           if (draftSubmissionExists) {
             return h.redirect(`${draftSubmissionWarning}/${applicationIndex}`)

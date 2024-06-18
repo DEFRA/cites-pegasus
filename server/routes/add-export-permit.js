@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -106,16 +106,7 @@ module.exports = [
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
 
-
-          let isExportPermitRequired = null
-          switch (request.payload.isExportPermitRequired) {
-            case "true":
-              isExportPermitRequired = true
-              break
-            case "false":
-              isExportPermitRequired = false
-              break
-          }
+          const isExportPermitRequired = stringToBool(request.payload.isExportPermitRequired, null)
 
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),

@@ -125,7 +125,7 @@ function stringToBool(string, defaultValue) {
     return defaultValue
   }
 
-const stringLower = string.toLowerCase()
+  const stringLower = string.toLowerCase()
 
   if(stringLower === 'true'){
     return true

@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { findErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -130,16 +130,8 @@ module.exports = [
           const submission = getSubmission(request)
           const application = submission.applications[applicationIndex]
 
-          let isBreeder = null
-          switch (request.payload.isBreeder) {
-            case "true":
-              isBreeder = true
-              break
-            case "false":
-              isBreeder = false
-              break
-          }
-
+          const isBreeder = stringToBool(request.payload.isBreeder, null)
+          
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
