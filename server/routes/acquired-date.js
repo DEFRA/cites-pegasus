@@ -18,7 +18,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.acquiredDate
 
-  let acquiredDateErrors = []
+  const acquiredDateErrors = []
   let errorList = null
 
   if (errors) {

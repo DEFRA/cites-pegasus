@@ -1,4 +1,7 @@
 
+const errorAnyEmpty = 'any.empty'
+const errorAnyNotEmpty = 'any.notEmpty'
+
 function isValidDate(day, month, year) {
     const date = new Date(year, month - 1, day)
 
@@ -30,26 +33,9 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
         return helpers.error("any.invalid", { customLabel: fieldName })
     }
 
-    if (!day && !month && !year) {
-        return helpers.error("any.empty", { customLabel: fieldName })
-    }
-    if (!day && !month) {
-        return helpers.error("any.empty", { customLabel: `${fieldName}-day-month` })
-    }
-    if (!day && !year) {
-        return helpers.error("any.empty", { customLabel: `${fieldName}-day-year` })
-    }
-    if (!month && !year) {
-        return helpers.error("any.empty", { customLabel: `${fieldName}-month-year` })
-    }
-    if (!day) {
-        return helpers.error("any.empty", { customLabel: `${fieldName}-day` })
-    }
-    if (!month) {
-        return helpers.error("any.empty", { customLabel: `${fieldName}-month` })
-    }
-    if (!year) {
-        return helpers.error("any.empty", { customLabel: `${fieldName}-year` })
+    const result = checkIfEmptyDateField(day, month, year, fieldName, helpers)
+    if (result){
+        return result
     }
 
     if (!isValidDate(day, month, year)) {
@@ -70,6 +56,30 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
     return null
 }
 
+function checkIfEmptyDateField(day, month, year, fieldName, helpers) {
+    if (!day && !month && !year) {
+        return helpers.error(errorAnyEmpty, { customLabel: fieldName })
+    }
+    if (!day && !month) {
+        return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-day-month` })
+    }
+    if (!day && !year) {
+        return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-day-year` })
+    }
+    if (!month && !year) {
+        return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-month-year` })
+    }
+    if (!day) {
+        return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-day` })
+    }
+    if (!month) {
+        return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-month` })
+    }
+    if (!year) {
+        return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-year` })
+    }
+}
+
 function dateValidatorMaxDate(day, month, year, allowFuture, maxDate, fieldName, helpers) {
     const result = dateValidator(day, month, year, allowFuture, fieldName, helpers)
 
@@ -88,25 +98,25 @@ function dateValidatorMaxDate(day, month, year, allowFuture, maxDate, fieldName,
 function emptyDateValidator(day, month, year, fieldName, helpers) {
 
     if (day && month && year) {
-        return helpers.error("any.notEmpty", { customLabel: fieldName })
+        return helpers.error(errorAnyNotEmpty, { customLabel: fieldName })
     }
     if (day && month) {
-        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-day-month` })
+        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-day-month` })
     }
     if (day && year) {
-        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-day-year` })
+        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-day-year` })
     }
     if (month && year) {
-        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-month-year` })
+        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-month-year` })
     }
     if (day) {
-        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-day` })
+        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-day` })
     }
     if (month) {
-        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-month` })
+        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-month` })
     }
     if (year) {
-        return helpers.error("any.notEmpty", { customLabel: `${fieldName}-year` })
+        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-year` })
     }
 
     return null

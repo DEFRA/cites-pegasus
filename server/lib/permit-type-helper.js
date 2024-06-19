@@ -47,6 +47,8 @@ function getPermitDescription(permitType, permitSubType) {
                 return commonContent.permitTypeDescriptionArticle10
             case pst.LEGAL_ACQUISITION:
                 return commonContent.permitTypeDescriptionArticle10
+            default:
+                throw new Error(`Invalid permit sub type: ${permitSubType}`)
         }
     }
 
@@ -65,6 +67,8 @@ function getPermitDescription(permitType, permitSubType) {
             return commonContent.permitTypeDescriptionTEC
         case pt.POC:
             return commonContent.permitTypeDescriptionPOC
+        default:
+            throw new Error(`Invalid permit type: ${permitSubType}`)
     }
 }
 
@@ -108,7 +112,7 @@ function getPermit(permitTypeOption, useCertificateFor) {
         case pto.OTHER:
             break
         default:
-            throw new Error('Unknown permit type')
+            throw new Error(`Invalid permit type option: ${permitTypeOption}`)
     }
 
     if (permit.permitType === pt.ARTICLE_10) {
@@ -119,6 +123,8 @@ function getPermit(permitTypeOption, useCertificateFor) {
             case cu.MOVE_LIVE_SPECIMEN:
                 permit.permitSubType = pst.ARTICLE_9_MOVEMENT
                 break
+            default:
+                //This is also OK
         }
     }
 

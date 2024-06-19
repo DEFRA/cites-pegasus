@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { findErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -159,16 +159,8 @@ module.exports = [
           const application = submission.applications[applicationIndex]
           const species = application.species
 
-          let isA10CertificateNumberKnown = null
-          switch (request.payload.isA10CertificateNumberKnown) {
-            case "true":
-              isA10CertificateNumberKnown = true
-              break
-            case "false":
-              isA10CertificateNumberKnown = false
-              break
-          }
-
+          let isA10CertificateNumberKnown = stringToBool(request.payload.isA10CertificateNumberKnown, null)
+          
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,

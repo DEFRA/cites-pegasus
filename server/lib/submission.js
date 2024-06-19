@@ -249,6 +249,8 @@ function migrateSubmissionToNewSchema(submission) {
             case "article10":
                 submission.permitTypeOption = 'article10'
                 break
+            default:
+                throw new Error(`Unable to migrate permit type: ${submission.permitType}`)
         }
     }
 }
