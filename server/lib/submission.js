@@ -52,6 +52,10 @@ function validateSubmission(submission, path, includePageData = false) {
 
     if (path) {
         if (!submissionProgress.map(item => item.pageUrl).includes(path)) {
+            console.error('Path validation failed for ' + path)
+            console.log('Submission: ' + JSON.stringify(submission))
+            console.log('Submission Progress: ' + JSON.stringify(submissionProgress))
+            console.log('Application Statuses: ' + JSON.stringify(applicationStatuses))
             throw new Error(`Invalid navigation to ${path}`)
         }
     }
