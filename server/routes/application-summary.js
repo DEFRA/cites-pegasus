@@ -768,7 +768,7 @@ function lookupAppContent(data, applicationRef) {
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       break
     default:
-      throw new Error(`Invalid permit type: ${permitType}`)
+      throw new Error(`Invalid permit type: ${data.permitType}`)
   }
 
   const purposeCodeValueText = {

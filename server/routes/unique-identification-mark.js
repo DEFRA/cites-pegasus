@@ -25,8 +25,12 @@ function createModel(errors, data) {
 
     for (const property in pageContent.errorMessages) {
       const propertyParts = property.split(".")
-      const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]
-      pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
+      if (propertyParts.length === 4) {
+        const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]
+        pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
+      } else {
+        console.error("Invalid error message")
+    }
     }
   }
 

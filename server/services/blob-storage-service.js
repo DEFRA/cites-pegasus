@@ -1,6 +1,6 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const { readSecret } = require('../lib/key-vault')
-
+const Boom = require('@hapi/boom');
 
 async function getBlobServiceClient(server) {
     if (!server.app.blobServiceClient) {
