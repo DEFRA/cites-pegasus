@@ -30,3 +30,4 @@ process.env.DYNAMICS_BASE_URL = 'x'
 process.env.GOVPAY_PAYMENTS_URL = 'x'
 process.env.GOVPAY_CALLBACK_URL = 'x'
 process.env.GOOGLE_TAG_ID = null
+process.env.STORAGE_ACCOUNT_URL = 'x'
