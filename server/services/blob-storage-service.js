@@ -1,17 +1,14 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
-const { readSecret } = require('../lib/key-vault')
+const config = require('../../config/config')
 
+// Azure authentication library to access Azure Key Vault
+const { DefaultAzureCredential } = require("@azure/identity")
 
 async function getBlobServiceClient(server) {
+    // Azure SDK clients accept the credential as a parameter
+    const credential = new DefaultAzureCredential();
     if (!server.app.blobServiceClient) {
-        readSecret('BLOB-STORAGE-CONNECTION-STRING')
-            .then(secret => {
-                server.app.blobServiceClient = BlobServiceClient.fromConnectionString(secret.value);
-            })
-            .catch(err => {
-                console.error(err)
-                throw err
-            })
+        server.app.blobServiceClient = new BlobServiceClient(config.storageAccountUrl, credential);
     }
 }
 
@@ -107,7 +104,8 @@ async function checkFileExists(server, containerName, fileName) {
     if (await checkContainerExists(server, containerName)) {
         const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
         const blockBlobClient = containerClient.getBlockBlobClient(fileName)
-        return await blockBlobClient.exists()
+        const exists = await blockBlobClient.exists()
+        return exists
     }
     return false
 }

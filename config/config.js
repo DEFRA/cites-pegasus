@@ -49,7 +49,8 @@ const schema = Joi.object().keys({
   }),
   govpayPaymentsURL: Joi.string().required(),
   govpayCallbackURL: Joi.string().required(),
-  googleTagId: Joi.string().allow("", null)
+  googleTagId: Joi.string().allow("", null),
+  storageAccountUrl: Joi.string().required()
 })
 
 // Build config
@@ -96,7 +97,8 @@ const config = {
   },
   govpayPaymentsURL: process.env.GOVPAY_PAYMENTS_URL,
   govpayCallbackURL: process.env.GOVPAY_CALLBACK_URL,
-  googleTagId: process.env.GOOGLE_TAG_ID
+  googleTagId: process.env.GOOGLE_TAG_ID,
+  storageAccountUrl: process.env.STORAGE_ACCOUNT_URL
 }
 
 // Validate config

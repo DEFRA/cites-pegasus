@@ -60,20 +60,21 @@ The following environment variables must be provided, for development this can b
 | REDIS_PORT                               | Port number for communication with Azure Redis Cache   |    yes   |         |                                  |       |
 | SESSION_CACHE_TTL                        | Session timeout in milliseconds                        |    yes   |         |                                  |       |
 | SERVICE_ROLE_ADMIN_USER                  | Service Role name for the Admin User                   |    yes   |         |                                  |       |
-| ENABLE_SPECIES_WARNING                   | Enable species warning message on scientific name page |    no    | false   |                                  |       |
-| ENABLE_DRAFT_SUBMISSION                  | Enable the save and retrieve of draft sumbissions      |    no    | false   |                                  |       |
+| ENABLE_SPECIES_WARNING                   | Enable species warning message on scientific name page |    yes    | false   |                                  |       |
+| ENABLE_DRAFT_SUBMISSION                  | Enable the save and retrieve of draft sumbissions      |    yes    | false   |                                  |       |
 | ENABLE_FILTER_SUBMITTED_BY               | Enable the filter to allow the user to view submissions from all users | no | false |                          |       |
-| DOCUMENT_UPLOAD_MAX_FILES_LIMIT          | Upper limit of number of files that can be uploaded    |    n     | 50      |                                  |       | 
-| ENABLE_DELIVERY_TYPE                     | Enable the delivery type page for special delivery     |    no    | false   |                                  |       |
-| ENABLE_INTERNAL_REFERENCE                | Enable the internal referece field                     |    no    | false   |                                  |       |
-| ENABLE_OTHER_PERMIT_TYPES                | Enable the additional non standard permit types        |    no    | false   |                                  |       |
-| ENABLE_BREEDER_PAGE                      | Enable the breeder page for A10s                       |    no    | false   |                                  |       |
-| ENABLE_DELIVERY_NAME                     | Enable the delivery name field                         |    no    | false   |                                  |       |
-| ENABLE_SPECIES_NAME_TYPEAHEAD            | Enables the typeahead on the species+ search page      |    no    | false   |                                  |       |
+| DOCUMENT_UPLOAD_MAX_FILES_LIMIT          | Upper limit of number of files that can be uploaded    |    yes    | 50      |                                  |       | 
+| ENABLE_DELIVERY_TYPE                     | Enable the delivery type page for special delivery     |    yes    | false   |                                  |       |
+| ENABLE_INTERNAL_REFERENCE                | Enable the internal referece field                     |    yes    | false   |                                  |       |
+| ENABLE_OTHER_PERMIT_TYPES                | Enable the additional non standard permit types        |    yes    | false   |                                  |       |
+| ENABLE_BREEDER_PAGE                      | Enable the breeder page for A10s                       |    yes    | false   |                                  |       |
+| ENABLE_DELIVERY_NAME                     | Enable the delivery name field                         |    yes    | false   |                                  |       |
+| ENABLE_SPECIES_NAME_TYPEAHEAD            | Enables the typeahead on the species+ search page      |    yes    | false   |                                  |       |
 | MAX_NUMBER_OF_UNIQUE_IDENTIFIERS         | Set the max number of unique identification marks that can be entered|    no    | 3   |                                  |       |
-| GOOGLE_TAG_ID                            | Sets the tag ID for Google Analytics                   |    no    | null    |                                  |       |
-| ENABLE_NOT_KNOWN_TRADE_TERM_CODE         | Enables the Not Known option in the Trade Term options |   no     | false   |                                  |       |
-| ENABLE_GENERATE_EXPORT_PERMITS_FROM_A10S | Allows extra details to be captured in A10 flow to generate Export applications |   no     | false   |                                  |       |
+| GOOGLE_TAG_ID                            | Sets the tag ID for Google Analytics                   |    yes    | null    |                                  |       |
+| ENABLE_NOT_KNOWN_TRADE_TERM_CODE         | Enables the Not Known option in the Trade Term options |   yes     | false   |                                  |       |
+| ENABLE_GENERATE_EXPORT_PERMITS_FROM_A10S | Allows extra details to be captured in A10 flow to generate Export applications |   yes     | false   |                                  |       |
+| STORAGE_ACCOUNT_URL                      | Storage account url (via managed identity)             |    yes   |         |                                  |       |      
 ## Project structure
 
 Here's the default structure for your project files.
