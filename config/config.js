@@ -67,6 +67,11 @@ const schema = Joi.object().keys({
     then: Joi.string().required(),
     otherwise: Joi.string().allow('', null)
   }),
+  memoryCacheMaxByteSize: Joi.string().when('useRedis', {
+    is: true,
+    then: Joi.string().allow('', null),
+    otherwise: Joi.string().required()
+  }),
   sessionCacheTTL: Joi.number()
 })
 
@@ -120,6 +125,7 @@ const config = {
   redisHostname: process.env.REDIS_HOSTNAME,
   redisPort: process.env.REDIS_PORT,
   redisPartition: process.env.REDIS_PARTITION,
+  memoryCacheMaxByteSize: process.env.MEMORY_CACHE_MAX_BYTE_SIZE,
   sessionCacheTTL: process.env.SESSION_CACHE_TTL
 }
 

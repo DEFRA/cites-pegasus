@@ -39,7 +39,7 @@ async function getCacheConfig() {
   }
 
   const memoryOptions = {
-    //maxByteSize: 104857600 //100Mb
+    maxByteSize: config.memoryCacheMaxByteSize
     //minCleanupIntervalMsec: 1000 //1sec
     //cloneBuffersOnGet: false
   }

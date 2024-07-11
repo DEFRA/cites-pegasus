@@ -55,9 +55,9 @@ The following environment variables must be provided, for development this can b
 | GOVPAY_PAYMENTS_URL                      | URL to use for communicating with the Govpay API       |    yes   |         |                                  |       |
 | KEY_VAULT_NAME                           | Name of our Azure Key Vault                            |    yes   |         |                                  |       |
 | KEY_VAULT_URI                            | URL to use for communicating with our Azure Key Vault  |    yes   |         |                                  |       |
-| REDIS_HOSTNAME                           | Hostname of Azure Redis Cache instance                 |    yes   |         |                                  |       |
-| REDIS_PARTITION                          | Partition to use within Azure Redis Cache              |    yes   |         |                                  |       |
-| REDIS_PORT                               | Port number for communication with Azure Redis Cache   |    yes   |         |                                  |       |
+| REDIS_HOSTNAME                           | Hostname of Azure Redis Cache instance                 | if USE_REDIS is true |         |                                  |       |
+| REDIS_PARTITION                          | Partition to use within Azure Redis Cache              | if USE_REDIS is true |         |                                  |       |
+| REDIS_PORT                               | Port number for communication with Azure Redis Cache   | if USE_REDIS is true |         |                                  |       |
 | SESSION_CACHE_TTL                        | Session timeout in milliseconds                        |    yes   |         |                                  |       |
 | SERVICE_ROLE_ADMIN_USER                  | Service Role name for the Admin User                   |    yes   |         |                                  |       |
 | ENABLE_SPECIES_WARNING                   | Enable species warning message on scientific name page |    yes    | false   |                                  |       |
@@ -76,6 +76,7 @@ The following environment variables must be provided, for development this can b
 | ENABLE_GENERATE_EXPORT_PERMITS_FROM_A10S | Allows extra details to be captured in A10 flow to generate Export applications |   yes     | false   |                                  |       |
 | STORAGE_ACCOUNT_URL                      | Storage account url (via managed identity)             |    yes   |         |                                  |       |      
 | USE_REDIS                                | Enable redis as session cache instead of in memory     |    yes   |         |                                  |       |
+| MEMORY_CACHE_MAX_BYTE_SIZE               | Max size of memory cache in bytes                      | if USE_REDIS is false |         |                                  |       |
 ## Project structure
 
 Here's the default structure for your project files.
