@@ -6,7 +6,7 @@ const { getOpenIdClient } = require('./services/oidc-client');
 const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service')
 const { getBlobServiceClient } = require('./services/blob-storage-service')
 
-const CatboxMemory = require('@hapi/catbox-memory')
+//const CatboxMemory = require('@hapi/catbox-memory')
 
 
 //Run this command line to create certs
@@ -16,22 +16,7 @@ async function createServer() {
   console.log('###### CITES PORTAL STARTUP: Creating server config ######')
   console.log('Environment: ' + config.env)
   const cacheConfig = await getCacheConfig()
-  const catbox = cacheConfig.useRedis ? require('@hapi/catbox-redis') : require('@hapi/catbox-memory')
-
-  const redisCache = {
-    name: 'session',
-    provider: {
-      constructor: catbox,
-      options: cacheConfig.catboxOptions
-    }
-  }
-
-  const memoryCache = {
-    name: 'session',
-    engine: new CatboxMemory.Engine(cacheConfig.catboxOptions)
-  }
-
-
+  
   const tlsConfig = config.env === 'local' ? {
     key: Fs.readFileSync('key.pem'),
     cert: Fs.readFileSync('cert.pem')
@@ -41,7 +26,7 @@ async function createServer() {
   const server = hapi.server({
     port: config.port,
     tls: tlsConfig, //COMMENT THIS OUT TO GO BACK TO HTTP
-    cache: cacheConfig.useRedis ? redisCache : memoryCache,
+    cache: cacheConfig,
     routes: {
       // auth: {
       //   mode: 'optional' //UNCOMMENT THIS TO DISABLE SECURITY

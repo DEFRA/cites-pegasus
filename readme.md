@@ -75,6 +75,7 @@ The following environment variables must be provided, for development this can b
 | ENABLE_NOT_KNOWN_TRADE_TERM_CODE         | Enables the Not Known option in the Trade Term options |   yes     | false   |                                  |       |
 | ENABLE_GENERATE_EXPORT_PERMITS_FROM_A10S | Allows extra details to be captured in A10 flow to generate Export applications |   yes     | false   |                                  |       |
 | STORAGE_ACCOUNT_URL                      | Storage account url (via managed identity)             |    yes   |         |                                  |       |      
+| USE_REDIS                                | Enable redis as session cache instead of in memory     |    yes   |         |                                  |       |
 ## Project structure
 
 Here's the default structure for your project files.

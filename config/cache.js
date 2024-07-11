@@ -1,50 +1,63 @@
 const Joi = require('joi')
 const { readSecret } = require('../server/lib/key-vault')
 require('dotenv').config()
+const config = require('./config')
+const catboxRedis = require('@hapi/catbox-redis')
+const catboxMemory = require('@hapi/catbox-memory')
 
-// Define config schema
-const schema = Joi.object({
-  useRedis: Joi.bool().default(false),
-  expiresIn: Joi.number().default(1200 * 1000), // 20 min
-  catboxOptions: Joi.object({
-    host: Joi.string().required(),
-    port: Joi.string().required(),
-    //password: Joi.string().allow(''),
-    partition: Joi.string().required(),
-    tls: Joi.object()
-  })
-})
+const cacheName = 'session'
 
-const config = {
-  useRedis: false, //process.env.NODE_ENV !== 'test',
-  expiresIn: process.env.SESSION_CACHE_TTL,
-  catboxOptions: {
-    host: process.env.REDIS_HOSTNAME,
-    port: process.env.REDIS_PORT,
-    //password: process.env.REDIS_PASSWORD,
-    partition: process.env.REDIS_PARTITION,
-    tls: {host: process.env.REDIS_HOSTNAME}//process.env.NODE_ENV === 'production' ? {servername: process.env.REDIS_HOSTNAME} : undefined
-  }
-}
+async function getCacheConfig() {
 
-// Validate config
-const result = schema.validate(config, {
-  abortEarly: false
-})
+  if (config.useRedis) {
 
-// Throw if config is invalid
-if (result.error) {
-  throw new Error(`The cache config is invalid. ${result.error.message}`)
-}
+    let redisPassword = null
+    try {
+      const secret = await readSecret('REDIS-PASSWORD')
+      redisPassword = secret.value      
+    }
+    catch(err){
+      console.error(err)
+      throw new Error('Unable to read redis password from key vault')
+    }
 
-async function getCacheConfig(){    
-  if(result.value.useRedis){
-    result.value.catboxOptions.password = await readSecret('REDIS-PASSWORD')
-  } else {
-    result.value.catboxOptions = {}
+    const redisOptions = {
+      host: config.redisHostname,
+      port: config.redisPort,
+      password: redisPassword,
+      partition: config.redisPartition,
+      tls: { host: config.redisHostname }
+    }
+
+    return {
+      name: cacheName,
+      provider: {
+        constructor: catboxRedis,
+        options: redisOptions
+      }
+    }
   }
 
-  return result.value
+  const memoryOptions = {
+    //maxByteSize: 104857600 //100Mb
+    //minCleanupIntervalMsec: 1000 //1sec
+    //cloneBuffersOnGet: false
+  }
+
+  return {
+    name: cacheName,
+    engine: new catboxMemory.Engine(memoryOptions)
+  }
+
+
+
+  // if(result.value.useRedis){
+  //   result.value.catboxOptions.password = await readSecret('REDIS-PASSWORD')
+  // } else {
+  //   result.value.catboxOptions = {}
+  // }
+
+  // return result.value
 }
 
 module.exports = { getCacheConfig }//result.value
