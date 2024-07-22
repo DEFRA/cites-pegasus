@@ -32,3 +32,4 @@ process.env.GOVPAY_CALLBACK_URL = 'x'
 process.env.GOOGLE_TAG_ID = null
 process.env.STORAGE_ACCOUNT_URL = 'x'
 process.env.USE_REDIS = false
+process.env.MEMORY_CACHE_MAX_BYTE_SIZE = 1073741824
