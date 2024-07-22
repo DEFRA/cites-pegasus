@@ -9,7 +9,7 @@ const schema = Joi.object().keys({
   port: Joi.number().required(),
   env: Joi.string().valid(...envs).default(envs[0]),
   urlPrefix: Joi.string().default(urlPrefix),
-  
+
   keyVaultUri: Joi.string().required(),
   cidmCallbackUrl: Joi.string().required(),
   cidmApiDiscoveryUrl: Joi.string().required(),
@@ -50,7 +50,29 @@ const schema = Joi.object().keys({
   govpayPaymentsURL: Joi.string().required(),
   govpayCallbackURL: Joi.string().required(),
   googleTagId: Joi.string().allow("", null),
-  storageAccountUrl: Joi.string().required()
+  storageAccountUrl: Joi.string().required(),
+  useRedis: Joi.boolean().required(),
+  redisHostname: Joi.string().when('useRedis', {
+    is: true,
+    then: Joi.string().required(),
+    otherwise: Joi.string().allow('', null)
+  }),
+  redisPort: Joi.string().when('useRedis', {
+    is: true,
+    then: Joi.string().required(),
+    otherwise: Joi.string().allow('', null)
+  }),
+  redisPartition: Joi.string().when('useRedis', {
+    is: true,
+    then: Joi.string().required(),
+    otherwise: Joi.string().allow('', null)
+  }),
+  memoryCacheMaxByteSize: Joi.string().when('useRedis', {
+    is: true,
+    then: Joi.string().allow('', null),
+    otherwise: Joi.string().required()
+  }),
+  sessionCacheTTL: Joi.number()
 })
 
 // Build config
@@ -98,7 +120,13 @@ const config = {
   govpayPaymentsURL: process.env.GOVPAY_PAYMENTS_URL,
   govpayCallbackURL: process.env.GOVPAY_CALLBACK_URL,
   googleTagId: process.env.GOOGLE_TAG_ID,
-  storageAccountUrl: process.env.STORAGE_ACCOUNT_URL
+  storageAccountUrl: process.env.STORAGE_ACCOUNT_URL,
+  useRedis: process.env.USE_REDIS,
+  redisHostname: process.env.REDIS_HOSTNAME,
+  redisPort: process.env.REDIS_PORT,
+  redisPartition: process.env.REDIS_PARTITION,
+  memoryCacheMaxByteSize: process.env.MEMORY_CACHE_MAX_BYTE_SIZE,
+  sessionCacheTTL: process.env.SESSION_CACHE_TTL
 }
 
 // Validate config
