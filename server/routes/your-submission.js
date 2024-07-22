@@ -317,7 +317,7 @@ module.exports = [
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
           const { applicationStatuses } = validateSubmission(submission, null)
-          const completeApplications = getCompleteApplications(submission, applicationStatuses)
+          const completeApplications = getCompletedApplications(submission, applicationStatuses)
 
           const pageData = {
             permitType: submission.permitType,
