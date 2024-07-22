@@ -20,7 +20,7 @@ const schema = Joi.object().keys({
   addressLookupAPICertName: Joi.string().required(),
   appInsightsInstrumentationKey: Joi.string().allow("", null),
   appInsightsInstrumentationCloudRole: Joi.string().allow("", null),
-  documentUploadMaxFilesLimit: Joi.number().default(50),
+  documentUploadMaxFilesLimit: Joi.number(),
   enableSpeciesWarning: Joi.boolean(),
   enableDraftSubmission: Joi.boolean(),
   enableFilterSubmittedBy: Joi.boolean(),
@@ -34,7 +34,7 @@ const schema = Joi.object().keys({
   enableGenerateExportPermitsFromA10s: Joi.boolean(),
   maxNumberOfUniqueIdentifiers: Joi.number().min(1),
   cookieOptions: Joi.object({
-    ttl: Joi.number().default(1000 * 60 * 60 * 24 * 365),
+    ttl: Joi.number(),
     //encoding: Joi.string().valid('base64json').default('base64json'),
     isSecure: Joi.bool().default(true),
     //isHttpOnly: Joi.bool().default(true),
@@ -77,7 +77,7 @@ const schema = Joi.object().keys({
 
 // Build config
 const config = {
-  port: process.env.PORT || 8080,
+  port: process.env.PORT,
   env: process.env.NODE_ENV || 'local',
   urlPrefix: process.env.URL_PREFIX,
   keyVaultUri: process.env.KEY_VAULT_URI,
@@ -101,7 +101,7 @@ const config = {
   enableDeliveryName: process.env.ENABLE_DELIVERY_NAME || false,
   enableSpeciesNameTypeahead: process.env.ENABLE_SPECIES_NAME_TYPEAHEAD || false,
   enableGenerateExportPermitsFromA10s: process.env.ENABLE_GENERATE_EXPORT_PERMITS_FROM_A10S || false,
-  maxNumberOfUniqueIdentifiers: process.env.MAX_NUMBER_OF_UNIQUE_IDENTIFIERS || 3,
+  maxNumberOfUniqueIdentifiers: process.env.MAX_NUMBER_OF_UNIQUE_IDENTIFIERS,
   enableNotKnownTradeTermCode: process.env.ENABLE_NOT_KNOWN_TRADE_TERM_CODE || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,

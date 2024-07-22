@@ -1,7 +1,6 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const config = require('../../config/config')
 
-// Azure authentication library to access Azure Key Vault
 const { DefaultAzureCredential } = require("@azure/identity")
 
 async function getBlobServiceClient(server) {

@@ -12,6 +12,7 @@ const { getPaymentStatus } = require("../services/govpay-service")
 const pageId = 'govpay'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathFailed = `${urlPrefix}/payment-problem`
+const invalidSubmissionPath = `${urlPrefix}/`
 const nextPathSuccessNewApplication = `${urlPrefix}/application-complete`
 const nextPathSuccessAccountFlow = `${urlPrefix}/payment-success`
 const paymentRoutes = ['account', 'new-application']

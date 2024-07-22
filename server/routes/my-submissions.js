@@ -281,7 +281,6 @@ async function getSubmissionsData(request, pageNo, filterData) {
   if (pageNo > queryUrls.
     length || pageNo < 1) {
     console.log("Invalid page number")
-    return h.redirect('/404')
   }
 
   const { submissions, nextQueryUrl, totalSubmissions } = await dynamics.getSubmissions(request.server, queryUrls[pageNo - 1], pageSize)

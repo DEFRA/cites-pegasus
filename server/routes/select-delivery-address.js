@@ -146,7 +146,7 @@ module.exports = [{
             const deliveryAddressOption = request.payload.deliveryAddressOption
             let deliveryAddress = null
             const { applicationStatuses } = validateSubmission(submission, pageId)
-            const applicationIndex = getApplicationIndex(submission, applicationStatuses)
+            const applicationIndex = getApplicationIndex(applicationStatuses)
 
             let nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
             

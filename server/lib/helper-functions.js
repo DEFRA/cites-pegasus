@@ -41,9 +41,9 @@ function findErrorList({ details }, inputFields, errorMessages) {
 
     const {
       type,
-      context: { label: valLabel, customLabel }
+      context: { label: valLabel1, customLabel1 }
     } = foundErrorList[0]
-    const label = customLabel ?? valLabel
+    const label = customLabel1 ?? valLabel1
     return `error.${label}.${type}`
   })
 
