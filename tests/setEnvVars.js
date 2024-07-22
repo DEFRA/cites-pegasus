@@ -1,4 +1,4 @@
-process.env.port = 8080
+process.env.PORT = 8080
 process.env.NODE_ENV = 'local'
 //process.env.URL_PREFIX = ' '
 process.env.KEY_VAULT_URI = 'x'
