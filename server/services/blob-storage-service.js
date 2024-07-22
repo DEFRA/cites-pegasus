@@ -4,6 +4,7 @@ const config = require('../../config/config')
 const { DefaultAzureCredential } = require("@azure/identity")
 
 async function getBlobServiceClient(server) {
+    // Use 'az login' command from the azure-cli npm package to identify
     // Azure SDK clients accept the credential as a parameter
     const credential = new DefaultAzureCredential();
     if (!server.app.blobServiceClient) {
