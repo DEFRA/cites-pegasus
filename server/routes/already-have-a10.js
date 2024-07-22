@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -12,30 +12,15 @@ const previousPathAcquiredDate = `${urlPrefix}/acquired-date`
 const previousPathBreeder = `${urlPrefix}/breeder`
 const nextPath = `${urlPrefix}/ever-imported-exported`
 const invalidSubmissionPath = `${urlPrefix}/`
+const a10CertificateNumberMinLength = 5
+const a10CertificateNumberMaxLength = 27
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.alreadyHaveA10
 
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["isA10CertificateNumberKnown", "a10CertificateNumber"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isA10CertificateNumberKnown", "a10CertificateNumber"])
+  
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
@@ -149,7 +134,7 @@ module.exports = [
           isA10CertificateNumberKnown: Joi.boolean().required(),
           a10CertificateNumber: Joi.when("isA10CertificateNumberKnown", {
             is: true,
-            then: Joi.string().min(5).max(27).regex(COMMENTS_REGEX).required()
+            then: Joi.string().min(a10CertificateNumberMinLength).max(a10CertificateNumberMaxLength).regex(COMMENTS_REGEX).required()
           })
         }),
 
@@ -159,13 +144,13 @@ module.exports = [
           const application = submission.applications[applicationIndex]
           const species = application.species
 
-          let isA10CertificateNumberKnown = stringToBool(request.payload.isA10CertificateNumberKnown, null)
+          const isA10CertificateNumberKnown = stringToBool(request.payload.isA10CertificateNumberKnown, null)
           
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species?.speciesName,
-            isA10CertificateNumberKnown: isA10CertificateNumberKnown,
+            isA10CertificateNumberKnown,
             a10CertificateNumber: request.payload.a10CertificateNumber,
             isBreeder: application.isBreeder
           }

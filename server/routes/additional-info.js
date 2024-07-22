@@ -17,7 +17,8 @@ const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathAppSummary = `${urlPrefix}/application-summary/check`
 const nextPathAddExportPermit = `${urlPrefix}/add-export-permit`
 const invalidSubmissionPath = `${urlPrefix}/`
-
+const commentsMaxLength = 500
+const internalReferenceMaxLength = 30
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -57,7 +58,7 @@ function createModel(errors, data) {
     inputComments: {
       id: "comments",
       name: "comments",
-      maxlength: 500,
+      maxlength: commentsMaxLength,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: pageContent.headingRemarks,
@@ -187,7 +188,7 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
-          internalReference: Joi.string().optional().allow(null, "").max(30),
+          internalReference: Joi.string().optional().allow(null, "").max(internalReferenceMaxLength),
         }),
         failAction: failAction
       },
@@ -195,7 +196,7 @@ module.exports = [
         const { applicationIndex } = request.params
 
         const modifiedComments = request.payload.comments.replace(/\r/g, '')
-        const schema = Joi.object({ comments: Joi.string().max(500).optional().allow(null, "") })
+        const schema = Joi.object({ comments: Joi.string().max(commentsMaxLength).optional().allow(null, "") })
         const result = schema.validate({ comments: modifiedComments }, { abortEarly: false })
 
         if (result.error) {

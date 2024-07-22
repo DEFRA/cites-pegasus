@@ -13,6 +13,7 @@ const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathBreeder = `${urlPrefix}/breeder`
 const nextPath = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = `${urlPrefix}/`
+const approximateDateMaxLength = 150
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -233,7 +234,7 @@ module.exports = [
           isExactDateUnknown: Joi.boolean().default(false),//.allow(null),
           approximateDate: Joi.when("isExactDateUnknown", {
             is: true,
-            then: Joi.string().max(150).required()
+            then: Joi.string().max(approximateDateMaxLength).required()
           }),
           "acquiredDate-day": Joi.any().optional(),
           "acquiredDate-month": Joi.any().optional(),

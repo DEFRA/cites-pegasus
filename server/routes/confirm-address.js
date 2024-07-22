@@ -161,7 +161,7 @@ module.exports = [{
                 nextPath = `${urlPrefix}/select-delivery-address`
             } else {
                 const { applicationStatuses } = validateSubmission(submission, null)
-                const applicationIndex = getApplicationIndex(submission, applicationStatuses)
+                const applicationIndex = getApplicationIndex(applicationStatuses)
                 nextPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : `${urlPrefix}/species-name/${applicationIndex}`
             }
 

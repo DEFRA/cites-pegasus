@@ -1,11 +1,12 @@
 const Joi = require('joi')
 const { readSecret } = require('../server/lib/key-vault')
 require('dotenv').config()
+const expiryMilliseconds = 1200000// 20 min
 
 // Define config schema
 const schema = Joi.object({
   useRedis: Joi.bool().default(false),
-  expiresIn: Joi.number().default(1200 * 1000), // 20 min
+  expiresIn: Joi.number().default(expiryMilliseconds), 
   catboxOptions: Joi.object({
     host: Joi.string().required(),
     port: Joi.string().required(),

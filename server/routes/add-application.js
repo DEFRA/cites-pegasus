@@ -35,7 +35,7 @@ function createModel(errors, data) {
     })
   }
 
-  const copyPrevious = pageContent.radioOptionCopyPrevious.replace('##SPECIES_NAME##', data.speciesName)
+  const radioOptionCopyPrevious = pageContent.radioOptionCopyPrevious.replace('##SPECIES_NAME##', data.speciesName)
 
   const model = {
     backLink: previousPath,
@@ -56,7 +56,7 @@ function createModel(errors, data) {
       items: [
         {
           value: "copyPrevious",
-          text: copyPrevious,
+          text: radioOptionCopyPrevious,
           checked: isChecked(
             data.addApplication,
             "copyPrevious"

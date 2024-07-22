@@ -1,7 +1,7 @@
 const { getYarValue, setYarValue } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
-const { permitType: pt, permitTypeOption: pto, permitSubType: pst, permitType } = require('../lib/permit-type-helper')
+const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('../lib/permit-type-helper')
 const { deleteIfExists } = require("../lib/helper-functions")
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
@@ -50,16 +50,14 @@ function clearSubmission(request) {
 function validateSubmission(submission, path, includePageData = false) {
     const { submissionProgress, applicationStatuses } = getSubmissionProgress(submission, includePageData)
 
-    if (path) {
-        if (!submissionProgress.map(item => item.pageUrl).includes(path)) {
-            console.error('Path validation failed for ' + path)
-            console.log('Submission: ' + JSON.stringify(submission))
-            console.log('Submission Progress: ' + JSON.stringify(submissionProgress))
-            console.log('Application Statuses: ' + JSON.stringify(applicationStatuses))
-            throw new Error(`Invalid navigation to ${path}`)
-        }
+    if (path && !submissionProgress.map(item => item.pageUrl).includes(path)) {
+        console.error('Path validation failed for ' + path)
+        console.log('Submission: ' + JSON.stringify(submission))
+        console.log('Submission Progress: ' + JSON.stringify(submissionProgress))
+        console.log('Application Statuses: ' + JSON.stringify(applicationStatuses))
+        throw new Error(`Invalid navigation to ${path}`)
     }
-
+    
     return { applicationStatuses, submissionProgress }
 
 }
@@ -86,7 +84,7 @@ async function checkDraftSubmissionExists(request) {
     }
     const containerName = getContainerName(request)
     const submissionFileName = getSubmissionFileName(request)
-    return await checkFileExists(request.server, containerName, submissionFileName)
+    return checkFileExists(request.server, containerName, submissionFileName)
 }
 
 async function getDraftSubmissionDetails(request) {
@@ -391,12 +389,12 @@ function deleteInProgressApplications(request) {
 
 function getCompletedApplications(submission, appStatuses) {
     return submission.applications.filter(app => {
-        const status = appStatuses.find(status => status.applicationIndex === app.applicationIndex);
-        return status && status.status === 'complete';
+        const statusMatch = appStatuses.find(status => status.applicationIndex === app.applicationIndex);
+        return statusMatch && statusMatch.status === 'complete';
     });
 }
 
-function getApplicationIndex(submission, applicationStatuses) {
+function getApplicationIndex(applicationStatuses) {
     //This function should be used as a last resort to get the applicationIndex when the applicationIndex is not available in the URL
     //Get the applicationStatus with the highest applicationIndex that is in-progress
     const appInProgressIndex = applicationStatuses.sort((a, b) => b.applicationIndex - a.applicationIndex).find(item => item.status === 'in-progress')
