@@ -17,7 +17,7 @@ const schema = Joi.object({
 })
 
 const config = {
-  useRedis: true, //process.env.NODE_ENV !== 'test',
+  useRedis: false, //process.env.NODE_ENV !== 'test',
   expiresIn: process.env.SESSION_CACHE_TTL,
   catboxOptions: {
     host: process.env.REDIS_HOSTNAME,
@@ -39,8 +39,12 @@ if (result.error) {
 }
 
 async function getCacheConfig(){    
-  const redisPassword = await readSecret('REDIS-PASSWORD')
-  result.value.catboxOptions.password = redisPassword.value
+  if(result.value.useRedis){
+    result.value.catboxOptions.password = await readSecret('REDIS-PASSWORD')
+  } else {
+    result.value.catboxOptions = {}
+  }
+
   return result.value
 }
 

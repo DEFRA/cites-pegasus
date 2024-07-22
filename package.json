@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  
   "scripts": {
     "start": "node index.js",
     "startdev": "nodemon --inspect index.js",
@@ -25,7 +24,7 @@
     "@azure/msal-node": "^1.14.2",
     "@azure/storage-blob": "^12.13.0",
     "@hapi/boom": "9.1.4",
-    "@hapi/catbox-memory": "^6.0.0",
+    "@hapi/catbox-memory": "^6.0.2",
     "@hapi/catbox-redis": "^6.0.2",
     "@hapi/hapi": "^21.3.7",
     "@hapi/inert": "^7.1.0",
