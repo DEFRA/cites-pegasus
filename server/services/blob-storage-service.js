@@ -39,7 +39,7 @@ async function createContainerWithTimestamp(server, name, attemptNo = 1) {
         if (err.code === 'ContainerAlreadyExists') {
             if (attemptNo >= 5) {
                 console.log("Unable to find unique container name after 5 attempts")
-                throw Boom.badImplementation("Unable to find unique container name after 5 attempts", err)
+                throw new Error("Unable to find unique container name after 5 attempts", err)
             }
 
             await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
