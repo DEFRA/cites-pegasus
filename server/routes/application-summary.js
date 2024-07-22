@@ -47,18 +47,18 @@ function createApplicationSummaryModel(errors, data) {
   const summaryListSections = []
   const isReadOnly = data.summaryType === summaryTypeConst.VIEW_SUBMITTED
 
-  summaryListSections.push(getSummaryListAboutThePermit(summaryData, pageContent, appContent))
-  summaryListSections.push(getSummaryListDeliveryAddress(summaryData, pageContent, data))
-  summaryListSections.push(getSummaryListSpecimenDetails(summaryData, pageContent, appContent, data, isReadOnly))
+  summaryListSections.push(getSummaryListAboutThePermit(summaryData, appContent))
+  summaryListSections.push(getSummaryListDeliveryAddress(summaryData, data))
+  summaryListSections.push(getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly))
   summaryListSections.push(getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly))
   summaryListSections.push(getSummaryListContactDetails(summaryData, pageContent, data))
   summaryListSections.push(getSummaryListRemarks(summaryData, pageContent, data, isReadOnly))
   summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly))
   summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly))
   summaryListSections.push(getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly))
+  summaryListSections.push(getSummaryListA10ExportData(summaryData, data, isReadOnly))
 
-  const breadcrumbs = getBreadcrumbs(pageContent, data, summaryType)
+  const breadcrumbs = getBreadcrumbs(data, summaryType)
 
   let backLink = null
 
@@ -148,7 +148,7 @@ function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData) {
   return endOfApplicationPage
 }
 
-function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
+function getBreadcrumbs(data, summaryType, applicationRef) {
   const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
   const submissionLink = `${previousPathMySubmission}/${data.cloneSource ? data.cloneSource.submissionRef : data.submissionRef}`
   const applicationLink = `${currentPath}/view-submitted/${data.cloneSource ? data.cloneSource.applicationIndex : data.applicationIndex}`
@@ -185,7 +185,7 @@ function getBreadcrumbs(pageContent, data, summaryType, applicationRef) {
   return breadcrumbs
 }
 
-function createSummaryList(key, id, rows){
+function createSummaryList(key, id, rows) {
   return {
     key,
     value: {
@@ -197,16 +197,16 @@ function createSummaryList(key, id, rows){
   }
 }
 
-function getSummaryListAboutThePermit(summaryData, pageContent, appContent) {
+function getSummaryListAboutThePermit(summaryData, appContent) {
   return createSummaryList(
-    'summaryListAboutThePermit', 
-    'permitType', 
+    'summaryListAboutThePermit',
+    'permitType',
     [createSummaryListRow(summaryData, ["permitTypeOption", "otherPermitTypeOption"], pageContent.rowTextPermitType, appContent.permitTypeValue, "/permitType", "permit type")]
-  )  
+  )
 }
 
 
-function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
+function getSummaryListDeliveryAddress(summaryData, data) {
   const summaryListDeliveryAddressRows = []
 
   const deliveryAddressDataItems = [
@@ -229,6 +229,9 @@ function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
         break
       case dt.STANDARD_DELIVERY:
         deliveryTypeDataValue = pageContent.rowTextStandardDelivery
+        break
+      default:
+        throw new Error("Unknown delivery type: " + data.delivery.deliveryType)
     }
   }
 
@@ -239,13 +242,13 @@ function getSummaryListDeliveryAddress(summaryData, pageContent, data) {
   }
 
   return createSummaryList(
-    'summaryListDeliveryAddress', 
-    'deliveryAddress', 
+    'summaryListDeliveryAddress',
+    'deliveryAddress',
     summaryListDeliveryAddressRows
   )
 }
 
-function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, data, isReadOnly) {
+function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly) {
   const summaryListSpecimenDetailsRows = []
 
   let unitsOfMeasurementValue = null
@@ -320,19 +323,19 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMarkType === "unmarked" ? pageContent.rowTextSpecimenIsNotMarked : data.species.uniqueIdentificationMark, "/uniqueIdentificationMark", "unique identification mark"))
   } else if (allowPageNavigation(data.submissionProgress, "has-unique-identification-mark/" + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "hasUniqueIdentificationMarkType", pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/hasUniqueIdentificationMark", "has unique identification mark"))
+  } else {
+    //Do nothing
   }
-  if (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark)) {
-    if (data.species.hasUniqueIdentificationMark) {
-      let markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
-      for (let i = 0; i < markCount; i++) {
-        let markDetails = ''
-        if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
-          const mark = data.species.uniqueIdentificationMarks[i]
-          const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
-          markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
-        }
-        summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark", "uniqueIdentificationMarks"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', markDetails, "/uniqueIdentificationMark", "unique identification mark"))
+  if (data.species.hasUniqueIdentificationMark && (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark))) {
+    const markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
+    for (let i = 0; i < markCount; i++) {
+      let markDetails = ''
+      if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
+        const mark = data.species.uniqueIdentificationMarks[i]
+        const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
+        markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
       }
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark", "uniqueIdentificationMarks"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', markDetails, "/uniqueIdentificationMark", "unique identification mark"))
     }
   }
   if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
@@ -353,11 +356,7 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   if (allowPageNavigation(data.submissionProgress, "breeder/" + data.applicationIndex) || (isReadOnly && typeof data.isBreeder === 'boolean')) {
     let textDescription = ""
     if (typeof data.isBreeder === 'boolean') {
-      if (data.isBreeder) {
-        textDescription = commonContent.radioOptionYes
-      } else {
-        textDescription = commonContent.radioOptionNo
-      }
+      textDescription = data.isBreeder ? commonContent.radioOptionYes : commonContent.radioOptionNo
     }
     summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'isBreeder', pageContent.rowTextAreYouTheBreeder, textDescription, "/breeder", "are you the breeder"))
   }
@@ -378,12 +377,12 @@ function getSummaryListSpecimenDetails(summaryData, pageContent, appContent, dat
   }
 
   return createSummaryList(
-    'summaryListSpecimenDetails', 
-    'specimenDetails', 
+    'summaryListSpecimenDetails',
+    'specimenDetails',
     summaryListSpecimenDetailsRows
   )
 }
-function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
   const summaryListA10ExportDataRows = []
 
   const viewingOldApplication = summaryData.summaryType === summaryTypeConst.VIEW_SUBMITTED && !data.a10ExportData
@@ -418,8 +417,8 @@ function getSummaryListA10ExportData(summaryData, pageContent, data, isReadOnly)
   }
 
   return createSummaryList(
-    'summaryListA10ExportData', 
-    'importerDetail', 
+    'summaryListA10ExportData',
+    'importerDetail',
     summaryListA10ExportDataRows
   )
 }
@@ -444,12 +443,12 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, "/importerExporterDetails", "contact details"))
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, "/importerExporterDetails", "contact details"))
   }
-  
+
   return createSummaryList(
-    'summaryListImporterExporterDetails', 
-    'importerExporterDetail', 
+    'summaryListImporterExporterDetails',
+    'importerExporterDetail',
     summaryListImporterExporterDetailsRows
-  )  
+  )
 }
 
 function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
@@ -461,12 +460,12 @@ function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
       summaryListRemarksRows.push(createSummaryListRow(summaryData, "internalReference", pageContent.rowTextInternalReference, data.internalReference, "/additionalInfo", "internal reference"))
     }
   }
-  
+
   return createSummaryList(
-    'summaryListRemarks', 
-    'remarks', 
+    'summaryListRemarks',
+    'remarks',
     summaryListRemarksRows
-  )  
+  )
 }
 
 function getSummaryListContactDetails(summaryData, pageContent, data) {
@@ -499,10 +498,10 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
   summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-address', pageContent.rowTextAddress, addressDataValue, contactDetailsData.hrefPathSuffixAddress, "address"))
 
   return createSummaryList(
-    'summaryListApplicantContactDetails', 
-    'contactDetails', 
+    'summaryListApplicantContactDetails',
+    'contactDetails',
     summaryListContactDetailsRows
-  )  
+  )
 }
 
 function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly) {
@@ -542,8 +541,8 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, da
   }
 
   return createSummaryList(
-    'summaryListCountryOfOriginPermitDetails', 
-    'permitDetails', 
+    'summaryListCountryOfOriginPermitDetails',
+    'permitDetails',
     summaryListPermitDetailsCountryOfOriginRows
   )
 }
@@ -588,8 +587,8 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, "/exportPermitDetails", "export permit details"))
   }
   return createSummaryList(
-    'summaryListExportOrReexportPermitDetails', 
-    'permitDetails', 
+    'summaryListExportOrReexportPermitDetails',
+    'permitDetails',
     summaryListPermitDetailsExportOrReexportRows
   )
 }
@@ -620,8 +619,8 @@ function getSummaryListImportPermitDetails(summaryData, pageContent, data, isRea
   }
 
   return createSummaryList(
-    'summaryListImportPermitDetails', 
-    'permitDetails', 
+    'summaryListImportPermitDetails',
+    'permitDetails',
     summaryListPermitDetailsImportRows
   )
 }

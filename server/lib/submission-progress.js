@@ -22,7 +22,7 @@ function getSubmissionProgress(submission, includePageData) {
             submissionProgress.push(getPageProgess('payment-problem'))
         }
         if (submission.applications?.length > 0) {
-            submission.applications.forEach((application, applicationIndex) => {
+            submission.applications.forEach((_application, applicationIndex) => {
                 submissionProgress.push(getPageProgess(`application-summary/view-submitted/${applicationIndex}`, applicationIndex))
             })
         }
@@ -144,7 +144,7 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
     const species = application.species
 
     if (!species?.speciesName) {
-        return { submissionProgress, applicationStatuses }
+        return
     }
 
     if (species.hasRestriction) {
@@ -154,7 +154,7 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
     submissionProgress.push(getPageProgess(`source-code/${applicationIndex}`, applicationIndex, includePageData, getPageDataSourceCode(species)))
 
     if (!species.sourceCode) {
-        return { submissionProgress, applicationStatuses }
+        return
     }
 
     if (submission.permitType === pt.ARTICLE_10) {
@@ -167,20 +167,20 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
     }
 
     if (!species.purposeCode && !species.useCertificateFor) {
-        return { submissionProgress, applicationStatuses }
+        return
     }
 
     submissionProgress.push(getPageProgess(`specimen-type/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('specimenType', species.specimenType)))
 
     if (!species.specimenType) {
-        return { submissionProgress, applicationStatuses }
+        return
     }
 
     if (species.specimenType === 'animalLiving') {//Living animal flow
         if (submission.permitType !== pt.ARTICLE_10) {
             submissionProgress.push(getPageProgess(`multiple-specimens/${applicationIndex}`, applicationIndex, includePageData, getPageDataMultipleSpecimens(species)))
             if (typeof species.isMultipleSpecimens !== 'boolean') {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
 
@@ -190,7 +190,7 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
             if (species.hasUniqueIdentificationMark) {
                 submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
                 if (!species.uniqueIdentificationMarks?.length) {
-                    return { submissionProgress, applicationStatuses }
+                    return
                 }
             }
         }
@@ -205,20 +205,20 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
         submissionProgress.push(getPageProgess(`quantity/${applicationIndex}`, applicationIndex, includePageData, getPageDataQuantity(species)))
 
         if (!species.quantity) {
-            return { submissionProgress, applicationStatuses }
+            return
         }
 
         if (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') {
             submissionProgress.push(getPageProgess(`created-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataCreatedDate(species?.createdDate)))
             if (!species.createdDate) {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
 
         submissionProgress.push(getPageProgess(`trade-term-code/${applicationIndex}`, applicationIndex, includePageData, getPageDataTradeTermCode(species)))
 
         if (typeof species.isTradeTermCode !== 'boolean') {
-            return { submissionProgress, applicationStatuses }
+            return
         }
 
         submissionProgress.push(getPageProgess(`has-unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('hasUniqueIdentificationMark', species.hasUniqueIdentificationMark)))
@@ -227,7 +227,7 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
             submissionProgress.push(getPageProgess(`unique-identification-mark/${applicationIndex}`, applicationIndex, includePageData, getPageDataUniqueIdentificationMark(species)))
 
             if (!species.uniqueIdentificationMarks?.length) {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
 
@@ -236,7 +236,7 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
     }
 
     if (!species.specimenDescriptionGeneric && !species.sex) {
-        return { submissionProgress, applicationStatuses }
+        return
     }
 
     if (submission.permitType === pt.ARTICLE_10) { //Article 10 flow
@@ -244,27 +244,27 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
             submissionProgress.push(getPageProgess(`breeder/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isBreeder', application.isBreeder)))
 
             if (typeof application.isBreeder !== 'boolean') {
-                return { submissionProgress, applicationStatuses }
+                return
             }
 
             if (application.isBreeder === false) {
                 submissionProgress.push(getPageProgess(`acquired-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataAcquiredDate(species?.acquiredDate)))
             }
             if (!species.acquiredDate && application.isBreeder === false) {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         } else {
             submissionProgress.push(getPageProgess(`acquired-date/${applicationIndex}`, applicationIndex, includePageData, getPageDataAcquiredDate(species?.acquiredDate)))
 
             if (!species.acquiredDate) {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
 
         submissionProgress.push(getPageProgess(`already-have-a10/${applicationIndex}`, applicationIndex, includePageData, getPageDataA10CertificateNumber(species)))
 
         if (typeof species.isA10CertificateNumberKnown !== 'boolean') {
-            return { submissionProgress, applicationStatuses }
+            return
         }
 
         submissionProgress.push(getPageProgess(`ever-imported-exported/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isEverImportedExported', species.isEverImportedExported)))
@@ -282,26 +282,26 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
         submissionProgress.push(getPageProgess(`origin-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataOriginPermitDetails(application.permitDetails)))
 
         if (typeof application.permitDetails?.isCountryOfOriginNotKnown !== 'boolean') {
-            return { submissionProgress, applicationStatuses }
+            return
         }
 
         if (submission.permitType === pt.IMPORT && !application.permitDetails?.isCountryOfOriginNotKnown && application.permitDetails?.countryOfOrigin) {
             submissionProgress.push(getPageProgess(`country-of-origin-import/${applicationIndex}`, applicationIndex, includePageData, getPageDataSimple('isExportOrReexportSameAsCountryOfOrigin', application.permitDetails?.isExportOrReexportSameAsCountryOfOrigin)))
             if (typeof application.permitDetails.isExportOrReexportSameAsCountryOfOrigin !== 'boolean') {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
 
         if (application.permitDetails.isExportOrReexportSameAsCountryOfOrigin !== true && submission.permitType !== pt.ARTICLE_10) {
             submissionProgress.push(getPageProgess(`export-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataExportPermitDetails(application.permitDetails)))
             if (typeof application.permitDetails.exportOrReexportPermitDetailsNotKnown !== 'boolean') {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
         if (submission.permitType !== pt.IMPORT && submission.permitType !== pt.EXPORT) {
             submissionProgress.push(getPageProgess(`import-permit-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImportPermitDetails(application.permitDetails)))
             if (typeof application.permitDetails.importPermitDetailsNotKnown !== 'boolean') {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
     }
@@ -309,7 +309,7 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
     if ((!application.importerExporterDetails || submission.permitType !== pt.EXPORT)
         && (species.isEverImportedExported || submission.permitType !== pt.ARTICLE_10)
         && !application.permitDetails) {
-        return { submissionProgress, applicationStatuses }
+        return
     }
 
     submissionProgress.push(getPageProgess(`additional-info/${applicationIndex}`, applicationIndex, includePageData, getPageDataAdditionalInfo(application)))
@@ -317,12 +317,12 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
     if (submission.permitType === pt.ARTICLE_10) {
         submissionProgress.push(getPageProgess(`add-export-permit/${applicationIndex}`, applicationIndex, includePageData, getPageDataIsExportPermitRequired(application.a10ExportData?.isExportPermitRequired)))
         if (typeof application.a10ExportData?.isExportPermitRequired !== "boolean" && config.enableGenerateExportPermitsFromA10s) {
-            return { submissionProgress, applicationStatuses }
+            return
         }
         if (application.a10ExportData?.isExportPermitRequired && config.enableGenerateExportPermitsFromA10s) {
             submissionProgress.push(getPageProgess(`importer-details/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterDetails(application.a10ExportData)))
             if (!application.a10ExportData?.importerDetails?.country) {
-                return { submissionProgress, applicationStatuses }
+                return
             }
         }
     }

@@ -11,21 +11,22 @@ window.onload = function () {
           .size;
 
         removeErrors();
-
+        
         if (fileSize >= clientJSConfig.maxFileSizeBytes) {
           showErrors(clientJSConfig);
         }
       }
     }
 
-    function showErrors(clientJSConfig) {
-      const errorMessage = clientJSConfig.fileSizeErrorText
+    function showErrors(config) {
+      
+      const errorMessage = config.fileSizeErrorText
       input.value = "";
       //Inline error message
       const error = document.createElement('p');
       error.id = "fileUpload-error";
       error.className = "govuk-error-message";
-      error.innerHTML = '<span class="govuk-visually-hidden">Error:</span> ' + errorMessage
+      error.innerHTML = `<span class="govuk-visually-hidden">Error:</span>${errorMessage}`
 
       input.classList.add('govuk-file-upload--error')
       input.parentNode.classList.add('govuk-form-group--error')
@@ -34,16 +35,16 @@ window.onload = function () {
       //Error summary
       const errorSummary = document.createElement('div');
       errorSummary.className = "govuk-grid-row";
-      errorSummary.innerHTML = '<div class="govuk-grid-column-two-thirds">' +
-                                  '<div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">' +
-                                    '<h2 class="govuk-error-summary__title" id="error-summary-title">' + clientJSConfig.errorSummaryTitle + '</h2>' +
-                                    '<div class="govuk-error-summary__body">' +
-                                      '<ul class="govuk-list govuk-error-summary__list">' +
-                                        '<li><a href="#fileUpload">' + errorMessage + '</a></li>' +
-                                      '</ul>' +
-                                    '</div>' +
-                                  '</div>' +
-                                '</div>'
+      errorSummary.innerHTML = `<div class="govuk-grid-column-two-thirds">
+                                  <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+                                    <h2 class="govuk-error-summary__title" id="error-summary-title">${config.errorSummaryTitle}</h2>
+                                    <div class="govuk-error-summary__body">
+                                      <ul class="govuk-list govuk-error-summary__list">
+                                        <li><a href="#fileUpload">${errorMessage}</a></li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>`
 
       const errorSummaryContainer = document.getElementById('divErrorSummaryContainer');
       if (errorSummaryContainer) {

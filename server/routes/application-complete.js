@@ -11,14 +11,14 @@ const nextPathExportSubmission = `${urlPrefix}/my-submissions/draft-continue`
 const { getPermitDescription } = require("../lib/permit-type-helper")
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel(_errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationComplete
-  
+
   const pageBodyContent = getPageBodyContent(pageContent, data)
   const permitDescription = getPermitDescription(data.permitType, data.permitSubType)
 
-  const permitTypeText = [pt.ARTICLE_10, pt.MIC, pt.TEC, pt.POC].includes(data.permitType) || permitDescription.endsWith(pageContent.permitTypeSuffix) ? permitDescription : permitDescription + ' ' + pageContent.permitTypeSuffix
+  const permitTypeText = [pt.ARTICLE_10, pt.MIC, pt.TEC, pt.POC].includes(data.permitType) || permitDescription.endsWith(pageContent.permitTypeSuffix) ? permitDescription : `${permitDescription} ${pageContent.permitTypeSuffix}`
 
   const panelContent = {
     titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', permitTypeText),
@@ -60,12 +60,10 @@ function getPageBodyContent(pageContent, data) {
     } else {
       pageBodyContent = data.costingType === 'simple' ? pageContent.exportSubmission.notPaid.simple : pageContent.exportSubmission.notPaid.complex
     }
+  } else if (data.paid) {
+    pageBodyContent = pageContent.noExportSubmission.paid
   } else {
-    if (data.paid) {
-      pageBodyContent = pageContent.noExportSubmission.paid
-    } else {
-      pageBodyContent = data.costingType === 'simple' ? pageContent.noExportSubmission.notPaid.simple : pageContent.noExportSubmission.notPaid.complex
-    }
+    pageBodyContent = data.costingType === 'simple' ? pageContent.noExportSubmission.notPaid.simple : pageContent.noExportSubmission.notPaid.complex
   }
   return pageBodyContent
 }
@@ -86,7 +84,7 @@ module.exports = [{
       paid: submission.paymentDetails.paymentStatus?.status === 'success',
       isExportSubmissionWaiting,
       permitType: submission.permitType,
-      permitSubType: submission.applications[0].permitSubType      
+      permitSubType: submission.applications[0].permitSubType
     }
 
     return h.view(pageId, createModel(null, pageData));
@@ -95,14 +93,14 @@ module.exports = [{
 {
   method: 'POST',
   path: `${currentPath}/go-to-account`,
-  handler: async (request, h) => {
+  handler: async (_request, h) => {
     return h.redirect(nextPathMySubmissions)
   },
 },
 {
   method: 'POST',
   path: `${currentPath}/go-to-export`,
-  handler: async (request, h) => {
+  handler: async (_request, h) => {
     return h.redirect(nextPathExportSubmission)
   },
 }

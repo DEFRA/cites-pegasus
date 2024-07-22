@@ -2,10 +2,12 @@
 * Add an `onPreResponse` listener to return error pages
 */
 
+const { httpStatusCode } = require('../lib/constants')
+
 module.exports = {
   plugin: {
     name: 'error-pages',
-    register: (server, options) => {
+    register: (server, _options) => {
       server.ext('onPreResponse', (request, h) => {
         const response = request.response
 
@@ -16,11 +18,11 @@ module.exports = {
 
           // In the event of 404
           // return the `404` view
-          if (statusCode === 404) {
+          if (statusCode === httpStatusCode.NOT_FOUND) {
             return h.view('404').code(statusCode)
           }
 
-          if (statusCode === 413) {
+          if (statusCode === httpStatusCode.PAYLOAD_TOO_LARGE) {
             return h.view('413').code(statusCode)
           }
 

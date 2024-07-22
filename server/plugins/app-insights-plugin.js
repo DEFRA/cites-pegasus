@@ -1,7 +1,8 @@
 const appInsights = require('applicationinsights')
 const config = require('../../config/config')
+const { httpStatusCode } = require('../lib/constants')
 
-const register = (server, options) => {
+const register = (server, _options) => {
   if (config.appInsightsInstrumentationKey && config.appInsightsInstrumentationCloudRole) {
     appInsights.setup(config.appInsightsInstrumentationKey)
       .setAutoDependencyCorrelation(true)
@@ -16,7 +17,7 @@ const register = (server, options) => {
     //Register a server extension point to log requests
     server.ext('onRequest', (request, h) => {
       const telemetry = { 
-        name: request.method.toUpperCase() + ' ' + request.path, 
+        name: `${request.method.toUpperCase()} ${request.path}`, 
         url: request.path 
       }
 
@@ -27,7 +28,7 @@ const register = (server, options) => {
     // Register a server extension point to log payload details
     server.ext('onPostAuth', (request, h) => {
       const telemetry = { 
-        name: request.method.toUpperCase() + ' ' + request.path, 
+        name: `${request.method.toUpperCase()} ${request.path}`, 
         properties: {
                 // Add custom properties
                 method: request.method,
@@ -46,10 +47,10 @@ const register = (server, options) => {
     // Register a server extension point to log responses
     server.ext('onPreResponse', (request, h) => {
       const telemetry = {
-        name: request.method.toUpperCase() + ' ' + request.path,
+        name: `${request.method.toUpperCase()} ${request.path}`, 
         url: request.path,
         resultCode: request.response.statusCode,
-        success: request.response.statusCode >= 200 && request.response.statusCode < 400,
+        success: request.response.statusCode >= httpStatusCode.OK && request.response.statusCode < httpStatusCode.BAD_REQUEST,
       };
       appInsights.defaultClient.trackRequest(telemetry)
       return h.continue

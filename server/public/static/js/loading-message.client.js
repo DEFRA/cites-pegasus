@@ -1,4 +1,4 @@
-window.onpageshow = function (event) {
+window.onpageshow = function (_event) {
     //Clears the loading message when the page is accessed via the back button
     hideLoadingMessage()
 }
@@ -15,9 +15,9 @@ function hideLoadingMessage() {
     elementToHide.forEach(element => {
         element.style.visibility = "visible"
     })
-    const element = document.getElementById("loading-overlay-container")
-    if (element) {
-        element.remove()
+    const container = document.getElementById("loading-overlay-container")
+    if (container) {
+        container.remove()
     }
 }
 
