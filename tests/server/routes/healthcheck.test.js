@@ -15,7 +15,7 @@ let route
 let request
 let code
 
-describe('Healthcheck Routes', () => {
+describe('Healthcheck Basic and Detailed Routes', () => {
 
     beforeEach(async () => {
         server = {

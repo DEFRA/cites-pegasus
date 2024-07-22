@@ -6,6 +6,11 @@
 trigger:
 - main
 
+pr:
+  branches:
+    exclude: 
+    - '*'
+    
 pool:
   #name: DEFRA-COMMON-windows2019-SSV3
   vmImage: 'ubuntu-latest'
