@@ -4,11 +4,12 @@ const { decode } = require('jsonwebtoken');
 const { client } = require('../services/oidc-client')
 const { readSecret } = require('../lib/key-vault')
 const { getYarValue, setYarValue } = require('../lib/session')
+const { httpStatusCode } = require('../lib/constants')
 
 module.exports = {
   plugin: {
     name: 'oidc-auth',
-    register: async (server, options) => {
+    register: async (server, _options) => {
 
       await server.register(jwtAuth)
 
@@ -16,7 +17,7 @@ module.exports = {
 
       const authOptions = {
         key: secret,
-        validate: async (decoded, request, h) => {
+        validate: async (decoded, request, _h) => {
           const sessionCIDMAuth = getYarValue(request, 'CIDMAuth')
 
           if (decoded.contactId === sessionCIDMAuth?.user.contactId) {
@@ -34,7 +35,7 @@ module.exports = {
 
       server.ext('onPreResponse', (request, h) => {
         const response = request.response;
-        if (response.isBoom && response.output.statusCode === 401) {
+        if (response.isBoom && response.output.statusCode === httpStatusCode.UNAUTHORIZED) {
           return h.redirect('/login');
         }
         return h.continue;

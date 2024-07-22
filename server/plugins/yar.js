@@ -4,7 +4,7 @@ const { readSecret } = require('../lib/key-vault')
 
 module.exports = {
   name: 'yar',
-  register: async function (server, options) {
+  register: async function (server, _options) {
 
     const cookiePassword = (await readSecret('SESSION-COOKIE-PASSWORD')).value
     const cacheConfig = await getCacheConfig()

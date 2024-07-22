@@ -35,7 +35,6 @@ const { permitTypeOption: pto, permitType: pt, permitSubType: pst } = constants
 
 function getPermitDescription(permitType, permitSubType) {
     const commonContent = textContent.common
-    const { permitType: pt, permitSubType: pst } = constants
     
     if (permitSubType) {
         switch (permitSubType) {
