@@ -7,7 +7,8 @@ const AVScanResult = {
     SUCCESS: 'success',
     MALICIOUS: 'malicious',
     TIMEOUT: 'timeout',
-    UNKNOWN: 'unknown'
+    UNKNOWN: 'unknown',
+    PROCESSING: 'processing'
 }
 
 async function getBlobServiceClient(server) {
@@ -99,7 +100,7 @@ async function getAVScanStatus(blockBlobClient) {
             console.log(`Check if AV scan is complete`)
             try {
                 const scanResult = await getAVScanResult(blockBlobClient)
-                if (scanResult) {
+                if (scanResult !== AVScanResult.PROCESSING) {
                     clearInterval(scanCheckIntervalId)
                     clearTimeout(timeoutId)
                     resolve(scanResult)
@@ -145,6 +146,7 @@ async function getAVScanResult(blockBlobClient) {
         console.error(err)
         throw err
     }
+    return AVScanResult.PROCESSING
 }
 
 async function saveObjectToContainer(server, containerName, filename, object) {
