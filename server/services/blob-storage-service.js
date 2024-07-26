@@ -68,10 +68,10 @@ async function saveFileToContainer(server, containerName, filename, data) {
         let url = blockBlobClient.url
 
         if (avScanResult !== AVScanResult.SUCCESS) {
-            deleteFileFromContainer(server, containerName, filename).then(data => {
+            deleteFileFromContainer(server, containerName, filename).then(() => {
                 console.log(`File ${filename} deleted from storage account because of AV scan result: ${avScanResult}`)
             })
-            .catch(error => {
+            .catch(() => {
                 //Do nothing
             })
 
@@ -96,7 +96,7 @@ async function getAVScanStatus(blockBlobClient) {
     return new Promise((resolve, reject) => {
 
         async function checkScan() {
-            console.log(`[${new Date().toISOString()}] running scan check`)
+            console.log(`Check if AV scan is complete`)
             try {
                 const scanResult = await getAVScanResult(blockBlobClient)
                 if (scanResult) {
@@ -107,7 +107,7 @@ async function getAVScanStatus(blockBlobClient) {
             } catch (err) {
                 clearInterval(scanCheckIntervalId)
                 clearTimeout(timeoutId)
-                reject(err)
+                reject(new Error(err.message))
             }
         }
 
@@ -116,9 +116,7 @@ async function getAVScanStatus(blockBlobClient) {
 
         scanCheckIntervalId = setInterval(checkScan, config.antiVirusCheckInterval)
 
-        console.log(`[${new Date().toISOString()}] Starting timeout timer`)
         timeoutId = setTimeout(() => {
-            console.log(`[${new Date().toISOString()}] Timeout reached`)
             clearInterval(scanCheckIntervalId);
             resolve(AVScanResult.TIMEOUT)
         }, config.antiVirusTimeout)
@@ -126,25 +124,20 @@ async function getAVScanStatus(blockBlobClient) {
 }
 
 async function getAVScanResult(blockBlobClient) {
-    return null
     try {
         const tagsResponse = await blockBlobClient.getTags()
-        if (tagsResponse.tags && tagsResponse.tags['Malware Scanning scan result']) {
+        if (tagsResponse.tags?.['Malware Scanning scan result']) {
             const scanResult = tagsResponse.tags['Malware Scanning scan result']
-            // Check for your particular response condition
-            let avScanResult
+            
             switch (scanResult.toUpperCase()) {
                 case 'NO THREATS FOUND':
-                    avScanResult = AVScanResult.SUCCESS
-                    break
+                    return AVScanResult.SUCCESS
                 case 'MALICIOUS':
-                    avScanResult = AVScanResult.MALICIOUS
-                    break
+                    return AVScanResult.MALICIOUS
                 default:
                     console.error('AV scan complete with unknown response')
-                    avScanResult = AVScanResult.UNKNOWN
+                    return AVScanResult.UNKNOWN
             }
-            return avScanResult
         }
     }
     catch (err) {

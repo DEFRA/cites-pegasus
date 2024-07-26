@@ -282,28 +282,29 @@ module.exports = [
 
           const fileSaveResult = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
 
-          const error = {
-            details: [
-              {
-                type: 'upload.exception',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
-
+          
           if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
+            const avError = {
+              details: [
+                {
+                  type: 'upload.exception',
+                  context: { label: 'fileUpload', key: 'fileUpload' }
+                }
+              ]
+            }
+
             switch (fileSaveResult.avScanResult) {
               case AVScanResult.MALICIOUS:
-                error.details[0].type = 'av-malicious.exception'
+                avError.details[0].type = 'av-malicious.exception'
                 break
               case AVScanResult.TIMEOUT:
-                error.details[0].type = 'av-timeout.exception'
+                avError.details[0].type = 'av-timeout.exception'
                 break
               default:
-                error.details[0].type = 'av-unknown.exception'
+                avError.details[0].type = 'av-unknown.exception'
             }
             
-            return failAction(request, h, error)
+            return failAction(request, h, avError)
           }
           
           console.log(`File added to blob container with url ${fileSaveResult.url}`)
