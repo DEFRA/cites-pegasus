@@ -1185,10 +1185,10 @@
       "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a .DOX, .DOCX, .PDF, .JPEG or .PNG",
       "error.fileUpload.any.existing": "A file with this name has already been uploaded",
       "error.fileUpload.any.maxfiles": "Maximum number of supporting documents reached",
-      "error.fileUpload.upload.exception": "The selected file could not be uploaded – try again",
-      "error.fileUpload.av-timeout.exception": "The selected file could not be uploaded – try again",
-      "error.fileUpload.av-unknown.exception": "The selected file could not be uploaded – try again",
-      "error.fileUpload.av-malicious.exception": "Please check for malware and try again",
+      "error.fileUpload.upload.exception": "The selected file could not be uploaded – please try again",
+      "error.fileUpload.av-timeout.exception": "The selected file could not be uploaded – please try again",
+      "error.fileUpload.av-unknown.exception": "The selected file could not be uploaded – please try again",
+      "error.fileUpload.av-malicious.exception": "The file appears corrupted. Please rectify before retrying",
       "error.file.delete.exception": "The selected file could not be removed – try again",
       "error.fileUpload.any.filesize": "The selected file must be smaller than 10MB"
     }

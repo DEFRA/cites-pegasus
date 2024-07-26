@@ -53,15 +53,6 @@ async function getCacheConfig() {
     engine: new catboxMemory.Engine(memoryOptions)
   }
 
-
-
-  // if(result.value.useRedis){
-  //   result.value.catboxOptions.password = await readSecret('REDIS-PASSWORD')
-  // } else {
-  //   result.value.catboxOptions = {}
-  // }
-
-  // return result.value
 }
 
 module.exports = { getCacheConfig }//result.value
