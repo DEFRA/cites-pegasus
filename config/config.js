@@ -72,7 +72,9 @@ const schema = Joi.object().keys({
     then: Joi.string().allow('', null),
     otherwise: Joi.string().required()
   }),
-  sessionCacheTTL: Joi.number()
+  sessionCacheTTL: Joi.number(),
+  antiVirusTimeout:  Joi.number(),
+  antiVirusCheckInterval: Joi.number()
 })
 
 // Build config
@@ -126,7 +128,9 @@ const config = {
   redisPort: process.env.REDIS_PORT,
   redisPartition: process.env.REDIS_PARTITION,
   memoryCacheMaxByteSize: process.env.MEMORY_CACHE_MAX_BYTE_SIZE,
-  sessionCacheTTL: process.env.SESSION_CACHE_TTL
+  sessionCacheTTL: process.env.SESSION_CACHE_TTL,
+  antiVirusTimeout: process.env.ANTIVIRUS_TIMEOUT,
+  antiVirusCheckInterval: process.env.ANTIVIRUS_CHECK_INTERVAL
 }
 
 // Validate config

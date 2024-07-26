@@ -3,6 +3,13 @@ const config = require('../../config/config')
 
 const { DefaultAzureCredential } = require("@azure/identity")
 
+const AVScanResult = {
+    SUCCESS: 'success',
+    MALICIOUS: 'malicious',
+    TIMEOUT: 'timeout',
+    UNKNOWN: 'unknown'
+}
+
 async function getBlobServiceClient(server) {
     // Use 'az login' command from the azure-cli npm package to identify
     // Azure SDK clients accept the credential as a parameter
@@ -38,7 +45,7 @@ async function createContainerWithTimestamp(server, name, attemptNo = 1) {
         console.log(containerName)
         if (err.code === 'ContainerAlreadyExists') {
             if (attemptNo >= 5) {
-                console.log("Unable to find unique container name after 5 attempts")
+                console.error("Unable to find unique container name after 5 attempts")
                 throw new Error("Unable to find unique container name after 5 attempts", err)
             }
 
@@ -57,10 +64,92 @@ async function saveFileToContainer(server, containerName, filename, data) {
         const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
         const blockBlobClient = containerClient.getBlockBlobClient(filename);
         await blockBlobClient.uploadData(data);
-        return blockBlobClient.url
+        const avScanResult = await getAVScanStatus(blockBlobClient)
+        let url = blockBlobClient.url
+
+        if (avScanResult !== AVScanResult.SUCCESS) {
+            deleteFileFromContainer(server, containerName, filename).then(data => {
+                console.log(`File ${filename} deleted from storage account because of AV scan result: ${avScanResult}`)
+            })
+            .catch(error => {
+                //Do nothing
+            })
+
+            url = null
+        }
+
+        return {
+            url,
+            avScanResult
+        }
     }
     catch (err) {
         console.log(err)
+        throw err
+    }
+}
+
+let scanCheckIntervalId
+let timeoutId
+
+async function getAVScanStatus(blockBlobClient) {
+    return new Promise((resolve, reject) => {
+
+        async function checkScan() {
+            console.log(`[${new Date().toISOString()}] running scan check`)
+            try {
+                const scanResult = await getAVScanResult(blockBlobClient)
+                if (scanResult) {
+                    clearInterval(scanCheckIntervalId)
+                    clearTimeout(timeoutId)
+                    resolve(scanResult)
+                }
+            } catch (err) {
+                clearInterval(scanCheckIntervalId)
+                clearTimeout(timeoutId)
+                reject(err)
+            }
+        }
+
+        // Run the scan check immediately
+        checkScan()
+
+        scanCheckIntervalId = setInterval(checkScan, config.antiVirusCheckInterval)
+
+        console.log(`[${new Date().toISOString()}] Starting timeout timer`)
+        timeoutId = setTimeout(() => {
+            console.log(`[${new Date().toISOString()}] Timeout reached`)
+            clearInterval(scanCheckIntervalId);
+            resolve(AVScanResult.TIMEOUT)
+        }, config.antiVirusTimeout)
+    })
+}
+
+async function getAVScanResult(blockBlobClient) {
+    return null
+    try {
+        const tagsResponse = await blockBlobClient.getTags()
+        if (tagsResponse.tags && tagsResponse.tags['Malware Scanning scan result']) {
+            const scanResult = tagsResponse.tags['Malware Scanning scan result']
+            // Check for your particular response condition
+            let avScanResult
+            switch (scanResult.toUpperCase()) {
+                case 'NO THREATS FOUND':
+                    avScanResult = AVScanResult.SUCCESS
+                    break
+                case 'MALICIOUS':
+                    avScanResult = AVScanResult.MALICIOUS
+                    break
+                default:
+                    console.error('AV scan complete with unknown response')
+                    avScanResult = AVScanResult.UNKNOWN
+            }
+            return avScanResult
+        }
+    }
+    catch (err) {
+        console.error("Unable to read document tags")
+        console.error(err)
         throw err
     }
 }
@@ -92,7 +181,7 @@ async function deleteFileFromContainer(server, containerName, fileName) {
         const blockBlobClient = containerClient.getBlockBlobClient(fileName);
         if (await checkContainerExists(server, containerName)) {
             await blockBlobClient.deleteIfExists({ deleteSnapshots: 'include' });
-        }
+        }        
     }
     catch (err) {
         console.log(err)
@@ -173,5 +262,6 @@ module.exports = {
     saveObjectToContainer,
     checkFileExists,
     getObjectFromContainer,
-    listContainerNames
+    listContainerNames,
+    AVScanResult
 }

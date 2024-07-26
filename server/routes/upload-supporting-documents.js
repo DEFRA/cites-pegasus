@@ -2,7 +2,7 @@ const Joi = require('joi')
 const { urlPrefix, documentUploadMaxFilesLimit } = require('../../config/config')
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
-const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists } = require("../services/blob-storage-service")
+const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists, AVScanResult } = require("../services/blob-storage-service")
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -47,9 +47,9 @@ function createModel(errors, data) {
   })
 
   const sortedDocuments = documents.sort((a, b) => (b.uploadTimestamp || 1) - (a.uploadTimestamp || 1))
-  
+
   const pagination = getPaginationControl(sortedDocuments.length, data.pageNo || 1, pageSize, currentPath)
-  
+
   const startIndex = (data.pageNo - 1) * pageSize
   const endIndex = startIndex + pageSize
   const paginatedDocuments = sortedDocuments.slice(startIndex, endIndex)
@@ -78,7 +78,7 @@ function createModel(errors, data) {
       name: "fileUpload",
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
-        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
+        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg,text/plain'
       }
     },
     pagination: pagination
@@ -95,7 +95,7 @@ function getPaginationControl(totalItems, pageNo, pageSize, url) {
   const endIndex = totalItems <= startIndex + pageSize ? totalItems : startIndex + pageSize
 
   const paginationText = `${startIndex + 1} to ${endIndex} of ${totalItems}`
-  
+
   const totalPages = Math.ceil(totalItems / pageSize)
 
   const prevAttr = pageNo === 1 ? { 'data-disabled': '' } : null
@@ -128,7 +128,7 @@ const fileSchema = Joi.object({
     filename: Joi.string().required(),
     headers: Joi.object({
       'content-disposition': Joi.string().required(),
-      'content-type': Joi.string().valid('application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg').required()
+      'content-type': Joi.string().valid('application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'text/plain').required()
     }).unknown(true),
   }).unknown(true),
   _data: Joi.any().required()
@@ -280,9 +280,34 @@ module.exports = [
             }
           }
 
-          const blobUrl = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
-          console.log(`File added to blob container with url ${blobUrl}`)
-          docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: blobUrl, uploadTimestamp: Date.now() })
+          const fileSaveResult = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
+
+          const error = {
+            details: [
+              {
+                type: 'upload.exception',
+                context: { label: 'fileUpload', key: 'fileUpload' }
+              }
+            ]
+          }
+
+          if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
+            switch (fileSaveResult.avScanResult) {
+              case AVScanResult.MALICIOUS:
+                error.details[0].type = 'av-malicious.exception'
+                break
+              case AVScanResult.TIMEOUT:
+                error.details[0].type = 'av-timeout.exception'
+                break
+              default:
+                error.details[0].type = 'av-unknown.exception'
+            }
+            
+            return failAction(request, h, error)
+          }
+          
+          console.log(`File added to blob container with url ${fileSaveResult.url}`)
+          docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: fileSaveResult.url, uploadTimestamp: Date.now() })
 
           try {
             mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
