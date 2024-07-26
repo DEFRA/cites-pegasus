@@ -77,6 +77,8 @@ The following environment variables must be provided, for development this can b
 | STORAGE_ACCOUNT_URL                      | Storage account url (via managed identity)             |    yes   |         |                                  |       |      
 | USE_REDIS                                | Enable redis as session cache instead of in memory     |    yes   |         |                                  |       |
 | MEMORY_CACHE_MAX_BYTE_SIZE               | Max size of memory cache in bytes                      | if USE_REDIS is false |         |                                  |       |
+| ANTIVIRUS_TIMEOUT                        | Number of milliseconds before abandoning AV result check |  yes   |         |                                  |       |
+| ANTIVIRUS_CHECK_INTERVAL                 | Number of milliseconds between each AV result check |  yes   |         |                                  |       |
 ## Project structure
 
 Here's the default structure for your project files.

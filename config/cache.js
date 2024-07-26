@@ -25,9 +25,13 @@ async function getCacheConfig() {
       host: config.redisHostname,
       port: config.redisPort,
       password: redisPassword,
-      partition: config.redisPartition,
-      tls: { host: config.redisHostname }
+      partition: config.redisPartition
     }
+
+    if(config.redisPort !== '6379'){
+      redisOptions.tls = { host: config.redisHostname }
+    }
+
 
     return {
       name: cacheName,

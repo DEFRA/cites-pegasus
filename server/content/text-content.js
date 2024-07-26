@@ -949,6 +949,9 @@ const schema = Joi.object().keys({
       "error.fileUpload.any.existing": Joi.string().required(),
       "error.fileUpload.any.maxfiles": Joi.string().required(),
       "error.fileUpload.upload.exception": Joi.string().required(),
+      "error.fileUpload.av-timeout.exception": Joi.string().required(),
+      "error.fileUpload.av-unknown.exception": Joi.string().required(),
+      "error.fileUpload.av-malicious.exception": Joi.string().required(),
       "error.file.delete.exception": Joi.string().required(),
       "error.fileUpload.any.filesize": Joi.string().required()
     }).required()
