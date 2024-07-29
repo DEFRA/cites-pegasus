@@ -1,6 +1,4 @@
-
 const errorAnyEmpty = 'any.empty'
-const errorAnyNotEmpty = 'any.notEmpty'
 
 function isValidDate(day, month, year) {
     const date = new Date(year, month - 1, day)
@@ -34,7 +32,7 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
     }
 
     const result = checkIfEmptyDateField(day, month, year, fieldName, helpers)
-    if (result){
+    if (result) {
         return result
     }
 
@@ -57,16 +55,16 @@ function dateValidator(day, month, year, allowFuture, fieldName, helpers) {
 }
 
 function checkIfEmptyDateField(day, month, year, fieldName, helpers) {
-    if (!day && !month && !year) {
+    if (areAllEmpty(day, month, year)) {
         return helpers.error(errorAnyEmpty, { customLabel: fieldName })
     }
-    if (!day && !month) {
+    if (areAllEmpty(day, month)) {
         return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-day-month` })
     }
-    if (!day && !year) {
+    if (areAllEmpty(day, year)) {
         return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-day-year` })
     }
-    if (!month && !year) {
+    if (areAllEmpty(month, year)) {
         return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-month-year` })
     }
     if (!day) {
@@ -78,6 +76,12 @@ function checkIfEmptyDateField(day, month, year, fieldName, helpers) {
     if (!year) {
         return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-year` })
     }
+}
+
+function areAllEmpty(...args) {
+    return args.every(item => {
+        return !item
+    });
 }
 
 function dateValidatorMaxDate(day, month, year, allowFuture, maxDate, fieldName, helpers) {
@@ -95,38 +99,10 @@ function dateValidatorMaxDate(day, month, year, allowFuture, maxDate, fieldName,
     return null
 }
 
-function emptyDateValidator(day, month, year, fieldName, helpers) {
-
-    if (day && month && year) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: fieldName })
-    }
-    if (day && month) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-day-month` })
-    }
-    if (day && year) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-day-year` })
-    }
-    if (month && year) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-month-year` })
-    }
-    if (day) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-day` })
-    }
-    if (month) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-month` })
-    }
-    if (year) {
-        return helpers.error(errorAnyNotEmpty, { customLabel: `${fieldName}-year` })
-    }
-
-    return null
-}
-
 module.exports = {
     isValidDate,
     isPastDate,
     isAfterMinDate,
     dateValidator,
-    dateValidatorMaxDate,
-    emptyDateValidator
+    dateValidatorMaxDate
 }
