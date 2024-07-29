@@ -24,6 +24,9 @@ function createModel(errors, data) {
     fields.push(`uniqueIdentificationMark${i}`)
 
     for (const property in pageContent.errorMessages) {
+      if(!property){
+        console.error("Invalid error message")
+      }
       const propertyParts = property.split(".")
       if (propertyParts[0] && propertyParts[1] && propertyParts[2] && propertyParts[3]) {
         const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]

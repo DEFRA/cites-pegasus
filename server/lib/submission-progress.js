@@ -273,6 +273,8 @@ function getApplicationProgress(application, applicationIndex, includePageData, 
 
         submissionProgress.push(getPageProgess(`importer-exporter/${applicationIndex}`, applicationIndex, includePageData, getPageDataImporterExporter(application.importerExporterDetails)))
 
+    } else {
+        //No action necessary
     }
 
     if ((application.importerExporterDetails && submission.permitType !== pt.EXPORT)
