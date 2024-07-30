@@ -24,6 +24,8 @@ function createModel(errors, data) {
     case false:
       isAgentRadioVal = commonContent.radioOptionNo
       break;
+    default:
+      throw new Error('Invalid option for isAgentRadioVal')
   }
 
   let errorList = null

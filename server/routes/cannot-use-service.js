@@ -8,7 +8,7 @@ const previousPathOtherPermitType = `${urlPrefix}/other-permit-type`
 function createModel(){
   const commonContent = textContent.common;
   const pageContent = textContent.cannotUseService;
-  let backLink = enableOtherPermitTypes ? previousPathOtherPermitType : previousPathPermitType
+  const backLink = enableOtherPermitTypes ? previousPathOtherPermitType : previousPathPermitType
   const pageTitle = pageContent.pageTitle + commonContent.pageTitleSuffix
   return { ...commonContent, ...pageContent, backLink, pageTitle }
 }
