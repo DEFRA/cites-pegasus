@@ -23,7 +23,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.describeLivingAnimal
 
-  let dateOfBirthErrors = []
+  const dateOfBirthErrors = []
   const fields = [
     "dateOfBirth",
     "dateOfBirth-day",
@@ -66,7 +66,7 @@ function createModel(errors, data) {
     { name: 'year', value: data.dateOfBirth.year }
   ]
 
-  let radioOptions = [
+  const radioOptions = [
     { text: pageContent.radioOptionSexMale, value: 'M', hasInput: false },
     { text: pageContent.radioOptionSexFemale, value: 'F', hasInput: false },
     { text: pageContent.radioOptionSexUndetermined, value: 'U', hasInput: false }
@@ -121,16 +121,11 @@ function createModel(errors, data) {
     ],
     errorMessage: getFieldError(errorList, "#isExactDateUnknown")
   }
-  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
-  if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
-    previousPath = previousPathMultipleSpecimens
-  }
-  
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
-  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+
+  const backLink = getBackLink(data)
 
   const model = {
-    backLink: backLink,
+    backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
@@ -188,6 +183,16 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getBackLink(data) {
+  
+  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
+  if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
+    previousPath = previousPathMultipleSpecimens
+  }
+  
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  return data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+}
 
 function getRadioItem(sex, radioOption, errorList) {
 
