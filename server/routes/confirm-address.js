@@ -81,7 +81,7 @@ function getPermitSpecificContent(pageContent, permitType) {
             pageHeader = pageContent.pageHeaderArticle10
             break
         default:
-            throw new Error(`Unknown permit type ${data.permitType}`)
+            throw new Error(`Unknown permit type ${permitType}`)
     }
     return { defaultTitle, pageHeader }
 }

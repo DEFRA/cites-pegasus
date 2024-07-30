@@ -28,7 +28,7 @@ function createModel(errors, data) {
         pageContent = textContent.contactDetails.agent
     }
 
-    let previousPath = `${urlPrefix}/applying-on-behalf`
+    const previousPath = `${urlPrefix}/applying-on-behalf`
 
     const { defaultTitle, pageHeader, inputHintEmail } = getPermitSpecificContent(pageContent, data.permitType)
 

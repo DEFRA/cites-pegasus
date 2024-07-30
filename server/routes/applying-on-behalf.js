@@ -16,7 +16,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applyingOnBehalf
 
-  let isAgentRadioVal = null
+  let isAgentRadioVal
   switch (data.isAgent) {
     case true:
       isAgentRadioVal = commonContent.radioOptionYes
@@ -25,7 +25,7 @@ function createModel(errors, data) {
       isAgentRadioVal = commonContent.radioOptionNo
       break;
     default:
-      throw new Error('Invalid option for isAgentRadioVal')
+      isAgentRadioVal = null
   }
 
   let errorList = null

@@ -269,6 +269,10 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
+function getModifiedParentDetails(permitType, parentDetails){
+  return [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(permitType) ? parentDetails.replace(/\r/g, '') : null
+}
+
 module.exports = [
   {
     method: "GET",
@@ -345,8 +349,8 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const modifiedMaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        const modifiedFemaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        const modifiedMaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.maleParentDetails)
+        const modifiedFemaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.femaleParentDetails)
         const schema = Joi.object({ 
           description: Joi.string().min(5).max(500),
           maleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, ""),
@@ -359,8 +363,8 @@ module.exports = [
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
-        species.maleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        species.femaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        species.maleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.maleParentDetails)
+        species.femaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.femaleParentDetails)
         species.sex = request.payload.sex
 
         species.dateOfBirth = request.payload.isExactDateUnknown
@@ -393,6 +397,8 @@ module.exports = [
         return h.redirect(redirectTo)
 
       }
+
     }
   }
 ]
+
