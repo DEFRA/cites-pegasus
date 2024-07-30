@@ -43,7 +43,6 @@ function createModel(errors, data) {
       "countryOfOriginPermitNumber",
       "countryOfOriginPermitIssueDate",
       "countryOfOriginPermitIssueDate-day",
-      "countryOfOriginPermitIssueDate-day",
       "countryOfOriginPermitIssueDate-day-month",
       "countryOfOriginPermitIssueDate-day-year",
       "countryOfOriginPermitIssueDate-month",

@@ -30,35 +30,7 @@ function createModel(errors, data) {
 
     let previousPath = `${urlPrefix}/applying-on-behalf`
 
-    let defaultTitle = ''
-    let pageHeader = ''
-    let inputHintEmail = ''
-
-    switch (data.permitType) {
-        case pt.IMPORT:
-            defaultTitle = pageContent.defaultTitleImport
-            pageHeader = pageContent.pageHeaderImport
-            inputHintEmail = pageContent.inputHintEmailImport
-            break
-        case pt.EXPORT:
-            defaultTitle = pageContent.defaultTitleExport
-            pageHeader = pageContent.pageHeaderExport
-            inputHintEmail = pageContent.inputHintEmailExport
-            break
-        case pt.MIC:
-        case pt.TEC:
-        case pt.POC:
-        case pt.REEXPORT:
-            defaultTitle = pageContent.defaultTitleReexport
-            pageHeader = pageContent.pageHeaderReexport
-            inputHintEmail = pageContent.inputHintEmailReexport
-            break
-        case pt.ARTICLE_10:
-            defaultTitle = pageContent.defaultTitleArticle10
-            pageHeader = pageContent.pageHeaderArticle10
-            inputHintEmail = pageContent.inputHintEmailArticle10
-            break;
-    }
+    const { defaultTitle, pageHeader, inputHintEmail } = getPermitSpecificContent(pageContent, data.permitType)
 
     let errorList = null
     if (errors) {
@@ -87,7 +59,7 @@ function createModel(errors, data) {
         isAgent: data.isAgent,
         formActionPage: `${currentPath}/${data.contactType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
 
         inputFullName: {
             label: {
@@ -100,21 +72,6 @@ function createModel(errors, data) {
             ...(data.fullName ? { value: data.fullName } : {}),
             errorMessage: getFieldError(errorList, '#fullName')
         },
-
-        // inputBusinessName: {
-        //     label: {
-        //         text: pageContent.inputLabelBusinessName,
-        //     },
-        //     hint: {
-        //         text: inputHintBusinessName
-        //     },
-        //     id: "businessName",
-        //     name: "businessName",
-        //     autocomplete: "on",
-        //     classes: "govuk-!-width-two-thirds disabled",
-        //     ...(data.businessName ? { value: data.businessName } : {}),
-        //     errorMessage: getFieldError(errorList, '#businessName')
-        // },
 
         inputEmail: {
             label: {
@@ -132,6 +89,41 @@ function createModel(errors, data) {
         }
     }
     return { ...commonContent, ...model }
+}
+
+function getPermitSpecificContent(pageContent, permitType) {
+    let defaultTitle
+    let pageHeader
+    let inputHintEmail
+    
+    switch (permitType) {
+        case pt.IMPORT:
+            defaultTitle = pageContent.defaultTitleImport
+            pageHeader = pageContent.pageHeaderImport
+            inputHintEmail = pageContent.inputHintEmailImport
+            break
+        case pt.EXPORT:
+            defaultTitle = pageContent.defaultTitleExport
+            pageHeader = pageContent.pageHeaderExport
+            inputHintEmail = pageContent.inputHintEmailExport
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
+            defaultTitle = pageContent.defaultTitleReexport
+            pageHeader = pageContent.pageHeaderReexport
+            inputHintEmail = pageContent.inputHintEmailReexport
+            break
+        case pt.ARTICLE_10:
+            defaultTitle = pageContent.defaultTitleArticle10
+            pageHeader = pageContent.pageHeaderArticle10
+            inputHintEmail = pageContent.inputHintEmailArticle10
+            break
+        default:
+            throw new Error(`Unknown permit type: ${permitType}`)
+    }
+    return { defaultTitle, pageHeader, inputHintEmail }
 }
 
 module.exports = [{
@@ -206,7 +198,7 @@ module.exports = [{
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
-                
+
                 let businessName
                 if (submission[request.params.contactType]) {
                     businessName = submission[request.params.contactType].businessName
@@ -229,9 +221,9 @@ module.exports = [{
         },
         handler: async (request, h) => {
             const { fullName, email } = request.payload
-            
+
             const submission = getSubmission(request)
-            
+
             let businessName
             if (submission[request.params.contactType]) {
                 businessName = submission[request.params.contactType].businessName
@@ -264,7 +256,7 @@ module.exports = [{
             }
 
             saveDraftSubmission(request, redirectTo)
-            return h.redirect(redirectTo)      
+            return h.redirect(redirectTo)
         }
     },
 }]
