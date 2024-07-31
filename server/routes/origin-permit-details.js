@@ -34,7 +34,7 @@ function createModel(errors, data) {
     previousPath = previousPathImporterExporter
   }
 
-  let countryOfOriginPermitIssueDateErrors = []
+  const countryOfOriginPermitIssueDateErrors = []
 
   const errorList = getErrorList(
     errors,

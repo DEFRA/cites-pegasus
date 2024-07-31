@@ -25,32 +25,42 @@ function createModel(errors, data) {
     previousPath = previousPathCountryOfOriginImport
   }
 
-  let exportOrReexportPermitIssueDateErrors = []
+  const exportOrReexportPermitIssueDateErrors = []
+
+  const permitIssueDateFieldItems = {
+    DATE: "exportOrReexportPermitIssueDate",
+    DAY: "exportOrReexportPermitIssueDate-day",
+    DAY_MONTH:"exportOrReexportPermitIssueDate-day-month",
+    DAY_YEAR: "exportOrReexportPermitIssueDate-day-year",
+    MONTH: "exportOrReexportPermitIssueDate-month",
+    MONTH_YEAR: "exportOrReexportPermitIssueDate-month-year",
+    YEAR: "exportOrReexportPermitIssueDate-year",
+  }
 
   const errorList = getErrorList(
     errors,
     { ...commonContent.errorMessages, ...pageContent.errorMessages },
     ["exportOrReexportCountry",
       "exportOrReexportPermitNumber",
-      "exportOrReexportPermitIssueDate",
-      "exportOrReexportPermitIssueDate-day",
-      "exportOrReexportPermitIssueDate-day-month",
-      "exportOrReexportPermitIssueDate-day-year",
-      "exportOrReexportPermitIssueDate-month",
-      "exportOrReexportPermitIssueDate-month-year",
-      "exportOrReexportPermitIssueDate-year",
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR,
       "exportOrReexportPermitDetailsNotKnown"]
   )
 
   if (errorList) {
     const permitIssueDateFields = [
-      "exportOrReexportPermitIssueDate",
-      "exportOrReexportPermitIssueDate-day",
-      "exportOrReexportPermitIssueDate-day-month",
-      "exportOrReexportPermitIssueDate-day-year",
-      "exportOrReexportPermitIssueDate-month",
-      "exportOrReexportPermitIssueDate-month-year",
-      "exportOrReexportPermitIssueDate-year"
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR
     ]
     permitIssueDateFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)

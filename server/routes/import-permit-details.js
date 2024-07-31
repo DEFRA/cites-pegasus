@@ -22,7 +22,7 @@ function createModel(errors, data) {
   const defaultBacklink = data.permitType === pt.ARTICLE_10 ? `${previousPathOriginPermitDetails}/${data.applicationIndex}` : `${previousPathExportPermitDetails}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
-  let importPermitIssueDateErrors = []
+  const importPermitIssueDateErrors = []
 
   const errorList = getErrorList(
     errors,
