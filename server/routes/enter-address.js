@@ -38,20 +38,6 @@ function createModel(errors, data) {
 }
 
 function getInputs(errorList, data, pageContent, commonContent) {
-    const countries = [{
-        text: commonContent.countrySelectDefault,
-        value: '',
-        selected: false
-    }]
-
-    countries.push(...data.countries.map(country => {
-        return {
-            text: country.name,
-            value: country.code,
-            selected: country.code === (data.country || '')
-        }
-    }))
-
     return {
         inputDeliveryName: {
             label: {
@@ -125,10 +111,29 @@ function getInputs(errorList, data, pageContent, commonContent) {
             id: "country",
             name: "country",
             classes: govukClass.WIDTH_TWO_THIRDS,
-            items: countries,
+            items: getCountries(data, commonContent),
             errorMessage: getFieldError(errorList, '#country')
         }
     }
+}
+
+function getCountries(data, commonContent) {
+
+    const countries = [{
+        text: commonContent.countrySelectDefault,
+        value: '',
+        selected: false
+    }]
+
+    countries.push(...data.countries.map(country => {
+        return {
+            text: country.name,
+            value: country.code,
+            selected: country.code === (data.country || '')
+        }
+    }))
+    
+    return countries
 }
 
 function getPageContent(data, enterAddressText) {

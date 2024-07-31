@@ -72,6 +72,10 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getRedirect(isEverImportedExported, permitType, applicationIndex) {
+  return isEverImportedExported && permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
+}
+
 module.exports = [
   {
     method: "GET",
@@ -172,7 +176,8 @@ module.exports = [
           }
         }
 
-        const redirectTo = request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
+        //request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
+        const redirectTo = getRedirect(request.payload.isEverImportedExported, submission.permitType, applicationIndex)
         
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
