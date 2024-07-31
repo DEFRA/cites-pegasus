@@ -78,7 +78,7 @@ function createModel(errors, data) {
       name: "fileUpload",
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
-        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg,text/plain'
+        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
       }
     },
     pagination: pagination
@@ -128,7 +128,7 @@ const fileSchema = Joi.object({
     filename: Joi.string().required(),
     headers: Joi.object({
       'content-disposition': Joi.string().required(),
-      'content-type': Joi.string().valid('application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'text/plain').required()
+      'content-type': Joi.string().valid('application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg').required()
     }).unknown(true),
   }).unknown(true),
   _data: Joi.any().required()
