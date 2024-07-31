@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool, getCountries } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator } = require("../lib/validators")
@@ -34,7 +34,7 @@ function createModel(errors, data) {
     DAY_YEAR: "exportOrReexportPermitIssueDate-day-year",
     MONTH: "exportOrReexportPermitIssueDate-month",
     MONTH_YEAR: "exportOrReexportPermitIssueDate-month-year",
-    YEAR: "exportOrReexportPermitIssueDate-year",
+    YEAR: "exportOrReexportPermitIssueDate-year"
   }
 
   const errorList = getErrorList(
@@ -81,20 +81,6 @@ function createModel(errors, data) {
     { name: "year", value: data.exportOrReexportPermitIssueDateYear }
   ]
 
-  const countries = [{
-    code: '',
-    name: commonContent.countrySelectDefault
-  }]
-  countries.push(...data.countries)
-
-  const exportOrReexportCountries = countries.map(country => {
-    return {
-      value: country.code,
-      text: country.name,
-      selected: country.code === (data.exportOrReexportCountry || '')
-    }
-  })
-
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -105,7 +91,7 @@ function createModel(errors, data) {
     id: "exportOrReexportCountry",
     name: "exportOrReexportCountry",
     classes: "govuk-!-width-two-thirds",
-    items: exportOrReexportCountries,
+    items: getCountries(data.countries, data.exportOrReexportCountry),
     //...(data.exportOrReexportCountry ? { value: data.exportOrReexportCountry } : {}),
     errorMessage: getFieldError(errorList, "#exportOrReexportCountry")
   }

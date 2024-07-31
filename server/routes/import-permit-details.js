@@ -24,29 +24,39 @@ function createModel(errors, data) {
 
   const importPermitIssueDateErrors = []
 
+  const permitIssueDateFieldItems = {
+    DATE: "importPermitIssueDate",
+    DAY: "importPermitIssueDate-day",
+    DAY_MONTH: "importPermitIssueDate-day-month",
+    DAY_YEAR: "importPermitIssueDate-day-year",
+    MONTH: "importPermitIssueDate-month",
+    MONTH_YEAR: "importPermitIssueDate-month-year",
+    YEAR: "importPermitIssueDate-year"
+  }
+
   const errorList = getErrorList(
     errors,
     { ...commonContent.errorMessages, ...pageContent.errorMessages },
     ["importPermitNumber",
-      "importPermitIssueDate",
-      "importPermitIssueDate-day",
-      "importPermitIssueDate-day-month",
-      "importPermitIssueDate-day-year",
-      "importPermitIssueDate-month",
-      "importPermitIssueDate-month-year",
-      "importPermitIssueDate-year",
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR,
       "importPermitDetailsNotKnown"]
   )
 
   if (errorList) {
     const permitIssueDateFields = [
-      "importPermitIssueDate",
-      "importPermitIssueDate-day",
-      "importPermitIssueDate-day-month",
-      "importPermitIssueDate-day-year",
-      "importPermitIssueDate-month",
-      "importPermitIssueDate-month-year",
-      "importPermitIssueDate-year"
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR
     ]
     permitIssueDateFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)
@@ -239,7 +249,7 @@ module.exports = [
           "importPermitIssueDate-year": importYear,
         } = request.payload
         const importPermitDetailsNotKnown = stringToBool(request.payload.importPermitDetailsNotKnown, false)
-        
+
 
         const requestPayload = {
           importPermitNumber: importPermitNumber,

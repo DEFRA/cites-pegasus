@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool, getCountries } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator, dateValidatorMaxDate } = require("../lib/validators")
@@ -36,30 +36,40 @@ function createModel(errors, data) {
 
   const countryOfOriginPermitIssueDateErrors = []
 
+  const permitIssueDateFieldItems = {
+    DATE: "countryOfOriginPermitIssueDate",
+    DAY: "countryOfOriginPermitIssueDate-day",
+    DAY_MONTH: "countryOfOriginPermitIssueDate-day-month",
+    DAY_YEAR: "countryOfOriginPermitIssueDate-day-year",
+    MONTH: "countryOfOriginPermitIssueDate-month",
+    MONTH_YEAR: "countryOfOriginPermitIssueDate-month-year",
+    YEAR: "countryOfOriginPermitIssueDate-year"
+  }
+
   const errorList = getErrorList(
     errors,
     { ...commonContent.errorMessages, ...pageContent.errorMessages },
     ["countryOfOrigin",
       "countryOfOriginPermitNumber",
-      "countryOfOriginPermitIssueDate",
-      "countryOfOriginPermitIssueDate-day",
-      "countryOfOriginPermitIssueDate-day-month",
-      "countryOfOriginPermitIssueDate-day-year",
-      "countryOfOriginPermitIssueDate-month",
-      "countryOfOriginPermitIssueDate-month-year",
-      "countryOfOriginPermitIssueDate-year",
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR,
       "isCountryOfOriginNotKnown"]
   )
 
   if (errorList) {
     const permitIssueDateFields = [
-      "countryOfOriginPermitIssueDate",
-      "countryOfOriginPermitIssueDate-day",
-      "countryOfOriginPermitIssueDate-day-month",
-      "countryOfOriginPermitIssueDate-day-year",
-      "countryOfOriginPermitIssueDate-month",
-      "countryOfOriginPermitIssueDate-month-year",
-      "countryOfOriginPermitIssueDate-year"
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR
     ]
     permitIssueDateFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)
@@ -80,23 +90,9 @@ function createModel(errors, data) {
     { name: "year", value: data.countryOfOriginPermitIssueDateYear }
   ]
 
-  const countries = [{
-    code: '',
-    name: commonContent.countrySelectDefault
-  }]
-  countries.push(...data.countries)
-
-  const countryOfOriginCountries = countries.map(country => {
-    return {
-      value: country.code,
-      text: country.name,
-      selected: country.code === (data.countryOfOrigin || '')
-    }
-  })
-
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const selectCountryOfOrigin = {
     label: {
       text: pageContent.inputLabelCountry
@@ -104,7 +100,7 @@ function createModel(errors, data) {
     id: "countryOfOrigin",
     name: "countryOfOrigin",
     classes: "govuk-!-width-two-thirds",
-    items: countryOfOriginCountries,
+    items: getCountries(data.countries, data.countryOfOrigin),
     //...(data.countryOfOrigin ? { value: data.countryOfOrigin } : {}),
     errorMessage: getFieldError(errorList, "#countryOfOrigin")
   }
@@ -219,7 +215,7 @@ const getMaxDate = (days) => {
   const currentDate = new Date()
   currentDate.setDate(currentDate.getDate() + days)
   currentDate.setHours(0, 0, 0, 0)
-  
+
   return currentDate
 }
 
@@ -242,7 +238,7 @@ const payloadSchemaNotPlantImport = Joi.object({
       "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
       "countryOfOriginPermitIssueDate-year": Joi.any().optional()
     }).custom(permitIssueDateValidatorNotPlantImport)
-  })  
+  })
 })
 
 const payloadSchemaPlantImport = Joi.object({
@@ -264,7 +260,7 @@ const payloadSchemaPlantImport = Joi.object({
       "countryOfOriginPermitIssueDate-month": Joi.any().optional(),
       "countryOfOriginPermitIssueDate-year": Joi.any().optional()
     }).custom(permitIssueDateValidatorPlantImport)
-  })  
+  })
 })
 
 module.exports = [
@@ -365,7 +361,7 @@ module.exports = [
           }
           return h.view(pageId, createModel(result.error, pageData)).takeover()
         }
-        
+
         const selectedCountryOfOriginCountry = request.server.app.countries.find(country => country.code === countryOfOrigin)
 
         const permitDetails = submission.applications[applicationIndex].permitDetails || {}
@@ -414,11 +410,11 @@ module.exports = [
 
         let redirectTo = `${nextPathExportPermitDetails}/${applicationIndex}`
 
-        if(submission.permitType === pt.IMPORT){
-          if(!isCountryOfOriginNotKnown){
-            redirectTo = `${nextPathCountryOfOriginImport}/${applicationIndex}`          
+        if (submission.permitType === pt.IMPORT) {
+          if (!isCountryOfOriginNotKnown) {
+            redirectTo = `${nextPathCountryOfOriginImport}/${applicationIndex}`
           }
-        } else if (submission.permitType === pt.ARTICLE_10){
+        } else if (submission.permitType === pt.ARTICLE_10) {
           redirectTo = `${nextPathImportPermitDetails}/${applicationIndex}`
         }
 

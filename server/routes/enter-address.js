@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryName } = require("../../config/config")
-const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, getCountries } = require('../lib/helper-functions')
 const { govukClass } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
@@ -111,29 +111,10 @@ function getInputs(errorList, data, pageContent, commonContent) {
             id: "country",
             name: "country",
             classes: govukClass.WIDTH_TWO_THIRDS,
-            items: getCountries(data, commonContent),
+            items: getCountries(data.countries, data.country),
             errorMessage: getFieldError(errorList, '#country')
         }
     }
-}
-
-function getCountries(data, commonContent) {
-
-    const countries = [{
-        text: commonContent.countrySelectDefault,
-        value: '',
-        selected: false
-    }]
-
-    countries.push(...data.countries.map(country => {
-        return {
-            text: country.name,
-            value: country.code,
-            selected: country.code === (data.country || '')
-        }
-    }))
-    
-    return countries
 }
 
 function getPageContent(data, enterAddressText) {

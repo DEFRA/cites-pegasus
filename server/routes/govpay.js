@@ -60,8 +60,8 @@ module.exports = [
     handler: async (request, h) => {
       const cidmAuth = getYarValue(request, 'CIDMAuth')
       const submission = getSubmission(request)
-      let name = cidmAuth.user.firstName + ' ' + cidmAuth.user.lastName
-      let email = cidmAuth.user.email
+      const name = cidmAuth.user.firstName + ' ' + cidmAuth.user.lastName
+      const email = cidmAuth.user.email
       let amount = submission.paymentDetails.costingValue
       
       if(submission.paymentDetails.feePaid && submission.paymentDetails.remainingAdditionalAmount > 0) {

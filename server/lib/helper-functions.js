@@ -136,6 +136,25 @@ function stringToBool(string, defaultValue) {
   }
 }
 
+function getCountries(countryList, selectedCountryCode) {
+  const countries = [{
+      text: textContent.common.countrySelectDefault,
+      value: '',
+      selected: false
+  }]
+
+  countries.push(...countryList.map(country => {
+      return {
+          text: country.name,
+          value: country.code,
+          selected: country.code === (selectedCountryCode || '')
+      }
+  }))
+  
+  return countries
+}
+
+
 module.exports = {
   isChecked,
   setLabelData,
@@ -158,5 +177,6 @@ module.exports = {
   getAddressSummary,
   toPascalCase,
   deleteIfExists,
-  stringToBool
+  stringToBool,
+  getCountries
 }

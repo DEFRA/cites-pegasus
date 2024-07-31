@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, getCountries} = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -29,38 +29,7 @@ function createModel(errors, data) {
     pageContent = lodash.merge(importerExporterText.common, importerExporterText.importerDetails)
   }
 
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["country", "name", "addressLine1", "addressLine2", "addressLine3", "addressLine4", "postcode"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
-  const countries = [{
-    text: commonContent.countrySelectDefault,
-    value: '',
-    selected: false
-  }]
-
-  countries.push(...data.countries.map(country => {
-    return {
-      text: country.name,
-      value: country.code,
-      selected: country.code === (data.country || '')
-    }
-  }))
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["country", "name", "addressLine1", "addressLine2", "addressLine3", "addressLine4", "postcode"])
 
   const previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
 
@@ -82,7 +51,7 @@ function createModel(errors, data) {
       id: "country",
       name: "country",
       classes: "govuk-!-width-two-thirds",
-      items: countries,
+      items: getCountries(data.countries, data.country),
       errorMessage: getFieldError(errorList, '#country')
     },
     inputFullName: {
@@ -150,8 +119,6 @@ function createModel(errors, data) {
   }
   return { ...commonContent, ...model }
 }
-
-
 
 module.exports = [
   {
