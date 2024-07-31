@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryName } = require("../../config/config")
-const { findErrorList, getFieldError, toPascalCase } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { govukClass } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -12,72 +13,31 @@ const contactTypes = ['applicant', 'delivery']
 const nextPath = `${urlPrefix}/confirm-address`
 const invalidSubmissionPath = `${urlPrefix}/`
 const lodash = require('lodash')
+const { func } = require('@hapi/joi')
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
-    let pageContent = null
 
     const enterAddressText = lodash.cloneDeep(textContent.enterAddress) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+    const pageContent = getPageContent(data, enterAddressText)
+    const { defaultTitle, pageHeader, pageBody } = getPermitSpecificContent(pageContent, data.permitType)
+    const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['deliveryName', 'addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode', 'country'])
 
-    if (data.contactType === 'applicant') {
-        if (data.isAgent) {
-            pageContent = lodash.merge(enterAddressText.common, enterAddressText.agentLed)
-        } else {
-            pageContent = lodash.merge(enterAddressText.common, enterAddressText.applicant)
-        }
-    } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(enterAddressText.common, enterAddressText.agent)
-    } else {
-        pageContent = lodash.merge(enterAddressText.common, enterAddressText.delivery)
+    const model = {
+        backLink: `${previousPath}/${data.contactType}`,
+        pageHeader: pageHeader,
+        pageBody: pageBody,
+        formActionPage: `${currentPath}/${data.contactType}`,
+        ...errorList ? { errorList } : {},
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
+        internationalAddress: data.contactType !== 'delivery',
+        showDeliveryName: data.contactType === 'delivery' && enableDeliveryName,
+        ...getInputs(errorList, data, pageContent, commonContent)
     }
+    return { ...commonContent, ...model }
+}
 
-    let defaultTitle = ''
-    let pageHeader = ''
-    let pageBody = ''
-    let errorMessages = pageContent.errorMessages
-
-    switch (data.permitType) {
-        case pt.IMPORT:
-            defaultTitle = pageContent.defaultTitleImport
-            pageHeader = pageContent.pageHeaderImport
-            pageBody = pageContent.pageBodyImport
-            break
-        case pt.EXPORT:
-            defaultTitle = pageContent.defaultTitleExport
-            pageHeader = pageContent.pageHeaderExport
-            pageBody = pageContent.pageBodyExport
-            break
-        case pt.MIC:
-        case pt.TEC:
-        case pt.POC:
-        case pt.REEXPORT:
-            defaultTitle = pageContent.defaultTitleReexport
-            pageHeader = pageContent.pageHeaderReexport
-            pageBody = pageContent.pageBodyReexport
-            break
-        case pt.ARTICLE_10:
-            defaultTitle = pageContent.defaultTitleArticle10
-            pageHeader = pageContent.pageHeaderArticle10
-            pageBody = pageContent.pageBodyArticle10
-            break
-    }
-
-    let errorList = null
-    if (errors) {
-        errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }
-        const fields = ['deliveryName', 'addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode', 'country']
-        fields.forEach(field => {
-            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            if (fieldError) {
-                errorList.push({
-                    text: fieldError,
-                    href: `#${field}`
-                })
-            }
-        })
-    }
-
+function getInputs(errorList, data, pageContent, commonContent) {
     const countries = [{
         text: commonContent.countrySelectDefault,
         value: '',
@@ -92,21 +52,13 @@ function createModel(errors, data) {
         }
     }))
 
-    const model = {
-        backLink: `${previousPath}/${data.contactType}`,
-        pageHeader: pageHeader,
-        pageBody: pageBody,
-        formActionPage: `${currentPath}/${data.contactType}`,
-        ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
-        internationalAddress: data.contactType !== 'delivery',
-        showDeliveryName: data.contactType === 'delivery' && enableDeliveryName,
+    return {
         inputDeliveryName: {
             label: {
                 text: pageContent.inputLabelDeliveryName
             },
             hint: {
-              text: pageContent.inputHintDeliveryName
+                text: pageContent.inputHintDeliveryName
             },
             id: "deliveryName",
             name: "deliveryName",
@@ -141,7 +93,7 @@ function createModel(errors, data) {
             id: "addressLine3",
             name: "addressLine3",
             autocomplete: "address-line3",
-            classes: "govuk-!-width-two-thirds",
+            classes: govukClass.WIDTH_TWO_THIRDS,
             ...(data.addressLine3 ? { value: data.addressLine3 } : {}),
             errorMessage: getFieldError(errorList, '#addressLine3')
         },
@@ -151,7 +103,7 @@ function createModel(errors, data) {
             },
             id: "addressLine4",
             name: "addressLine4",
-            classes: "govuk-!-width-two-thirds",
+            classes: govukClass.WIDTH_TWO_THIRDS,
             ...(data.addressLine4 ? { value: data.addressLine4 } : {}),
             errorMessage: getFieldError(errorList, '#addressLine4')
         },
@@ -172,12 +124,60 @@ function createModel(errors, data) {
             },
             id: "country",
             name: "country",
-            classes: "govuk-!-width-two-thirds",
+            classes: govukClass.WIDTH_TWO_THIRDS,
             items: countries,
             errorMessage: getFieldError(errorList, '#country')
         }
     }
-    return { ...commonContent, ...model }
+}
+
+function getPageContent(data, enterAddressText) {
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
+            return lodash.merge(enterAddressText.common, enterAddressText.agentLed)
+        } else {
+            return lodash.merge(enterAddressText.common, enterAddressText.applicant)
+        }
+    } else if (data.contactType === 'agent') {
+        return lodash.merge(enterAddressText.common, enterAddressText.agent)
+    } else {
+        return lodash.merge(enterAddressText.common, enterAddressText.delivery)
+    }
+}
+
+function getPermitSpecificContent(pageContent, permitType) {
+    let defaultTitle = ''
+    let pageHeader = ''
+    let pageBody = ''
+
+    switch (permitType) {
+        case pt.IMPORT:
+            defaultTitle = pageContent.defaultTitleImport
+            pageHeader = pageContent.pageHeaderImport
+            pageBody = pageContent.pageBodyImport
+            break
+        case pt.EXPORT:
+            defaultTitle = pageContent.defaultTitleExport
+            pageHeader = pageContent.pageHeaderExport
+            pageBody = pageContent.pageBodyExport
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
+            defaultTitle = pageContent.defaultTitleReexport
+            pageHeader = pageContent.pageHeaderReexport
+            pageBody = pageContent.pageBodyReexport
+            break
+        case pt.ARTICLE_10:
+            defaultTitle = pageContent.defaultTitleArticle10
+            pageHeader = pageContent.pageHeaderArticle10
+            pageBody = pageContent.pageBodyArticle10
+            break
+        default:
+            throw new Error(`Unknown permit type: ${permitType}`)
+    }
+    return { defaultTitle, pageHeader, pageBody }
 }
 
 module.exports = [{
@@ -264,7 +264,7 @@ module.exports = [{
             }
 
             const selectedCountry = request.server.app.countries.find(country => country.code === (request.payload.country || 'UK'))
-            
+
             const newSubmission = {
                 [contactType]: {
                     candidateAddressData: {

@@ -2,7 +2,7 @@ const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
 const { findErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
 const { getYarValue, setYarValue } = require('../lib/session')
-const { deliveryType: dt } = require("../lib/constants")
+const { deliveryType: dt, summaryType: summaryTypeConst } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, getPermitDescription } = require("../lib/permit-type-helper")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists, allowPageNavigation } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
@@ -20,13 +20,6 @@ const nextPathYourSubmission = `${urlPrefix}/your-submission`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/copy-as-new`
 const invalidSubmissionPath = `${urlPrefix}/`
-const summaryTypeConst = {
-  CHECK: 'check',
-  VIEW: 'view',
-  COPY: 'copy',
-  VIEW_SUBMITTED: 'view-submitted',
-  COPY_AS_NEW: 'copy-as-new'
-}
 const summaryTypes = Object.values(summaryTypeConst)
 
 const pageContent = textContent.applicationSummary

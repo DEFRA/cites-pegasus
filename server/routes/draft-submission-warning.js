@@ -10,7 +10,11 @@ const previousPathLanding = `${urlPrefix}/`
 const previousPathAppSummary = `${urlPrefix}/application-summary/view-submitted`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
-const newSubmissionTypes = ['new', 'copy-as-new']
+const newSubmissionTypeConst = {
+  COPY_AS_NEW: 'copy-as-new',
+  NEW: 'new',
+};
+const newSubmissionTypes = [newSubmissionTypeConst.NEW, newSubmissionTypeConst.COPY_AS_NEW]
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -67,7 +71,7 @@ function createModel(errors, data) {
 }
 
 function getBacklink(newSubmissionType, applicationIndex) {
-  return newSubmissionType === 'copy-as-new' ? `${previousPathAppSummary}/${applicationIndex}` : previousPathLanding
+  return newSubmissionType === newSubmissionTypeConst.COPY_AS_NEW ? `${previousPathAppSummary}/${applicationIndex}` : previousPathLanding
 }
 
 module.exports = [{
@@ -78,7 +82,7 @@ module.exports = [{
       params: Joi.object({
         newSubmissionType: Joi.string().valid(...newSubmissionTypes).required(),
         applicationIndex: Joi.number().when('newSubmissionType', {
-          is: 'copy-as-new',
+          is: newSubmissionTypeConst.COPY_AS_NEW,
           then: Joi.number().required(),
           otherwise: Joi.number().optional().allow(null, '')
         })
@@ -103,7 +107,7 @@ module.exports = [{
       params: Joi.object({
         newSubmissionType: Joi.string().valid(...newSubmissionTypes).required(),
         applicationIndex: Joi.number().when('newSubmissionType', {
-          is: 'copy-as-new',
+          is: newSubmissionTypeConst.COPY_AS_NEW,
           then: Joi.number().required(),
           otherwise: Joi.number().optional().allow(null, '')
         })
@@ -125,7 +129,7 @@ module.exports = [{
     const { newSubmissionType, applicationIndex } = request.params
 
     if (request.payload.areYouSure) {
-      if (newSubmissionType === 'copy-as-new') {
+      if (newSubmissionType === newSubmissionTypeConst.COPY_AS_NEW) {
         cloneSubmission(request, applicationIndex)
         saveDraftSubmission(request, `${nextPathCopyAsNewApplication}/0`)
         return h.redirect(`${nextPathCopyAsNewApplication}/0`)
