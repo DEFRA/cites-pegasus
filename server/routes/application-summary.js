@@ -396,6 +396,8 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
       textDescription = commonContent.radioOptionYes
     } else if (data.a10ExportData?.isExportPermitRequired === false) {
       textDescription = commonContent.radioOptionNo
+    } else {
+      //Do nothing
     }
 
     if (allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)) {
@@ -735,6 +737,8 @@ function lookupAppContent(data, applicationRef) {
       buttonText = commonContent.copyAsNewApplicationButton
       showConfirmButton = data.isCurrentUsersApplication
       break
+    default:
+      throw new Error(`Invalid summary type: ${data.summaryType}`)
   }
 
   let headerApplicantContactDetails = null
@@ -869,6 +873,8 @@ function createAreYouSureModel(errors, data) {
       pageContent = areYouSureText.yourContactDetails
     } else if (changeType === "applicantAddress") {
       pageContent = areYouSureText.yourAddress
+    } else {
+      //Do nothing
     }
   } else if (data.isAgent) {
     if (changeType === "applicantContactDetails") {
@@ -888,6 +894,8 @@ function createAreYouSureModel(errors, data) {
         case pt.ARTICLE_10:
           pageContent = areYouSureText.article10ContactDetails
           break
+        default:
+          throw new Error(`Unknown permit type ${data.permitType}`)
       }
     } else if (changeType === "applicantAddress") {
       switch (data.permitType) {
@@ -906,8 +914,14 @@ function createAreYouSureModel(errors, data) {
         case pt.ARTICLE_10:
           pageContent = areYouSureText.article10Address
           break
+        default:
+          throw new Error(`Unknown permit type ${data.permitType}`)
       }
+    } else {
+      //Do nothing
     }
+  } else {
+    //Do nothing
   }
 
   let errorList = null

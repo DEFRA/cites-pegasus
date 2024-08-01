@@ -173,10 +173,8 @@ function getPageBodyContent(data, pageContent) {
   let pageBodyNewApplicationFromPrevious = null
   if (data.noApplicationMadeBefore && data.submissions.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
-    pageBodyNewApplicationFromPrevious = null
   } else if ((data.noApplicationFound || data.noMatchingApplication) && data.submissions.length === 0) {
     pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
-    pageBodyNewApplicationFromPrevious = null
   } else {
     pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
   }

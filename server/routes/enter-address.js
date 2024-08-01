@@ -40,12 +40,8 @@ function createModel(errors, data) {
 function getInputs(errorList, data, pageContent) {
     return {
         inputDeliveryName: {
-            label: {
-                text: pageContent.inputLabelDeliveryName
-            },
-            hint: {
-                text: pageContent.inputHintDeliveryName
-            },
+            label: { text: pageContent.inputLabelDeliveryName },
+            hint: { text: pageContent.inputHintDeliveryName },
             id: "deliveryName",
             name: "deliveryName",
             autocomplete: "name",
@@ -53,9 +49,7 @@ function getInputs(errorList, data, pageContent) {
             errorMessage: getFieldError(errorList, '#deliveryName')
         },
         inputAddressLine1: {
-            label: {
-                text: pageContent.inputLabelAddressLine1
-            },
+            label: { text: pageContent.inputLabelAddressLine1 },
             id: "addressLine1",
             name: "addressLine1",
             autocomplete: "address-line1",
@@ -63,9 +57,7 @@ function getInputs(errorList, data, pageContent) {
             errorMessage: getFieldError(errorList, '#addressLine1')
         },
         inputAddressLine2: {
-            label: {
-                text: pageContent.inputLabelAddressLine2
-            },
+            label: { text: pageContent.inputLabelAddressLine2 },
             id: "addressLine2",
             name: "addressLine2",
             autocomplete: "address-line2",
@@ -73,9 +65,7 @@ function getInputs(errorList, data, pageContent) {
             errorMessage: getFieldError(errorList, '#addressLine2')
         },
         inputAddressLine3: {
-            label: {
-                text: pageContent.inputLabelAddressLine3
-            },
+            label: { text: pageContent.inputLabelAddressLine3 },
             id: "addressLine3",
             name: "addressLine3",
             autocomplete: "address-line3",
@@ -84,9 +74,7 @@ function getInputs(errorList, data, pageContent) {
             errorMessage: getFieldError(errorList, '#addressLine3')
         },
         inputAddressLine4: {
-            label: {
-                text: pageContent.inputLabelAddressLine4
-            },
+            label: { text: pageContent.inputLabelAddressLine4 },
             id: "addressLine4",
             name: "addressLine4",
             classes: govukClass.WIDTH_TWO_THIRDS,
@@ -94,9 +82,7 @@ function getInputs(errorList, data, pageContent) {
             errorMessage: getFieldError(errorList, '#addressLine4')
         },
         inputPostcode: {
-            label: {
-                text: pageContent.inputLabelPostcode
-            },
+            label: { text: pageContent.inputLabelPostcode },
             id: "postcode",
             name: "postcode",
             classes: "govuk-input--width-10",
@@ -105,9 +91,7 @@ function getInputs(errorList, data, pageContent) {
             errorMessage: getFieldError(errorList, '#postcode')
         },
         selectCountry: {
-            label: {
-                text: pageContent.inputLabelCountry
-            },
+            label: { text: pageContent.inputLabelCountry },
             id: "country",
             name: "country",
             classes: govukClass.WIDTH_TWO_THIRDS,

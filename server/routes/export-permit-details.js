@@ -15,6 +15,15 @@ const nextPathImportPermitDetails = `${urlPrefix}/import-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 const assetPath = `${urlPrefix}/assets`
+const permitIssueDateFieldItems = {
+  DATE: "exportOrReexportPermitIssueDate",
+  DAY: "exportOrReexportPermitIssueDate-day",
+  DAY_MONTH: "exportOrReexportPermitIssueDate-day-month",
+  DAY_YEAR: "exportOrReexportPermitIssueDate-day-year",
+  MONTH: "exportOrReexportPermitIssueDate-month",
+  MONTH_YEAR: "exportOrReexportPermitIssueDate-month-year",
+  YEAR: "exportOrReexportPermitIssueDate-year"
+}
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -26,16 +35,6 @@ function createModel(errors, data) {
   }
 
   const exportOrReexportPermitIssueDateErrors = []
-
-  const permitIssueDateFieldItems = {
-    DATE: "exportOrReexportPermitIssueDate",
-    DAY: "exportOrReexportPermitIssueDate-day",
-    DAY_MONTH:"exportOrReexportPermitIssueDate-day-month",
-    DAY_YEAR: "exportOrReexportPermitIssueDate-day-year",
-    MONTH: "exportOrReexportPermitIssueDate-month",
-    MONTH_YEAR: "exportOrReexportPermitIssueDate-month-year",
-    YEAR: "exportOrReexportPermitIssueDate-year"
-  }
 
   const errorList = getErrorList(
     errors,
@@ -180,10 +179,10 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
 }
 
 function permitIssueDateValidator(value, helpers) {
-  const day = value["exportOrReexportPermitIssueDate-day"]
-  const month = value["exportOrReexportPermitIssueDate-month"]
-  const year = value["exportOrReexportPermitIssueDate-year"]
-  const fieldName = "exportOrReexportPermitIssueDate"
+  const day = value[permitIssueDateFieldItems.DAY]
+  const month = value[permitIssueDateFieldItems.MONTH]
+  const year = value[permitIssueDateFieldItems.YEAR]
+  const fieldName = permitIssueDateFieldItems.DATE
   const dateValidatorResponse = dateValidator(day, month, year, false, fieldName, helpers)
 
   return dateValidatorResponse === null ? value : dateValidatorResponse

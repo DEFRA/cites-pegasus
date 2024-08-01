@@ -35,15 +35,15 @@ function createModel(errors, data) {
     })
   }
 
-  let defaultBacklink = previousPath
-  
+  const defaultBacklink = previousPath
+
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
     backLink: backLink,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputOtherPermitType: {
       idPrefix: "otherPermitTypeOption",
       name: "otherPermitTypeOption",
@@ -90,6 +90,27 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getRedirect(otherPermitTypeOption) {
+  let redirectTo = null
+  switch (otherPermitTypeOption) {
+    case pto.MIC:
+    case pto.TEC:
+    case pto.POC:
+      redirectTo = nextPathGuidanceCompletion
+      break
+    case pto.SEMI_COMPLETE:
+    case pto.DRAFT:
+      redirectTo = nextPathApplyingOnBehalf
+      break
+    case pto.OTHER:
+      redirectTo = cannotUseServicePath
+      break
+    default:
+      throw new Error(`Unknown other permit type ${otherPermitTypeOption}`)
+  }
+  return redirectTo
 }
 
 module.exports = [{
@@ -151,11 +172,11 @@ module.exports = [{
       }
 
       submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
-      
+
       const permit = getPermit(request.payload.otherPermitTypeOption, submission.applications[0].useCertificateFor)
       submission.permitType = permit.permitType
       submission.applications[0].permitSubType = permit.permitSubType
-      
+
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -173,21 +194,7 @@ module.exports = [{
         return h.redirect(exitChangeRouteUrl)
       }
 
-      let redirectTo
-      switch (request.payload.otherPermitTypeOption) {
-        case pto.MIC:
-        case pto.TEC:
-        case pto.POC:
-          redirectTo = nextPathGuidanceCompletion
-          break
-        case pto.SEMI_COMPLETE:
-        case pto.DRAFT:
-          redirectTo = nextPathApplyingOnBehalf
-          break
-        case pto.OTHER:
-          redirectTo = cannotUseServicePath
-          break
-      }
+      const redirectTo = getRedirect(request.payload.otherPermitTypeOption)
       saveDraftSubmission(request, redirectTo)
       return h.redirect(redirectTo)
     }

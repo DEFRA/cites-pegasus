@@ -20,6 +20,15 @@ const nextPathImportPermitDetails = `${urlPrefix}/import-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 const assetPath = `${urlPrefix}/assets`
+const permitIssueDateFieldItems = {
+  DATE: "countryOfOriginPermitIssueDate",
+  DAY: "countryOfOriginPermitIssueDate-day",
+  DAY_MONTH: "countryOfOriginPermitIssueDate-day-month",
+  DAY_YEAR: "countryOfOriginPermitIssueDate-day-year",
+  MONTH: "countryOfOriginPermitIssueDate-month",
+  MONTH_YEAR: "countryOfOriginPermitIssueDate-month-year",
+  YEAR: "countryOfOriginPermitIssueDate-year"
+}
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -36,15 +45,6 @@ function createModel(errors, data) {
 
   const countryOfOriginPermitIssueDateErrors = []
 
-  const permitIssueDateFieldItems = {
-    DATE: "countryOfOriginPermitIssueDate",
-    DAY: "countryOfOriginPermitIssueDate-day",
-    DAY_MONTH: "countryOfOriginPermitIssueDate-day-month",
-    DAY_YEAR: "countryOfOriginPermitIssueDate-day-year",
-    MONTH: "countryOfOriginPermitIssueDate-month",
-    MONTH_YEAR: "countryOfOriginPermitIssueDate-month-year",
-    YEAR: "countryOfOriginPermitIssueDate-year"
-  }
 
   const errorList = getErrorList(
     errors,
@@ -189,26 +189,24 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
 }
 
 function permitIssueDateValidatorNotPlantImport(value, helpers) {
-  const day = value["countryOfOriginPermitIssueDate-day"]
-  const month = value["countryOfOriginPermitIssueDate-month"]
-  const year = value["countryOfOriginPermitIssueDate-year"]
-  const fieldName = "countryOfOriginPermitIssueDate"
+  const { day, month, year, fieldName } = getDatePropertiesFromValue(value)
   const dateValidatorResponse = dateValidator(day, month, year, false, fieldName, helpers)
-
   return dateValidatorResponse === null ? value : dateValidatorResponse
 }
 
 function permitIssueDateValidatorPlantImport(value, helpers) {
-  const day = value["countryOfOriginPermitIssueDate-day"]
-  const month = value["countryOfOriginPermitIssueDate-month"]
-  const year = value["countryOfOriginPermitIssueDate-year"]
-  const fieldName = "countryOfOriginPermitIssueDate"
-
+  const { day, month, year, fieldName } = getDatePropertiesFromValue(value)
   const maxDate = getMaxDate(31)
-
   const dateValidatorResponse = dateValidatorMaxDate(day, month, year, true, maxDate, fieldName, helpers)
-
   return dateValidatorResponse === null ? value : dateValidatorResponse
+}
+
+function getDatePropertiesFromValue(value){
+  const day = value[permitIssueDateFieldItems.DAY]
+  const month = value[permitIssueDateFieldItems.MONTH]
+  const year = value[permitIssueDateFieldItems.YEAR]
+  const fieldName = permitIssueDateFieldItems.DATE
+  return { day, month, year, fieldName }
 }
 
 const getMaxDate = (days) => {
@@ -416,6 +414,8 @@ module.exports = [
           }
         } else if (submission.permitType === pt.ARTICLE_10) {
           redirectTo = `${nextPathImportPermitDetails}/${applicationIndex}`
+        } else {
+          //Do nothing
         }
 
         saveDraftSubmission(request, redirectTo)
