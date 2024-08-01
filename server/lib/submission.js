@@ -312,7 +312,7 @@ function migrate_PermitDetails(permitType, permitDetails) {
         }
 
         if (permitType !== pt.IMPORT) {
-            deleteIfExists(app.permitDetails, 'isExportOrReexportSameAsCountryOfOrigin')
+            deleteIfExists(permitDetails, 'isExportOrReexportSameAsCountryOfOrigin')
         }
 
         if (permitType === pt.ARTICLE_10) {

@@ -749,7 +749,7 @@ function getDateValue(date) {
 }
 
 function lookupAppContent(data, applicationRef) {
-  const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data.summaryType)
+  const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data)
 
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
@@ -863,7 +863,7 @@ function lookupAppContent(data, applicationRef) {
   }
 }
 
-function getSummaryTypeSpecificContent(summaryType) {
+function getSummaryTypeSpecificContent(data) {
 
   let pageTitle = null
   let pageHeader = null
@@ -871,7 +871,7 @@ function getSummaryTypeSpecificContent(summaryType) {
   let showConfirmButton = true
 
 
-  switch (summaryType) {
+  switch (data.summaryType) {
     case summaryTypeConst.CHECK:
       pageTitle = pageContent.defaultTitleCheck
       pageHeader = pageContent.pageHeaderCheck
@@ -924,9 +924,9 @@ function createAreYouSureModel(errors, data) {
     }
   } else if (data.isAgent) {
     if (changeType === "applicantContactDetails") {
-      getPageContentApplicantContactDetails(permitType, areYouSureText)
+      pageContent = getPageContentApplicantContactDetails(data.permitType, areYouSureText)
     } else if (changeType === "applicantAddress") {
-      getPageContentApplicantAddress(permitType, areYouSureText)
+      pageContent = getPageContentApplicantAddress(data.permitType, areYouSureText)
     } else {
       //Do nothing
     }
@@ -951,42 +951,6 @@ function createAreYouSureModel(errors, data) {
         })
       }
     })
-  }
-
-  function getPageContentApplicantContactDetails(permitType, areYouSureText) {
-    switch (permitType) {
-      case pt.IMPORT:
-        return areYouSureText.importerContactDetails
-      case pt.EXPORT:
-        return areYouSureText.exporterContactDetails
-      case pt.MIC:
-      case pt.TEC:
-      case pt.POC:
-      case pt.REEXPORT:
-        return areYouSureText.reexporterContactDetails
-      case pt.ARTICLE_10:
-        return areYouSureText.article10ContactDetails
-      default:
-        throw new Error(`Unknown permit type ${data.permitType}`)
-    }
-  }
-
-  function getPageContentApplicantAddress(permitType, areYouSureText) {
-    switch (permitType) {
-      case pt.IMPORT:
-        return areYouSureText.importerAddress
-      case pt.EXPORT:
-        return areYouSureText.exporterAddress
-      case pt.MIC:
-      case pt.TEC:
-      case pt.POC:
-      case pt.REEXPORT:
-        return areYouSureText.reexporterAddress
-      case pt.ARTICLE_10:
-        return areYouSureText.article10Address
-      default:
-        throw new Error(`Unknown permit type ${data.permitType}`)
-    }
   }
 
   const model = {
@@ -1015,6 +979,42 @@ function createAreYouSureModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getPageContentApplicantContactDetails(permitType, areYouSureText) {
+  switch (permitType) {
+    case pt.IMPORT:
+      return areYouSureText.importerContactDetails
+    case pt.EXPORT:
+      return areYouSureText.exporterContactDetails
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
+      return areYouSureText.reexporterContactDetails
+    case pt.ARTICLE_10:
+      return areYouSureText.article10ContactDetails
+    default:
+      throw new Error(`Unknown permit type ${data.permitType}`)
+  }
+}
+
+function getPageContentApplicantAddress(permitType, areYouSureText) {
+  switch (permitType) {
+    case pt.IMPORT:
+      return areYouSureText.importerAddress
+    case pt.EXPORT:
+      return areYouSureText.exporterAddress
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
+      return areYouSureText.reexporterAddress
+    case pt.ARTICLE_10:
+      return areYouSureText.article10Address
+    default:
+      throw new Error(`Unknown permit type ${data.permitType}`)
+  }
 }
 
 function postFailAction(request, h, err) {
