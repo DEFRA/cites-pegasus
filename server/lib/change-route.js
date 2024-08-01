@@ -209,9 +209,7 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
             //Do nothing
         }
     }
-
-}
-return null
+    return null
 }
 
 function urlCompare(fullUrl, partialUrl, matchType) {
