@@ -1,6 +1,6 @@
 const config = require('../../config/config')
 const pageId = 'oidc'
-const { getYarValue, setYarValue, clearYarSession } = require('../lib/session')
+const { getYarValue, setYarValue, clearYarSession, sessionKey } = require('../lib/session')
 const { getDomain } = require('../lib/helper-functions')
 const { getOpenIdClient } = require('../services/oidc-client')
 const { cidmCallbackUrl, cidmPostLogoutRedirectUrl, cidmAccountManagementUrl } = require('../../config/config')
@@ -67,7 +67,7 @@ module.exports = [
       const user = tokenSet.claims();//Retrieve the user details from the CIDM jww token
       console.log(`User logged in: ${user.firstName} ${user.lastName} (${user.email})`)
 
-      const sessionCIDMAuth = getYarValue(request, 'CIDMAuth')
+      const sessionCIDMAuth = getYarValue(request, sessionKey.CIDM_AUTH)
       if(sessionCIDMAuth && user.contactId !== sessionCIDMAuth?.user.contactId) {
         //A different user has signed in successfully so clear the previous users session
         clearYarSession(request)
@@ -80,7 +80,7 @@ module.exports = [
       const relationshipDetails = getRelationshipDetails(user)
       const roleDetails = getRoleDetails(user)
 
-      setYarValue(request, 'CIDMAuth', { idToken: tokenSet.id_token, user: { ...user, ...relationshipDetails, ...roleDetails } })
+      setYarValue(request, sessionKey.CIDM_AUTH, { idToken: tokenSet.id_token, user: { ...user, ...relationshipDetails, ...roleDetails } })
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
       const token = jwt.sign({ contactId: user.contactId }, secret, { algorithm: 'HS256' })
@@ -141,7 +141,7 @@ module.exports = [
     handler: async (request, h) => {
       const oidcClient = request.server.app.oidcClient
 
-      const cidmAuth = getYarValue(request, 'CIDMAuth')
+      const cidmAuth = getYarValue(request, sessionKey.CIDM_AUTH)
       const endSessionParams = {
         id_token_hint: cidmAuth?.idToken || null,
         post_logout_redirect_uri: cidmPostLogoutRedirectUrl        
@@ -206,14 +206,14 @@ module.exports = [
         ],
       }
 
-      const sessionCIDMAuth = getYarValue(request, 'CIDMAuth')
+      const sessionCIDMAuth = getYarValue(request, sessionKey.CIDM_AUTH)
       if(sessionCIDMAuth && user.contactId !== sessionCIDMAuth?.user.contactId) {
         //A different user has signed in successfully so clear the previous users session
         clearYarSession(request)
       }
 
       const relationshipDetails = getRelationshipDetails(user)
-      setYarValue(request, 'CIDMAuth', { idToken: 'abc123', user: { ...user, ...relationshipDetails } })
+      setYarValue(request, sessionKey.CIDM_AUTH, { idToken: 'abc123', user: { ...user, ...relationshipDetails } })
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
       const token = jwt.sign({ contactId: user.contactId }, secret, { algorithm: 'HS256' })

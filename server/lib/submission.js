@@ -1,4 +1,4 @@
-const { getYarValue, setYarValue } = require('./session')
+const { getYarValue, setYarValue, sessionKey } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('../lib/permit-type-helper')
@@ -10,7 +10,7 @@ const { describe } = require('@hapi/joi/lib/base')
 const { getSubmissionProgress } = require('./submission-progress')
 
 function getSubmission(request) {
-    const session = getYarValue(request, 'submission')
+    const session = getYarValue(request, sessionKey.SUBMISSION)
     return lodash.cloneDeep(session)
 }
 
@@ -21,7 +21,7 @@ function createSubmission(request) {
         organisationId: cidmAuth.user.organisationId || null,
         applications: [{ applicationIndex: 0 }]
     }
-    setYarValue(request, 'submission', submission)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
     return submission
 }
 
@@ -31,7 +31,7 @@ function mergeSubmission(request, data, path) {
 
     const mergedSubmission = lodash.merge(existingSubmission, data)
 
-    setYarValue(request, 'submission', mergedSubmission)
+    setYarValue(request, sessionKey.SUBMISSION, mergedSubmission)
 
     return mergedSubmission
 }
@@ -40,11 +40,11 @@ function setSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    setYarValue(request, 'submission', data)
+    setYarValue(request, sessionKey.SUBMISSION, data)
 }
 
 function clearSubmission(request) {
-    setYarValue(request, 'submission', null)
+    setYarValue(request, sessionKey.SUBMISSION, null)
 }
 
 function validateSubmission(submission, path, includePageData = false) {
@@ -226,8 +226,8 @@ function cloneSubmission(request, applicationIndex) {
 
     migrateSubmissionToNewSchema(submission)
 
-    setYarValue(request, 'submission', submission)
-    setYarValue(request, 'cloneSource', cloneSource)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
+    setYarValue(request, sessionKey.CLONE_SOURCE, cloneSource)
 }
 
 function migrateSubmissionToNewSchema(submission) {
@@ -326,7 +326,7 @@ function createApplication(request) {
     }
 
     applications.push(newApplication)
-    setYarValue(request, 'submission', submission)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
     return newApplication.applicationIndex
 }
 
@@ -350,7 +350,7 @@ function deleteApplication(request, applicationIndex) {
     // Update the applicationIndex of each remaining application to ensure no gaps
     reIndexApplications(applications)
 
-    setYarValue(request, 'submission', submission)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
     return submission
 }
 

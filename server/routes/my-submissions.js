@@ -3,7 +3,7 @@ const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
 const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { clearChangeRoute } = require("../lib/change-route")
-const { getYarValue, setYarValue } = require('../lib/session')
+const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
 const user = require('../lib/user')
 const { createSubmission, getDraftSubmissionDetails, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
@@ -54,15 +54,8 @@ function createModel(errors, data) {
 
   const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
-  let pagebodyNoApplicationsFound = null
-  let pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
-  if (data.noApplicationMadeBefore && submissionsData.length === 0) {
-    pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
-    pageBodyNewApplicationFromPrevious = null
-  } else if ((data.noApplicationFound || data.noMatchingApplication) && submissionsData.length === 0) {
-    pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
-    pageBodyNewApplicationFromPrevious = null
-  }
+
+  const { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious} = getPageBodyContent(data, pageContent)
 
   const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
   const pageTitle = (data.organisationName ? pageContent.defaultTitleOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.defaultTitle) + commonContent.pageTitleSuffix
@@ -175,6 +168,21 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getPageBodyContent(data, pageContent) {
+  let pagebodyNoApplicationsFound = null
+  let pageBodyNewApplicationFromPrevious = null
+  if (data.noApplicationMadeBefore && data.submissions.length === 0) {
+    pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
+    pageBodyNewApplicationFromPrevious = null
+  } else if ((data.noApplicationFound || data.noMatchingApplication) && data.submissions.length === 0) {
+    pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
+    pageBodyNewApplicationFromPrevious = null
+  } else {
+    pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
+  }
+  return { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious}
+}
+
 function createAreYouSureModel(errors) {
   const commonContent = textContent.common
   
@@ -267,7 +275,7 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 }
 
 async function getSubmissionsData(request, pageNo, filterData) {
-  let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
+  let queryUrls = getYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS)
   const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
 
   if (!queryUrls) {
@@ -291,7 +299,7 @@ async function getSubmissionsData(request, pageNo, filterData) {
 
 
 
-  setYarValue(request, 'mySubmissions-queryUrls', queryUrls)
+  setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, queryUrls)
 
   return { submissions, totalSubmissions }
 }
@@ -321,12 +329,12 @@ module.exports = [
       const pageNo = request.params.pageNo
 
       if (!pageNo) {
-        setYarValue(request, 'mySubmissions-queryUrls', null)
-        setYarValue(request, 'mySubmissions-filterData', null)
+        setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, null)
+        setYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA, null)
         return h.redirect(`${currentPath}/1`)
       }
 
-      let filterData = getYarValue(request, 'mySubmissions-filterData')
+      let filterData = getYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA)
 
       if (!filterData) {
         filterData = { submittedBy: "me" }
@@ -424,8 +432,8 @@ module.exports = [
         }
 
         try {
-          setYarValue(request, 'mySubmissions-queryUrls', null)
-          setYarValue(request, 'mySubmissions-filterData', filterData)
+          setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, null)
+          setYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA, filterData)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

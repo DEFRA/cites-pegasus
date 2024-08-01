@@ -1,10 +1,9 @@
-const MSAL = require('@azure/msal-node');
-const Wreck = require('@hapi/wreck');
-const { getYarValue, setYarValue } = require('../lib/session')
-const moment = require('moment');
+const MSAL = require('@azure/msal-node')
+const Wreck = require('@hapi/wreck')
+const moment = require('moment')
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
-const lodash = require('lodash');
+const lodash = require('lodash')
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
 
 async function getClientCredentialsToken() {

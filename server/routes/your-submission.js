@@ -3,7 +3,7 @@ const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission, moveApplicationToEndOfList, reIndexApplications } = require('../lib/submission')
-const { setYarValue } = require('../lib/session')
+const { setYarValue, sessionKey } = require('../lib/session')
 const textContent = require('../content/text-content')
 const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -213,7 +213,7 @@ module.exports = [
 
       const completeApplications = getCompletedApplications(submission, applicationStatuses)
 
-      setYarValue(request, 'cloneSource', null)
+      setYarValue(request, sessionKey.CLONE_SOURCE, null)
 
       const pageData = {
         permitType: submission.permitType,

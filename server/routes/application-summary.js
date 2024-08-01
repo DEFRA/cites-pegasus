@@ -1,7 +1,7 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
 const { findErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
-const { getYarValue, setYarValue } = require('../lib/session')
+const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
 const { deliveryType: dt, summaryType: summaryTypeConst } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, getPermitDescription } = require("../lib/permit-type-helper")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists, allowPageNavigation } = require("../lib/submission")
@@ -1012,15 +1012,15 @@ module.exports = [
 
       let cloneSource = null
       if (summaryType === summaryTypeConst.COPY_AS_NEW || (!submission.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED)) {
-        cloneSource = getYarValue(request, 'cloneSource')
+        cloneSource = getYarValue(request, sessionKey.CLONE_SOURCE)
       }
 
       if (cloneSource?.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED) {
         //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
         const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
         submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
-        setYarValue(request, 'submission', submission)
-        setYarValue(request, 'cloneSource', null)
+        setYarValue(request, sessionKey.SUBMISSION, submission)
+        setYarValue(request, sessionKey.CLONE_SOURCE, null)
       }
 
 

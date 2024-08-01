@@ -32,12 +32,12 @@ function createModel(errors, data) {
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
         internationalAddress: data.contactType !== 'delivery',
         showDeliveryName: data.contactType === 'delivery' && enableDeliveryName,
-        ...getInputs(errorList, data, pageContent, commonContent)
+        ...getInputs(errorList, data, pageContent)
     }
     return { ...commonContent, ...model }
 }
 
-function getInputs(errorList, data, pageContent, commonContent) {
+function getInputs(errorList, data, pageContent) {
     return {
         inputDeliveryName: {
             label: {

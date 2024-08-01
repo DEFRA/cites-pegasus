@@ -44,6 +44,13 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     heading: pageContent.heading,
     headingAddress: pageContent.headingAddress,
+    ...getInputs(errorList, data, pageContent)
+
+  }
+  return { ...commonContent, ...model }
+}
+function getInputs(errorList, data, pageContent) {
+  return { 
     selectCountry: {
       label: {
         text: pageContent.inputLabelCountry
@@ -115,9 +122,7 @@ function createModel(errors, data) {
       ...(data.postcode ? { value: data.postcode } : {}),
       errorMessage: getFieldError(errorList, '#postcode')
     }
-
   }
-  return { ...commonContent, ...model }
 }
 
 module.exports = [

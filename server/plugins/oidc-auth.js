@@ -3,7 +3,7 @@ const jwksClient = require('jwks-rsa');
 const { decode } = require('jsonwebtoken');
 const { client } = require('../services/oidc-client')
 const { readSecret } = require('../lib/key-vault')
-const { getYarValue, setYarValue } = require('../lib/session')
+const { getYarValue, sessionKey } = require('../lib/session')
 const { httpStatusCode } = require('../lib/constants')
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
       const authOptions = {
         key: secret,
         validate: async (decoded, request, _h) => {
-          const sessionCIDMAuth = getYarValue(request, 'CIDMAuth')
+          const sessionCIDMAuth = getYarValue(request, sessionKey.CIDM_AUTH)
 
           if (decoded.contactId === sessionCIDMAuth?.user.contactId) {
             return { isValid: true, credentials: { contactId: decoded.contactId } }

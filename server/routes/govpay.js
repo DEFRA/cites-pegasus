@@ -5,7 +5,7 @@ const { createPayment } = require('../services/govpay-service')
 const { setSubmissionPayment } = require('../services/dynamics-service')
 const user = require('../lib/user')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
-const { setYarValue, getYarValue } = require('../lib/session')
+const { setYarValue, getYarValue, sessionKey } = require('../lib/session')
 const textContent = require('../content/text-content')
 const { getDomain } = require('../lib/helper-functions')
 const { getPaymentStatus } = require("../services/govpay-service")
@@ -79,7 +79,7 @@ module.exports = [
         return h.redirect(invalidSubmissionPath)
       }
 
-      setYarValue(request, 'govpay-paymentRoute', request.params.paymentRoute)
+      setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.params.paymentRoute)
       return h.redirect(response.nextUrl)
     }
   },

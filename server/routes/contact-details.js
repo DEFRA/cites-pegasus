@@ -6,7 +6,7 @@ const { permitType: pt } = require('../lib/permit-type-helper')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
-const { getYarValue } = require('../lib/session')
+const { getYarValue, sessionKey } = require('../lib/session')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['applicant']
@@ -149,7 +149,7 @@ module.exports = [{
             fullName = submission[request.params.contactType].fullName
             businessName = submission[request.params.contactType].businessName
         } else {
-            const { user } = getYarValue(request, 'CIDMAuth')
+            const { user } = getYarValue(request, sessionKey.CIDM_AUTH)
             businessName = user.organisationName
 
             if ((request.params.contactType === 'applicant' && !submission?.isAgent)
@@ -203,7 +203,7 @@ module.exports = [{
                 if (submission[request.params.contactType]) {
                     businessName = submission[request.params.contactType].businessName
                 } else {
-                    const { user } = getYarValue(request, 'CIDMAuth')
+                    const { user } = getYarValue(request, sessionKey.CIDM_AUTH)
                     businessName = user.organisationName
                 }
 
@@ -228,7 +228,7 @@ module.exports = [{
             if (submission[request.params.contactType]) {
                 businessName = submission[request.params.contactType].businessName
             } else {
-                const { user } = getYarValue(request, 'CIDMAuth')
+                const { user } = getYarValue(request, sessionKey.CIDM_AUTH)
                 businessName = user.organisationName
             }
 
