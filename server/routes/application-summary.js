@@ -996,7 +996,7 @@ function getPageContentApplicantContactDetails(permitType, areYouSureText) {
     case pt.ARTICLE_10:
       return areYouSureText.article10ContactDetails
     default:
-      throw new Error(`Unknown permit type ${data.permitType}`)
+      throw new Error(`Unknown permit type ${permitType}`)
   }
 }
 
