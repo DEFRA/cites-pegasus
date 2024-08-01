@@ -1,3 +1,4 @@
+const containerId = "loading-overlay-container"
 window.onpageshow = function (_event) {
     //Clears the loading message when the page is accessed via the back button
     hideLoadingMessage()
@@ -15,7 +16,7 @@ function hideLoadingMessage() {
     elementToHide.forEach(element => {
         element.style.visibility = "visible"
     })
-    const container = document.getElementById("loading-overlay-container")
+    const container = document.getElementById(containerId)
     if (container) {
         container.remove()
     }
@@ -38,8 +39,8 @@ function showLoadingMessage() {
     element.style.visibility = "hidden"
 
     const overlayContainer = document.createElement("div")
-    overlayContainer.classList.add("loading-overlay-container")
-    overlayContainer.id = "loading-overlay-container"
+    overlayContainer.classList.add(containerId)
+    overlayContainer.id = containerId
     overlayContainer.innerHTML = loadingOverlay
 
     element.parentNode.insertBefore(overlayContainer, element)

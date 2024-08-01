@@ -8,6 +8,7 @@ const lodash = require('lodash')
 const config = require('../../config/config')
 const { describe } = require('@hapi/joi/lib/base')
 const { getSubmissionProgress } = require('./submission-progress')
+const { func } = require('@hapi/joi')
 
 function getSubmission(request) {
     const session = getYarValue(request, sessionKey.SUBMISSION)
@@ -57,7 +58,7 @@ function validateSubmission(submission, path, includePageData = false) {
         console.log('Application Statuses: ' + JSON.stringify(applicationStatuses))
         throw new Error(`Invalid navigation to ${path}`)
     }
-    
+
     return { applicationStatuses, submissionProgress }
 
 }
@@ -259,41 +260,55 @@ function migrateSubmissionToNewSchema(submission) {
 
 function migrateApplicationToNewSchema(app, permitType) {
 
-    if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
-        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1
-    }
+    migrate_IsMultipleSpecimens(app.species)
+    migrate_NumberOfUnmarkedSpecimens(app.species)
+    migrate_UniqueIdentification(app.species)
+    migrate_PermitDetails(permitType, app.permitDetails)
+    migrate_TradeTermCode(app.species)
+}
 
-    if (app.species.numberOfUnmarkedSpecimens && typeof app.species.numberOfUnmarkedSpecimens === "string") {
-        app.species.numberOfUnmarkedSpecimens = parseInt(app.species.numberOfUnmarkedSpecimens)
+function migrate_IsMultipleSpecimens(species) {
+    if (species.specimenType === 'animalLiving' && typeof species.isMultipleSpecimens !== 'boolean') {
+        species.isMultipleSpecimens = species.numberOfUnmarkedSpecimens > 1
     }
+}
 
-    if (app.species.uniqueIdentificationMarkType) {
-        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
-            app.species.hasUniqueIdentificationMark = false
-            app.species.uniqueIdentificationMarks = null
+function migrate_NumberOfUnmarkedSpecimens(species) {
+    if (species.numberOfUnmarkedSpecimens && typeof species.numberOfUnmarkedSpecimens === "string") {
+        species.numberOfUnmarkedSpecimens = parseInt(species.numberOfUnmarkedSpecimens)
+    }
+}
+
+function migrate_UniqueIdentification(species) {
+    if (species.uniqueIdentificationMarkType) {
+        if (species.uniqueIdentificationMarkType === 'unmarked') {
+            species.hasUniqueIdentificationMark = false
+            species.uniqueIdentificationMarks = null
         } else {
-            app.species.hasUniqueIdentificationMark = true
-            app.species.uniqueIdentificationMarks = [{
+            species.hasUniqueIdentificationMark = true
+            species.uniqueIdentificationMarks = [{
                 index: 0,
-                uniqueIdentificationMark: app.species.uniqueIdentificationMark,
-                uniqueIdentificationMarkType: app.species.uniqueIdentificationMarkType
+                uniqueIdentificationMark: species.uniqueIdentificationMark,
+                uniqueIdentificationMarkType: species.uniqueIdentificationMarkType
             }]
         }
-        delete app.species.uniqueIdentificationMark
-        delete app.species.uniqueIdentificationMarkType
+        delete species.uniqueIdentificationMark
+        delete species.uniqueIdentificationMarkType
     }
+}
 
-    if (app.permitDetails) {
-        deleteIfExists(app.permitDetails, 'isCountryOfOriginNotApplicable')
-        deleteIfExists(app.permitDetails, 'isExportOrReexportNotApplicable')
+function migrate_PermitDetails(permitType, permitDetails) {
+    if (permitDetails) {
+        deleteIfExists(permitDetails, 'isCountryOfOriginNotApplicable')
+        deleteIfExists(permitDetails, 'isExportOrReexportNotApplicable')
 
-        if (app.permitDetails.countryOfOrigin) {
-            app.permitDetails.isCountryOfOriginNotKnown = false
+        if (permitDetails.countryOfOrigin) {
+            permitDetails.isCountryOfOriginNotKnown = false
         }
 
-        if (app.permitDetails.exportOrReexportCountry) {
-            app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
-            app.permitDetails.exportOrReexportPermitDetailsNotKnown = false
+        if (permitDetails.exportOrReexportCountry) {
+            permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
+            permitDetails.exportOrReexportPermitDetailsNotKnown = false
         }
 
         if (permitType !== pt.IMPORT) {
@@ -301,18 +316,20 @@ function migrateApplicationToNewSchema(app, permitType) {
         }
 
         if (permitType === pt.ARTICLE_10) {
-            deleteIfExists(app.permitDetails, 'exportOrReexportCountry')
-            deleteIfExists(app.permitDetails, 'exportOrReexportCountryDesc')
-            deleteIfExists(app.permitDetails, 'exportOrReexportPermitNumber')
-            deleteIfExists(app.permitDetails, 'exportOrReexportPermitIssueDate')
-            deleteIfExists(app.permitDetails, 'exportOrReexportPermitDetailsNotKnown')
+            deleteIfExists(permitDetails, 'exportOrReexportCountry')
+            deleteIfExists(permitDetails, 'exportOrReexportCountryDesc')
+            deleteIfExists(permitDetails, 'exportOrReexportPermitNumber')
+            deleteIfExists(permitDetails, 'exportOrReexportPermitIssueDate')
+            deleteIfExists(permitDetails, 'exportOrReexportPermitDetailsNotKnown')
         }
     }
+}
 
-    if (!config.enableNotKnownTradeTermCode && !app.species.tradeTermCode) {
-        app.species.tradeTermCode = null
-        app.species.isTradeTermCode = null
-        app.species.isTradeTermCodeDesc = null
+function migrate_TradeTermCode(species) {
+    if (!config.enableNotKnownTradeTermCode && !species.tradeTermCode) {
+        species.tradeTermCode = null
+        species.isTradeTermCode = null
+        species.isTradeTermCodeDesc = null
     }
 }
 

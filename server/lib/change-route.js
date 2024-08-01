@@ -199,9 +199,16 @@ function checkChangeRouteExit(request, isBack, isMinorOrNoChange = false) {
         const matchesFirstStartUrl = urlCompare(request.path, firstStartUrl.url, firstStartUrl.matchType)
         const matchesLastStartUrl = urlCompare(request.path, lastStartUrl.url, lastStartUrl.matchType)
 
-        if ((!isBack && matchesEndUrl) || (!isBack && isMinorOrNoChange && !changeData.dataRemoved && matchesLastStartUrl) || (isBack && !changeData.dataRemoved && matchesFirstStartUrl)) {
-            return changeData.returnUrl
+        if(isBack) {
+            if(!changeData.dataRemoved && matchesFirstStartUrl) {
+                return changeData.returnUrl
+            } 
+        } else {
+            if (matchesEndUrl || (isMinorOrNoChange && !changeData.dataRemoved && matchesLastStartUrl)) {
+                return changeData.returnUrl
+            }
         }
+
     }
     return null
 }

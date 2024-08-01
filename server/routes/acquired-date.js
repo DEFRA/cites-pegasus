@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { findErrorList, getFieldError, getErrorList } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { dateValidator } = require("../lib/validators")
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -19,36 +19,48 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.acquiredDate
 
-  const acquiredDateErrors = []
-  let errorList = null
 
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = [
-      "acquiredDate",
-      "acquiredDate-day",
-      "acquiredDate-day-month",
-      "acquiredDate-day-year",
-      "acquiredDate-month",
-      "acquiredDate-month-year",
-      "acquiredDate-year",
-      "isExactDateUnknown",
-      "approximateDate"
-    ]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [
+        "acquiredDate",
+        "acquiredDate-day",
+        "acquiredDate-day-month",
+        "acquiredDate-day-year",
+        "acquiredDate-month",
+        "acquiredDate-month-year",
+        "acquiredDate-year",
+        "isExactDateUnknown",
+        "approximateDate"
+      ])
+  // let errorList = null
+
+  // if (errors) {
+  //   errorList = []
+  //   const mergedErrorMessages = {
+  //     ...commonContent.errorMessages,
+  //     ...pageContent.errorMessages
+  //   }
+  //   const fields = [
+  //     "acquiredDate",
+  //     "acquiredDate-day",
+  //     "acquiredDate-day-month",
+  //     "acquiredDate-day-year",
+  //     "acquiredDate-month",
+  //     "acquiredDate-month-year",
+  //     "acquiredDate-year",
+  //     "isExactDateUnknown",
+  //     "approximateDate"
+  //   ]
+  //   fields.forEach((field) => {
+  //     const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
+  //     if (fieldError) {
+  //       errorList.push({
+  //         text: fieldError,
+  //         href: `#${field}`
+  //       })
+  //     }
+  //   })
+  // }
+  const acquiredDateErrors = []
 
   if (errorList) {
     const acquiredDateFields = [
@@ -112,7 +124,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputAcquiredDate: {
       id: "acquiredDate",
       name: "acquiredDate",
