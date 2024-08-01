@@ -31,35 +31,7 @@ function createModel(errors, data) {
         "isExactDateUnknown",
         "approximateDate"
       ])
-  // let errorList = null
-
-  // if (errors) {
-  //   errorList = []
-  //   const mergedErrorMessages = {
-  //     ...commonContent.errorMessages,
-  //     ...pageContent.errorMessages
-  //   }
-  //   const fields = [
-  //     "acquiredDate",
-  //     "acquiredDate-day",
-  //     "acquiredDate-day-month",
-  //     "acquiredDate-day-year",
-  //     "acquiredDate-month",
-  //     "acquiredDate-month-year",
-  //     "acquiredDate-year",
-  //     "isExactDateUnknown",
-  //     "approximateDate"
-  //   ]
-  //   fields.forEach((field) => {
-  //     const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-  //     if (fieldError) {
-  //       errorList.push({
-  //         text: fieldError,
-  //         href: `#${field}`
-  //       })
-  //     }
-  //   })
-  // }
+  
   const acquiredDateErrors = []
 
   if (errorList) {

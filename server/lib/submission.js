@@ -260,26 +260,26 @@ function migrateSubmissionToNewSchema(submission) {
 
 function migrateApplicationToNewSchema(app, permitType) {
 
-    migrate_IsMultipleSpecimens(app.species)
-    migrate_NumberOfUnmarkedSpecimens(app.species)
-    migrate_UniqueIdentification(app.species)
-    migrate_PermitDetails(permitType, app.permitDetails)
-    migrate_TradeTermCode(app.species)
+    migrateIsMultipleSpecimens(app.species)
+    migrateNumberOfUnmarkedSpecimens(app.species)
+    migrateUniqueIdentification(app.species)
+    migratePermitDetails(permitType, app.permitDetails)
+    migrateTradeTermCode(app.species)
 }
 
-function migrate_IsMultipleSpecimens(species) {
+function migrateIsMultipleSpecimens(species) {
     if (species.specimenType === 'animalLiving' && typeof species.isMultipleSpecimens !== 'boolean') {
         species.isMultipleSpecimens = species.numberOfUnmarkedSpecimens > 1
     }
 }
 
-function migrate_NumberOfUnmarkedSpecimens(species) {
+function migrateNumberOfUnmarkedSpecimens(species) {
     if (species.numberOfUnmarkedSpecimens && typeof species.numberOfUnmarkedSpecimens === "string") {
         species.numberOfUnmarkedSpecimens = parseInt(species.numberOfUnmarkedSpecimens)
     }
 }
 
-function migrate_UniqueIdentification(species) {
+function migrateUniqueIdentification(species) {
     if (species.uniqueIdentificationMarkType) {
         if (species.uniqueIdentificationMarkType === 'unmarked') {
             species.hasUniqueIdentificationMark = false
@@ -297,7 +297,7 @@ function migrate_UniqueIdentification(species) {
     }
 }
 
-function migrate_PermitDetails(permitType, permitDetails) {
+function migratePermitDetails(permitType, permitDetails) {
     if (permitDetails) {
         deleteIfExists(permitDetails, 'isCountryOfOriginNotApplicable')
         deleteIfExists(permitDetails, 'isExportOrReexportNotApplicable')
@@ -325,7 +325,7 @@ function migrate_PermitDetails(permitType, permitDetails) {
     }
 }
 
-function migrate_TradeTermCode(species) {
+function migrateTradeTermCode(species) {
     if (!config.enableNotKnownTradeTermCode && !species.tradeTermCode) {
         species.tradeTermCode = null
         species.isTradeTermCode = null

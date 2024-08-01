@@ -444,20 +444,21 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
     }
   }
 
-  function shouldDisplayAddExportPermit(data, isReadOnly) {
-    return allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)
-  }
-
-  function shouldDisplayImporterDetails(data, isReadOnly) {
-    return allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)
-  }
-
-
+  
+  
   return createSummaryList(
     'summaryListA10ExportData',
     'importerDetail',
     summaryListA10ExportDataRows
   )
+}
+
+function shouldDisplayAddExportPermit(data, isReadOnly) {
+  return allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)
+}
+
+function shouldDisplayImporterDetails(data, isReadOnly) {
+  return allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)
 }
 
 function getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly) {
