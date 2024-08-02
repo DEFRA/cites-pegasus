@@ -4,6 +4,7 @@ const { findErrorList, getFieldError, isChecked } = require("../lib/helper-funct
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const { checkChangeRouteExit } = require("../lib/change-route")
+const { govukClass } = require("../lib/constants")
 const pageId = "purpose-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
@@ -58,7 +59,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionB,
           hint: { text: pageContent.radioOptionBHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "B")
         },
@@ -67,7 +68,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionE,
           hint: { text: pageContent.radioOptionEHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "E")
         },
@@ -76,7 +77,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionG,
           hint: { text: pageContent.radioOptionGHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "G")
         },
@@ -85,7 +86,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionH,
           hint: { text: pageContent.radioOptionHHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "H")
         },
@@ -94,7 +95,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionL,
           hint: { text: pageContent.radioOptionLHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "L")
         },
@@ -103,7 +104,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionM,
           hint: { text: pageContent.radioOptionMHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "M")
         },
@@ -112,7 +113,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionN,
           hint: { text: pageContent.radioOptionNHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "N")
         },
@@ -121,7 +122,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionP,
           hint: { text: pageContent.radioOptionPHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "P")
         },
@@ -130,7 +131,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionQ,
           hint: { text: pageContent.radioOptionQHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "Q")
         },
@@ -139,7 +140,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionS,
           hint: { text: pageContent.radioOptionSHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "S")
         },
@@ -148,7 +149,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionT,
           hint: { text: pageContent.radioOptionTHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "T")
         },
@@ -157,7 +158,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionZ,
           hint: { text: pageContent.radioOptionZHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.purposeCode, "Z")
         }

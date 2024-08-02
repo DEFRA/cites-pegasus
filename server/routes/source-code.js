@@ -9,6 +9,7 @@ const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const nunjucks = require("nunjucks")
 const { checkChangeRouteExit } = require("../lib/change-route")
+const { govukClass } = require("../lib/constants")
 const pageId = "source-code"
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpeciesName = `${urlPrefix}/species-name`
@@ -125,7 +126,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionW,
           hint: { text: pageContent.radioOptionWHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "W")
         },
@@ -134,7 +135,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionR,
           hint: { text: pageContent.radioOptionRHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "R")
         },
@@ -143,7 +144,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionD,
           hint: { text: pageContent.radioOptionDHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "D")
         },
@@ -152,7 +153,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionC,
           hint: { html: pageContent.radioOptionCHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "C")
         },
@@ -161,7 +162,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionF,
           hint: { html: pageContent.radioOptionFHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "F")
         },
@@ -170,7 +171,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionA,
           hint: { text: pageContent.radioOptionAHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "A")
         },
@@ -179,7 +180,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionI,
           hint: { text: pageContent.radioOptionIHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "I"),
           conditional: {
@@ -191,7 +192,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionO,
           hint: { text: pageContent.radioOptionOHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "O"),
           conditional: {
@@ -203,7 +204,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionX,
           hint: { text: pageContent.radioOptionXHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "X")
         },
@@ -212,7 +213,7 @@ function createModel(errors, data) {
           text: pageContent.radioOptionY,
           hint: { html: pageContent.radioOptionYHint },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "Y")
         },
@@ -226,7 +227,7 @@ function createModel(errors, data) {
             text: pageContent.radioOptionUHint            
           },
           label: {
-            classes: "govuk-!-font-weight-bold"
+            classes: govukClass.FONT_WEIGHT_BOLD
           },
           checked: isChecked(data.sourceCode, "U"),
           conditional: {

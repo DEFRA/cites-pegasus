@@ -34,14 +34,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.originPermitDetails
 
-  let previousPath
-  if (data.isEverImportedExported) {
-    previousPath = previousPathEverImportedExported
-  } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
-    previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
-  } else {
-    previousPath = previousPathImporterExporter
-  }
+  const previousPath = getPreviousPath(data)
 
   const countryOfOriginPermitIssueDateErrors = []
 
@@ -152,6 +145,16 @@ function createModel(errors, data) {
     ]
   }
 
+  function getPreviousPath(data) {
+    if (data.isEverImportedExported) {
+      return previousPathEverImportedExported
+    } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
+      return data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
+    } else {
+      return previousPathImporterExporter
+    }
+  }
+
   const model = {
     backLink: backLink,
     assetPath,
@@ -201,7 +204,7 @@ function permitIssueDateValidatorPlantImport(value, helpers) {
   return dateValidatorResponse === null ? value : dateValidatorResponse
 }
 
-function getDatePropertiesFromValue(value){
+function getDatePropertiesFromValue(value) {
   const day = value[permitIssueDateFieldItems.DAY]
   const month = value[permitIssueDateFieldItems.MONTH]
   const year = value[permitIssueDateFieldItems.YEAR]

@@ -25,6 +25,7 @@ module.exports = {
         COPY_AS_NEW: 'copy-as-new'
     },
     govukClass: {
-        WIDTH_TWO_THIRDS: 'govuk-!-width-two-thirds'
+        WIDTH_TWO_THIRDS: 'govuk-!-width-two-thirds',
+        FONT_WEIGHT_BOLD: 'govuk-!-font-weight-bold'
     }
 }

@@ -22,7 +22,7 @@ function createModel(errors, data) {
   ])
 
   unitsOfMeasurement.forEach((e) => {
-    if (e.value === data.unitOfMeasurement) e.selected = "true"
+    if (e.value === data.unitOfMeasurement) { e.selected = "true" }
   })
 
   let errorList = null

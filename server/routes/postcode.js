@@ -17,55 +17,12 @@ const lodash = require('lodash')
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
-    let pageContent = null
-    let defaultBackLink = `${previousPathContactDetails}/${data.contactType}`
-
-    const postcodeText = lodash.cloneDeep(textContent.postcode) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
-
-    if (data.contactType === 'applicant') {
-        if (data.isAgent) {
-            pageContent = lodash.merge(postcodeText.common, postcodeText.agentLed)
-        } else {
-            pageContent = lodash.merge(postcodeText.common, postcodeText.applicant)
-        }
-    } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(postcodeText.common, postcodeText.agent)
-    } else {
-        pageContent = lodash.merge(postcodeText.common, postcodeText.delivery)
-        defaultBackLink = previousPathSelectDeliveryAddress
-    }
+    
+    const { pageContent, defaultBackLink } = getPageContentAndBackLink(data)
 
     const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBackLink
 
-    let defaultTitle = ''
-    let pageHeader = ''
-
-    let errorMessages = null
-    switch (data.permitType) {
-        case pt.IMPORT:
-            defaultTitle = pageContent.defaultTitleImport
-            pageHeader = pageContent.pageHeaderImport
-            errorMessages = pageContent.errorMessagesImport
-            break
-        case pt.EXPORT:
-            defaultTitle = pageContent.defaultTitleExport
-            pageHeader = pageContent.pageHeaderExport
-            errorMessages = pageContent.errorMessagesExport
-            break
-        case pt.MIC:
-        case pt.TEC:
-        case pt.POC:
-        case pt.REEXPORT:
-            defaultTitle = pageContent.defaultTitleReexport
-            pageHeader = pageContent.pageHeaderReexport
-            errorMessages = pageContent.errorMessagesReexport
-            break;
-        case pt.ARTICLE_10:
-            defaultTitle = pageContent.defaultTitleArticle10
-            pageHeader = pageContent.pageHeaderArticle10
-            errorMessages = pageContent.errorMessagesArticle10
-            break;
-    }
+    const {defaultTitle, pageHeader, errorMessages} = getPermitSpecificContent(pageContent, data.permitType)
 
     let errorList = null
     if (errors) {
@@ -109,6 +66,64 @@ function createModel(errors, data) {
 
     return { ...commonContent, ...model }
 }
+
+function getPermitSpecificContent(pageContent, permitType) {
+    let defaultTitle = ''
+    let pageHeader = ''
+    let errorMessages = null
+
+    switch (permitType) {
+        case pt.IMPORT:
+            defaultTitle = pageContent.defaultTitleImport
+            pageHeader = pageContent.pageHeaderImport
+            errorMessages = pageContent.errorMessagesImport
+            break
+        case pt.EXPORT:
+            defaultTitle = pageContent.defaultTitleExport
+            pageHeader = pageContent.pageHeaderExport
+            errorMessages = pageContent.errorMessagesExport
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
+            defaultTitle = pageContent.defaultTitleReexport
+            pageHeader = pageContent.pageHeaderReexport
+            errorMessages = pageContent.errorMessagesReexport
+            break
+        case pt.ARTICLE_10:
+            defaultTitle = pageContent.defaultTitleArticle10
+            pageHeader = pageContent.pageHeaderArticle10
+            errorMessages = pageContent.errorMessagesArticle10
+            break
+        default:
+            throw new Error(`Unknown permit type ${permitType}`)
+    }
+    return { defaultTitle, pageHeader, errorMessages }
+}
+
+function getPageContentAndBackLink(data) {
+    let pageContent = null
+    let defaultBackLink = `${previousPathContactDetails}/${data.contactType}`
+
+    const postcodeText = lodash.cloneDeep(textContent.postcode) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
+            pageContent = lodash.merge(postcodeText.common, postcodeText.agentLed)
+        } else {
+            pageContent = lodash.merge(postcodeText.common, postcodeText.applicant)
+        }
+    } else if (data.contactType === 'agent') {
+        pageContent = lodash.merge(postcodeText.common, postcodeText.agent)
+    } else {
+        pageContent = lodash.merge(postcodeText.common, postcodeText.delivery)
+        defaultBackLink = previousPathSelectDeliveryAddress
+    }
+
+    return {pageContent, defaultBackLink}
+}
+
 
 module.exports = [{
     method: 'GET',
