@@ -19,19 +19,18 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.acquiredDate
 
-
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [
-        "acquiredDate",
-        "acquiredDate-day",
-        "acquiredDate-day-month",
-        "acquiredDate-day-year",
-        "acquiredDate-month",
-        "acquiredDate-month-year",
-        "acquiredDate-year",
-        "isExactDateUnknown",
-        "approximateDate"
-      ])
-  
+    "acquiredDate",
+    "acquiredDate-day",
+    "acquiredDate-day-month",
+    "acquiredDate-day-year",
+    "acquiredDate-month",
+    "acquiredDate-month-year",
+    "acquiredDate-year",
+    "isExactDateUnknown",
+    "approximateDate"
+  ])
+
   const acquiredDateErrors = []
 
   if (errorList) {
@@ -51,14 +50,6 @@ function createModel(errors, data) {
       }
     })
   }
-
-  const acquiredDateErrorMessage = acquiredDateErrors.map(item => { return item.message }).join('</p> <p class="govuk-error-message">')
-
-  const acquiredDateComponents = [
-    { name: 'day', value: data.acquiredDateDay },
-    { name: 'month', value: data.acquiredDateMonth },
-    { name: 'year', value: data.acquiredDateYear }
-  ]
 
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
@@ -88,7 +79,6 @@ function createModel(errors, data) {
     previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
   }
 
-
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -97,6 +87,21 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    ...getInputs(pageContent, acquiredDateErrors, data, approximateDateInput, errorList)
+  }
+  return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, acquiredDateErrors, data, approximateDateInput, errorList) {
+
+  const acquiredDateErrorMessage = acquiredDateErrors.map(item => { return item.message }).join('</p> <p class="govuk-error-message">')
+
+  const acquiredDateComponents = [
+    { name: 'day', value: data.acquiredDateDay },
+    { name: 'month', value: data.acquiredDateMonth },
+    { name: 'year', value: data.acquiredDateYear }
+  ]
+  return {
     inputAcquiredDate: {
       id: "acquiredDate",
       name: "acquiredDate",
@@ -132,7 +137,6 @@ function createModel(errors, data) {
       errorMessage: getFieldError(errorList, "#isExactDateUnknown")
     }
   }
-  return { ...commonContent, ...model }
 }
 
 function getAcquiredDateInputGroupItems(components, acquiredDateErrors) {

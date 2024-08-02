@@ -76,12 +76,12 @@ function createApplicationSummaryModel(errors, data) {
   summaryListSections.push(getSummaryListAboutThePermit(summaryData, appContent))
   summaryListSections.push(getSummaryListDeliveryAddress(summaryData, data))
   summaryListSections.push(getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListContactDetails(summaryData, pageContent, data))
-  summaryListSections.push(getSummaryListRemarks(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly))
+  summaryListSections.push(getSummaryListImporterExporterDetails(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListContactDetails(summaryData, data))
+  summaryListSections.push(getSummaryListRemarks(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListImportPermitDetails(summaryData, data, isReadOnly))
   summaryListSections.push(getSummaryListA10ExportData(summaryData, data, isReadOnly))
 
   const breadcrumbs = getBreadcrumbs(data, summaryType)
@@ -109,7 +109,7 @@ function createApplicationSummaryModel(errors, data) {
     hintIncomplete = pageContent.hintIncomplete
   }
 
-  const showImportPermitDetails = summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== summaryTypeConst.VIEW_SUBMITTED || summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text)
+  const showImportPermitDetails = canShowImportPermitDetails(summaryListSectionsObject, summaryType)
 
   const model = {
     backLink,
@@ -144,6 +144,10 @@ function createApplicationSummaryModel(errors, data) {
     errorList
   }
   return { ...commonContent, ...model }
+}
+
+function canShowImportPermitDetails(summaryListSectionsObject, summaryType) {
+  return summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== summaryTypeConst.VIEW_SUBMITTED || Boolean(summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text))
 }
 
 function getBackLink(summaryType, data) {
@@ -355,7 +359,7 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
     const markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
     for (let i = 0; i < markCount; i++) {
       let markDetails = ''
-      if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
+      if (data.species.uniqueIdentificationMarks?.[i]) {
         const mark = data.species.uniqueIdentificationMarks[i]
         const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
         markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
@@ -461,7 +465,7 @@ function shouldDisplayImporterDetails(data, isReadOnly) {
   return allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)
 }
 
-function getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListImporterExporterDetails(summaryData, data, isReadOnly) {
   const summaryListImporterExporterDetailsRows = []
 
   const addressDataItems = [
@@ -489,7 +493,7 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
   )
 }
 
-function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListRemarks(summaryData, data, isReadOnly) {
   const summaryListRemarksRows = []
   if (allowPageNavigation(data.submissionProgress, "additional-info/" + data.applicationIndex) || isReadOnly) {
     summaryListRemarksRows.push(createSummaryListRow(summaryData, "comments", pageContent.rowTextRemarks, data.comments, "/additionalInfo", "remarks"))
@@ -506,7 +510,7 @@ function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
   )
 }
 
-function getSummaryListContactDetails(summaryData, pageContent, data) {
+function getSummaryListContactDetails(summaryData, data) {
   const summaryListContactDetailsRows = []
   const addressDataItems = [
     data.applicant.address.addressLine1,
@@ -540,7 +544,7 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
   )
 }
 
-function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnly) {
   const summaryListPermitDetailsCountryOfOriginRows = []
 
   const permitIssueDate = {
@@ -583,7 +587,7 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, da
   )
 }
 
-function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOnly) {
 
   const summaryListPermitDetailsExportOrReexportRows = []
 
@@ -629,7 +633,7 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
   )
 }
 
-function getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListImportPermitDetails(summaryData, data, isReadOnly) {
   const summaryListPermitDetailsImportRows = []
 
   const permitIssueDate = {
@@ -1014,7 +1018,7 @@ function getPageContentApplicantAddress(permitType, areYouSureText) {
     case pt.ARTICLE_10:
       return areYouSureText.article10Address
     default:
-      throw new Error(`Unknown permit type ${data.permitType}`)
+      throw new Error(`Unknown permit type ${permitType}`)
   }
 }
 
