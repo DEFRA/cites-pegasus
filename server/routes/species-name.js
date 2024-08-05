@@ -1,11 +1,10 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableSpeciesNameTypeahead } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { getSpecies, getSpecieses } = require("../services/dynamics-service")
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
-const lodash = require("lodash")
 const pageId = "species-name"
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathSourceCode = `${urlPrefix}/source-code`
@@ -18,25 +17,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.speciesName
 
-  
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["speciesName"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })  
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["speciesName"])
 
   const previousPathOld = (data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`)
   const previousPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : previousPathOld
@@ -62,7 +43,7 @@ function createModel(errors, data) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     inputLabelSpeciesName: pageContent.inputLabelSpeciesName,
     javascriptBody: pageContent.javascriptBody,
-    noJavascriptBody: pageContent.noJavascriptBody,    
+    noJavascriptBody: pageContent.noJavascriptBody,
     speciesSearchResults: data.speciesSearchResults,
     speciesSearchResultsCount: data.speciesSearchResults?.count,
     //selectSpecies,
@@ -99,7 +80,7 @@ module.exports = [
         submission.applications = []
       }
 
-      if(applicationIndex + 1 > submission.applications.length) {
+      if (applicationIndex + 1 > submission.applications.length) {
         console.log("Invalid application index")
         return h.redirect(invalidSubmissionPath)
       }
@@ -134,7 +115,7 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      if(request.params.query.length < 3) {
+      if (request.params.query.length < 3) {
         return ''
       }
       const speciesSearchResults = await getSpecieses(request.server, request.params.query)
@@ -188,7 +169,7 @@ module.exports = [
         species.speciesName = speciesData?.scientificName
         species.speciesSearchData = request.payload.speciesName
         species.kingdom = speciesData?.kingdom
-        species.hasRestriction =  speciesData?.hasRestriction 
+        species.hasRestriction = speciesData?.hasRestriction
         species.warningMessage = speciesData?.warningMessage
 
         if (isMajorChange) {
@@ -237,16 +218,22 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        let redirectTo = `${nextPathSourceCode}/${applicationIndex}`
-        if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
-          redirectTo = `${unknownSpeciesPath}/${applicationIndex}`
-        } else if (species.hasRestriction) {
-          redirectTo = `${nextPathSpeciesWarning}/${applicationIndex}`
-        }
-        
+        const redirectTo = getRedirect(speciesData, species, applicationIndex)
+
         saveDraftSubmission(request, redirectTo)
-        return h.redirect(redirectTo)    
+        return h.redirect(redirectTo)
       }
     }
   }
 ]
+
+function getRedirect(speciesData, species, applicationIndex) {
+  if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
+    return `${unknownSpeciesPath}/${applicationIndex}`
+  } else if (species.hasRestriction) {
+    return `${nextPathSpeciesWarning}/${applicationIndex}`
+  } else {
+    return `${nextPathSourceCode}/${applicationIndex}`
+  }
+}
+

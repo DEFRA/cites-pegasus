@@ -1,11 +1,10 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryName } = require("../../config/config")
-const { findErrorList, getFieldError, toPascalCase } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressesByPostcode } = require('../services/address-service')
 const textContent = require('../content/text-content')
-const postcode = require('./postcode')
 const pageId = 'select-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
@@ -16,38 +15,11 @@ const lodash = require('lodash')
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
-    let pageContent = null
-
     const selectAddressText = lodash.cloneDeep(textContent.selectAddress) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
-    if (data.contactType === 'applicant') {
-        if (data.isAgent) {
-            pageContent = lodash.merge(selectAddressText.common, selectAddressText.agentLed)
-        } else {
-            pageContent = lodash.merge(selectAddressText.common, selectAddressText.applicant)
-        }
-    } else if (data.contactType === 'agent') {
-        pageContent = lodash.merge(selectAddressText.common, selectAddressText.agent)
-    } else {
-        pageContent = lodash.merge(selectAddressText.common, selectAddressText.delivery)
-    }
-
-    let errorList = null
-    if (errors) {
-        errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-        const fields = ['address', 'deliveryName']
-        fields.forEach(field => {
-            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            if (fieldError) {
-                errorList.push({
-                    text: fieldError,
-                    href: `#${field}`
-                })
-            }
-        })
-    }
-
+    const pageContent = getPageContent(data, selectAddressText)
+    const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['address', 'deliveryName'])
+    
     let addressSelectItems = []
 
     if (data.results && data.results.length > 0) {
@@ -77,15 +49,15 @@ function createModel(errors, data) {
         id: "deliveryName",
         name: "deliveryName",
         label: {
-          text: pageContent.inputLabelDeliveryName,
-          classes: "govuk-label--s",
-          isPageHeading: false
+            text: pageContent.inputLabelDeliveryName,
+            classes: "govuk-label--s",
+            isPageHeading: false
         },
         hint: {
-          text: pageContent.inputHintDeliveryName
+            text: pageContent.inputHintDeliveryName
         },
         ...(data.deliveryName ? { value: data.deliveryName } : {}),
-      }
+    }
 
     // const unitsOfMeasurement = lodash.cloneDeep([{ text: pageContent.unitOfMeasurementPrompt, value: null}, ...pageContent.unitsOfMeasurement])
     // unitsOfMeasurement.forEach(e => { if (e.value === data.unitOfMeasurement) e.selected = 'true' })
@@ -99,12 +71,26 @@ function createModel(errors, data) {
         enterManualAddressLinkText: pageContent.enterManualAddressLinkText,
         enterManualAddressUrl: `/enter-address/${data.contactType}`,
         ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
         selectAddress,
         inputDeliveryName,
         showDeliveryName: data.contactType === 'delivery' && enableDeliveryName
     }
     return { ...commonContent, ...model }
+}
+
+function getPageContent(data, selectAddressText) {
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
+            return lodash.merge(selectAddressText.common, selectAddressText.agentLed)
+        } else {
+            return lodash.merge(selectAddressText.common, selectAddressText.applicant)
+        }
+    } else if (data.contactType === 'agent') {
+        return lodash.merge(selectAddressText.common, selectAddressText.agent)
+    } else {
+        return lodash.merge(selectAddressText.common, selectAddressText.delivery)
+    }
 }
 
 function validateSearchData(searchData) {
@@ -215,7 +201,7 @@ module.exports = [{
                 const otherAddressLineComponents = [localityComponents.join(", "), selectedAddress.Town, selectedAddress.County].filter(Boolean)
 
                 const selectedCountry = request.server.app.countries.find(country => country.code === 'UK')
-                
+
                 const newSubmission = {
                     [contactType]: {
                         candidateAddressData: {
@@ -246,7 +232,7 @@ module.exports = [{
 
             const redirectTo = `${nextPath}/${contactType}`
             saveDraftSubmission(request, redirectTo)
-            return h.redirect(redirectTo)      
+            return h.redirect(redirectTo)
         }
     },
 }

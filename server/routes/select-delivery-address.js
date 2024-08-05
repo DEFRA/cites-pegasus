@@ -53,7 +53,7 @@ function createModel(errors, data) {
     })
 
 
-    let deliveryAddressOptionItems = [{
+    const deliveryAddressOptionItems = [{
         value: "applicant",
         //text: `${pageContent.radioOptionDeliverToApplicantAddress} ${applicantAddressSummary}`,
         text: applicantAddressSummary,

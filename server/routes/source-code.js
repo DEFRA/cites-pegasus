@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt} = require('../lib/permit-type-helper')
 const config = require('../../config/config')
@@ -22,28 +22,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const isAnimal = data.kingdom === "Animalia"
   const pageContent = isAnimal ? textContent.sourceCode.animal : textContent.sourceCode.plant
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-    const fields = [
-      "sourceCode",
-      "anotherSourceCodeForI",
-      "anotherSourceCodeForO",
-      "enterAReason"
-    ]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [ "sourceCode", "anotherSourceCodeForI", "anotherSourceCodeForO", "enterAReason" ])
 
   const anotherSourceCodeI = lodash.cloneDeep([
     { text: pageContent.anotherSourceCodePrompt, value: null },
@@ -51,7 +30,7 @@ function createModel(errors, data) {
   ])
 
   anotherSourceCodeI.forEach((e) => {
-    if (e.value === data.anotherSourceCodeForI) e.selected = "true"
+    if (e.value === data.anotherSourceCodeForI) { e.selected = "true" }
   })
 
   const anotherSourceCodeO = lodash.cloneDeep([
@@ -60,7 +39,7 @@ function createModel(errors, data) {
   ])
  
  anotherSourceCodeO.forEach((e) => {
-    if (e.value === data.anotherSourceCodeForO) e.selected = "true"
+    if (e.value === data.anotherSourceCodeForO) { e.selected = "true" }
   })
 
   let renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
@@ -101,9 +80,8 @@ function createModel(errors, data) {
     }
   })
 
-  const defaultBacklink = data.hasRestriction && config.enableSpeciesWarning ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
-  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-
+  const backLink = getBackLink(data)
+  
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
@@ -239,6 +217,11 @@ function createModel(errors, data) {
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getBackLink(data) {
+  const defaultBacklink = data.hasRestriction && config.enableSpeciesWarning ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
+  return data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 }
 
 function failAction(request, h, err) {
