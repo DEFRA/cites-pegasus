@@ -17,26 +17,8 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.uniqueIdentificationMark
 
-  const fields = []
-  let pageContentErrorMessages = {}
-  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
-    fields.push(`uniqueIdentificationMarkType${i}`)
-    fields.push(`uniqueIdentificationMark${i}`)
-
-    for (const property in pageContent.errorMessages) {
-      if(!property){
-        console.error("Invalid error message")
-      }
-      const propertyParts = property.split(".")
-      if (propertyParts[0] && propertyParts[1] && propertyParts[2] && propertyParts[3]) {
-        const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]
-        pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
-      } else {
-        console.error("Invalid error message")
-    }
-    }
-  }
-
+  const {fields, pageContentErrorMessages} = prepareErrorData(data, pageContent)
+  
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentErrorMessages }, fields)
 
   const selectItems = Object.entries(commonContent.uniqueIdentificationMarkTypes)
@@ -107,6 +89,29 @@ function createModel(errors, data) {
     marks
   }
   return { ...commonContent, ...model }
+}
+
+function prepareErrorData(data, pageContent) {
+  const fields = []
+  const pageContentErrorMessages = {}
+  for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
+    fields.push(`uniqueIdentificationMarkType${i}`)
+    fields.push(`uniqueIdentificationMark${i}`)
+
+    for (const property in pageContent.errorMessages) {
+      if(!property){
+        console.error("Invalid error message")
+      }
+      const propertyParts = property.split(".")
+      if (propertyParts[0] && propertyParts[1] && propertyParts[2] && propertyParts[3]) {
+        const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]
+        pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
+      } else {
+        console.error("Invalid error message")
+    }
+    }
+  }
+  return {fields, pageContentErrorMessages}
 }
 
 function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniqueIdentificationMarks, submission, applicationIndex) {

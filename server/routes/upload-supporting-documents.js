@@ -10,9 +10,9 @@ const assetPath = `${urlPrefix}/assets`
 const previousPath = `${urlPrefix}/add-application`
 const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = `${urlPrefix}/`
-const Boom = require('@hapi/boom');
 const maxFileSizeBytes = 10485760
 const pageSize = 15
+const multiPartFormData = 'multipart/form-data'
 
 function createModel(errors, data) {
 
@@ -198,7 +198,7 @@ module.exports = [
         maxBytes: 20971520, // 20 MB limit
         output: 'stream',
         parse: true,
-        allow: 'multipart/form-data',
+        allow: multiPartFormData,
         multipart: true,
         timeout: false
       },
@@ -348,7 +348,7 @@ module.exports = [
     path: `${currentPath}/delete/{fileName}`,
     options: {
       payload: {
-        allow: 'multipart/form-data',
+        allow: multiPartFormData,
         multipart: true
       },
       handler: async (request, h) => {
@@ -408,7 +408,7 @@ module.exports = [
     path: `${currentPath}/continue`,
     options: {
       payload: {
-        allow: 'multipart/form-data',
+        allow: multiPartFormData,
         multipart: true
       },
       handler: async (request, h) => {

@@ -61,6 +61,16 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getRedirect(speciesData, species, applicationIndex) {
+  if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
+    return `${unknownSpeciesPath}/${applicationIndex}`
+  } else if (species.hasRestriction) {
+    return `${nextPathSpeciesWarning}/${applicationIndex}`
+  } else {
+    return `${nextPathSourceCode}/${applicationIndex}`
+  }
+}
+
 module.exports = [
   {
     method: "GET",
@@ -226,14 +236,4 @@ module.exports = [
     }
   }
 ]
-
-function getRedirect(speciesData, species, applicationIndex) {
-  if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
-    return `${unknownSpeciesPath}/${applicationIndex}`
-  } else if (species.hasRestriction) {
-    return `${nextPathSpeciesWarning}/${applicationIndex}`
-  } else {
-    return `${nextPathSourceCode}/${applicationIndex}`
-  }
-}
 

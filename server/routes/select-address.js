@@ -20,7 +20,7 @@ function createModel(errors, data) {
     const pageContent = getPageContent(data, selectAddressText)
     const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['address', 'deliveryName'])
     
-    let addressSelectItems = []
+    const addressSelectItems = []
 
     if (data.results && data.results.length > 0) {
         if (data.results.length === 1) {

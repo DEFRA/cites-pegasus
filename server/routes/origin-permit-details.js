@@ -144,17 +144,7 @@ function createModel(errors, data) {
       }
     ]
   }
-
-  function getPreviousPath(data) {
-    if (data.isEverImportedExported) {
-      return previousPathEverImportedExported
-    } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
-      return data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
-    } else {
-      return previousPathImporterExporter
-    }
-  }
-
+  
   const model = {
     backLink: backLink,
     assetPath,
@@ -170,6 +160,16 @@ function createModel(errors, data) {
     checkboxCountryOfOriginNotKnown
   }
   return { ...commonContent, ...model }
+}
+
+function getPreviousPath(data) {
+  if (data.isEverImportedExported) {
+    return previousPathEverImportedExported
+  } else if (data.permitType === pt.REEXPORT && data.otherPermitTypeOption === pto.SEMI_COMPLETE) {
+    return data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
+  } else {
+    return previousPathImporterExporter
+  }
 }
 
 function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {

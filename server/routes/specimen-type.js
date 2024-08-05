@@ -111,7 +111,7 @@ function createModel(errors, data) {
 function failAction(request, h, err) {
   const submission = getSubmission(request)
   const species = submission.applications[request.params.applicationIndex].species
-
+  
   const pageData = {
     backLinkOverride: checkChangeRouteExit(request, true),
     permitType: submission.permitType,
@@ -120,8 +120,19 @@ function failAction(request, h, err) {
     kingdom: species.kingdom,
     specimenType: request.payload.specimenType
   }
-
+  
   return h.view(pageId, createModel(err, pageData)).takeover()
+}
+
+function getRedirect(species, submission, applicationIndex) {
+  if (species.specimenType === 'animalLiving'){
+    if (submission.permitType === pt.ARTICLE_10) {
+      return `${nextPathUniqueId}/${applicationIndex}`
+    } else {
+      return `${nextPathMultipleSpecimens}/${applicationIndex}`
+    }
+  }
+  return `${nextPathQuantity}/${applicationIndex}`
 }
 
 module.exports = [
@@ -240,21 +251,14 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        let redirectTo =`${nextPathQuantity}/${request.params.applicationIndex}`
-
-        if (species.specimenType === 'animalLiving'){
-          if (submission.permitType === pt.ARTICLE_10) {
-            redirectTo = `${nextPathUniqueId}/${request.params.applicationIndex}`
-          } else {
-            redirectTo = `${nextPathMultipleSpecimens}/${request.params.applicationIndex}`
-          }
-        }
+        
+        const redirectTo = getRedirect(species, submission, request.params.applicationIndex)
         
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
+        
       }
     }
   }
-
+  
 ]
