@@ -13,6 +13,7 @@ const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
 const nextPathSpeciesName = `${urlPrefix}/species-name`
 const areYouSurePath = `are-you-sure`
 const lodash = require('lodash')
+const specimenType = require('./specimen-type')
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createSubmitApplicationModel(errors, data) {
@@ -40,9 +41,11 @@ function createSubmitApplicationModel(errors, data) {
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.article10Applications)
       insetText = getA10InsetText(data.permitType, data.applications, pageContent)
       break
+    default:
+      throw new Error(`Unknown permit type ${data.permitType}`)
   }
 
-  
+
 
   const applicationsData = data.applications
   const applicationsTableData = applicationsData.map(application => {
@@ -58,27 +61,16 @@ function createSubmitApplicationModel(errors, data) {
         return { mark: mark.uniqueIdentificationMark, labelMark }
       })
     }
-    let unitsOfMeasurementText = null
-    if (application.species.specimenType === "animalLiving") {
-      if (application.species.numberOfUnmarkedSpecimens > 1) {
-        unitsOfMeasurementText = `Specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
-      } else {
-        unitsOfMeasurementText = `Specimen`
-      }
-    } else if (application.species.unitOfMeasurement === "noOfSpecimens") {
-      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
-    } else if (application.species.unitOfMeasurement === "noOfPiecesOrParts") {
-      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
-    } else {
-      unitsOfMeasurementText = application.species?.unitOfMeasurement
-    }
 
+    const unitsOfMeasurementText = getUnitsOfMeasurementText(application.species, pageContent)
 
-    let quantity = application.species?.quantity
+    let quantity = null
     if (application.species.specimenType === "animalLiving" && application.species.numberOfUnmarkedSpecimens) {
       quantity = application.species.numberOfUnmarkedSpecimens
     } else if (application.species.specimenType === "animalLiving") {
       quantity = 1
+    } else {
+      quantity = application.species?.quantity
     }
 
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
@@ -105,8 +97,26 @@ function createSubmitApplicationModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getUnitsOfMeasurementText(species, pageContent) {
+  let unitsOfMeasurementText = null
+  if (species.specimenType === "animalLiving") {
+    if (species.numberOfUnmarkedSpecimens > 1) {
+      unitsOfMeasurementText = `Specimen${species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
+    } else {
+      unitsOfMeasurementText = `Specimen`
+    }
+  } else if (species.unitOfMeasurement === "noOfSpecimens") {
+    unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
+  } else if (species.unitOfMeasurement === "noOfPiecesOrParts") {
+    unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
+  } else {
+    unitsOfMeasurementText = species?.unitOfMeasurement
+  }
+  return unitsOfMeasurementText
+}
+
 function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
-  if (permitType === pt.EXPORT && a10SourceSubmissionRef){
+  if (permitType === pt.EXPORT && a10SourceSubmissionRef) {
     return pageContent.insetText
   } else {
     return null
@@ -114,7 +124,7 @@ function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
 }
 
 function getA10InsetText(permitType, applications, pageContent) {
-  if (permitType === pt.ARTICLE_10 && applications.some(app => app.a10ExportData?.isExportPermitRequired)){
+  if (permitType === pt.ARTICLE_10 && applications.some(app => app.a10ExportData?.isExportPermitRequired)) {
     return pageContent.insetText
   } else {
     return null

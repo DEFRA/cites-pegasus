@@ -151,6 +151,29 @@ function getMaxDocs(applicationsCount) {
   return Math.min(5 + (applicationsCount * 5), documentUploadMaxFilesLimit)
 }
 
+function getAVError(avScanResult) {
+  const avError = {
+    details: [
+      {
+        type: 'upload.exception',
+        context: { label: 'fileUpload', key: 'fileUpload' }
+      }
+    ]
+  }
+
+  switch (avScanResult) {
+    case AVScanResult.MALICIOUS:
+      avError.details[0].type = 'av-malicious.exception'
+      break
+    case AVScanResult.TIMEOUT:
+      avError.details[0].type = 'av-timeout.exception'
+      break
+    default:
+      avError.details[0].type = 'av-unknown.exception'
+  }
+  return avError
+}
+
 module.exports = [
   {
     method: "GET",
@@ -284,26 +307,8 @@ module.exports = [
 
           
           if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
-            const avError = {
-              details: [
-                {
-                  type: 'upload.exception',
-                  context: { label: 'fileUpload', key: 'fileUpload' }
-                }
-              ]
-            }
-
-            switch (fileSaveResult.avScanResult) {
-              case AVScanResult.MALICIOUS:
-                avError.details[0].type = 'av-malicious.exception'
-                break
-              case AVScanResult.TIMEOUT:
-                avError.details[0].type = 'av-timeout.exception'
-                break
-              default:
-                avError.details[0].type = 'av-unknown.exception'
-            }
-            
+            const avError = getAVError(fileSaveResult.avScanResult)
+                        
             return failAction(request, h, avError)
           }
           

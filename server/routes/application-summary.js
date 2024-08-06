@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { findErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
 const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
 const { deliveryType: dt, summaryType: summaryTypeConst } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, getPermitDescription } = require("../lib/permit-type-helper")
@@ -907,6 +907,39 @@ function getSummaryTypeSpecificContent(data) {
 
 function createAreYouSureModel(errors, data) {
   const commonContent = textContent.common
+
+  const pageContent = getPageContent(data)
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['areYouSure'])
+  
+  const model = {
+    backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
+    formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
+    ...(errorList ? { errorList } : {}),
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageHeader: pageContent.pageHeader,
+    pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
+
+    inputAreYouSure: {
+      idPrefix: "areYouSure",
+      name: "areYouSure",
+      classes: "govuk-radios--inline",
+      items: [
+        {
+          value: true,
+          text: commonContent.radioOptionYes,
+        },
+        {
+          value: false,
+          text: commonContent.radioOptionNo,
+        }
+      ],
+      errorMessage: getFieldError(errorList, "#areYouSure")
+    }
+  }
+  return { ...commonContent, ...model }
+}
+
+function getPageContent(data) {
   const changeType = data.changeRouteData.changeType
   const areYouSureText = textContent.applicationSummary.areYouSure
 
@@ -938,52 +971,7 @@ function createAreYouSureModel(errors, data) {
   } else {
     //Do nothing
   }
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
-  const model = {
-    backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
-    formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
-    ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    pageHeader: pageContent.pageHeader,
-    pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
-  }
-  return { ...commonContent, ...model }
+  return pageContent
 }
 
 function getPageContentApplicantContactDetails(permitType, areYouSureText) {
