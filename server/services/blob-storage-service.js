@@ -240,7 +240,7 @@ async function listContainerNames(server, maxPageSize) {
         //prefix: containerNamePrefix
     }
     const iterator = server.app.blobServiceClient.listContainers(options).byPage({ maxPageSize })
-    let response = (await iterator.next()).value
+    const response = (await iterator.next()).value
     if (response.containerItems) {
         return response.containerItems.map(container => container.name)
     }

@@ -5,6 +5,9 @@ const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 const lodash = require('lodash')
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
+const httpResponsePrefix = 'HTTP Response Payload: '
+const collectionExpandoString = '#Collection(Microsoft.Dynamics.CRM.expando)'
+const countString = '@odata.count'
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -87,7 +90,7 @@ async function postSubmission(server, submission) {
 
     const { payload } = await Wreck.post(url, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
     return payload
   } catch (err) {
@@ -128,14 +131,14 @@ function mapSubmissionToPayload(submission) {
   addOdataTypeProperty(payload)
 
   if (payload.supportingDocuments) {
-    payload.supportingDocuments["files@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+    payload.supportingDocuments["files@odata.type"] = collectionExpandoString
   }
 
   if (payload.applications) {
-    payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+    payload["applications@odata.type"] = collectionExpandoString
     payload.applications.forEach(application => {
       if(application.species?.uniqueIdentificationMarks){
-        application.species["uniqueIdentificationMarks@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)" 
+        application.species["uniqueIdentificationMarks@odata.type"] = collectionExpandoString
       }
     })
   }
@@ -225,11 +228,11 @@ async function getSpecieses(server, speciesName) {
 
     const { payload } = response
     
-    if (payload && payload["@odata.count"] > 0) {
+    if (payload && payload[countString] > 0) {
 
       if (Array.isArray(payload.value) && payload.value.length > 0) {
         return {
-          count: payload["@odata.count"],
+          count: payload[countString],
           items: payload.value.map(formatItem)      
         }
       }
@@ -379,6 +382,33 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
+  const filterParts = getFilterParts(submittedByFilterEnabled, submittedBy, contactId, organisationId, statuses, permitTypes)
+
+  if (searchTerm) {
+
+    const encodedSearchTerm = encodeURIComponent(searchTerm).replace(/'/g, '%27%27')
+
+    const searchTermParts = [
+      `cites_submissionreference eq '${encodedSearchTerm}'`,
+      `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${encodedSearchTerm}'))`,
+      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_name eq '${encodedSearchTerm}'))`,
+      `cites_cites_submission_incident_submission/any(o4:(contains(o4/cites_deliveryaddresspostcode, '${encodedSearchTerm}')))`,
+      `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${encodedSearchTerm}')))`,
+      `contains(cites_applicantfullname,'${encodedSearchTerm}')`,
+    ]
+    if(config.enableInternalReference){
+      searchTermParts.push(`cites_cites_submission_incident_submission/any(o6:(o6/cites_internalreference eq '${encodedSearchTerm}'))`)
+    }
+    filterParts.push(`(${searchTermParts.join(" or ")})`)
+  }
+
+  const filter = `$filter=${filterParts.join(" and ")}`
+
+  return `${apiUrl}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
+}
+
+function getFilterParts(submittedByFilterEnabled, submittedBy, contactId, organisationId, statuses, permitTypes) {
+
   const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
   const filterParts = [
     `_cites_organisation_value eq ${organisationIdValue}`,
@@ -407,28 +437,7 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
     const permitTypeMappedList = permitTypes.map(x => `'${dynamicsPermitTypesMappings[x]}'`).join(",")
     filterParts.push(`cites_cites_submission_incident_submission/any(o1:(Microsoft.Dynamics.CRM.In(PropertyName='cites_permittype',PropertyValues=[${permitTypeMappedList}])))`)
   }
-
-  if (searchTerm) {
-
-    const encodedSearchTerm = encodeURIComponent(searchTerm).replace(/'/g, '%27%27')
-
-    const searchTermParts = [
-      `cites_submissionreference eq '${encodedSearchTerm}'`,
-      `cites_cites_submission_incident_submission/any(o2:(o2/cites_applicationreference eq '${encodedSearchTerm}'))`,
-      `cites_cites_permit_submission_cites_submission/any(o3:(o3/cites_name eq '${encodedSearchTerm}'))`,
-      `cites_cites_submission_incident_submission/any(o4:(contains(o4/cites_deliveryaddresspostcode, '${encodedSearchTerm}')))`,
-      `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${encodedSearchTerm}')))`,
-      `contains(cites_applicantfullname,'${encodedSearchTerm}')`,
-    ]
-    if(config.enableInternalReference){
-      searchTermParts.push(`cites_cites_submission_incident_submission/any(o6:(o6/cites_internalreference eq '${encodedSearchTerm}'))`)
-    }
-    filterParts.push(`(${searchTermParts.join(" or ")})`)
-  }
-
-  const filter = `$filter=${filterParts.join(" and ")}`
-
-  return `${apiUrl}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
+  return filterParts
 }
 
 async function getSubmissions(server, query, pageSize) {
@@ -448,7 +457,7 @@ async function getSubmissions(server, query, pageSize) {
 
 
     if (payload) {
-      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2));
       //log('HTTP Response Payload', payload)
       return {
         submissions: payload.value.map(x => {
@@ -463,7 +472,7 @@ async function getSubmissions(server, query, pageSize) {
           }
         }),
         nextQueryUrl: payload["@odata.nextLink"],
-        totalSubmissions: payload['@odata.count']
+        totalSubmissions: payload[countString]
       };
     }
 
@@ -531,7 +540,7 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
     const { payload } = response
 
     if (payload) {
-      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2));
 
       if (payload.value.length == 0) {
         throw new Error(`Submission not found with reference '${submissionRef}' and contact '${contactId}'`)
@@ -606,7 +615,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     const { payload } = await Wreck.get(url, options)
 
     if (payload) {
-      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
       if (payload.value.length == 0) {
         throw new Error(`Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`)
@@ -659,7 +668,7 @@ async function setSubmissionPayment(params) {
 
     const { payload } = await Wreck.patch(url, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
   } catch (err) {
     if (err.data?.payload) {

@@ -908,16 +908,16 @@ function getSummaryTypeSpecificContent(data) {
 function createAreYouSureModel(errors, data) {
   const commonContent = textContent.common
 
-  const pageContent = getPageContent(data)
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['areYouSure'])
+  const pageContentAreYouSure = getPageContentAreYouSure(data)
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentAreYouSure.errorMessages }, ['areYouSure'])
   
   const model = {
     backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    pageHeader: pageContent.pageHeader,
-    pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContentAreYouSure.defaultTitle + commonContent.pageTitleSuffix,
+    pageHeader: pageContentAreYouSure.pageHeader,
+    pageBody: pageContentAreYouSure.pageBody2 ? `${pageContentAreYouSure.pageBody1} ${data.permitType} ${pageContentAreYouSure.pageBody2}` : pageContentAreYouSure.pageBody1,
 
     inputAreYouSure: {
       idPrefix: "areYouSure",
@@ -939,39 +939,39 @@ function createAreYouSureModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function getPageContent(data) {
+function getPageContentAreYouSure(data) {
   const changeType = data.changeRouteData.changeType
   const areYouSureText = textContent.applicationSummary.areYouSure
 
-  let pageContent = null
+  let pageContentAreYouSure = null
   if (changeType === "permitType") {
-    pageContent = areYouSureText.permitType
+    pageContentAreYouSure = areYouSureText.permitType
   } else if (changeType === "speciesName") {
-    pageContent = areYouSureText.scientificName
+    pageContentAreYouSure = areYouSureText.scientificName
   } else if (changeType === "multipleSpecimens") {
-    pageContent = areYouSureText.multipleSpecimens
+    pageContentAreYouSure = areYouSureText.multipleSpecimens
   } else if (changeType === "deliveryAddress") {
-    pageContent = areYouSureText.deliveryAddress
+    pageContentAreYouSure = areYouSureText.deliveryAddress
   } else if (!data.isAgent) {
     if (changeType === "applicantContactDetails") {
-      pageContent = areYouSureText.yourContactDetails
+      pageContentAreYouSure = areYouSureText.yourContactDetails
     } else if (changeType === "applicantAddress") {
-      pageContent = areYouSureText.yourAddress
+      pageContentAreYouSure = areYouSureText.yourAddress
     } else {
       //Do nothing
     }
   } else if (data.isAgent) {
     if (changeType === "applicantContactDetails") {
-      pageContent = getPageContentApplicantContactDetails(data.permitType, areYouSureText)
+      pageContentAreYouSure = getPageContentApplicantContactDetails(data.permitType, areYouSureText)
     } else if (changeType === "applicantAddress") {
-      pageContent = getPageContentApplicantAddress(data.permitType, areYouSureText)
+      pageContentAreYouSure = getPageContentApplicantAddress(data.permitType, areYouSureText)
     } else {
       //Do nothing
     }
   } else {
     //Do nothing
   }
-  return pageContent
+  return pageContentAreYouSure
 }
 
 function getPageContentApplicantContactDetails(permitType, areYouSureText) {
