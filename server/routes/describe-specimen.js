@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { stringLength } = require('../lib/constants')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require("../content/text-content")
@@ -57,7 +58,7 @@ function createModel(errors, data) {
     inputSpecimenDescriptionGeneric: {
       id: "specimenDescriptionGeneric",
       name: "specimenDescriptionGeneric",
-      maxlength: 500,
+      maxlength: stringLength.max500,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: `${pageContent.pageHeader}`,
@@ -147,7 +148,7 @@ module.exports = [
         const { applicationIndex } = request.params
 
         const modifiedDescription = request.payload.specimenDescriptionGeneric.replace(/\r/g, '')
-        const schema = Joi.object({ specimenDescriptionGeneric: Joi.string().min(5).max(500) })
+        const schema = Joi.object({ specimenDescriptionGeneric: Joi.string().min(stringLength.min5).max(stringLength.max500) })
         const result = schema.validate({ specimenDescriptionGeneric: modifiedDescription }, { abortEarly: false })
 
         if (result.error) {

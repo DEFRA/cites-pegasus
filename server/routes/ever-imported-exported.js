@@ -149,10 +149,8 @@ module.exports = [
 
         species.isEverImportedExported = request.payload.isEverImportedExported
 
-        if (isChange) {
-          if (species.isEverImportedExported === false) {
-            application.permitDetails = null
-          }          
+        if (isChange && species.isEverImportedExported === false) {
+          application.permitDetails = null
         }
 
         try {
@@ -169,8 +167,8 @@ module.exports = [
         const exitChangeRouteUrl = checkChangeRouteExit(request, false)
         if (exitChangeRouteUrl) {
           const changeData = getChangeRouteData(request)
-          
-          if (species.isEverImportedExported !== true || !changeData.dataRemoved ) {
+
+          if (species.isEverImportedExported !== true || !changeData.dataRemoved) {
             saveDraftSubmission(request, exitChangeRouteUrl)
             return h.redirect(exitChangeRouteUrl)
           }
@@ -178,7 +176,7 @@ module.exports = [
 
         //request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
         const redirectTo = getRedirect(request.payload.isEverImportedExported, submission.permitType, applicationIndex)
-        
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
       }

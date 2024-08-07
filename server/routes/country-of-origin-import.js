@@ -128,18 +128,17 @@ module.exports = [
 
         permitDetails.isExportOrReexportSameAsCountryOfOrigin = request.payload.isExportOrReexportSameAsCountryOfOrigin
 
-        if (isChange) {
-          if (permitDetails.isExportOrReexportSameAsCountryOfOrigin) {
-            permitDetails.exportOrReexportCountry = null
-            permitDetails.exportOrReexportCountryDesc = null
-            permitDetails.exportOrReexportPermitNumber = null
-            permitDetails.exportOrReexportPermitIssueDate = {
-              day: null,
-              month: null,
-              year: null
-            }
+        if (isChange && permitDetails.isExportOrReexportSameAsCountryOfOrigin) {
+          permitDetails.exportOrReexportCountry = null
+          permitDetails.exportOrReexportCountryDesc = null
+          permitDetails.exportOrReexportPermitNumber = null
+          permitDetails.exportOrReexportPermitIssueDate = {
+            day: null,
+            month: null,
+            year: null
           }
         }
+
 
         try {
           setSubmission(request, submission, `${pageId}/${applicationIndex}`)

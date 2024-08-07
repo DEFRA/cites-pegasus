@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { stringLength } = require('../lib/constants')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { dateValidator } = require("../lib/validators")
 const textContent = require("../content/text-content")
@@ -225,7 +226,7 @@ module.exports = [
           isExactDateUnknown: Joi.boolean().default(false),//.allow(null),
           approximateDate: Joi.when("isExactDateUnknown", {
             is: true,
-            then: Joi.string().max(150).required()
+            then: Joi.string().max(stringLength.max150).required()
           }),
           "createdDate-day": Joi.any().optional(),
           "createdDate-month": Joi.any().optional(),

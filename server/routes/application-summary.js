@@ -60,8 +60,7 @@ const commonContent = textContent.common
 
 function createApplicationSummaryModel(errors, data) {
   const summaryType = data.summaryType
-  const applicationRef = data.cloneSource ? data.cloneSource.applicationRef : data.applicationRef
-
+  
   const summaryData = {
     summaryType,
     hrefPrefix: `../../application-summary/${summaryType}/change/${data.applicationIndex}`,
@@ -753,13 +752,10 @@ function getDateValue(date) {
   }
 }
 
-function lookupAppContent(data) {
-  const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data)
-
+function getPermitSpecificContent(permitType) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
-  const permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
-  switch (data.permitType) {
+  switch (permitType) {
     case pt.IMPORT:
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
       headingImporterExporterDetails = pageContent.headerExportOrReexporterContactDetails
@@ -779,8 +775,16 @@ function lookupAppContent(data) {
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       break
     default:
-      throw new Error(`Invalid permit type: ${data.permitType}`)
+      throw new Error(`Invalid permit type: ${permitType}`)
   }
+  return { headerApplicantContactDetails, headingImporterExporterDetails }
+}
+
+function lookupAppContent(data) {
+  const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data)
+  const permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
+
+  const { headerApplicantContactDetails, headingImporterExporterDetails } = getPermitSpecificContent(data.permitType)
 
   const purposeCodeValueText = {
     B: pageContent.rowTextPurposeCodeB,

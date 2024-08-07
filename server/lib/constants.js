@@ -14,8 +14,9 @@ module.exports = {
         OK: 200,
         BAD_REQUEST: 400,
         UNAUTHORIZED: 401,
+        FORBIDDEN: 403,
         NOT_FOUND: 404,
-        PAYLOAD_TOO_LARGE: 413
+        INTERNAL_SERVER_ERROR: 500
     },
     summaryType: {
         CHECK: 'check',
@@ -27,5 +28,13 @@ module.exports = {
     govukClass: {
         WIDTH_TWO_THIRDS: 'govuk-!-width-two-thirds',
         FONT_WEIGHT_BOLD: 'govuk-!-font-weight-bold'
+    },
+    stringLength: {
+        max50: 50,
+        max150: 150,
+        max500: 500,
+        max1000: 1000,
+        min3: 3,
+        min5: 5
     }
 }

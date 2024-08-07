@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryName } = require("../../config/config")
 const { getErrorList, getFieldError, getCountries } = require('../lib/helper-functions')
-const { govukClass } = require("../lib/constants")
+const { govukClass, stringLength } = require("../lib/constants")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX, TOWN_COUNTY_REGEX, POSTCODE_REGEX } = require('../lib/regex-validation')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -158,7 +158,7 @@ module.exports = [{
             params: Joi.object({
                 contactType: Joi.string().valid(...contactTypes)
             }),
-            failAction: (request, h, error) => {
+            failAction: (_request, _h, error) => {
                 console.log(error)
             }
         }
@@ -199,21 +199,21 @@ module.exports = [{
         handler: async (request, h) => {
             const contactType = request.params.contactType
             const ukAddressSchema = Joi.object({
-                deliveryName: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
-                addressLine1: Joi.string().max(150).regex(ADDRESS_REGEX),
-                addressLine2: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
-                addressLine3: Joi.string().max(150).regex(TOWN_COUNTY_REGEX),
-                addressLine4: Joi.string().max(150).regex(TOWN_COUNTY_REGEX).optional().allow('', null),
-                postcode: Joi.string().max(50).regex(POSTCODE_REGEX)
+                deliveryName: Joi.string().max(stringLength.max150).regex(ADDRESS_REGEX).optional().allow('', null),
+                addressLine1: Joi.string().max(stringLength.max150).regex(ADDRESS_REGEX),
+                addressLine2: Joi.string().max(stringLength.max150).regex(ADDRESS_REGEX).optional().allow('', null),
+                addressLine3: Joi.string().max(stringLength.max150).regex(TOWN_COUNTY_REGEX),
+                addressLine4: Joi.string().max(stringLength.max150).regex(TOWN_COUNTY_REGEX).optional().allow('', null),
+                postcode: Joi.string().max(stringLength.max50).regex(POSTCODE_REGEX)
             })
 
             const internationalAddressSchema = Joi.object({
-                addressLine1: Joi.string().max(150).required(),
-                addressLine2: Joi.string().max(150).required(),
-                addressLine3: Joi.string().max(150).optional().allow('', null),
-                addressLine4: Joi.string().max(150).optional().allow('', null),
-                postcode: Joi.string().max(50).optional().allow('', null),
-                country: Joi.string().required().max(150)
+                addressLine1: Joi.string().max(stringLength.max150).required(),
+                addressLine2: Joi.string().max(stringLength.max150).required(),
+                addressLine3: Joi.string().max(stringLength.max150).optional().allow('', null),
+                addressLine4: Joi.string().max(stringLength.max150).optional().allow('', null),
+                postcode: Joi.string().max(stringLength.max50).optional().allow('', null),
+                country: Joi.string().required().max(stringLength.max150)
             })
 
             const payloadSchema = contactType === 'delivery' ? ukAddressSchema : internationalAddressSchema

@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { stringLength } = require('../lib/constants')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
@@ -12,7 +13,6 @@ const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['applicant']
 const nextPath = `${urlPrefix}/postcode`
 const invalidSubmissionPath = `${urlPrefix}/`
-
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -193,8 +193,8 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             payload: Joi.object({
-                fullName: Joi.string().max(150).regex(NAME_REGEX).required(),
-                email: Joi.string().max(150).email().allow("")
+                fullName: Joi.string().max(stringLength.max150).regex(NAME_REGEX).required(),
+                email: Joi.string().max(stringLength.max150).email().allow("")
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
