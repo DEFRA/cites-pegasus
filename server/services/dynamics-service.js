@@ -137,7 +137,7 @@ function mapSubmissionToPayload(submission) {
   if (payload.applications) {
     payload["applications@odata.type"] = collectionExpandoString
     payload.applications.forEach(application => {
-      if(application.species?.uniqueIdentificationMarks){
+      if (application.species?.uniqueIdentificationMarks) {
         application.species["uniqueIdentificationMarks@odata.type"] = collectionExpandoString
       }
     })
@@ -170,19 +170,20 @@ async function getSpecies(server, speciesName) {
     console.log(url)
     const { payload } = await Wreck.get(url, options)
 
-    
+
 
     if (payload?.value?.length) {
-      if (config.enableSpeciesWarning && payload.value[0].cites_warningmessage){
-        return { 
-          scientificName: payload.value[0].cites_name, 
-          kingdom: payload.value[0].cites_kingdom, 
+      if (config.enableSpeciesWarning && payload.value[0].cites_warningmessage) {
+        return {
+          scientificName: payload.value[0].cites_name,
+          kingdom: payload.value[0].cites_kingdom,
           hasRestriction: payload.value[0].cites_restrictionsapply,
-          warningMessage: payload.value[0].cites_warningmessage}
+          warningMessage: payload.value[0].cites_warningmessage
+        }
       } else {
-        return { 
-          scientificName: payload.value[0].cites_name, 
-          kingdom: payload.value[0].cites_kingdom, 
+        return {
+          scientificName: payload.value[0].cites_name,
+          kingdom: payload.value[0].cites_kingdom,
         }
       }
     }
@@ -212,7 +213,7 @@ async function getSpecieses(server, speciesName) {
     const select = `$select=cites_name,cites_kingdom,cites_restrictionsapply,cites_warningmessage`
     const orderBy = `$orderby=cites_name asc`
     const count = `$count=true`
-    
+
     const speciesNameSegments = speciesName.trim().split(/\s+/)
     const filterParts = speciesNameSegments.map(segment => `contains(cites_name, '${segment}') eq true`)
     filterParts.push('statecode eq 0') //Removes deactivated species
@@ -227,16 +228,14 @@ async function getSpecieses(server, speciesName) {
     const response = await Wreck.get(url, options)
 
     const { payload } = response
-    
-    if (payload && payload[countString] > 0) {
 
-      if (Array.isArray(payload.value) && payload.value.length > 0) {
-        return {
-          count: payload[countString],
-          items: payload.value.map(formatItem)      
-        }
+    if (payload && payload[countString] > 0 && Array.isArray(payload.value) && payload.value.length > 0) {
+      return {
+        count: payload[countString],
+        items: payload.value.map(formatItem)
       }
     }
+
 
     return {
       count: 0,
@@ -247,9 +246,9 @@ async function getSpecieses(server, speciesName) {
     if (err.data?.res?.statusCode === 404) {
       //No species match
       return {
-      count: 0,
-      items: []
-    }
+        count: 0,
+        items: []
+      }
     }
 
     if (err.data?.payload) {
@@ -357,7 +356,7 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
   if (portalStatuses.includes('awaitingAdditionalPayment')) {
     statuses.push(149900003)
   }
-  
+
   if (portalStatuses.includes('inProgress')) {
     statuses.push(149900002)
   }
@@ -396,7 +395,7 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
       `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${encodedSearchTerm}')))`,
       `contains(cites_applicantfullname,'${encodedSearchTerm}')`,
     ]
-    if(config.enableInternalReference){
+    if (config.enableInternalReference) {
       searchTermParts.push(`cites_cites_submission_incident_submission/any(o6:(o6/cites_internalreference eq '${encodedSearchTerm}'))`)
     }
     filterParts.push(`(${searchTermParts.join(" or ")})`)
@@ -415,15 +414,15 @@ function getFilterParts(submittedByFilterEnabled, submittedBy, contactId, organi
     "cites_submissionmethod eq 149900000",
     "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
   ]
-  
-  if(!submittedByFilterEnabled || submittedBy === 'me') {
+
+  if (!submittedByFilterEnabled || submittedBy === 'me') {
     filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
   }
 
   if (statuses && statuses.length > 0) {
     const statusMappedList = getDynamicsSubmissionStatuses(statuses).map(x => `'${x}'`).join(",")
-    if(statuses.includes('closed')) {
-      if(statusMappedList){
+    if (statuses.includes('closed')) {
+      if (statusMappedList) {
         filterParts.push(`(Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}]) or Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1']))`)
       } else {
         filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1'])`)
@@ -499,11 +498,11 @@ function getPaymentCalculationType(dynamicsType) {
 
 function updateSubmissionSchema(jsonContent) {
   jsonContent.applications.forEach(jsonApplication => {
-    if(jsonApplication.species.hasOwnProperty("parentDetails") && !jsonApplication.species.hasOwnProperty("maleParentDetails")) {
+    if (jsonApplication.species.hasOwnProperty("parentDetails") && !jsonApplication.species.hasOwnProperty("maleParentDetails")) {
       jsonApplication.species.maleParentDetails = jsonApplication.species.parentDetails
       jsonApplication.species.femaleParentDetails = null
       delete jsonApplication.species.parentDetails
-    }    
+    }
   })
   return jsonContent
 }
@@ -513,13 +512,13 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
   const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,cites_remainingadditionalamount,cites_additionalamountpaid,statuscode,statecode"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
   const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
-      
+
   const filterParts = [
-    `cites_submissionreference eq '${submissionRef}'`,    
+    `cites_submissionreference eq '${submissionRef}'`,
     `_cites_organisation_value eq ${organisationIdValue}`
   ]
 
-  if(contactId) {
+  if (contactId) {
     filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
   }
 
@@ -590,12 +589,12 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     const top = "$top=1"
     const select = "$select=cites_submissionreference"
     const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
-    
+
     const filterParts = [
       `$filter=_cites_organisation_value eq ${organisationIdValue}`
     ]
 
-    if(contactId) {
+    if (contactId) {
       filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
     }
 
@@ -631,7 +630,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
   }
 }
 
-function getDynamicsSubmissionStatus(portalStatus){
+function getDynamicsSubmissionStatus(portalStatus) {
   const results = getDynamicsSubmissionStatuses([portalStatus])
   return results[0]
 }
@@ -648,14 +647,14 @@ async function setSubmissionPayment(params) {
       statuscode: 149900002
     }
 
-    if(params.isAdditionalPayment) {
+    if (params.isAdditionalPayment) {
       requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
       requestPayload.cites_additionalpaymentreference = params.paymentRef
       requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
     } else {
       requestPayload.cites_paymentmethod = 149900000 // Gov Pay
       requestPayload.cites_paymentreference = params.paymentRef
-      requestPayload.cites_totalfeeamount = params.paymentValue      
+      requestPayload.cites_totalfeeamount = params.paymentValue
     }
 
     const options = {

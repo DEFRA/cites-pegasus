@@ -68,7 +68,7 @@ function createApplicationSummaryModel(errors, data) {
     mandatoryFieldIssues: data.mandatoryFieldIssues
   }
 
-  const appContent = lookupAppContent(data, applicationRef)
+  const appContent = lookupAppContent(data)
 
   const summaryListSections = []
   const isReadOnly = data.summaryType === summaryTypeConst.VIEW_SUBMITTED
@@ -753,7 +753,7 @@ function getDateValue(date) {
   }
 }
 
-function lookupAppContent(data, applicationRef) {
+function lookupAppContent(data) {
   const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data)
 
   let headerApplicantContactDetails = null
@@ -906,7 +906,7 @@ function getSummaryTypeSpecificContent(data) {
 }
 
 function createAreYouSureModel(errors, data) {
-  const commonContent = textContent.common
+  //const commonContent = textContent.common
 
   const pageContentAreYouSure = getPageContentAreYouSure(data)
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentAreYouSure.errorMessages }, ['areYouSure'])
@@ -1054,7 +1054,7 @@ module.exports = [
           summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -1127,7 +1127,7 @@ module.exports = [
           applicationIndex: Joi.number().required(),
           changeType: Joi.string().valid(...changeTypes),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }

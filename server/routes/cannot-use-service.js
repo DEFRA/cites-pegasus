@@ -16,7 +16,7 @@ function createModel(){
 module.exports = [{
   method: 'GET',
   path: currentPath,
-  handler: (request, h) => {
+  handler: (_request, h) => {
     return h.view(pageId, createModel());  
   }
 }]

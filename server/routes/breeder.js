@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
@@ -12,29 +12,9 @@ const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const nextPathAlreadyHaveA10 = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function getErrors(errors, contentErrorMessages, fields) {
-  const errorList = []
-  if (errors) {
-
-    if (fields?.length > 0) {
-
-      fields.forEach((field) => {
-        const fieldError = findErrorList(errors, [field], contentErrorMessages)[0]
-        if (fieldError) {
-          errorList.push({
-            text: fieldError,
-            href: `#${field}`
-          })
-        }
-      })
-    }
-  }
-  return errorList.length ? errorList : null
-}
-
 function createModel(errors, data) {
   const { common: commonContent, breeder: pageContent } = textContent
-  const errorList = getErrors(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
 
   const defaultBacklink = data.isMultipleSpecimens && data.numberOfUnmarkedSpecimens > 1 ? `${previousPathDescribeSpecimen}/${data.applicationIndex}` : `${previousPathDescribeLivingAnimal}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink

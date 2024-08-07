@@ -10,7 +10,7 @@ const contactTypes = ['applicant', 'delivery']
 const invalidSubmissionPath = `${urlPrefix}/`
 const lodash = require('lodash')
 
-function createModel(errors, data) {
+function createModel(_errors, data) {
     const commonContent = textContent.common
     const pageContent = getPageContent(data)
     const previousPath = getPreviousPath(data)
@@ -94,7 +94,7 @@ module.exports = [{
             params: Joi.object({
                 contactType: Joi.string().valid(...contactTypes)
             }),
-            failAction: (request, h, error) => {
+            failAction: (_request, _h, error) => {
                 console.log(error)
             }
         }
