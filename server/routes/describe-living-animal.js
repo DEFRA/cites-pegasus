@@ -19,24 +19,33 @@ const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathBreeder = `${urlPrefix}/breeder`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = `${urlPrefix}/`
+const dateOfBirthDateFieldItems = {
+  DATE: "dateOfBirth",
+  DAY: "dateOfBirth-day",
+  DAY_MONTH: "dateOfBirth-day-month",
+  DAY_YEAR: "dateOfBirth-day-year",
+  MONTH: "dateOfBirth-month",
+  MONTH_YEAR: "dateOfBirth-month-year",
+  YEAR: "dateOfBirth-year"
+}
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.describeLivingAnimal
 
   const dateOfBirthErrors = []
-  const fields = ["dateOfBirth", "dateOfBirth-day", "dateOfBirth-day-month", "dateOfBirth-day-year", "dateOfBirth-month", "dateOfBirth-month-year", "dateOfBirth-year", "sex", "maleParentDetails", "femaleParentDetails", "description"]
+  const fields = [dateOfBirthDateFieldItems.DATE, dateOfBirthDateFieldItems.DAY, dateOfBirthDateFieldItems.DAY_MONTH, dateOfBirthDateFieldItems.DAY_YEAR, dateOfBirthDateFieldItems.MONTH, dateOfBirthDateFieldItems.MONTH_YEAR, dateOfBirthDateFieldItems.YEAR, "sex", "maleParentDetails", "femaleParentDetails", "description"]
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, fields)
 
   if (errorList) {
     const dateOfBirthFields = [
-      "dateOfBirth",
-      "dateOfBirth-day",
-      "dateOfBirth-day-month",
-      "dateOfBirth-day-year",
-      "dateOfBirth-month",
-      "dateOfBirth-month-year",
-      "dateOfBirth-year"
+      dateOfBirthDateFieldItems.DATE,
+      dateOfBirthDateFieldItems.DAY,
+      dateOfBirthDateFieldItems.DAY_MONTH,
+      dateOfBirthDateFieldItems.DAY_YEAR,
+      dateOfBirthDateFieldItems.MONTH,
+      dateOfBirthDateFieldItems.MONTH_YEAR,
+      dateOfBirthDateFieldItems.YEAR
     ]
     dateOfBirthFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)
