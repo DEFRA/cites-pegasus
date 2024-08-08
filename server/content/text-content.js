@@ -692,7 +692,8 @@ const schema = Joi.object().keys({
         "error.dateOfBirth-day-year.any.empty": Joi.string().required(),
         "error.dateOfBirth-month-year.any.empty": Joi.string().required(),
         "error.dateOfBirth.any.beforeMinDate": Joi.string().required(),
-        "error.dateOfBirth.any.both": Joi.string().required()
+        "error.dateOfBirth.any.both": Joi.string().required(),
+        "error.approximateDate.string.max": Joi.string().required(),
       })
       .required()
   }).required(),

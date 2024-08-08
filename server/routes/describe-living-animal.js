@@ -34,7 +34,7 @@ function createModel(errors, data) {
   const pageContent = textContent.describeLivingAnimal
 
   const dateOfBirthErrors = []
-  const fields = [dateOfBirthDateFieldItems.DATE, dateOfBirthDateFieldItems.DAY, dateOfBirthDateFieldItems.DAY_MONTH, dateOfBirthDateFieldItems.DAY_YEAR, dateOfBirthDateFieldItems.MONTH, dateOfBirthDateFieldItems.MONTH_YEAR, dateOfBirthDateFieldItems.YEAR, "sex", "maleParentDetails", "femaleParentDetails", "description"]
+  const fields = [dateOfBirthDateFieldItems.DATE, dateOfBirthDateFieldItems.DAY, dateOfBirthDateFieldItems.DAY_MONTH, dateOfBirthDateFieldItems.DAY_YEAR, dateOfBirthDateFieldItems.MONTH, dateOfBirthDateFieldItems.MONTH_YEAR, dateOfBirthDateFieldItems.YEAR, "approximateDate", "sex", "maleParentDetails", "femaleParentDetails", "description"]
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, fields)
 
   if (errorList) {
