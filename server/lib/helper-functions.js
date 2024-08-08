@@ -69,6 +69,11 @@ function getErrorList(errors, errorMessages, fields) {
     }
   })
 
+  if(errorList.length === 0) {
+    console.error('Errors: ', errors)
+    console.error('Fields: ', fields)
+    console.error(`Unable to prepare error message for error: ${errors?.output?.payload?.message} `)
+  }
   return errorList
 }
 

@@ -35,6 +35,7 @@ function createModel(errors, data) {
     "sex",
     "maleParentDetails",
     "femaleParentDetails",
+    "approximateDate",
     "description"
   ]
 

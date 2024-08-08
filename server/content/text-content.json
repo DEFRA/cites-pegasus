@@ -852,7 +852,8 @@
       "error.dateOfBirth-day-year.any.empty": "Date of birth must include a day and year",
       "error.dateOfBirth-month-year.any.empty": "Date of birth must include a month and year",
       "error.dateOfBirth.any.beforeMinDate": "Date of birth must be on or after 01/01/1753",
-      "error.dateOfBirth.any.both": "Enter a birth or hatch date, or enter an approximate date"
+      "error.dateOfBirth.any.both": "Enter a birth or hatch date, or enter an approximate date",
+      "error.approximateDate.string.max": "Approximate date must be 150 characters or less"
     }
   },
   "importerExporter": {
