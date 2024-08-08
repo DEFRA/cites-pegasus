@@ -10,10 +10,17 @@
 
         {% block centralContent%}{% endblock %}
 
-        {{ govukButton({
-        text: continueButton,
-        type: "submit"
-      }) }}
+        {% if continueWithoutSaveButton %}
+          {{ govukButton({
+            text: continueButton,
+            type: "submit"
+          }) }}
+        {% else %}
+          {{ govukButton({
+              text: saveAndContinueButton,
+              type: "submit"
+            }) }}
+        {% endif %}
       </form>
     </div>
   </div>
