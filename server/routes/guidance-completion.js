@@ -39,7 +39,7 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
     
-    return h.view(pageId, createModel(null));
+    return h.view('warning', createModel(null));
   }
 },
 {

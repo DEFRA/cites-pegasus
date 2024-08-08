@@ -54,7 +54,7 @@ module.exports = [{
       warningMessage: species.warningMessage
     }
 
-    return h.view(pageId, createModel(null, pageData));
+    return h.view('warning', createModel(null, pageData));
   }
 },
 {

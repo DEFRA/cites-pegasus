@@ -9,6 +9,8 @@
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -16,27 +18,21 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
-
+  {% if errorList %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{govukErrorSummary ({
+        "titleText": errorSummaryTitle,
+        "errorList": errorList
+        }) }}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-
-        <h1 class="govuk-heading-l">
-            {{pageHeader}}
-        </h1>
-
-        {{ govukWarningText({
-            text: warningMessage,
-            iconFallbackText: "Warning"
-          }) }}
-        
-        {{ govukButton({
-        text: continueButton,
-        type: "submit"
-      }) }}
-      </form>
+      {% block form %}{% endblock %}
     </div>
   </div>
 {% endblock %}

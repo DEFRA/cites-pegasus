@@ -1,0 +1,20 @@
+{% extends 'application-layout.html' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">
+        {{pageHeader}}
+      </h1>
+      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+
+        {% block centralContent%}{% endblock %}
+
+        {{ govukButton({
+        text: continueButton,
+        type: "submit"
+      }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
