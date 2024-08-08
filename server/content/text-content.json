@@ -1182,7 +1182,7 @@
     "buttonDelete": "Remove",
     "errorMessages": {
       "error.fileUpload.hapi.filename.string.empty": "Select a supporting document",
-      "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a .DOX, .DOCX, .PDF, .JPEG or .PNG",
+      "error.fileUpload.hapi.headers.content-type.any.only": "The selected file must be a .DOC, .DOCX, .PDF, .JPEG or .PNG",
       "error.fileUpload.any.existing": "A file with this name has already been uploaded",
       "error.fileUpload.any.maxfiles": "Maximum number of supporting documents reached",
       "error.fileUpload.upload.exception": "The selected file could not be uploaded – please try again",
