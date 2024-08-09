@@ -1,11 +1,10 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const { permitType: pt } = require('../lib/permit-type-helper')
-const nunjucks = require("nunjucks")
 const pageId = 'has-unique-identification-mark'
 const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -22,27 +21,9 @@ function createModel(errors, data) {
 
   const commonContent = textContent.common
   const pageContent = textContent.hasUniqueIdentificationMark
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["hasUniqueIdentificationMark"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
-
+  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["hasUniqueIdentificationMark"])
+  
   let previousPath = previousPathTradeTermCode
 
   if (data.specimenType === 'animalLiving') {
@@ -63,10 +44,8 @@ function createModel(errors, data) {
     inputIdPrefix: "hasUniqueIdentificationMark",
     inputName: "hasUniqueIdentificationMark",
     pageHeader: pageContent.pageHeader,
-    inputYesText: commonContent.radioOptionYes,
+    inputHint: pageContent.inputHint,
     inputYesChecked: data.hasUniqueIdentificationMark,
-    inputNoText: commonContent.radioOptionNo,
-    inputNoChecked: data.hasUniqueIdentificationMark === false,
     errorMessage: getFieldError(errorList, "#hasUniqueIdentificationMark")
   }
 

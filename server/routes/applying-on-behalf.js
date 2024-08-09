@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
-const { findErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, setLabelData } = require('../lib/helper-functions')
 const { mergeSubmission, getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
@@ -16,34 +16,8 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applyingOnBehalf
 
-  let isAgentRadioVal
-  switch (data.isAgent) {
-    case true:
-      isAgentRadioVal = commonContent.radioOptionYes
-      break;
-    case false:
-      isAgentRadioVal = commonContent.radioOptionNo
-      break;
-    default:
-      isAgentRadioVal = null
-  }
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-    const fields = ['isAgent']
-    fields.forEach(field => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isAgent"])
+  
   let backLink = null
   if (enableOtherPermitTypes && data.otherPermitTypeOption) {
     if ([pto.MIC, pto.TEC, pto.POC].includes(data.otherPermitTypeOption)) {
@@ -63,25 +37,14 @@ function createModel(errors, data) {
     pageBody1: pageContent.pageBody1,
     pageBody2: pageContent.pageBody2,
     bulletListItems: pageContent.bulletListItems,
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputIsAgent: {
-      id: "isAgent",
-      name: "isAgent",
-      classes: "govuk-radios--inline",
-      // fieldset: {
-      //   legend: {
-      //     text: pageContent.radioHeaderAgent,
-      //     isPageHeading: true,
-      //     classes: "govuk-fieldset__legend--l"
-      //   }
-      // },
-      hint: {
-        text: pageContent.radioIsAgentHint
-      },
-      items: setLabelData(isAgentRadioVal, [commonContent.radioOptionYes, commonContent.radioOptionNo]),
-      errorMessage: getFieldError(errorList, '#isAgent')
-    }
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    inputIdPrefix: "isAgent",
+    inputName: "isAgent",
+    inputClasses: "govuk-radios--inline",
+    inputYesChecked: data.isAgent,
+    errorMessage: getFieldError(errorList, '#isAgent')
   }
+
   return { ...commonContent, ...model }
 
 }
@@ -116,19 +79,19 @@ module.exports = [{
     validate: {
       options: { abortEarly: false },
       payload: Joi.object({
-        isAgent: Joi.string().required().valid(textContent.common.radioOptionYes, textContent.common.radioOptionNo)
+        isAgent: Joi.boolean().required()
       }),
       failAction: (request, h, err) => {
         const submission = getSubmission(request)
         const pageData = {
-          isAgent: submission.isAgent,
+          isAgent: request.payload.isAgent,
           otherPermitTypeOption: submission.otherPermitTypeOption
         }
         return h.view(pageId, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
-      const isAgent = request.payload.isAgent === textContent.common.radioOptionYes
+      const isAgent = request.payload.isAgent
 
       try {
         const agentData = isAgent ? { isAgent: isAgent } : { isAgent: isAgent, agent: null }

@@ -1,28 +1,36 @@
 {% extends 'application-basic-layout.html' %}
 
 {% block centralContent %}
-        {{ govukRadios({
-        input: inputIdPrefix,
+  {% call govukFieldset({
+          legend: {
+            text: pageHeader,
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+  {% block bodyText %}
+  <div class="govuk-hint">
+    {{inputHint}}
+  </div>
+  {% endblock %}
+  {{ govukRadios({
+        input: inputIdPrefix | default(inputName),
         name: inputName,
-  fieldset: {
-    legend: {
-      text: pageHeader,
-      isPageHeading: true,
-      classes: "govuk-fieldset__legend--l"
-    }
-  },
-  items: [
-    {
-      value: true,
-      text: inputYesText,
-      checked: inputYesChecked
-    },
-    {
-      value: false,
-      text: inputNoText,
-      checked: inputNoChecked
-    }
-  ],
-  errorMessage: errorMessage
-}) }}
+        classes: inputClasses,
+        items: [
+          {
+            value: true,
+            text: radioOptionYes,
+            checked: inputYesChecked
+          },
+          {
+            value: false,
+            text: radioOptionNo,
+            checked: inputYesChecked === false
+          }
+        ],
+        errorMessage: errorMessage
+      }) 
+  }}
+  {% endcall %}
 {% endblock %}
