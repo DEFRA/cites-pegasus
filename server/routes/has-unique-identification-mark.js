@@ -7,6 +7,7 @@ const textContent = require('../content/text-content')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const nunjucks = require("nunjucks")
 const pageId = 'has-unique-identification-mark'
+const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpecimenType = `${urlPrefix}/specimen-type`
 const previousPathTradeTermCode = `${urlPrefix}/trade-term-code`
@@ -59,34 +60,16 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputUniqueIdentificationMark: {
-      idPrefix: "hasUniqueIdentificationMark",
-      name: "hasUniqueIdentificationMark",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
-      hint: {
-        text: pageContent.inputHint
-      },
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-          checked: data.hasUniqueIdentificationMark
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-          checked: data.hasUniqueIdentificationMark === false
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#hasUniqueIdentificationMark")
-    }
+    inputIdPrefix: "hasUniqueIdentificationMark",
+    inputName: "hasUniqueIdentificationMark",
+    pageHeader: pageContent.pageHeader,
+    inputYesText: commonContent.radioOptionYes,
+    inputYesChecked: data.hasUniqueIdentificationMark,
+    inputNoText: commonContent.radioOptionNo,
+    inputNoChecked: data.hasUniqueIdentificationMark === false,
+    errorMessage: getFieldError(errorList, "#hasUniqueIdentificationMark")
   }
+
   return { ...commonContent, ...model }
 }
 
@@ -103,7 +86,7 @@ function failAction(request, h, err) {
     hasUniqueIdentificationMark: request.payload.hasUniqueIdentificationMark,
     permitType: submission.permitType
   }
-  return h.view(pageId, createModel(err, pageData)).takeover()
+  return h.view(viewName, createModel(err, pageData)).takeover()
 }
 
 module.exports = [
@@ -138,7 +121,7 @@ module.exports = [
         permitType: submission.permitType
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -162,7 +145,7 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         if (!hasUniqueIdentificationMark) {
-          species.uniqueIdentificationMarks = null  
+          species.uniqueIdentificationMarks = null
         }
         species.hasUniqueIdentificationMark = hasUniqueIdentificationMark
 
