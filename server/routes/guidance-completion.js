@@ -3,6 +3,7 @@ const { urlPrefix } = require("../../config/config")
 const { getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'guidance-completion'
+const view = 'warning'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/other-permit-type`
 const nextPath = `${urlPrefix}/applying-on-behalf`
@@ -39,7 +40,7 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
     
-    return h.view('warning', createModel(null));
+    return h.view(viewName, createModel(null));
   }
 },
 {

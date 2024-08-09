@@ -3,6 +3,7 @@ const { urlPrefix } = require("../../config/config")
 const { getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const pageId = 'species-warning'
+const viewName = 'warning'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/species-name`
 const nextPath = `${urlPrefix}/source-code`
@@ -54,7 +55,7 @@ module.exports = [{
       warningMessage: species.warningMessage
     }
 
-    return h.view('warning', createModel(null, pageData));
+    return h.view(viewName, createModel(null, pageData));
   }
 },
 {

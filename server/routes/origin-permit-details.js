@@ -9,6 +9,7 @@ const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const permitType = require("./permit-type")
 const pageId = "origin-permit-details"
+const viewName = 'permit-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathImporterExporter = `${urlPrefix}/importer-exporter`
 const previousPathEverImportedExported = `${urlPrefix}/ever-imported-exported`
@@ -154,10 +155,10 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: data.permitType === pt.IMPORT ? pageContent.pageBodyImport : pageContent.pageBodyNotImport,
     divider: pageContent.dividerText,
-    selectCountryOfOrigin,
-    inputCountryOfOriginPermitNumber,
-    inputCountryOfOriginPermitIssueDate,
-    checkboxCountryOfOriginNotKnown
+    selectCountry: selectCountryOfOrigin,
+    inputPermitNumber: inputCountryOfOriginPermitNumber,
+    inputPermitIssueDate: inputCountryOfOriginPermitIssueDate,
+    checkboxNotKnown: checkboxCountryOfOriginNotKnown
   }
   return { ...commonContent, ...model }
 }
@@ -303,7 +304,7 @@ module.exports = [
         isCountryOfOriginNotKnown: permitDetails?.isCountryOfOriginNotKnown,
         countries: request.server.app.countries
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -360,7 +361,7 @@ module.exports = [
             isCountryOfOriginNotKnown: isCountryOfOriginNotKnown,
             countries: request.server.app.countries
           }
-          return h.view(pageId, createModel(result.error, pageData)).takeover()
+          return h.view(viewName, createModel(result.error, pageData)).takeover()
         }
 
         const selectedCountryOfOriginCountry = request.server.app.countries.find(country => country.code === countryOfOrigin)

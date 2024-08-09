@@ -1,5 +1,6 @@
 {% extends 'application-basic-layout.html' %}
 {% set continueWithoutSaveButton = true %}
+{% set showPageHeader = true %}
 {% block centralContent%}
   {{ govukWarningText({
             text: warningMessage,

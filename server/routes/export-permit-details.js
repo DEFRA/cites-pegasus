@@ -8,6 +8,7 @@ const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "export-permit-details"
+const viewName = 'permit-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const previousPathCountryOfOriginImport = `${urlPrefix}/country-of-origin-import`
@@ -151,9 +152,9 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     divider: pageContent.dividerText,
-    selectExportOrReexportCountry,
-    inputExportOrReexportPermitNumber,
-    inputExportOrReexportPermitIssueDate,
+    selectCountry: selectExportOrReexportCountry,
+    inputPermitNumber: inputExportOrReexportPermitNumber,
+    inputPermitIssueDate: inputExportOrReexportPermitIssueDate,
     checkboxNotKnown
   }
   return { ...commonContent, ...model }
@@ -251,7 +252,7 @@ module.exports = [
         isCountryOfOriginNotKnown: permitDetails?.isCountryOfOriginNotKnown,
         countries: request.server.app.countries
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -306,7 +307,7 @@ module.exports = [
             isCountryOfOriginNotKnown: submission.permitDetails?.isCountryOfOriginNotKnown,
             countries: request.server.app.countries
           }
-          return h.view(pageId, createModel(result.error, pageData)).takeover()
+          return h.view(viewName, createModel(result.error, pageData)).takeover()
         }
         const selectedExportOrReexportCountry = request.server.app.countries.find(country => country.code === exportOrReexportCountry)
 

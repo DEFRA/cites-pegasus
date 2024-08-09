@@ -8,6 +8,7 @@ const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "import-permit-details"
+const viewName = 'permit-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const previousPathExportPermitDetails = `${urlPrefix}/export-permit-details`
@@ -226,7 +227,7 @@ module.exports = [
         importPermitDetailsNotKnown: permitDetails?.importPermitDetailsNotKnown,
 
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -274,7 +275,7 @@ module.exports = [
             importPermitIssueDateYear: importYear,
             importPermitDetailsNotKnown
           }
-          return h.view(pageId, createModel(result.error, pageData)).takeover()
+          return h.view(viewName, createModel(result.error, pageData)).takeover()
         }
 
         const permitDetails = submission.applications[applicationIndex].permitDetails || {}
