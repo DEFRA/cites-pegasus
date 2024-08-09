@@ -20,7 +20,7 @@ async function getBlobServiceClient(server) {
     }
 }
 
-async function createContainer(server, containerName, attemptNo = 1) {
+async function createContainer(server, containerName) {
 
     try {
         const containerClient = server.app.blobServiceClient.getContainerClient(containerName);

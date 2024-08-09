@@ -1,11 +1,12 @@
 const Joi = require('joi')
 const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/`
 const nextPathApplyingOnBehalf = `${urlPrefix}/applying-on-behalf`
@@ -17,23 +18,8 @@ const previousPathYourSubmission = `${urlPrefix}/your-submission`
 function createModel(errors, data) {
   const commonContent = textContent.common;
   const pageContent = textContent.permitType;
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-    const fields = ['permitTypeOption']
-    fields.forEach(field => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [ "permitTypeOption" ])
+  
   let defaultBacklink = previousPath
   if (data.fromYourSubmission) {
     defaultBacklink = previousPathYourSubmission
@@ -46,8 +32,7 @@ function createModel(errors, data) {
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputPermitType: {
-      idPrefix: "permitTypeOption",
+    radios: {
       name: "permitTypeOption",
       fieldset: {
         legend: {
@@ -115,7 +100,7 @@ module.exports = [{
       fromYourSubmission: fromYourSubmission
     }
 
-    return h.view(pageId, createModel(null, pageData));
+    return h.view(viewName, createModel(null, pageData));
   }
 },
 {
@@ -136,7 +121,7 @@ module.exports = [{
           fromYourSubmission: applicationStatuses.some((application) => application.status === "complete")
         }
 
-        return h.view(pageId, createModel(err, pageData)).takeover()
+        return h.view(viewName, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
