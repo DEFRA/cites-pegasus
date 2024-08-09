@@ -11,6 +11,7 @@ const nunjucks = require("nunjucks")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { govukClass } = require("../lib/constants")
 const pageId = "source-code"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpeciesName = `${urlPrefix}/species-name`
 const previousPathSpeciesWarning = `${urlPrefix}/species-warning`
@@ -88,8 +89,7 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
-    inputSourceCode: {
-      idPrefix: "sourceCode",
+    radios: {
       name: "sourceCode",
       fieldset: {
         legend: {
@@ -235,7 +235,7 @@ function failAction(request, h, err) {
     hasRestriction: species.hasRestriction, 
     ...request.payload
   }
-  return h.view(pageId, createModel(err, pageData)).takeover()
+  return h.view(viewName, createModel(err, pageData)).takeover()
 }
 
 const anotherSourceCodesPlantValuesForI = textContent.sourceCode.plant.anotherSourceCodes.filter(x => x.showForI === true).map(
@@ -290,7 +290,7 @@ module.exports = [
         enterAReason: species.enterAReason
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {

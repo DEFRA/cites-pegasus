@@ -30,7 +30,6 @@ function createModel(errors, data) {
 
     radios:
     {
-      idPrefix: "deliveryType",
       name: "deliveryType",
       fieldset: {
         legend: {

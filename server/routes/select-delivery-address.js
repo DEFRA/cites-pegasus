@@ -1,12 +1,13 @@
 const Joi = require('joi')
 const { urlPrefix, enableDeliveryType, enableDeliveryName } = require('../../config/config')
-const { findErrorList, getFieldError, isChecked, toPascalCase } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, isChecked, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'select-delivery-address'
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/confirm-address/applicant`
 const deliveryAddressOptions = ['applicant', 'different']
@@ -17,23 +18,8 @@ function createModel(errors, data) {
     const pageContent = textContent.selectDeliveryAddress;
 
     const applicantAddressSummary = getAddressSummary(data.applicantAddress)
-
-    let errorList = null
-    if (errors) {
-        errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-        const fields = ['deliveryAddressOption', 'deliveryName']
-        fields.forEach(field => {
-            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            if (fieldError) {
-                errorList.push({
-                    text: fieldError,
-                    href: `#${field}`
-                })
-            }
-        })
-    }
-
+    const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [ "deliveryAddressOption", "deliveryName" ])
+    
     const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
     nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
@@ -77,8 +63,7 @@ function createModel(errors, data) {
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
         changeAddressLinkText: pageContent.changeAddressLinkText,
         changeAddressLink: `/postcode/delivery`,
-        inputDeliveryAddressOptions: {
-            idPrefix: "deliveryAddressOption",
+        radios: {
             name: "deliveryAddressOption",
             fieldset: {
                 legend: {
@@ -115,7 +100,7 @@ module.exports = [{
             deliveryName: submission?.delivery?.address?.deliveryName
         }
 
-        return h.view(pageId, createModel(null, pageData));
+        return h.view(viewName, createModel(null, pageData));
     }
 },
 {
@@ -133,12 +118,12 @@ module.exports = [{
 
                 const pageData = {
                     permitType: submission?.permitType,
-                    deliveryAddressOption: submission?.delivery?.addressOption,
+                    deliveryAddressOption: request.payload.deliveryAddressOption,
                     applicantAddress: submission.applicant.address,
                     deliveryName: request.payload.deliveryName
                 }
 
-                return h.view(pageId, createModel(err, pageData)).takeover()
+                return h.view(viewName, createModel(err, pageData)).takeover()
             }
         },
         handler: async (request, h) => {

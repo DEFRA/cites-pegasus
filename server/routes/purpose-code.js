@@ -1,11 +1,12 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { govukClass } = require("../lib/constants")
 const pageId = "purpose-code"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPathSpecimenType = `${urlPrefix}/specimen-type`
@@ -14,26 +15,8 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.purposeCode
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["purposeCode"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["purposeCode"])
+  
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -42,9 +25,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-      
-    inputPurposeCode: {
-      idPrefix: "purposeCode",
+    radios: {
       name: "purposeCode",
       fieldset: {
         legend: {
@@ -202,7 +183,7 @@ module.exports = [
         purposeCode: species.purposeCode
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
 
@@ -229,7 +210,7 @@ module.exports = [
             ...request.payload
 
           }
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
