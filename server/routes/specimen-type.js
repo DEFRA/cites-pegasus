@@ -1,11 +1,12 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "specimen-type"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathQuantity = `${urlPrefix}/quantity`
 const nextPathUniqueId = `${urlPrefix}/has-unique-identification-mark`
@@ -15,25 +16,7 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.specimenType
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["specimenType"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["specimenType"])
 
   let radioOptions = null
 
@@ -90,9 +73,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-
-    inputSpecimenType: {
-      idPrefix: "specimenType",
+    radios: {
       name: "specimenType",
       fieldset: {
         legend: {
@@ -121,7 +102,7 @@ function failAction(request, h, err) {
     specimenType: request.payload.specimenType
   }
   
-  return h.view(pageId, createModel(err, pageData)).takeover()
+  return h.view(viewName, createModel(err, pageData)).takeover()
 }
 
 function getRedirect(species, submission, applicationIndex) {
@@ -167,7 +148,7 @@ module.exports = [
         specimenType: species.specimenType
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
 

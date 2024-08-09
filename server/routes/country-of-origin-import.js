@@ -5,6 +5,7 @@ const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } 
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "country-of-origin-import"
+const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/origin-permit-details`
 const nextPathExportPermitDetails = `${urlPrefix}/export-permit-details`
@@ -27,32 +28,11 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
-
-    inputIsExportOrReexportSameAsCountryOfOrigin: {
-      idPrefix: "isExportOrReexportSameAsCountryOfOrigin",
-      name: "isExportOrReexportSameAsCountryOfOrigin",
-      classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-          checked: data.isExportOrReexportSameAsCountryOfOrigin
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-          checked: data.isExportOrReexportSameAsCountryOfOrigin === false
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#isExportOrReexportSameAsCountryOfOrigin")
-    }
+    inputName: "isExportOrReexportSameAsCountryOfOrigin",
+    pageHeader,
+    inputYesChecked: data.isExportOrReexportSameAsCountryOfOrigin,
+    errorMessage: getFieldError(errorList, "#isExportOrReexportSameAsCountryOfOrigin"),
+    inputClasses: "govuk-radios--inline"
   }
   return { ...commonContent, ...model }
 }
@@ -87,7 +67,7 @@ module.exports = [
         countryOfOrigin: permitDetails?.countryOfOriginDesc,
         isExportOrReexportSameAsCountryOfOrigin: permitDetails?.isExportOrReexportSameAsCountryOfOrigin
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -116,7 +96,7 @@ module.exports = [
             isExportOrReexportSameAsCountryOfOrigin
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

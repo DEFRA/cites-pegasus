@@ -6,6 +6,7 @@ const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const nunjucks = require("nunjucks")
 const pageId = 'multiple-specimens'
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
 const nextPathUniqueIdentifier = `${urlPrefix}/has-unique-identification-mark`
@@ -33,9 +34,6 @@ function createModel(errors, data) {
       label: {
         text: pageContent.inputLabelNumberOfSpecimens
       },
-      // hint: {
-      //   text: pageContent.inputLabelA10CertificateNumberHint
-      // },
       ...(data.numberOfSpecimens ? { value: data.numberOfSpecimens } : {}),
       errorMessage: getFieldError(errorList, "#numberOfSpecimens")
     }
@@ -51,9 +49,7 @@ function createModel(errors, data) {
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
-
-
-    isMultipleSpecimens: {
+    radios: {
       idPrefix: "isMultipleSpecimens",
       name: "isMultipleSpecimens",
       fieldset: {
@@ -131,7 +127,7 @@ module.exports = [
         numberOfSpecimens: species.numberOfUnmarkedSpecimens
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
 
     }
   },
@@ -160,7 +156,7 @@ module.exports = [
             applicationIndex: applicationIndex,
             ...request.payload
           }
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

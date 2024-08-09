@@ -38,7 +38,6 @@ function createModel(errors, data) {
     pageBody2: pageContent.pageBody2,
     bulletListItems: pageContent.bulletListItems,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputIdPrefix: "isAgent",
     inputName: "isAgent",
     inputClasses: "govuk-radios--inline",
     inputYesChecked: data.isAgent,
