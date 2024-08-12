@@ -5,6 +5,7 @@ const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission 
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressesByPostcode } = require('../services/address-service')
 const textContent = require('../content/text-content')
+const { stringLength } = require("../lib/constants")
 const pageId = 'select-address'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathPostcode = `${urlPrefix}/postcode`
@@ -107,7 +108,7 @@ module.exports = [{
             params: Joi.object({
                 contactType: Joi.string().valid(...contactTypes)
             }),
-            failAction: (request, h, error) => {
+            failAction: (_request, _h, error) => {
                 console.log(error)
             }
         }
@@ -173,7 +174,7 @@ module.exports = [{
             options: { abortEarly: false },
             payload: Joi.object({
                 address: Joi.string().required(),
-                deliveryName: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null)
+                deliveryName: Joi.string().max(stringLength.max150).regex(ADDRESS_REGEX).optional().allow('', null)
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);

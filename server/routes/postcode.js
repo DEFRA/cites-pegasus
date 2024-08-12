@@ -133,7 +133,7 @@ module.exports = [{
             params: Joi.object({
                 contactType: Joi.string().valid(...contactTypes)
             }),
-            failAction: (request, h, error) => {
+            failAction: (_request, _h, error) => {
                 console.log(error)
             }
         }

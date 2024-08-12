@@ -34,120 +34,124 @@ function createModel(errors, data) {
           classes: "govuk-fieldset__legend--l"
         }
       },
-      items: [
-        {
-          value: "B",
-          text: pageContent.radioOptionB,
-          hint: { text: pageContent.radioOptionBHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "B")
-        },
-        {
-          value: "E",
-          text: pageContent.radioOptionE,
-          hint: { text: pageContent.radioOptionEHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "E")
-        },
-        {
-          value: "G",
-          text: pageContent.radioOptionG,
-          hint: { text: pageContent.radioOptionGHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "G")
-        },
-        {
-          value: "H",
-          text: pageContent.radioOptionH,
-          hint: { text: pageContent.radioOptionHHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "H")
-        },
-        {
-          value: "L",
-          text: pageContent.radioOptionL,
-          hint: { text: pageContent.radioOptionLHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "L")
-        },
-        {
-          value: "M",
-          text: pageContent.radioOptionM,
-          hint: { text: pageContent.radioOptionMHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "M")
-        },
-        {
-          value: "N",
-          text: pageContent.radioOptionN,
-          hint: { text: pageContent.radioOptionNHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "N")
-        },
-        {
-          value: "P",
-          text: pageContent.radioOptionP,
-          hint: { text: pageContent.radioOptionPHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "P")
-        },
-        {
-          value: "Q",
-          text: pageContent.radioOptionQ,
-          hint: { text: pageContent.radioOptionQHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "Q")
-        },
-        {
-          value: "S",
-          text: pageContent.radioOptionS,
-          hint: { text: pageContent.radioOptionSHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "S")
-        },
-        {
-          value: "T",
-          text: pageContent.radioOptionT,
-          hint: { text: pageContent.radioOptionTHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "T")
-        },
-        {
-          value: "Z",
-          text: pageContent.radioOptionZ,
-          hint: { text: pageContent.radioOptionZHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.purposeCode, "Z")
-        }
-      ],
+      items: getItems(pageContent, data),
       errorMessage: getFieldError(errorList, "#purposeCode")
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getItems(pageContent, data) {
+  return [
+    {
+      value: "B",
+      text: pageContent.radioOptionB,
+      hint: { text: pageContent.radioOptionBHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "B")
+    },
+    {
+      value: "E",
+      text: pageContent.radioOptionE,
+      hint: { text: pageContent.radioOptionEHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "E")
+    },
+    {
+      value: "G",
+      text: pageContent.radioOptionG,
+      hint: { text: pageContent.radioOptionGHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "G")
+    },
+    {
+      value: "H",
+      text: pageContent.radioOptionH,
+      hint: { text: pageContent.radioOptionHHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "H")
+    },
+    {
+      value: "L",
+      text: pageContent.radioOptionL,
+      hint: { text: pageContent.radioOptionLHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "L")
+    },
+    {
+      value: "M",
+      text: pageContent.radioOptionM,
+      hint: { text: pageContent.radioOptionMHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "M")
+    },
+    {
+      value: "N",
+      text: pageContent.radioOptionN,
+      hint: { text: pageContent.radioOptionNHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "N")
+    },
+    {
+      value: "P",
+      text: pageContent.radioOptionP,
+      hint: { text: pageContent.radioOptionPHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "P")
+    },
+    {
+      value: "Q",
+      text: pageContent.radioOptionQ,
+      hint: { text: pageContent.radioOptionQHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "Q")
+    },
+    {
+      value: "S",
+      text: pageContent.radioOptionS,
+      hint: { text: pageContent.radioOptionSHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "S")
+    },
+    {
+      value: "T",
+      text: pageContent.radioOptionT,
+      hint: { text: pageContent.radioOptionTHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "T")
+    },
+    {
+      value: "Z",
+      text: pageContent.radioOptionZ,
+      hint: { text: pageContent.radioOptionZHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "Z")
+    }
+  ]
 }
 
 module.exports = [

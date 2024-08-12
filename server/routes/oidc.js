@@ -1,13 +1,24 @@
 const config = require('../../config/config')
 const pageId = 'oidc'
 const { getYarValue, setYarValue, clearYarSession, sessionKey } = require('../lib/session')
-const { getDomain } = require('../lib/helper-functions')
+const { httpStatusCode } = require('../lib/constants')
 const { getOpenIdClient } = require('../services/oidc-client')
 const { cidmCallbackUrl, cidmPostLogoutRedirectUrl, cidmAccountManagementUrl } = require('../../config/config')
 
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken');
 const landingPage = '/my-submissions'
+const relationshipsParts = {
+  organisationId: 1,
+  organisationName: 2,
+  userType: 4
+}
+const roleParts = {
+  serviceRole: 1
+}
+const relationshipMinParts = 5
+const roleMinParts = 3
+
 function getRelationshipDetails(user) {
 
   const relationshipDetails = {    
@@ -18,10 +29,10 @@ function getRelationshipDetails(user) {
 
   if (user.relationships && user.relationships.length === 1) {
     const parts = user.relationships[0].split(':')
-    if (parts.length >= 5) {
-      relationshipDetails.organisationId = parts[1]
-      relationshipDetails.organisationName = parts[2]
-      relationshipDetails.userType = parts[4]
+    if (parts.length >= relationshipMinParts) {
+      relationshipDetails.organisationId = parts[relationshipsParts.organisationId]
+      relationshipDetails.organisationName = parts[relationshipsParts.organisationName]
+      relationshipDetails.userType = parts[relationshipsParts.userType]
     }
   }
   
@@ -35,8 +46,8 @@ function getRoleDetails(user) {
   
     if (user.roles && user.roles.length === 1) {
       const parts = user.roles[0].split(':')
-      if (parts.length >= 3) {
-        roleDetails.serviceRole = parts[1]
+      if (parts.length >= roleMinParts) {
+        roleDetails.serviceRole = parts[roleParts.serviceRole]
       }
     }
     
@@ -173,7 +184,7 @@ module.exports = [
     },
     handler: async (request, h) => {
       if ( config.env === 'prod' || config.env === 'production' || config.env === 'live') {
-        return h.response().code(403)
+        return h.response().code(httpStatusCode.FORBIDDEN)
       }
 
       const user = {

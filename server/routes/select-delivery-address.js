@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix, enableDeliveryType, enableDeliveryName } = require('../../config/config')
 const { getErrorList, getFieldError, isChecked, toPascalCase } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, getApplicationIndex, saveDraftSubmission } = require('../lib/submission')
+const { stringLength } = require("../lib/constants")
 const { ADDRESS_REGEX } = require('../lib/regex-validation')
 const { getAddressSummary } = require('../lib/helper-functions')
 const textContent = require('../content/text-content')
@@ -57,7 +58,6 @@ function createModel(errors, data) {
 
     const model = {
         backLink: previousPath,
-        pageHeader: pageContent.pageHeader,
         formActionPage: currentPath,
         ...errorList ? { errorList } : {},
         pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
@@ -111,7 +111,7 @@ module.exports = [{
             options: { abortEarly: false },
             payload: Joi.object({
                 deliveryAddressOption: Joi.string().required().valid(...deliveryAddressOptions),
-                deliveryName: Joi.string().max(150).regex(ADDRESS_REGEX).optional().allow('', null),
+                deliveryName: Joi.string().max(stringLength.max150).regex(ADDRESS_REGEX).optional().allow('', null),
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);

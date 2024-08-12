@@ -6,7 +6,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const returnToYourApplicationsUrl = `${urlPrefix}/`
 
 
-function createModel(paymentRoute) {
+function createModel() {
   const commonContent = textContent.common;
   const pageContent = textContent.paymentSuccess;
   const notificationHeader = pageContent.pageHeader
@@ -20,7 +20,7 @@ module.exports = [{
   path: `${currentPath}`,
   config: {
     auth: false,
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       return h.view(pageId, createModel());
     }
   },

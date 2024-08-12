@@ -6,7 +6,7 @@ module.exports = [{
   options: {
     auth: 'jwt'
   },
-  handler: async (request, h) => {
+  handler: async (request, _h) => {
     const { user } = request.auth.credentials;
     return `Hello, ${user}!`;
   }  

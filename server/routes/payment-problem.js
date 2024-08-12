@@ -26,7 +26,7 @@ module.exports = [{
       params: Joi.object({
         paymentRoute: Joi.string().valid(...paymentRoutes)
       }),
-      failAction: (request, h, error) => {
+      failAction: (_request, _h, error) => {
         console.log(error)
       }
     },
