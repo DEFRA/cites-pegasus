@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { getErrorList, getFieldError, stringToBool, getCountries } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { stringLength } = require('../lib/constants')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
@@ -73,76 +74,9 @@ function createModel(errors, data) {
     })
   }
 
-  const exportOrReexportPermitIssueDateErrorMessage = exportOrReexportPermitIssueDateErrors[0]?.message
-
-  const exportOrReexportPermitIssueDateComponents = [
-    { name: "day", value: data.exportOrReexportPermitIssueDateDay },
-    { name: "month", value: data.exportOrReexportPermitIssueDateMonth },
-    { name: "year", value: data.exportOrReexportPermitIssueDateYear }
-  ]
-
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
-  const selectExportOrReexportCountry = {
-    label: {
-      text: pageContent.inputLabelCountry
-    },
-    id: "exportOrReexportCountry",
-    name: "exportOrReexportCountry",
-    classes: "govuk-!-width-two-thirds",
-    items: getCountries(data.countries, data.exportOrReexportCountry),
-    //...(data.exportOrReexportCountry ? { value: data.exportOrReexportCountry } : {}),
-    errorMessage: getFieldError(errorList, "#exportOrReexportCountry")
-  }
-
-  const inputExportOrReexportPermitNumber = {
-    label: {
-      text: pageContent.inputLabelPermitNumber
-    },
-    id: "exportOrReexportPermitNumber",
-    name: "exportOrReexportPermitNumber",
-    classes: "govuk-input govuk-input--width-20",
-    autocomplete: "on",
-    ...(data.exportOrReexportPermitNumber
-      ? { value: data.exportOrReexportPermitNumber }
-      : {}),
-    errorMessage: getFieldError(errorList, "#exportOrReexportPermitNumber")
-  }
-
-  const inputExportOrReexportPermitIssueDate = {
-    id: "exportOrReexportPermitIssueDate",
-    name: "exportOrReexportPermitIssueDate",
-    namePrefix: "exportOrReexportPermitIssueDate",
-    fieldset: {
-      legend: {
-        text: pageContent.inputLabelPermitIssueDate
-      }
-    },
-    hint: {
-      text: pageContent.inputLabelHintPermitIssueDate
-    },
-    items: getPermitIssueDateInputGroupItems(
-      exportOrReexportPermitIssueDateComponents,
-      exportOrReexportPermitIssueDateErrors
-    ),
-    errorMessage: exportOrReexportPermitIssueDateErrorMessage
-      ? { html: exportOrReexportPermitIssueDateErrorMessage }
-      : null
-  }
-
-  const checkboxNotKnown = {
-    idPrefix: "exportOrReexportPermitDetailsNotKnown",
-    name: "exportOrReexportPermitDetailsNotKnown",
-    items: [
-      {
-        value: true,
-        text: pageContent.checkboxLabelNotKnown,
-        checked: data.exportOrReexportPermitDetailsNotKnown
-      }
-    ],
-    errorMessage: getFieldError(errorList, "#exportOrReexportPermitDetailsNotKnown")
-  }
   const model = {
     backLink: backLink,
     assetPath,
@@ -152,12 +86,80 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     divider: pageContent.dividerText,
-    selectCountry: selectExportOrReexportCountry,
-    inputPermitNumber: inputExportOrReexportPermitNumber,
-    inputPermitIssueDate: inputExportOrReexportPermitIssueDate,
-    checkboxNotKnown
+    ...getInputs(pageContent, data, errorList, exportOrReexportPermitIssueDateErrors)   
   }
   return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, data, errorList, exportOrReexportPermitIssueDateErrors) {
+  const exportOrReexportPermitIssueDateErrorMessage = exportOrReexportPermitIssueDateErrors[0]?.message
+
+  const exportOrReexportPermitIssueDateComponents = [
+    { name: "day", value: data.exportOrReexportPermitIssueDateDay },
+    { name: "month", value: data.exportOrReexportPermitIssueDateMonth },
+    { name: "year", value: data.exportOrReexportPermitIssueDateYear }
+  ]
+  return {
+    selectCountry: {
+      label: {
+        text: pageContent.inputLabelCountry
+      },
+      id: "exportOrReexportCountry",
+      name: "exportOrReexportCountry",
+      classes: "govuk-!-width-two-thirds",
+      items: getCountries(data.countries, data.exportOrReexportCountry),
+      //...(data.exportOrReexportCountry ? { value: data.exportOrReexportCountry } : {}),
+      errorMessage: getFieldError(errorList, "#exportOrReexportCountry")
+    },
+
+    inputPermitNumber: {
+      label: {
+        text: pageContent.inputLabelPermitNumber
+      },
+      id: "exportOrReexportPermitNumber",
+      name: "exportOrReexportPermitNumber",
+      classes: "govuk-input govuk-input--width-20",
+      autocomplete: "on",
+      ...(data.exportOrReexportPermitNumber
+        ? { value: data.exportOrReexportPermitNumber }
+        : {}),
+      errorMessage: getFieldError(errorList, "#exportOrReexportPermitNumber")
+    },
+
+    inputPermitIssueDate: {
+      id: "exportOrReexportPermitIssueDate",
+      name: "exportOrReexportPermitIssueDate",
+      namePrefix: "exportOrReexportPermitIssueDate",
+      fieldset: {
+        legend: {
+          text: pageContent.inputLabelPermitIssueDate
+        }
+      },
+      hint: {
+        text: pageContent.inputLabelHintPermitIssueDate
+      },
+      items: getPermitIssueDateInputGroupItems(
+        exportOrReexportPermitIssueDateComponents,
+        exportOrReexportPermitIssueDateErrors
+      ),
+      errorMessage: exportOrReexportPermitIssueDateErrorMessage
+        ? { html: exportOrReexportPermitIssueDateErrorMessage }
+        : null
+    },
+
+    checkboxNotKnown: {
+      idPrefix: "exportOrReexportPermitDetailsNotKnown",
+      name: "exportOrReexportPermitDetailsNotKnown",
+      items: [
+        {
+          value: true,
+          text: pageContent.checkboxLabelNotKnown,
+          checked: data.exportOrReexportPermitDetailsNotKnown
+        }
+      ],
+      errorMessage: getFieldError(errorList, "#exportOrReexportPermitDetailsNotKnown")
+    }
+  }
 }
 
 function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
@@ -194,12 +196,12 @@ const payloadSchema = Joi.object({
 
   exportOrReexportCountry: Joi.when("exportOrReexportPermitDetailsNotKnown", {
     is: false,
-    then: Joi.string().max(150).required(),
+    then: Joi.string().max(stringLength.max150).required(),
     //otherwise: Joi.string().pattern(/^$/).allow('', null).required()
   }),
   exportOrReexportPermitNumber: Joi.when("exportOrReexportPermitDetailsNotKnown", {
     is: false,
-    then: Joi.string().min(1).max(27).regex(COMMENTS_REGEX).required(),
+    then: Joi.string().min(stringLength.min1).max(stringLength.max27).regex(COMMENTS_REGEX).required(),
     //otherwise: Joi.string().length(0)
   }),
   exportOrReexportPermitIssueDate: Joi.when("exportOrReexportPermitDetailsNotKnown", {
@@ -213,6 +215,23 @@ const payloadSchema = Joi.object({
 
   exportOrReexportPermitDetailsNotKnown: Joi.boolean().default(false),
 })
+
+function validatePayload(payload) {
+  const exportOrReexportPermitDetailsNotKnown = stringToBool(payload.exportOrReexportPermitDetailsNotKnown, false)
+
+  const requestPayload = {
+    exportOrReexportCountry: payload.exportOrReexportCountry,
+    exportOrReexportPermitNumber: payload.exportOrReexportPermitNumber,
+    exportOrReexportPermitDetailsNotKnown: exportOrReexportPermitDetailsNotKnown || false,
+    exportOrReexportPermitIssueDate: {
+      "exportOrReexportPermitIssueDate-day": payload["exportOrReexportPermitIssueDate-day"],
+      "exportOrReexportPermitIssueDate-month": payload["exportOrReexportPermitIssueDate-month"],
+      "exportOrReexportPermitIssueDate-year": payload["exportOrReexportPermitIssueDate-year"],
+    }
+  }
+
+  return payloadSchema.validate(requestPayload, { abortEarly: false })
+}
 
 module.exports = [
   {
@@ -268,6 +287,8 @@ module.exports = [
       handler: async (request, h) => {
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
+        const result = validatePayload(request.payload)
+
         const {
           exportOrReexportCountry,
           exportOrReexportPermitNumber,
@@ -278,21 +299,7 @@ module.exports = [
 
         const exportOrReexportPermitDetailsNotKnown = stringToBool(request.payload.exportOrReexportPermitDetailsNotKnown, false)
 
-        const requestPayload = {
-          exportOrReexportCountry: exportOrReexportCountry,
-          exportOrReexportPermitNumber: exportOrReexportPermitNumber,
-          exportOrReexportPermitDetailsNotKnown: exportOrReexportPermitDetailsNotKnown || false,
-          exportOrReexportPermitIssueDate: {
-            "exportOrReexportPermitIssueDate-day": exportOrReexportDay,
-            "exportOrReexportPermitIssueDate-month": exportOrReexportMonth,
-            "exportOrReexportPermitIssueDate-year": exportOrReexportYear,
-          }
-        }
-
-        const result = payloadSchema.validate(requestPayload, { abortEarly: false })
-
         if (result.error) {
-
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,

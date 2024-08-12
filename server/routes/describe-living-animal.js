@@ -34,7 +34,21 @@ function createModel(errors, data) {
   const pageContent = textContent.describeLivingAnimal
 
   const dateOfBirthErrors = []
-  const fields = [dateOfBirthDateFieldItems.DATE, dateOfBirthDateFieldItems.DAY, dateOfBirthDateFieldItems.DAY_MONTH, dateOfBirthDateFieldItems.DAY_YEAR, dateOfBirthDateFieldItems.MONTH, dateOfBirthDateFieldItems.MONTH_YEAR, dateOfBirthDateFieldItems.YEAR, "approximateDate", "sex", "maleParentDetails", "femaleParentDetails", "description"]
+  const fields = [
+    dateOfBirthDateFieldItems.DATE,
+    dateOfBirthDateFieldItems.DAY,
+    dateOfBirthDateFieldItems.DAY_MONTH,
+    dateOfBirthDateFieldItems.DAY_YEAR,
+    dateOfBirthDateFieldItems.MONTH,
+    dateOfBirthDateFieldItems.MONTH_YEAR,
+    dateOfBirthDateFieldItems.YEAR,
+    "approximateDate",
+    "sex",
+    "maleParentDetails",
+    "femaleParentDetails",
+    "description"
+  ]
+
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, fields)
 
   if (errorList) {
@@ -73,6 +87,30 @@ function createModel(errors, data) {
     errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
   }
 
+  const backLink = getBackLink(data)
+
+  const model = {
+    backLink,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
+    ...(errorList ? { errorList } : {}),
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageHeader: pageContent.pageHeader,
+    caption: data.speciesName,
+    inputLabelSex: pageContent.inputLabelSex,
+    inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
+    inputLabelDescription: pageContent.inputLabelDescription,
+    inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
+    inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
+    showParentDetails: [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType),
+    inputDateOfBirth,
+    ...getCheckboxIsExactDateUnknown(pageContent, data, errorList),
+    ...getOtherInputs(pageContent, data, errorList)
+  }
+  return { ...commonContent, ...model }
+}
+
+
+function getCheckboxIsExactDateUnknown(pageContent, data, errorList) {
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
@@ -93,47 +131,28 @@ function createModel(errors, data) {
     }
   })
 
-  const checkboxIsExactDateUnknown = {
-    idPrefix: "isExactDateUnknown",
-    name: "isExactDateUnknown",
-    classes: "govuk-checkboxes--small",
-    items: [
-      {
-        value: true,
-        text: pageContent.checkboxLabelIsExactDateUnknown,
-        checked: data.isExactDateUnknown,
-        conditional: {
-          html: approximateDateInput
+  return {
+    checkboxIsExactDateUnknown: {
+      idPrefix: "isExactDateUnknown",
+      name: "isExactDateUnknown",
+      classes: "govuk-checkboxes--small",
+      items: [
+        {
+          value: true,
+          text: pageContent.checkboxLabelIsExactDateUnknown,
+          checked: data.isExactDateUnknown,
+          conditional: {
+            html: approximateDateInput
+          }
         }
-      }
-    ],
-    errorMessage: getFieldError(errorList, "#isExactDateUnknown")
+      ],
+      errorMessage: getFieldError(errorList, "#isExactDateUnknown")
+    }
   }
-
-  const backLink = getBackLink(data)
-
-  const model = {
-    backLink,
-    formActionPage: `${currentPath}/${data.applicationIndex}`,
-    ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    pageHeader: pageContent.pageHeader,
-    caption: data.speciesName,
-    inputLabelSex: pageContent.inputLabelSex,
-    inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
-    inputLabelDescription: pageContent.inputLabelDescription,
-    inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
-    inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
-    showParentDetails: [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType),
-    inputDateOfBirth,
-    checkboxIsExactDateUnknown,
-    ...getInputs(pageContent, data, errorList)
-  }
-  return { ...commonContent, ...model }
 }
 
-function getInputs(pageContent, data, errorList) {
-  
+function getOtherInputs(pageContent, data, errorList) {
+
   const radioOptions = [
     { text: pageContent.radioOptionSexMale, value: 'M', hasInput: false },
     { text: pageContent.radioOptionSexFemale, value: 'F', hasInput: false },

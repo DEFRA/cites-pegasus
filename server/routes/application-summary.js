@@ -60,7 +60,7 @@ const commonContent = textContent.common
 
 function createApplicationSummaryModel(errors, data) {
   const summaryType = data.summaryType
-  
+
   const summaryData = {
     summaryType,
     hrefPrefix: `../../application-summary/${summaryType}/change/${data.applicationIndex}`,
@@ -447,8 +447,8 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
     }
   }
 
-  
-  
+
+
   return createSummaryList(
     'summaryListA10ExportData',
     'importerDetail',
@@ -786,46 +786,9 @@ function lookupAppContent(data) {
 
   const { headerApplicantContactDetails, headingImporterExporterDetails } = getPermitSpecificContent(data.permitType)
 
-  const purposeCodeValueText = {
-    B: pageContent.rowTextPurposeCodeB,
-    E: pageContent.rowTextPurposeCodeE,
-    G: pageContent.rowTextPurposeCodeG,
-    H: pageContent.rowTextPurposeCodeH,
-    L: pageContent.rowTextPurposeCodeL,
-    M: pageContent.rowTextPurposeCodeM,
-    N: pageContent.rowTextPurposeCodeN,
-    P: pageContent.rowTextPurposeCodeP,
-    Q: pageContent.rowTextPurposeCodeQ,
-    S: pageContent.rowTextPurposeCodeS,
-    T: pageContent.rowTextPurposeCodeT,
-    Z: pageContent.rowTextPurposeCodeZ,
-  }
-
-  const sourceCodeValueText = {
-    W: pageContent.rowTextSourceCodeW,
-    R: pageContent.rowTextSourceCodeR,
-    D: data.species?.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
-    C: pageContent.rowTextSourceCodeC,
-    F: pageContent.rowTextSourceCodeF,
-    I: pageContent.rowTextSourceCodeI,
-    O: pageContent.rowTextSourceCodeO,
-    X: pageContent.rowTextSourceCodeX,
-    Y: pageContent.rowTextSourceCodeY,
-    A: pageContent.rowTextSourceCodeA,
-    U: data.species?.enterAReason
-  }
-
-  const otherSourceCodeValueText = {
-    W: pageContent.rowTextSourceCodeW,
-    R: pageContent.rowTextSourceCodeR,
-    D: data.species?.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
-    C: pageContent.rowTextSourceCodeC,
-    F: pageContent.rowTextSourceCodeF,
-    A: pageContent.rowTextSourceCodeA,
-    X: pageContent.rowTextSourceCodeX,
-    Y: pageContent.rowTextSourceCodeY,
-    U: pageContent.rowTextSourceCodeU
-  };
+  const purposeCodeValueText = getPurposeCodeValueText(pageContent)
+  const sourceCodeValueText = getSourceCodeValueText(pageContent, data.species?.kingdom, data.species?.enterAReason)
+  const otherSourceCodeValueText = getOtherSourceCodeValueText(pageContent, data.species?.kingdom)
 
   const specimenTypeValue = {
     animalLiving: pageContent.rowTextSpecimenTypeAnimalLiving,
@@ -872,6 +835,54 @@ function lookupAppContent(data) {
   }
 }
 
+function getPurposeCodeValueText(pageContent) {
+
+  return {
+    B: pageContent.rowTextPurposeCodeB,
+    E: pageContent.rowTextPurposeCodeE,
+    G: pageContent.rowTextPurposeCodeG,
+    H: pageContent.rowTextPurposeCodeH,
+    L: pageContent.rowTextPurposeCodeL,
+    M: pageContent.rowTextPurposeCodeM,
+    N: pageContent.rowTextPurposeCodeN,
+    P: pageContent.rowTextPurposeCodeP,
+    Q: pageContent.rowTextPurposeCodeQ,
+    S: pageContent.rowTextPurposeCodeS,
+    T: pageContent.rowTextPurposeCodeT,
+    Z: pageContent.rowTextPurposeCodeZ
+  }
+}
+
+function getSourceCodeValueText(pageContent, kingdom, enterAReason) {
+  return {
+    W: pageContent.rowTextSourceCodeW,
+    R: pageContent.rowTextSourceCodeR,
+    D: kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    C: pageContent.rowTextSourceCodeC,
+    F: pageContent.rowTextSourceCodeF,
+    I: pageContent.rowTextSourceCodeI,
+    O: pageContent.rowTextSourceCodeO,
+    X: pageContent.rowTextSourceCodeX,
+    Y: pageContent.rowTextSourceCodeY,
+    A: pageContent.rowTextSourceCodeA,
+    U: enterAReason
+  }
+}
+
+function getOtherSourceCodeValueText(pageContent, kingdom) {
+  return {
+    W: pageContent.rowTextSourceCodeW,
+    R: pageContent.rowTextSourceCodeR,
+    D: kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    C: pageContent.rowTextSourceCodeC,
+    F: pageContent.rowTextSourceCodeF,
+    A: pageContent.rowTextSourceCodeA,
+    X: pageContent.rowTextSourceCodeX,
+    Y: pageContent.rowTextSourceCodeY,
+    U: pageContent.rowTextSourceCodeU
+  }
+}
+
 function getSummaryTypeSpecificContent(data) {
 
   let pageTitle = null
@@ -914,7 +925,7 @@ function createAreYouSureModel(errors, data) {
 
   const pageContentAreYouSure = getPageContentAreYouSure(data)
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentAreYouSure.errorMessages }, ['areYouSure'])
-  
+
   const model = {
     backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,

@@ -2,6 +2,7 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { stringLength } = require('../lib/constants')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
@@ -70,62 +71,6 @@ function createModel(errors, data) {
     })
   }
 
-  const importPermitIssueDateErrorMessage = importPermitIssueDateErrors[0]?.message
-
-  const importPermitIssueDateComponents = [
-    { name: "day", value: data.importPermitIssueDateDay },
-    { name: "month", value: data.importPermitIssueDateMonth },
-    { name: "year", value: data.importPermitIssueDateYear }
-  ]
-
-  const inputPermitNumber = {
-    label: {
-      text: pageContent.inputLabelPermitNumber
-    },
-    id: "importPermitNumber",
-    name: "importPermitNumber",
-    classes: "govuk-input govuk-input--width-20",
-    autocomplete: "on",
-    ...(data.importPermitNumber
-      ? { value: data.importPermitNumber }
-      : {}),
-    errorMessage: getFieldError(errorList, "#importPermitNumber")
-  }
-
-  const inputPermitIssueDate = {
-    id: "importPermitIssueDate",
-    name: "importPermitIssueDate",
-    namePrefix: "importPermitIssueDate",
-    fieldset: {
-      legend: {
-        text: pageContent.inputLabelPermitIssueDate
-      }
-    },
-    hint: {
-      text: pageContent.inputLabelHintPermitIssueDate
-    },
-    items: getPermitIssueDateInputGroupItems(
-      importPermitIssueDateComponents,
-      importPermitIssueDateErrors
-    ),
-    errorMessage: importPermitIssueDateErrorMessage
-      ? { html: importPermitIssueDateErrorMessage }
-      : null
-  }
-
-  const checkboxNotKnown = {
-    idPrefix: "importPermitDetailsNotKnown",
-    name: "importPermitDetailsNotKnown",
-    items: [
-      {
-        value: true,
-        text: pageContent.checkboxLabelNotKnown,
-        checked: data.importPermitDetailsNotKnown
-      }
-    ],
-    errorMessage: getFieldError(errorList, "#importPermitDetailsNotKnown")
-  }
-
   const model = {
     backLink: backLink,
     assetPath,
@@ -135,11 +80,69 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     divider: pageContent.dividerText,
-    inputPermitNumber,
-    inputPermitIssueDate,
-    checkboxNotKnown
+    ...getInputs(pageContent, data, errorList, importPermitIssueDateErrors)
   }
   return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, data, errorList, importPermitIssueDateErrors) {
+  const importPermitIssueDateErrorMessage = importPermitIssueDateErrors[0]?.message
+
+  const importPermitIssueDateComponents = [
+    { name: "day", value: data.importPermitIssueDateDay },
+    { name: "month", value: data.importPermitIssueDateMonth },
+    { name: "year", value: data.importPermitIssueDateYear }
+  ]
+
+  return {
+    inputPermitNumber: {
+      label: {
+        text: pageContent.inputLabelPermitNumber
+      },
+      id: "importPermitNumber",
+      name: "importPermitNumber",
+      classes: "govuk-input govuk-input--width-20",
+      autocomplete: "on",
+      ...(data.importPermitNumber
+        ? { value: data.importPermitNumber }
+        : {}),
+      errorMessage: getFieldError(errorList, "#importPermitNumber")
+    },
+
+    inputPermitIssueDate: {
+      id: "importPermitIssueDate",
+      name: "importPermitIssueDate",
+      namePrefix: "importPermitIssueDate",
+      fieldset: {
+        legend: {
+          text: pageContent.inputLabelPermitIssueDate
+        }
+      },
+      hint: {
+        text: pageContent.inputLabelHintPermitIssueDate
+      },
+      items: getPermitIssueDateInputGroupItems(
+        importPermitIssueDateComponents,
+        importPermitIssueDateErrors
+      ),
+      errorMessage: importPermitIssueDateErrorMessage
+        ? { html: importPermitIssueDateErrorMessage }
+        : null
+    },
+
+    checkboxNotKnown: {
+      idPrefix: "importPermitDetailsNotKnown",
+      name: "importPermitDetailsNotKnown",
+      items: [
+        {
+          value: true,
+          text: pageContent.checkboxLabelNotKnown,
+          checked: data.importPermitDetailsNotKnown
+        }
+      ],
+      errorMessage: getFieldError(errorList, "#importPermitDetailsNotKnown")
+    }
+  }
 }
 
 function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
@@ -178,7 +181,7 @@ const payloadSchema = Joi.object({
 
   importPermitNumber: Joi.when("importPermitDetailsNotKnown", {
     is: false,
-    then: Joi.string().min(1).max(27).regex(COMMENTS_REGEX).required(),
+    then: Joi.string().min(stringLength.min1).max(stringLength.max27).regex(COMMENTS_REGEX).required(),
     //otherwise: Joi.string().length(0)
   }),
   importPermitIssueDate: Joi.when("importPermitDetailsNotKnown", {

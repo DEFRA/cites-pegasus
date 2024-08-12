@@ -97,7 +97,7 @@ describe('Healthcheck Basic and Detailed Routes', () => {
             test('calls keyVault.readSecret', async () => {
                 await route.handler(request, h)
                 expect(keyVault.readSecret.mock.calls.length).toEqual(1)
-                expect(keyVault.readSecret.mock.calls[0][0]).toEqual('REDIS-PASSWORD')
+                expect(keyVault.readSecret.mock.calls[0][0]).toEqual('CIDM-API-CLIENT-ID')
             })
             test('calls blobStorageService.listContainerNames', async () => {
                 await route.handler(request, h)
@@ -123,7 +123,7 @@ describe('Healthcheck Basic and Detailed Routes', () => {
             test('returns error message for session.setYarValue exception', async () => {
                 session.setYarValue.mockImplementation(() => { throw new Error('Session Error') })
                 await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Error calling redis session')
+                expect(h.response.mock.calls[0][0]).toEqual('Error testing session cache')
                 expect(code.mock.calls[0][0]).toEqual(500)
             })
             test('returns error message for blobStorageService.listContainerNames exception', async () => {

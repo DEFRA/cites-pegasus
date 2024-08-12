@@ -10,7 +10,7 @@ const nextPath = `${urlPrefix}/applying-on-behalf`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 
-function createModel(errors) {
+function createModel() {
   const commonContent = textContent.common
   const pageContent = textContent.guidanceCompletion
 
@@ -40,7 +40,7 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
     
-    return h.view(viewName, createModel(null));
+    return h.view(viewName, createModel());
   }
 },
 {

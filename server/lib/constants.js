@@ -30,10 +30,12 @@ module.exports = {
         FONT_WEIGHT_BOLD: 'govuk-!-font-weight-bold'
     },
     stringLength: {
+        max27: 27,
         max50: 50,
         max150: 150,
         max500: 500,
         max1000: 1000,
+        min1: 1,
         min3: 3,
         min5: 5
     }
