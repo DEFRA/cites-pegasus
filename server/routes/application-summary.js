@@ -786,9 +786,9 @@ function lookupAppContent(data) {
 
   const { headerApplicantContactDetails, headingImporterExporterDetails } = getPermitSpecificContent(data.permitType)
 
-  const purposeCodeValueText = getPurposeCodeValueText(pageContent)
-  const sourceCodeValueText = getSourceCodeValueText(pageContent, data.species?.kingdom, data.species?.enterAReason)
-  const otherSourceCodeValueText = getOtherSourceCodeValueText(pageContent, data.species?.kingdom)
+  const purposeCodeValueText = getPurposeCodeValueText()
+  const sourceCodeValueText = getSourceCodeValueText(data.species?.kingdom, data.species?.enterAReason)
+  const otherSourceCodeValueText = getOtherSourceCodeValueText(data.species?.kingdom)
 
   const specimenTypeValue = {
     animalLiving: pageContent.rowTextSpecimenTypeAnimalLiving,
@@ -835,7 +835,7 @@ function lookupAppContent(data) {
   }
 }
 
-function getPurposeCodeValueText(pageContent) {
+function getPurposeCodeValueText() {
 
   return {
     B: pageContent.rowTextPurposeCodeB,
@@ -853,7 +853,7 @@ function getPurposeCodeValueText(pageContent) {
   }
 }
 
-function getSourceCodeValueText(pageContent, kingdom, enterAReason) {
+function getSourceCodeValueText(kingdom, enterAReason) {
   return {
     W: pageContent.rowTextSourceCodeW,
     R: pageContent.rowTextSourceCodeR,
@@ -869,7 +869,7 @@ function getSourceCodeValueText(pageContent, kingdom, enterAReason) {
   }
 }
 
-function getOtherSourceCodeValueText(pageContent, kingdom) {
+function getOtherSourceCodeValueText(kingdom) {
   return {
     W: pageContent.rowTextSourceCodeW,
     R: pageContent.rowTextSourceCodeR,

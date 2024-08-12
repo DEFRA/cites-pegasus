@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { clearChangeRoute } = require("../lib/change-route")
 const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
@@ -22,7 +22,7 @@ const statuses = ['awaitingPayment', 'awaitingAdditionalPayment', 'inProgress', 
 const pageSize = 15
 
 
-function createModel(errors, data) {
+function createModel(data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmissions
 
@@ -55,7 +55,7 @@ function createModel(errors, data) {
   const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
 
-  const { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious} = getPageBodyContent(data, pageContent)
+  const { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious } = getPageBodyContent(data, pageContent)
 
   const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
   const pageTitle = (data.organisationName ? pageContent.defaultTitleOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.defaultTitle) + commonContent.pageTitleSuffix
@@ -64,7 +64,7 @@ function createModel(errors, data) {
     pageHeader,
     draftNotificationTitle: pageContent.draftNotificationTitle,
     draftNotificationHeader: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationHeaderExportSubmission : pageContent.draftNotificationHeader,
-    draftNotificationBody: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationBodyExportSubmission :  pageContent.draftNotificationBody,
+    draftNotificationBody: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationBodyExportSubmission : pageContent.draftNotificationBody,
     draftContinue: pageContent.draftContinue,
     draftDelete: pageContent.draftDelete,
     draftContinuePath: draftContinuePath,
@@ -87,6 +87,14 @@ function createModel(errors, data) {
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: `${currentPath}/new-application`,
     organisationName: data.organisationName,
+    ...getInputs(pageContent, commonContent, data, textPagination)
+
+  }
+  return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, commonContent, data, textPagination) {
+  return {
     inputSearch: {
       id: "searchTerm",
       name: "searchTerm",
@@ -148,9 +156,9 @@ function createModel(errors, data) {
           value: "closed",
           text: commonContent.statusDescriptionClosed,
           checked: isChecked(data.statuses, "closed")
-        }        
+        }
       ],
-    },   
+    },
     checkboxSubmittedBy: {
       idPrefix: "submittedBy",
       name: "submittedBy",
@@ -159,13 +167,12 @@ function createModel(errors, data) {
           value: "me",
           text: pageContent.submittedByDescriptionMe,
           checked: isChecked(data.submittedBy, "me")
-        }        
+        }
       ],
     },
     showCheckboxSubmittedBy: data.submittedByFilterEnabled,
-    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, pageSize, textPagination) : ""
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, textPagination) : ""
   }
-  return { ...commonContent, ...model }
 }
 
 function getPageBodyContent(data, pageContent) {
@@ -178,37 +185,19 @@ function getPageBodyContent(data, pageContent) {
   } else {
     pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
   }
-  return { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious}
+  return { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious }
 }
 
 function createAreYouSureModel(errors) {
   const commonContent = textContent.common
-  
   const pageContent = textContent.mySubmissions.areYouSureDraftDelete
   const defaultTitle = pageContent.defaultTitle
-  const pageHeader =pageContent.pageHeader
-  const pageBody= `${pageContent.pageBody1}`
-  const formActionPage= `${currentPath}/draft-delete`  
-  
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages,
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const pageHeader = pageContent.pageHeader
+  const pageBody = `${pageContent.pageBody1}`
+  const formActionPage = `${currentPath}/draft-delete`
 
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['areYouSure'])
+    
   const model = {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
@@ -216,7 +205,7 @@ function createAreYouSureModel(errors) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
     pageBody: pageBody,
-  
+
     inputAreYouSure: {
       idPrefix: "areYouSure",
       name: "areYouSure",
@@ -224,7 +213,7 @@ function createAreYouSureModel(errors) {
       items: [
         {
           value: true,
-          text: commonContent.radioOptionYes  
+          text: commonContent.radioOptionYes
         },
         {
           value: false,
@@ -244,7 +233,7 @@ function getApplicationDate(date) {
   return formattedDate
 }
 
-function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
+function paginate(totalSubmissions, currentPage, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
 
   const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
@@ -306,7 +295,7 @@ module.exports = [
   {
     method: 'GET',
     path: `${urlPrefix}/`,
-    handler: (request, h) => {
+    handler: (_request, h) => {
       return h.redirect(currentPath)
     }
   },
@@ -359,7 +348,7 @@ module.exports = [
         draftSubmissionDetail,
         submittedByFilterEnabled
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(pageId, createModel(pageData))
     }
   },
   //POST for start new application button
@@ -404,7 +393,7 @@ module.exports = [
             ),
           submittedBy: Joi.string().allow(''),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       },
@@ -412,18 +401,18 @@ module.exports = [
 
         const pageNo = 1
 
-        let permitTypes = null
+        let filterPermitTypes = null
 
         if (request.payload.permitTypes) {
           if (Array.isArray(request.payload.permitTypes)) {
-            permitTypes = request.payload.permitTypes
+            filterPermitTypes = request.payload.permitTypes
           } else {
-            permitTypes = [request.payload.permitTypes]
+            filterPermitTypes = [request.payload.permitTypes]
           }
         }
 
         const filterData = {
-          permitTypes: permitTypes,
+          permitTypes: filterPermitTypes,
           statuses: request.payload.statuses,
           searchTerm: request.payload.searchTerm,
           submittedBy: request.payload.submittedBy
@@ -457,7 +446,7 @@ module.exports = [
           submittedByFilterEnabled
         }
 
-        return h.view(pageId, createModel(null, pageData))
+        return h.view(pageId, createModel(pageData))
       }
     }
   },
@@ -489,7 +478,7 @@ module.exports = [
   {
     method: "GET",
     path: `${currentPath}/draft-delete`,
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       return h.view('are-you-sure', createAreYouSureModel(null))
     }
   },
@@ -502,12 +491,12 @@ module.exports = [
         payload: Joi.object({
           areYouSure: Joi.boolean().required()
         }),
-        failAction: (request, h, err) => {
+        failAction: (_request, h, err) => {
           return h.view('are-you-sure', createAreYouSureModel(err)).takeover()
         }
       },
-      handler: async (request, h) => {     
-        if(request.payload.areYouSure){
+      handler: async (request, h) => {
+        if (request.payload.areYouSure) {
           await deleteDraftSubmission(request)
         }
         return h.redirect(currentPath)

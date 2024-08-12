@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { stringLength } = require('../lib/constants')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -17,7 +18,7 @@ function createModel(errors, data) {
 
   const { common: commonContent, importerDetails: pageContent } = textContent
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["country", "name", "addressLine1", "addressLine2", "addressLine3", "addressLine4", "postcode"])
- 
+
   const countries = [{
     text: commonContent.countrySelectDefault,
     value: '',
@@ -39,13 +40,20 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     heading: pageContent.heading,
     headingAddress: pageContent.headingAddress,
-    insetText: { 
+    insetText: {
       text: pageContent.insetText
     },
+    ...getInputs(pageContent, data, errorList, countries)
+  }
+  return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, data, errorList, countries) {
+  return {
     selectCountry: {
       label: {
         text: pageContent.inputLabelCountry
@@ -117,9 +125,7 @@ function createModel(errors, data) {
       ...(data.postcode ? { value: data.postcode } : {}),
       errorMessage: getFieldError(errorList, '#postcode')
     }
-
   }
-  return { ...commonContent, ...model }
 }
 
 module.exports = [
@@ -138,7 +144,7 @@ module.exports = [
       const submission = getSubmission(request)
 
       try {
-        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)        
+        validateSubmission(submission, `${pageId}/${request.params.applicationIndex}`)
       } catch (err) {
         console.error(err)
         return h.redirect(invalidSubmissionPath)
@@ -173,13 +179,13 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          country: Joi.string().max(150).required(),
-          name: Joi.string().max(150).regex(NAME_REGEX).required(),
-          addressLine1: Joi.string().max(150).required(),
-          addressLine2: Joi.string().max(150).required(),
-          addressLine3: Joi.string().max(150).optional().allow('', null),
-          addressLine4: Joi.string().max(150).optional().allow('', null),
-          postcode: Joi.string().max(50).optional().allow('', null)
+          country: Joi.string().max(stringLength.max150).required(),
+          name: Joi.string().max(stringLength.max150).regex(NAME_REGEX).required(),
+          addressLine1: Joi.string().max(stringLength.max150).required(),
+          addressLine2: Joi.string().max(stringLength.max150).required(),
+          addressLine3: Joi.string().max(stringLength.max150).optional().allow('', null),
+          addressLine4: Joi.string().max(stringLength.max150).optional().allow('', null),
+          postcode: Joi.string().max(stringLength.max50).optional().allow('', null)
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
@@ -214,7 +220,7 @@ module.exports = [
         submission.applications[applicationIndex].a10ExportData.importerDetails = importerDetails
 
         try {
-          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)          
+          mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)

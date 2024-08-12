@@ -12,7 +12,7 @@ const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted
 const invalidSubmissionPath = `${urlPrefix}/`
 const pageSize = 15
 
-function createModel(errors, data) {
+function createModel(data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmission
 
@@ -170,7 +170,7 @@ module.exports = [
 
       setYarValue(request, sessionKey.SUBMISSION, submission)
       
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(pageId, createModel(pageData))
     }
   }
 ]

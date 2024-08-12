@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
 const { getErrorList, getFieldError, getCountries} = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { stringLength } = require('../lib/constants')
 const { NAME_REGEX } = require('../lib/regex-validation')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -178,13 +179,13 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          country: Joi.string().max(150).required(),
-          name: Joi.string().max(150).regex(NAME_REGEX).required(),
-          addressLine1: Joi.string().max(150).required(),
-          addressLine2: Joi.string().max(150).required(),
-          addressLine3: Joi.string().max(150).optional().allow('', null),
-          addressLine4: Joi.string().max(150).optional().allow('', null),
-          postcode: Joi.string().max(50).optional().allow('', null)
+          country: Joi.string().max(stringLength.max150).required(),
+          name: Joi.string().max(stringLength.max150).regex(NAME_REGEX).required(),
+          addressLine1: Joi.string().max(stringLength.max150).required(),
+          addressLine2: Joi.string().max(stringLength.max150).required(),
+          addressLine3: Joi.string().max(stringLength.max150).optional().allow('', null),
+          addressLine4: Joi.string().max(stringLength.max150).optional().allow('', null),
+          postcode: Joi.string().max(stringLength.max50).optional().allow('', null)
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
