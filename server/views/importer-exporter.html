@@ -1,28 +1,31 @@
 {% extends 'application-basic-layout.html' %}
 {% set showPageHeader = true %}
-{% block centralContent %}  
-        {% call govukFieldset({
+{% block centralContent %}
+  {% if insetText %}
+    {{ govukInsetText(insetText) }}
+  {% endif %}
+  {% call govukFieldset({
           legend: {
             html: '<h2 class="govuk-fieldset__legend--m">' + heading + '</h2>',
             isPageHeading: false
           }
         }) %}
 
-        {{ govukSelect(selectCountry) }}
-        {% endcall %}
+  {{ govukSelect(selectCountry) }}
+  {% endcall %}
 
-        {% call govukFieldset({
+  {% call govukFieldset({
           legend: {
             html: '<h2 class="govuk-fieldset__legend--m">' + headingAddress + '</h2>',
             isPageHeading: false
           }
         }) %}
-        {{ govukInput(inputFullName) }}
-        {{ govukInput(inputAddressLine1) }}
-        {{ govukInput(inputAddressLine2) }}
-        {{ govukInput(inputAddressLine3) }}
-        {{ govukInput(inputAddressLine4) }}
-        {{ govukInput(inputPostcode) }}
-        {% endcall %}
-      
+  {{ govukInput(inputFullName) }}
+  {{ govukInput(inputAddressLine1) }}
+  {{ govukInput(inputAddressLine2) }}
+  {{ govukInput(inputAddressLine3) }}
+  {{ govukInput(inputAddressLine4) }}
+  {{ govukInput(inputPostcode) }}
+  {% endcall %}
+
 {% endblock %}

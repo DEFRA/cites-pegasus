@@ -7,6 +7,7 @@ const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'importer-details'
+const viewName = 'importer-exporter'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAddExportPermit = `${urlPrefix}/add-export-permit`
 const nextPathAppSummary = `${urlPrefix}/application-summary/check`
@@ -158,7 +159,7 @@ module.exports = [
         countries: request.server.app.countries,
       }
 
-      return h.view(pageId, createModel(null, pageData))//This view is shared with the importer-exporter page
+      return h.view(viewName, createModel(null, pageData))//This view is shared with the importer-exporter page
 
     }
   },
@@ -189,7 +190,7 @@ module.exports = [
             ...request.payload,
             countries: request.server.app.countries,
           }
-          return h.view(pageId, createModel(err, pageData)).takeover()//This view is shared with the importer-exporter page
+          return h.view(viewName, createModel(err, pageData)).takeover()//This view is shared with the importer-exporter page
         }
       },
       handler: async (request, h) => {
