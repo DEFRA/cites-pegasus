@@ -177,7 +177,7 @@ function getAVError(avScanResult) {
 
 function validateRequest(request) {
   if (request.headers["content-length"] > maxFileSizeBytes) {
-    const error = {
+    return {
       details: [
         {
           type: 'any.filesize',
@@ -185,7 +185,6 @@ function validateRequest(request) {
         }
       ]
     }
-    return error
   }
 
   let payloadSchema = null
@@ -195,9 +194,21 @@ function validateRequest(request) {
     payloadSchema = Joi.object({ fileUpload: fileSchema })
   }
 
-  const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
+  const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' })
 
-  return error  
+  return error
+}
+
+function getFileUploadError(type) {
+  return {
+    details: [
+      {
+        path: ['fileUpload'],
+        type,
+        context: { label: 'fileUpload', key: 'fileUpload' }
+      }
+    ]
+  }
 }
 
 module.exports = [
@@ -252,11 +263,11 @@ module.exports = [
         timeout: false
       },
       handler: async (request, h) => {
-        const error = validateRequest(request)
-        if(error) {
-          return failAction(request, h, error)
+        const requestValidationError = validateRequest(request)
+        if (requestValidationError) {
+          return failAction(request, h, requestValidationError)
         }
-        
+
         const submission = getSubmission(request)
 
         if (submission.supportingDocuments === undefined) {
@@ -268,30 +279,14 @@ module.exports = [
         const maxFilesCount = getMaxDocs(submission.applications.length)
 
         if (docs.files.length >= maxFilesCount) {
-          const error = {
-            details: [
-              {
-                path: ['fileUpload'],
-                type: 'any.maxfiles',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
+          const error = getFileUploadError('any.maxfiles')
           return failAction(request, h, error)
         }
 
 
         const existingFile = docs.files.find(file => file.fileName === request.payload.fileUpload.hapi.filename)
         if (existingFile) {
-          const error = {
-            details: [
-              {
-                path: ['fileUpload'],
-                type: 'any.existing',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
+          const error = getFileUploadError('any.existing')
           return failAction(request, h, error)
         }
 
@@ -310,13 +305,13 @@ module.exports = [
 
           const fileSaveResult = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
 
-          
+
           if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
             const avError = getAVError(fileSaveResult.avScanResult)
-                        
+
             return failAction(request, h, avError)
           }
-          
+
           console.log(`File added to blob container with url ${fileSaveResult.url}`)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: fileSaveResult.url, uploadTimestamp: Date.now() })
 
