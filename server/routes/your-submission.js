@@ -16,7 +16,7 @@ const lodash = require('lodash')
 const specimenType = require('./specimen-type')
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createSubmitApplicationModel(errors, data) {
+function createSubmitApplicationModel(_errors, data) {
   const commonContent = textContent.common
 
   let pageContent = null
@@ -292,7 +292,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -337,7 +337,7 @@ module.exports = [
           return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
         }
       },
-      handler: async (request, h) => {
+      handler: async (_request, h) => {
         return h.redirect(nextPathContinue)
       }
     }
@@ -351,7 +351,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -377,7 +377,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }

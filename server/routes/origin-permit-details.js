@@ -286,14 +286,14 @@ function validatePayload(payload, submission, applicationIndex) {
   return payloadSchema.validate(requestPayload, { abortEarly: false })
 }
 
-function getRedirect(permitType, isCountryOfOriginNotKnown, applicationIndex) {
-  if (permitType === pt.IMPORT) {
+function getRedirect(submission, isCountryOfOriginNotKnown, applicationIndex) {
+  if (submission.permitType === pt.IMPORT) {
     if (!isCountryOfOriginNotKnown) {
       return `${nextPathCountryOfOriginImport}/${applicationIndex}`
     } else {
       return `${nextPathExportPermitDetails}/${applicationIndex}`
     }
-  } else if (permitType === pt.ARTICLE_10) {
+  } else if (submission.permitType === pt.ARTICLE_10) {
     return `${nextPathImportPermitDetails}/${applicationIndex}`
   } else {
     return `${nextPathExportPermitDetails}/${applicationIndex}`
@@ -432,7 +432,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        const redirectTo = getRedirect(submission.permitType, isCountryOfOriginNotKnown, applicationIndex)
+        const redirectTo = getRedirect(submission, isCountryOfOriginNotKnown, applicationIndex)
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)

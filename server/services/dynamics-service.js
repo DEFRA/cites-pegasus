@@ -3,11 +3,17 @@ const Wreck = require('@hapi/wreck')
 const moment = require('moment')
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
+const { httpStatusCode } = require('../lib/constants')
 const lodash = require('lodash')
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
 const httpResponsePrefix = 'HTTP Response Payload: '
 const collectionExpandoString = '#Collection(Microsoft.Dynamics.CRM.expando)'
 const countString = '@odata.count'
+const dynamicsStatusCodeConst = {
+  awaitingPayment: 1,
+  inProgress: 149900002,
+  awaitingAdditionalPayment: 149900003
+}
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -108,7 +114,7 @@ function addOdataTypeProperty(obj) {
   }
 
   if (Array.isArray(obj)) {
-    obj.forEach((item, index) => {
+    obj.forEach((item, _index) => {
       addOdataTypeProperty(item);
     });
   } else {
@@ -190,7 +196,7 @@ async function getSpecies(server, speciesName) {
 
     return null
   } catch (err) {
-    if (err.data?.res?.statusCode === 404) {
+    if (err.data?.res?.statusCode === httpStatusCode.NOT_FOUND) {
       //No species match
       return null
     }
@@ -243,7 +249,7 @@ async function getSpecieses(server, speciesName) {
     }
 
   } catch (err) {
-    if (err.data?.res?.statusCode === 404) {
+    if (err.data?.res?.statusCode === httpStatusCode.NOT_FOUND) {
       //No species match
       return {
         count: 0,
@@ -260,19 +266,16 @@ async function getSpecieses(server, speciesName) {
 }
 
 function formatItem(item) {
-  if (config.enableSpeciesWarning && item.cites_warningmessage) {
-    return {
-      scientificName: item.cites_name,
-      kingdom: item.cites_kingdom,
-      hasRestriction: item.cites_restrictionsapply,
-      warningMessage: item.cites_warningmessage,
-    };
-  } else {
-    return {
-      scientificName: item.cites_name,
-      kingdom: item.cites_kingdom,
-    };
+  const response = {
+    scientificName: item.cites_name,
+    kingdom: item.cites_kingdom
   }
+
+  if (config.enableSpeciesWarning && item.cites_warningmessage) {
+    response.hasRestriction = item.cites_restrictionsapply
+    response.warningMessage = item.cites_warningmessage    
+  }
+  return response
 }
 
 async function getCountries(server) {
@@ -333,13 +336,13 @@ function getPortalSubmissionStatus(dynamicsStatuscode, dynamicsStatecode) {
   if (dynamicsStatecode !== 0) {
     return 'closed'
   }
-
+  
   switch (dynamicsStatuscode) {
-    case 1:
+    case dynamicsStatusCodeConst.awaitingPayment:
       return 'awaitingPayment'
-    case 149900002:
+    case dynamicsStatusCodeConst.inProgress:
       return 'inProgress'
-    case 149900003:
+    case dynamicsStatusCodeConst.awaitingAdditionalPayment:
       return 'awaitingAdditionalPayment'
     default:
       return ''
@@ -350,15 +353,15 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
   const statuses = [];
 
   if (portalStatuses.includes('awaitingPayment')) {
-    statuses.push(1)
+    statuses.push(dynamicsStatusCodeConst.awaitingPayment)
   }
 
   if (portalStatuses.includes('awaitingAdditionalPayment')) {
-    statuses.push(149900003)
+    statuses.push(dynamicsStatusCodeConst.awaitingAdditionalPayment)
   }
 
   if (portalStatuses.includes('inProgress')) {
-    statuses.push(149900002)
+    statuses.push(dynamicsStatusCodeConst.inProgress)
   }
 
   return statuses
@@ -372,7 +375,7 @@ const dynamicsPermitTypesMappings = {
 }
 
 function reverseMapper(mapping, value) {
-  const match = Object.entries(mapping).find(x => x[1] == value)
+  const match = Object.entries(mapping).find(x => x[1] === value)
   return match ? match[0] : value.toString()
 }
 
@@ -486,10 +489,15 @@ async function getSubmissions(server, query, pageSize) {
 }
 
 function getPaymentCalculationType(dynamicsType) {
+  const dynamicsPaymentCalcTypeConst = {
+    simple: 149900000,
+    complex: 149900001
+  }
+  
   switch (dynamicsType) {
-    case 149900000:
+    case dynamicsPaymentCalcTypeConst.simple:
       return "simple"
-    case 149900001:
+    case dynamicsPaymentCalcTypeConst.complex:
       return "complex"
     default:
       throw new Error("Unknown Dynamics Payment Calculation Type.")
@@ -541,7 +549,7 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
     if (payload) {
       console.log(httpResponsePrefix + JSON.stringify(payload, null, 2));
 
-      if (payload.value.length == 0) {
+      if (payload.value.length === 0) {
         throw new Error(`Submission not found with reference '${submissionRef}' and contact '${contactId}'`)
       }
 
@@ -561,7 +569,7 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
       }
 
       jsonContent.applications.forEach(jsonApplication => {
-        const dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonApplication.applicationIndex)
+        const dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex === jsonApplication.applicationIndex)
         jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference
       })
 
@@ -616,7 +624,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     if (payload) {
       console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
-      if (payload.value.length == 0) {
+      if (payload.value.length === 0) {
         throw new Error(`Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`)
       }
     }
