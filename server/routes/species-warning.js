@@ -10,7 +10,7 @@ const nextPath = `${urlPrefix}/source-code`
 const invalidSubmissionPath = `${urlPrefix}/`
 
 
-function createModel(errors, data) {
+function createModel(data) {
   const commonContent = textContent.common
   const pageContent = textContent.speciesWarning
 
@@ -55,7 +55,7 @@ module.exports = [{
       warningMessage: species.warningMessage
     }
 
-    return h.view(viewName, createModel(null, pageData));
+    return h.view(viewName, createModel(pageData));
   }
 },
 {

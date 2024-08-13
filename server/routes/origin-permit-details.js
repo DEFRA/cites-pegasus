@@ -280,10 +280,24 @@ function validatePayload(payload, submission, applicationIndex) {
       "countryOfOriginPermitIssueDate-year": payload["countryOfOriginPermitIssueDate-year"],
     },
   }
-
+  
   const payloadSchema = submission.permitType === pt.IMPORT && submission.applications[applicationIndex]?.species.kingdom === 'Plantae' ? payloadSchemaPlantImport : payloadSchemaNotPlantImport
-
+  
   return payloadSchema.validate(requestPayload, { abortEarly: false })
+}
+
+function getRedirect(permitType, isCountryOfOriginNotKnown, applicationIndex) {
+  if (permitType === pt.IMPORT) {
+    if (!isCountryOfOriginNotKnown) {
+      return `${nextPathCountryOfOriginImport}/${applicationIndex}`
+    } else {
+      return `${nextPathExportPermitDetails}/${applicationIndex}`
+    }
+  } else if (permitType === pt.ARTICLE_10) {
+    return `${nextPathImportPermitDetails}/${applicationIndex}`
+  } else {
+    return `${nextPathExportPermitDetails}/${applicationIndex}`
+  }  
 }
 
 module.exports = [
@@ -350,7 +364,7 @@ module.exports = [
           "countryOfOriginPermitIssueDate-month": countryOfOriginMonth,
           "countryOfOriginPermitIssueDate-year": countryOfOriginYear,
         } = request.payload
-        
+
         const isCountryOfOriginNotKnown = stringToBool(request.payload.isCountryOfOriginNotKnown, false)
 
         if (result.error) {
@@ -418,17 +432,7 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        let redirectTo = `${nextPathExportPermitDetails}/${applicationIndex}`
-
-        if (submission.permitType === pt.IMPORT) {
-          if (!isCountryOfOriginNotKnown) {
-            redirectTo = `${nextPathCountryOfOriginImport}/${applicationIndex}`
-          }
-        } else if (submission.permitType === pt.ARTICLE_10) {
-          redirectTo = `${nextPathImportPermitDetails}/${applicationIndex}`
-        } else {
-          //Do nothing
-        }
+        const redirectTo = getRedirect(submission.permitType, isCountryOfOriginNotKnown, applicationIndex)
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
@@ -436,4 +440,3 @@ module.exports = [
     }
   }
 ]
-

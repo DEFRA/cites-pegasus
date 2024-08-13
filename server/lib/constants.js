@@ -33,6 +33,7 @@ module.exports = {
         max27: 27,
         max50: 50,
         max150: 150,
+        max300: 300,
         max500: 500,
         max1000: 1000,
         min1: 1,

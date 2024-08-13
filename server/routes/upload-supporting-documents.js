@@ -48,7 +48,7 @@ function createModel(errors, data) {
 
   const sortedDocuments = documents.sort((a, b) => (b.uploadTimestamp || 1) - (a.uploadTimestamp || 1))
 
-  const pagination = getPaginationControl(sortedDocuments.length, data.pageNo || 1, pageSize, currentPath)
+  const pagination = getPaginationControl(sortedDocuments.length, data.pageNo || 1, currentPath)
 
   const startIndex = (data.pageNo - 1) * pageSize
   const endIndex = startIndex + pageSize
@@ -86,7 +86,7 @@ function createModel(errors, data) {
   return { ...commonContent, ...pageContent, ...model }
 }
 
-function getPaginationControl(totalItems, pageNo, pageSize, url) {
+function getPaginationControl(totalItems, pageNo, url) {
   if (totalItems <= pageSize) {
     return null
   }
@@ -148,7 +148,8 @@ function failAction(request, h, err) {
 }
 
 function getMaxDocs(applicationsCount) {
-  return Math.min(5 + (applicationsCount * 5), documentUploadMaxFilesLimit)
+  const maxDocsMultiplier = 5
+  return Math.min(maxDocsMultiplier + (applicationsCount * maxDocsMultiplier), documentUploadMaxFilesLimit)
 }
 
 function getAVError(avScanResult) {
@@ -172,6 +173,31 @@ function getAVError(avScanResult) {
       avError.details[0].type = 'av-unknown.exception'
   }
   return avError
+}
+
+function validateRequest(request) {
+  if (request.headers["content-length"] > maxFileSizeBytes) {
+    const error = {
+      details: [
+        {
+          type: 'any.filesize',
+          context: { label: 'fileUpload', key: 'fileUpload' }
+        }
+      ]
+    }
+    return error
+  }
+
+  let payloadSchema = null
+  if (Array.isArray(request.payload.fileUpload)) {
+    payloadSchema = Joi.object({ fileUpload: Joi.array().items(fileSchema) })
+  } else {
+    payloadSchema = Joi.object({ fileUpload: fileSchema })
+  }
+
+  const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
+
+  return error  
 }
 
 module.exports = [
@@ -226,32 +252,11 @@ module.exports = [
         timeout: false
       },
       handler: async (request, h) => {
-        if (request.headers["content-length"] > maxFileSizeBytes) {
-          const error = {
-            details: [
-              {
-                type: 'any.filesize',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
+        const error = validateRequest(request)
+        if(error) {
           return failAction(request, h, error)
         }
-
-        let payloadSchema = null
-        if (Array.isArray(request.payload.fileUpload)) {
-          payloadSchema = Joi.object({ fileUpload: Joi.array().items(fileSchema) })
-        } else {
-          payloadSchema = Joi.object({ fileUpload: fileSchema })
-        }
-
-        const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
-
-        // If there was an error, return a 400 Bad Request response
-        if (error) {
-          return failAction(request, h, error)
-        }
-
+        
         const submission = getSubmission(request)
 
         if (submission.supportingDocuments === undefined) {

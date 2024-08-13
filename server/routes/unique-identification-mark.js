@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, maxNumberOfUniqueIdentifiers } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { stringLength } = require('../lib/constants')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -22,7 +23,7 @@ function createModel(errors, data) {
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentErrorMessages }, fields)
 
   const selectItems = Object.entries(commonContent.uniqueIdentificationMarkTypes)
-    .filter(([key, value]) => key !== 'unmarked')
+    .filter(([key, _value]) => key !== 'unmarked')
     .map(([key, value]) => ({
       text: value,
       value: key
@@ -94,6 +95,12 @@ function createModel(errors, data) {
 function prepareErrorData(data, pageContent) {
   const fields = []
   const pageContentErrorMessages = {}
+  const propertyPartIndex = {
+    part0: 0,
+    part1: 1,
+    part2: 2,
+    part3: 3
+  }
   for (let i = 0; i < data.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
     fields.push(`uniqueIdentificationMarkType${i}`)
     fields.push(`uniqueIdentificationMark${i}`)
@@ -103,8 +110,8 @@ function prepareErrorData(data, pageContent) {
         console.error("Invalid error message")
       }
       const propertyParts = property.split(".")
-      if (propertyParts[0] && propertyParts[1] && propertyParts[2] && propertyParts[3]) {
-        const newPropertyName = propertyParts[0] + "." + propertyParts[1] + i + "." + propertyParts[2] + "." + propertyParts[3]
+      if (propertyParts[propertyPartIndex.part0] && propertyParts[propertyPartIndex.part1] && propertyParts[propertyPartIndex.part2] && propertyParts[propertyPartIndex.part3]) {
+        const newPropertyName = propertyParts[propertyPartIndex.part0] + "." + propertyParts[propertyPartIndex.part1] + i + "." + propertyParts[propertyPartIndex.part2] + "." + propertyParts[propertyPartIndex.part3]
         pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
       } else {
         console.error("Invalid error message")
@@ -326,7 +333,7 @@ module.exports = [
 
         for (let i = 0; i < request.payload.numberOfMarks; i++) {
           schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG")
-          schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(3).max(150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')
+          schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(stringLength.min3).max(stringLength.max150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')
         }
 
         const result = Joi.object(schemaObject).validate(request.payload, { abortEarly: false })

@@ -37,68 +37,72 @@ function createModel(errors, data) {
       hint: {
         text: pageContent.hintText
       },
-      items: [
-        {
-          value: "a",
-          text: pageContent.radioOptionA,
-          checked: isChecked(
-            data.specimenOrigin,
-            "a"
-          )
-        },
-        {
-          value: "b",
-          text: pageContent.radioOptionB,
-          checked: isChecked(
-            data.specimenOrigin,
-            "b"
-          )
-        },
-        {
-          value: "c",
-          text: pageContent.radioOptionC,
-          checked: isChecked(
-            data.specimenOrigin,
-            "c"
-          )
-        },
-        {
-          value: "d",
-          text: pageContent.radioOptionD,
-          checked: isChecked(
-            data.specimenOrigin,
-            "d"
-          )
-        },
-        {
-          value: "e",
-          text: pageContent.radioOptionE,
-          checked: isChecked(
-            data.specimenOrigin,
-            "e"
-          )
-        },
-        {
-          value: "f",
-          text: pageContent.radioOptionF,
-          checked: isChecked(
-            data.specimenOrigin,
-            "f"
-          )
-        },
-        {
-          value: "g",
-          text: pageContent.radioOptionG,
-          checked: isChecked(
-            data.specimenOrigin,
-            "g"
-          )
-        }
-      ],
+      items: getItems(pageContent, data),
       errorMessage: getFieldError(errorList, "#specimenOrigin")
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getItems(pageContent, data) {
+  return [
+    {
+      value: "a",
+      text: pageContent.radioOptionA,
+      checked: isChecked(
+        data.specimenOrigin,
+        "a"
+      )
+    },
+    {
+      value: "b",
+      text: pageContent.radioOptionB,
+      checked: isChecked(
+        data.specimenOrigin,
+        "b"
+      )
+    },
+    {
+      value: "c",
+      text: pageContent.radioOptionC,
+      checked: isChecked(
+        data.specimenOrigin,
+        "c"
+      )
+    },
+    {
+      value: "d",
+      text: pageContent.radioOptionD,
+      checked: isChecked(
+        data.specimenOrigin,
+        "d"
+      )
+    },
+    {
+      value: "e",
+      text: pageContent.radioOptionE,
+      checked: isChecked(
+        data.specimenOrigin,
+        "e"
+      )
+    },
+    {
+      value: "f",
+      text: pageContent.radioOptionF,
+      checked: isChecked(
+        data.specimenOrigin,
+        "f"
+      )
+    },
+    {
+      value: "g",
+      text: pageContent.radioOptionG,
+      checked: isChecked(
+        data.specimenOrigin,
+        "g"
+      )
+    }
+  ]
 }
 
 module.exports = [

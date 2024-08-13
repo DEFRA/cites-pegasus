@@ -83,12 +83,10 @@ function createModel(data) {
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
     tableHeadStatus: pageContent.rowTextStatus,
-    //textPagination: textPagination,
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: `${currentPath}/new-application`,
     organisationName: data.organisationName,
     ...getInputs(pageContent, commonContent, data, textPagination)
-
   }
   return { ...commonContent, ...model }
 }
@@ -101,14 +99,11 @@ function getInputs(pageContent, commonContent, data, textPagination) {
       classes: "govuk-grid-column-one-half",
       inputmode: "search",
       autocomplete: "on",
-      label: {
-        text: pageContent.inputLabelSearch
-      },
+      label: { text: pageContent.inputLabelSearch },
       ...(data.searchTerm ? { value: data.searchTerm } : {}),
     },
 
     checkboxPermitType: {
-      idPrefix: "permitTypes",
       name: "permitTypes",
       items: [
         {
@@ -134,7 +129,6 @@ function getInputs(pageContent, commonContent, data, textPagination) {
       ],
     },
     checkboxStatus: {
-      idPrefix: "statuses",
       name: "statuses",
       items: [
         {
@@ -160,7 +154,6 @@ function getInputs(pageContent, commonContent, data, textPagination) {
       ],
     },
     checkboxSubmittedBy: {
-      idPrefix: "submittedBy",
       name: "submittedBy",
       items: [
         {
@@ -357,7 +350,7 @@ module.exports = [
     path: `${currentPath}/new-application`,
     options: {
       validate: {
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       },

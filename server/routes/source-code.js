@@ -9,7 +9,7 @@ const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const nunjucks = require("nunjucks")
 const { checkChangeRouteExit } = require("../lib/change-route")
-const { govukClass } = require("../lib/constants")
+const { govukClass, stringLength } = require("../lib/constants")
 const pageId = "source-code"
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -71,7 +71,7 @@ function createModel(errors, data) {
     input: {
       id: "enterAReason",
       name: "enterAReason",
-      maxlength: 300,
+      maxlength: stringLength.max300,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: pageContent.characterCountLabelEnterAReason
@@ -98,125 +98,129 @@ function createModel(errors, data) {
           classes: "govuk-fieldset__legend--l"
         }
       },
-      items: [
-        {
-          value: "W",
-          text: pageContent.radioOptionW,
-          hint: { text: pageContent.radioOptionWHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "W")
-        },
-        isAnimal && {
-          value: "R",
-          text: pageContent.radioOptionR,
-          hint: { text: pageContent.radioOptionRHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "R")
-        },
-        {
-          value: "D",
-          text: pageContent.radioOptionD,
-          hint: { text: pageContent.radioOptionDHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "D")
-        },
-        isAnimal && {
-          value: "C",
-          text: pageContent.radioOptionC,
-          hint: { html: pageContent.radioOptionCHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "C")
-        },
-        isAnimal && {
-          value: "F",
-          text: pageContent.radioOptionF,
-          hint: { html: pageContent.radioOptionFHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "F")
-        },
-        !(isAnimal) && {
-          value: "A",
-          text: pageContent.radioOptionA,
-          hint: { text: pageContent.radioOptionAHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "A")
-        },
-        {
-          value: "I",
-          text: pageContent.radioOptionI,
-          hint: { text: pageContent.radioOptionIHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "I"),
-          conditional: {
-            html: sourceInputForI
-          }
-        },
-        {
-          value: "O",
-          text: pageContent.radioOptionO,
-          hint: { text: pageContent.radioOptionOHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "O"),
-          conditional: {
-            html: sourceInputForO
-          }
-        },
-        {
-          value: "X",
-          text: pageContent.radioOptionX,
-          hint: { text: pageContent.radioOptionXHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "X")
-        },
-        !(isAnimal) && {
-          value: "Y",
-          text: pageContent.radioOptionY,
-          hint: { html: pageContent.radioOptionYHint },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "Y")
-        },
-        {
-          divider: pageContent.dividerText
-        },
-        {
-          value: "U",
-          text: pageContent.radioOptionU,
-          hint: {
-            text: pageContent.radioOptionUHint            
-          },
-          label: {
-            classes: govukClass.FONT_WEIGHT_BOLD
-          },
-          checked: isChecked(data.sourceCode, "U"),
-          conditional: {
-            html: sourceCharacterCount
-          }
-        }
-      ],
+      items: getItems(pageContent, data, sourceCharacterCount, sourceInputForI, sourceInputForO, isAnimal) ,
       errorMessage: getFieldError(errorList, "#sourceCode")
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getItems(pageContent, data, sourceCharacterCount, sourceInputForI, sourceInputForO, isAnimal) {
+  return [
+    {
+      value: "W",
+      text: pageContent.radioOptionW,
+      hint: { text: pageContent.radioOptionWHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "W")
+    },
+    isAnimal && {
+      value: "R",
+      text: pageContent.radioOptionR,
+      hint: { text: pageContent.radioOptionRHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "R")
+    },
+    {
+      value: "D",
+      text: pageContent.radioOptionD,
+      hint: { text: pageContent.radioOptionDHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "D")
+    },
+    isAnimal && {
+      value: "C",
+      text: pageContent.radioOptionC,
+      hint: { html: pageContent.radioOptionCHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "C")
+    },
+    isAnimal && {
+      value: "F",
+      text: pageContent.radioOptionF,
+      hint: { html: pageContent.radioOptionFHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "F")
+    },
+    !(isAnimal) && {
+      value: "A",
+      text: pageContent.radioOptionA,
+      hint: { text: pageContent.radioOptionAHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "A")
+    },
+    {
+      value: "I",
+      text: pageContent.radioOptionI,
+      hint: { text: pageContent.radioOptionIHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "I"),
+      conditional: {
+        html: sourceInputForI
+      }
+    },
+    {
+      value: "O",
+      text: pageContent.radioOptionO,
+      hint: { text: pageContent.radioOptionOHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "O"),
+      conditional: {
+        html: sourceInputForO
+      }
+    },
+    {
+      value: "X",
+      text: pageContent.radioOptionX,
+      hint: { text: pageContent.radioOptionXHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "X")
+    },
+    !(isAnimal) && {
+      value: "Y",
+      text: pageContent.radioOptionY,
+      hint: { html: pageContent.radioOptionYHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "Y")
+    },
+    {
+      divider: pageContent.dividerText
+    },
+    {
+      value: "U",
+      text: pageContent.radioOptionU,
+      hint: {
+        text: pageContent.radioOptionUHint            
+      },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "U"),
+      conditional: {
+        html: sourceCharacterCount
+      }
+    }
+  ]
 }
 
 function getBackLink(data) {
@@ -327,11 +331,11 @@ module.exports = [
 
         const animalSchema = Joi.object({ 
           sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U"),
-          enterAReason: Joi.string().max(300).allow("", null),
+          enterAReason: Joi.string().max(stringLength.max300).allow("", null),
         })
         const plantSchema = Joi.object({ 
           sourceCode:  Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y"),
-          enterAReason: Joi.string().max(300).allow("", null),
+          enterAReason: Joi.string().max(stringLength.max300).allow("", null),
         })
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
         const modifiedEnterAReason = request.payload.enterAReason.replace(/\r/g, '')

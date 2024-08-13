@@ -12,6 +12,7 @@ const nextPathSpeciesWarning = `${urlPrefix}/species-warning`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 const addApplication = `${urlPrefix}/add-application`
+const minLengthAutoComplete = 3
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -125,7 +126,7 @@ module.exports = [
       }
     },
     handler: async (request, h) => {
-      if (request.params.query.length < 3) {
+      if (request.params.query.length < minLengthAutoComplete) {
         return ''
       }
       const speciesSearchResults = await getSpecieses(request.server, request.params.query)

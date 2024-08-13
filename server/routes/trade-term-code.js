@@ -3,6 +3,7 @@ const { urlPrefix, enableNotKnownTradeTermCode } = require("../../config/config"
 const { findErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { ALPHA_REGEX } = require("../lib/regex-validation")
+const { stringLength } = require("../lib/constants")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
@@ -133,7 +134,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          tradeTermCode: Joi.string().length(3).regex(ALPHA_REGEX).required()
+          tradeTermCode: Joi.string().length(stringLength.min3).regex(ALPHA_REGEX).required()
         }
         ),
 
