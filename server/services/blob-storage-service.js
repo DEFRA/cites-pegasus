@@ -53,7 +53,7 @@ async function createContainerWithTimestamp(server, name, attemptNo = 1) {
 
             await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
 
-            return await createContainerWithTimestamp(server, name, attemptNo + 1)
+            return createContainerWithTimestamp(server, name, attemptNo + 1)
         }
         throw err
     }
@@ -230,7 +230,7 @@ function streamToBuffer(readableStream) {
 
 async function checkContainerExists(server, containerName) {
     const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
-    return await containerClient.exists()
+    return containerClient.exists()
 }
 
 async function listContainerNames(server, maxPageSize) {

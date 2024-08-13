@@ -111,7 +111,7 @@ function prepareErrorData(data, pageContent) {
       }
       const propertyParts = property.split(".")
       if (propertyParts[propertyPartIndex.part0] && propertyParts[propertyPartIndex.part1] && propertyParts[propertyPartIndex.part2] && propertyParts[propertyPartIndex.part3]) {
-        const newPropertyName = propertyParts[propertyPartIndex.part0] + "." + propertyParts[propertyPartIndex.part1] + i + "." + propertyParts[propertyPartIndex.part2] + "." + propertyParts[propertyPartIndex.part3]
+        const newPropertyName = `${propertyParts[propertyPartIndex.part0]}.${propertyParts[propertyPartIndex.part1]}${i}.${propertyParts[propertyPartIndex.part2]}.${propertyParts[propertyPartIndex.part3]}`
         pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
       } else {
         console.error("Invalid error message")

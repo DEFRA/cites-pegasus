@@ -158,7 +158,7 @@ module.exports = [{
                 //get applicant details from auth credentials
 
                 email = user.email
-                fullName = user.firstName + ' ' + user.lastName
+                fullName = `${user.firstName} ${user.lastName}`
             }
         }
         const pageData = {
