@@ -5,6 +5,7 @@ const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } 
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "add-export-permit"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
 const nextPathAppSummary = `${urlPrefix}/application-summary/check`
@@ -28,7 +29,7 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody1: pageContent.pageBody1,
     pageBody2: pageContent.pageBody2,
-    inputIsExportPermitRequired: {
+    radios: {
       idPrefix: "isExportPermitRequired",
       name: "isExportPermitRequired",
       classes: "govuk-radios--inline",
@@ -87,7 +88,7 @@ module.exports = [
         isExportPermitRequired: application.a10ExportData?.isExportPermitRequired
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -114,7 +115,7 @@ module.exports = [
             isExportPermitRequired
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
