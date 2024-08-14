@@ -55,6 +55,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,    
+    fullWidth: true,
     inputSpecimenDescriptionGeneric: {
       id: "specimenDescriptionGeneric",
       name: "specimenDescriptionGeneric",

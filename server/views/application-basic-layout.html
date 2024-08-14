@@ -2,7 +2,11 @@
 
 {% block content %}
   <div class="govuk-grid-row">
+  {% if fullWidth %}
+    <div class="govuk-grid-column-full">
+  {% else %}
     <div class="govuk-grid-column-two-thirds">
+  {% endif %}
       {% if showPageHeader %}
         <h1 class="govuk-heading-l">
           {{pageHeader}}
@@ -12,6 +16,7 @@
 
         {% block centralContent%}{% endblock %}
 
+        {% block submitButton %}
         {% if continueWithoutSaveButton %}
           {{ govukButton({
             text: continueButton,
@@ -23,6 +28,9 @@
               type: "submit"
             }) }}
         {% endif %}
+        {% endblock %}
+
+        {% block lowerContent %}{% endblock %}
       </form>
     </div>
   </div>
