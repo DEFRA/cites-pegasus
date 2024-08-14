@@ -9,8 +9,11 @@
           }
         }) %}
   {% block bodyText %}
+  {% if pageBody%}
+    <p class="govuk-body">{{pageBody | safe}}</p>
+  {% endif %}
   <div class="govuk-hint">
-    {{inputHint}}
+    {{inputHint | safe}}
   </div>
   {% endblock %}
   {{ govukRadios({

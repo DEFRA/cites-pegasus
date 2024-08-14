@@ -5,6 +5,7 @@ const { createSubmission, deleteDraftSubmission, cloneSubmission, saveDraftSubmi
 const { clearChangeRoute } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'draft-submission-warning'
+const areYouSureViewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathLanding = `${urlPrefix}/`
 const previousPathAppSummary = `${urlPrefix}/application-summary/view-submitted`
@@ -47,23 +48,10 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")
   }
 
   return { ...commonContent, ...model }
@@ -96,7 +84,7 @@ module.exports = [{
       applicationIndex: request.params.applicationIndex
     }
 
-    return h.view('are-you-sure', createModel(null, pageData));
+    return h.view(areYouSureViewName, createModel(null, pageData));
   }
 },
 {
@@ -121,7 +109,7 @@ module.exports = [{
           applicationIndex: request.params.applicationIndex
         }
         
-        return h.view('are-you-sure', createModel(err, pageData)).takeover()        
+        return h.view(areYouSureViewName, createModel(err, pageData)).takeover()        
       }
     }
   },

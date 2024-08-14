@@ -7,6 +7,7 @@ const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "acquired-date"
+const viewName = 'application-date-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
@@ -102,7 +103,7 @@ function getInputs(pageContent, acquiredDateErrors, data, approximateDateInput, 
     { name: 'year', value: data.acquiredDateYear }
   ]
   return {
-    inputAcquiredDate: {
+    inputDate: {
       id: "acquiredDate",
       name: "acquiredDate",
       namePrefix: "acquiredDate",
@@ -206,7 +207,7 @@ module.exports = [
         isExactDateUnknown: species.acquiredDate?.isExactDateUnknown,
         approximateDate: species.acquiredDate?.approximateDate
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -247,7 +248,7 @@ module.exports = [
             approximateDate: approximateDate
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

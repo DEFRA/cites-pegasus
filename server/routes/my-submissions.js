@@ -9,6 +9,7 @@ const { createSubmission, getDraftSubmissionDetails, loadDraftSubmission, delete
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
+const areYouSureViewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
@@ -198,23 +199,10 @@ function createAreYouSureModel(errors) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
     pageBody: pageBody,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")
   }
   return { ...commonContent, ...model }
 }
@@ -472,7 +460,7 @@ module.exports = [
     method: "GET",
     path: `${currentPath}/draft-delete`,
     handler: async (_request, h) => {
-      return h.view('are-you-sure', createAreYouSureModel(null))
+      return h.view(areYouSureViewName, createAreYouSureModel(null))
     }
   },
   {
@@ -485,7 +473,7 @@ module.exports = [
           areYouSure: Joi.boolean().required()
         }),
         failAction: (_request, h, err) => {
-          return h.view('are-you-sure', createAreYouSureModel(err)).takeover()
+          return h.view(areYouSureViewName, createAreYouSureModel(err)).takeover()
         }
       },
       handler: async (request, h) => {

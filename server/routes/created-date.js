@@ -8,6 +8,7 @@ const { dateValidator } = require("../lib/validators")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "created-date"
+const viewName = 'application-date-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/quantity`
 const nextPath = `${urlPrefix}/trade-term-code`
@@ -95,7 +96,7 @@ function getInputs(pageContent, errorList, data, approximateDateInput, createdDa
   ]
 
   return {
-    inputCreatedDate: {
+    inputDate: {
       id: "createdDate",
       name: "createdDate",
       namePrefix: "createdDate",
@@ -198,7 +199,7 @@ module.exports = [
         isExactDateUnknown: species.createdDate?.isExactDateUnknown,
         approximateDate: species.createdDate?.approximateDate
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -237,7 +238,7 @@ module.exports = [
             approximateDate: approximateDate
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

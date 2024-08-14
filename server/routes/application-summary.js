@@ -21,6 +21,7 @@ const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-n
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/copy-as-new`
 const invalidSubmissionPath = `${urlPrefix}/`
 const summaryTypes = Object.values(summaryTypeConst)
+const areYouSureViewName = 'application-yes-no-layout'
 
 const changeLink = {
   sourceCode: {
@@ -933,23 +934,10 @@ function createAreYouSureModel(errors, data) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContentAreYouSure.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContentAreYouSure.pageHeader,
     pageBody: pageContentAreYouSure.pageBody2 ? `${pageContentAreYouSure.pageBody1} ${data.permitType} ${pageContentAreYouSure.pageBody2}` : pageContentAreYouSure.pageBody1,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")    
   }
   return { ...commonContent, ...model }
 }
@@ -1191,7 +1179,7 @@ module.exports = [
         isAgent: submission.isAgent,
         changeRouteData: changeRouteData,
       }
-      return h.view('are-you-sure', createAreYouSureModel(null, pageData))
+      return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
   //POST for Application Summary Page
@@ -1277,7 +1265,7 @@ module.exports = [
             changeRouteData: changeRouteData,
           }
 
-          return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
+          return h.view(areYouSureViewName, createAreYouSureModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
