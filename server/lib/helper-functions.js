@@ -159,6 +159,12 @@ function getCountries(countryList, selectedCountryCode) {
   return countries
 }
 
+function getContent(page) {
+  return {
+    commonContent: textContent.common,
+    pageContent: textContent[page]
+  }
+}
 
 module.exports = {
   isChecked,
@@ -183,5 +189,6 @@ module.exports = {
   toPascalCase,
   deleteIfExists,
   stringToBool,
-  getCountries
+  getCountries,
+  getContent
 }

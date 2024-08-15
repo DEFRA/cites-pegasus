@@ -1,20 +1,15 @@
-const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-const textContent = require('../content/text-content')
 const pageId = 'guidance-completion'
 const viewName = 'warning'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/other-permit-type`
 const nextPath = `${urlPrefix}/applying-on-behalf`
-const invalidSubmissionPath = `${urlPrefix}/`
-
+const { getContent } = require('../lib/helper-functions')
+const { createGetHandler, createPostHandler } = require('../lib/handler-factory')
 
 function createModel() {
-  const commonContent = textContent.common
-  const pageContent = textContent.guidanceCompletion
-
-
+  const { commonContent, pageContent } = getContent("guidanceCompletion")
+  
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -27,39 +22,7 @@ function createModel() {
 
 }
 
-module.exports = [{
-  method: 'GET',
-  path: currentPath,
-  handler: async (request, h) => {
-    const submission = getSubmission(request)
-
-    try {
-      validateSubmission(submission, pageId)
-    } catch (err) {
-      console.error(err)
-      return h.redirect(invalidSubmissionPath)
-    }
-    
-    return h.view(viewName, createModel());
-  }
-},
-{
-  method: 'POST',
-  path: currentPath,
-  handler: async (request, h) => {
-    const submission = getSubmission(request)
-
-    try {
-      validateSubmission(submission, pageId)
-    } catch (err) {
-      console.error(err)
-      return h.redirect(invalidSubmissionPath)
-    }
-
-    const redirectTo = nextPath
-    saveDraftSubmission(request, redirectTo)
-    return h.redirect(redirectTo)
-
-  },
-}
+module.exports = [
+  createGetHandler(pageId, currentPath, null, viewName, createModel),
+  createPostHandler(pageId, currentPath, null, () => nextPath)
 ]
