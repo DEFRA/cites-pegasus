@@ -1,40 +1,7 @@
-{% extends 'layout.html' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% extends 'application-basic-layout.html' %}
+{% set showPageHeader = true %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButton,
-    href: backLink,
-	  attributes: {id: 'linkBack'}
-  }) }}
-
-  {% if errorList %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {{govukErrorSummary ({
-        "titleText": errorSummaryTitle,
-        "errorList": errorList
-        }) }}
-      </div>
-    </div>
-  {% endif %}
-
-{% endblock %}
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {% call govukFieldset({
-          legend: {
-            text: pageHeader,
-            classes: "govuk-fieldset__legend--l",
-            isPageHeading: true
-          }
-        }) %}
+{% block centralContent %}
 
         {% if pageBody %}
           <p>{{ pageBody }}</p>
@@ -51,13 +18,4 @@
         {% endif %}
         {{ govukInput(inputEmail) }}
 
-        {{ govukButton({
-          text: saveAndContinueButton,
-          type: "submit"
-        }) }}
-
-        {% endcall %}
-      </form>
-    </div>
-  </div>
 {% endblock %}

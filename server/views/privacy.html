@@ -1,18 +1,7 @@
-{% extends 'layout.html' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% extends 'application-basic-layout.html' %}
+{% set fullWidth = true %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButtonText,
-    href: backLink,
-	  attributes: {id: 'linkBack', onclick: "history.back(); return false;"}
-  }) }}
-
-{% endblock %}
-
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+{% block centralContent %}
 
       <h1 class="govuk-heading-l"> {{pageHeader}} </h1>
 
@@ -71,6 +60,6 @@
       <h2 class="govuk-heading-m"> {{heading12}} </h2>
         <p class="govuk-body"> {{pageBodyText21 | safe}} </p>
 
-    </div>
-  </div>
+{% endblock %}
+{% block submitButton %}
 {% endblock %}

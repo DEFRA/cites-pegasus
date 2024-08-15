@@ -12,7 +12,11 @@
           {{pageHeader}}
         </h1>
       {% endif %}
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+      {% if noFormAction %}
+        <form method="POST" autocomplete="off" novalidate="novalidate">
+      {% else %}
+        <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+      {% endif %}
 
         {% block centralContent%}{% endblock %}
 
