@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { httpStatusCode } = require("../lib/constants")
 const config = require('../../config/config')
@@ -16,27 +16,8 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.declaration
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["declaration"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["declaration"])
+  
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,

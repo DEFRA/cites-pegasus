@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { stringLength } = require('../lib/constants')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -31,23 +31,8 @@ function createModel(errors, data) {
     const previousPath = `${urlPrefix}/applying-on-behalf`
 
     const { defaultTitle, pageHeader, inputHintEmail } = getPermitSpecificContent(pageContent, data.permitType)
-
-    let errorList = null
-    if (errors) {
-        errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...textContent.contactDetails.errorMessages, ...pageContent.errorMessages }
-        const fields = ['fullName', 'businessName', 'email']
-        fields.forEach(field => {
-            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            if (fieldError) {
-                errorList.push({
-                    text: fieldError,
-                    href: `#${field}`
-                })
-            }
-        })
-    }
-
+    const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...textContent.contactDetails.errorMessages, ...pageContent.errorMessages }, ['fullName', 'businessName', 'email'])
+    
     const backLink = data.backLinkOverride ? data.backLinkOverride : previousPath
 
     const model = {

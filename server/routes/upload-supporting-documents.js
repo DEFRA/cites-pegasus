@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, documentUploadMaxFilesLimit } = require('../../config/config')
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
 const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists, AVScanResult } = require("../services/blob-storage-service")
 const textContent = require('../content/text-content')
@@ -18,27 +18,8 @@ function createModel(errors, data) {
 
   const commonContent = textContent.common
   const pageContent = textContent.uploadSupportingDocuments
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename", "file"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field.split('.')[0]}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename", "file"])
+  
   const documents = data.files?.map((file) => {
     return {
       ...file,

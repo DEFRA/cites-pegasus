@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { stringLength } = require('../lib/constants')
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -22,26 +22,8 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.specimenDescriptionGeneric
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["specimenDescriptionGeneric"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["specimenDescriptionGeneric"])
+  
   let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
   if (data.specimenType === 'animalLiving' && data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens

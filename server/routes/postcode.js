@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { POSTCODE_REGEX } = require('../lib/regex-validation')
@@ -24,22 +24,8 @@ function createModel(errors, data) {
 
     const {defaultTitle, pageHeader, errorMessages} = getPermitSpecificContent(pageContent, data.permitType)
 
-    let errorList = null
-    if (errors) {
-        errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }
-        const fields = ['postcode']
-        fields.forEach(field => {
-            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            if (fieldError) {
-                errorList.push({
-                    text: fieldError,
-                    href: `#${field}`
-                })
-            }
-        })
-    }
-
+    const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessages }, ["postcode"])
+    
     const model = {
         backLink: backLink,
         pageHeader: pageHeader,

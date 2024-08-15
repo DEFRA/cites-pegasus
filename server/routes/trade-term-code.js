@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableNotKnownTradeTermCode } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { ALPHA_REGEX } = require("../lib/regex-validation")
 const { stringLength } = require("../lib/constants")
@@ -18,26 +18,8 @@ const unknownTradeTermCodeValue = 'UKN'
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.tradeTermCode
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["tradeTermCode"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['tradeTermCode'])
+  
   const tradeTermCodes = []
 
   tradeTermCodes.push({

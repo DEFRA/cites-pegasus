@@ -1,6 +1,5 @@
 const Joi = require('joi')
 const { urlPrefix, enableInternalReference } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
 const { setYarValue, getYarValue, sessionKey } = require('../lib/session')
 const dynamics = require("../services/dynamics-service")
 const user = require('../lib/user')

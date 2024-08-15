@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, cloneApplication, getCompletedApplications } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const pageId = "add-application"
@@ -15,25 +15,7 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.addApplication
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["addApplication"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["addApplication"])
 
   const radioOptionCopyPrevious = pageContent.radioOptionCopyPrevious.replace('##SPECIES_NAME##', data.speciesName)
 

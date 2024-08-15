@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError, getErrorList } = require("../lib/helper-functions")
+const { getFieldError, getErrorList } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { dateValidator } = require("../lib/validators")
 const { checkChangeRouteExit } = require("../lib/change-route")

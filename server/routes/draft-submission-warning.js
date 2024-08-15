@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { createSubmission, deleteDraftSubmission, cloneSubmission, saveDraftSubmission } = require("../lib/submission")
 const { clearChangeRoute } = require("../lib/change-route")
 const textContent = require('../content/text-content')
@@ -20,26 +20,8 @@ const newSubmissionTypes = [newSubmissionTypeConst.NEW, newSubmissionTypeConst.C
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.draftSubmissionWarning
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["areYouSure"])
+  
   const backlink = getBacklink(data.newSubmissionType, data.applicationIndex)
 
   const model = {
