@@ -6,6 +6,7 @@ const pageId = 'importer-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const currentPathWithParams = `${currentPath}/{applicationIndex}`
 const previousPathAddExportPermit = `${urlPrefix}/add-export-permit`
+const nextPathAppSummary = `${urlPrefix}/application-summary/check`
 
 function createModel(errors, data) {
 
@@ -32,8 +33,9 @@ function createModel(errors, data) {
 }
 
 const getImporterExporterDetails = (submission, applicationIndex) => submission.applications[applicationIndex].a10ExportData?.importerDetails
+const getRedirect = (applicationIndex) => `${nextPathAppSummary}/${applicationIndex}`
 
 module.exports = [
   createGetHandler(pageId, currentPathWithParams, createModel, getImporterExporterDetails),
-  createPostHandler(pageId, currentPathWithParams, createModel)
+  createPostHandler(pageId, currentPathWithParams, createModel, getRedirect )
 ]

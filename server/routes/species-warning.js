@@ -29,6 +29,6 @@ const getRedirect = (params) => `${nextPath}/${params.applicationIndex}`
 const pathValidation = Joi.object({applicationIndex: Joi.number().required()})
 
 module.exports = [
-    createGetHandler(pageId, currentPathWithParams, pathValidation, viewName, createModel),
-    createPostHandler(pageId, currentPathWithParams, pathValidation, getRedirect)
+    createGetHandler(currentPathWithParams, pathValidation, viewName, createModel),
+    createPostHandler(currentPathWithParams, pathValidation, getRedirect)
 ]

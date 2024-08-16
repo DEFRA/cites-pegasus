@@ -2,7 +2,7 @@ const { urlPrefix } = require("../../config/config")
 const { getSubmission, validateSubmission, saveDraftSubmission } = require('./submission');
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createGetHandler(pageId, path, pathValidation, viewName, createModel) {
+function createGetHandler(path, pathValidation, viewName, createModel) {
     const getHandler = {
         method: 'GET',
         path: path,
@@ -33,7 +33,7 @@ function createGetHandler(pageId, path, pathValidation, viewName, createModel) {
     return getHandler
 }
 
-function createPostHandler(pageId, path, pathValidation, getRedirect) {
+function createPostHandler(path, pathValidation, getRedirect) {
     return {
         method: 'POST',
         path: path,
@@ -43,20 +43,19 @@ function createPostHandler(pageId, path, pathValidation, getRedirect) {
             }
         },
         handler: async (request, h) => {
-            //const { applicationIndex } = request.params;
             const submission = getSubmission(request);
 
-              try {
+            try {
                 validateSubmission(submission, request.path.replace(/^\/+/, ''))
-              } catch (err) {
+            } catch (err) {
                 console.error(err);
                 return h.redirect(invalidSubmissionPath);
-              }
+            }
             const redirectTo = getRedirect(request.params)
             saveDraftSubmission(request, redirectTo)
             return h.redirect(redirectTo)
         }
-    };
+    }
 }
 
 module.exports = { createGetHandler, createPostHandler }

@@ -8,6 +8,8 @@ const currentPath = `${urlPrefix}/${pageId}`
 const currentPathWithParams = `${currentPath}/{applicationIndex}`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
+const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
+const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const lodash = require('lodash')
 
 function createModel(errors, data) {
@@ -35,7 +37,7 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     heading: pageContent.heading,
     headingAddress: pageContent.headingAddress,
@@ -47,7 +49,15 @@ function createModel(errors, data) {
 
 const getImporterExporterDetails = (submission, applicationIndex) => submission.applications[applicationIndex].importerExporterDetails
 
+const getRedirect = (applicationIndex, permitType) => {
+  if (permitType === pt.EXPORT) {
+    return `${nextPathAdditionalInfo}/${applicationIndex}`
+  } else {
+    return `${nextPathOriginPermitDetails}/${applicationIndex}`
+  }
+}
+
 module.exports = [
   createGetHandler(pageId, currentPathWithParams, createModel, getImporterExporterDetails),
-  createPostHandler(pageId, currentPathWithParams, createModel)
+  createPostHandler(pageId, currentPathWithParams, createModel, getRedirect)
 ]

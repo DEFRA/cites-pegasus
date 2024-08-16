@@ -23,6 +23,6 @@ function createModel() {
 }
 
 module.exports = [
-  createGetHandler(pageId, currentPath, null, viewName, createModel),
-  createPostHandler(pageId, currentPath, null, () => nextPath)
+  createGetHandler(currentPath, null, viewName, createModel),
+  createPostHandler(currentPath, null, () => nextPath)
 ]

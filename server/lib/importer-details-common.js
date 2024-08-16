@@ -8,9 +8,6 @@ const { checkChangeRouteExit } = require("./change-route")
 const { permitType: pt } = require('./permit-type-helper')
 const invalidSubmissionPath = `${urlPrefix}/`
 const viewName = 'importer-exporter'
-const nextPathAppSummary = `${urlPrefix}/application-summary/check`
-const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
-const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 
 function getInputs(pageContent, data, errorList) {
     return {
@@ -131,7 +128,7 @@ function createGetHandler(pageId, path, createModel, getImporterExporterDetails)
     return getHandler
 }
 
-function createPostHandler(pageId, path, createModel) {
+function createPostHandler(pageId, path, createModel, getRedirect) {
     return {
         method: "POST",
         path: path,
@@ -181,11 +178,11 @@ function createPostHandler(pageId, path, createModel) {
                     postcode: request.payload.postcode.trim()
                 }
 
-                if(submission.permitType === pt.ARTICLE_10) {
+                if (submission.permitType === pt.ARTICLE_10) {
                     submission.applications[applicationIndex].a10ExportData.importerDetails = details
                 } else {
                     submission.applications[applicationIndex].importerExporterDetails = details
-                }                    
+                }
 
                 try {
                     mergeSubmission(request, { applications: submission.applications }, `${pageId}/${applicationIndex}`)
@@ -200,23 +197,13 @@ function createPostHandler(pageId, path, createModel) {
                     return h.redirect(exitChangeRouteUrl)
                 }
 
-                let redirectTo = null
-
-                if(submission.permitType === pt.ARTICLE_10) {
-                    redirectTo = `${nextPathAppSummary}/${applicationIndex}`
-                } else if (submission.permitType === pt.EXPORT) {
-                    redirectTo = `${nextPathAdditionalInfo}/${applicationIndex}`
-                } else {
-                    redirectTo = `${nextPathOriginPermitDetails}/${applicationIndex}`
-                }
-
+                const redirectTo = getRedirect(applicationIndex, submission.permitType)
+                
                 saveDraftSubmission(request, redirectTo)
                 return h.redirect(redirectTo)
-
             }
         }
     }
 }
-
 
 module.exports = { createGetHandler, createPostHandler, getInputs }
