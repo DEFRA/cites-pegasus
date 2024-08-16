@@ -1,8 +1,8 @@
 const Joi = require("joi")
 const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { findErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
-const { getYarValue, setYarValue } = require('../lib/session')
-const { deliveryType: dt } = require("../lib/constants")
+const { getErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
+const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
+const { deliveryType: dt, summaryType: summaryTypeConst } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, getPermitDescription } = require("../lib/permit-type-helper")
 const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists, allowPageNavigation } = require("../lib/submission")
 const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
@@ -20,21 +20,47 @@ const nextPathYourSubmission = `${urlPrefix}/your-submission`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const draftSubmissionWarning = `${urlPrefix}/draft-submission-warning/copy-as-new`
 const invalidSubmissionPath = `${urlPrefix}/`
-const summaryTypeConst = {
-  CHECK: 'check',
-  VIEW: 'view',
-  COPY: 'copy',
-  VIEW_SUBMITTED: 'view-submitted',
-  COPY_AS_NEW: 'copy-as-new'
-}
 const summaryTypes = Object.values(summaryTypeConst)
+const areYouSureViewName = 'application-yes-no-layout'
+
+const changeLink = {
+  sourceCode: {
+    href: '/sourceCode',
+    hiddenText: 'source code'
+  },
+  describeLivingAnimal: {
+    href: '/describeLivingAnimal'
+  },
+  importerDetails: {
+    href: '/importerDetails'
+  },
+  importerExporterDetails: {
+    href: '/importerExporterDetails',
+    hiddenTextContactDetails: 'contact details'
+  },
+  contactDetails: {
+    href: '/applicantContactDetails',
+    hiddenText: 'contact details'
+  },
+  applicantAddress: {
+    href: '/applicantAddress',
+    hiddenText: 'applicant address'
+  },
+  originPermitDetails: {
+    href: '/originPermitDetails',
+    hiddenText: 'country of origin permit details'
+  },
+  exportPermitDetails: {
+    href: '/exportPermitDetails',
+    hiddenText: 'export permit details'
+  }
+}
 
 const pageContent = textContent.applicationSummary
 const commonContent = textContent.common
 
 function createApplicationSummaryModel(errors, data) {
   const summaryType = data.summaryType
-  const applicationRef = data.cloneSource ? data.cloneSource.applicationRef : data.applicationRef
 
   const summaryData = {
     summaryType,
@@ -42,7 +68,7 @@ function createApplicationSummaryModel(errors, data) {
     mandatoryFieldIssues: data.mandatoryFieldIssues
   }
 
-  const appContent = lookupAppContent(data, applicationRef)
+  const appContent = lookupAppContent(data)
 
   const summaryListSections = []
   const isReadOnly = data.summaryType === summaryTypeConst.VIEW_SUBMITTED
@@ -50,30 +76,16 @@ function createApplicationSummaryModel(errors, data) {
   summaryListSections.push(getSummaryListAboutThePermit(summaryData, appContent))
   summaryListSections.push(getSummaryListDeliveryAddress(summaryData, data))
   summaryListSections.push(getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListContactDetails(summaryData, pageContent, data))
-  summaryListSections.push(getSummaryListRemarks(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly))
-  summaryListSections.push(getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly))
+  summaryListSections.push(getSummaryListImporterExporterDetails(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListContactDetails(summaryData, data))
+  summaryListSections.push(getSummaryListRemarks(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOnly))
+  summaryListSections.push(getSummaryListImportPermitDetails(summaryData, data, isReadOnly))
   summaryListSections.push(getSummaryListA10ExportData(summaryData, data, isReadOnly))
 
   const breadcrumbs = getBreadcrumbs(data, summaryType)
-
-  let backLink = null
-
-  const endOfApplicationPage = getEndOfApplicationPage(data.applicationIndex, data.permitType, data.a10ExportData)
-
-  switch (summaryType) {
-    case summaryTypeConst.CHECK:
-      backLink = data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
-      break
-    case summaryTypeConst.VIEW_SUBMITTED:
-    case summaryTypeConst.COPY_AS_NEW:
-      break
-    default:
-      backLink = nextPathYourSubmission
-  }
+  const backLink = getBackLink(summaryType, data)
 
   summaryListSections.forEach(item => applyBorderClasses(item.value))
 
@@ -97,7 +109,7 @@ function createApplicationSummaryModel(errors, data) {
     hintIncomplete = pageContent.hintIncomplete
   }
 
-  const showImportPermitDetails = summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== summaryTypeConst.VIEW_SUBMITTED || summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text)
+  const showImportPermitDetails = canShowImportPermitDetails(summaryListSectionsObject, summaryType)
 
   const model = {
     backLink,
@@ -132,6 +144,23 @@ function createApplicationSummaryModel(errors, data) {
     errorList
   }
   return { ...commonContent, ...model }
+}
+
+function canShowImportPermitDetails(summaryListSectionsObject, summaryType) {
+  return summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== summaryTypeConst.VIEW_SUBMITTED || Boolean(summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text))
+}
+
+function getBackLink(summaryType, data) {
+  const endOfApplicationPage = getEndOfApplicationPage(data.applicationIndex, data.permitType, data.a10ExportData)
+  switch (summaryType) {
+    case summaryTypeConst.CHECK:
+      return data.referer?.endsWith(nextPathYourSubmission) ? nextPathYourSubmission : endOfApplicationPage
+    case summaryTypeConst.VIEW_SUBMITTED:
+    case summaryTypeConst.COPY_AS_NEW:
+      return null
+    default:
+      return nextPathYourSubmission
+  }
 }
 
 function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData) {
@@ -282,13 +311,13 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
   //This is where we need to add a new entry for number of unmarked specimens
 
   if (allowPageNavigation(data.submissionProgress, "source-code/" + data.applicationIndex) || isReadOnly) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["sourceCode", "enterAReason"], pageContent.rowTextSourceCode, `${data.species.sourceCode || ""} ${appContent.sourceCodeValueText[data.species.sourceCode] || ""}`, "/sourceCode", "source code"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["sourceCode", "enterAReason"], pageContent.rowTextSourceCode, `${data.species.sourceCode || ""} ${appContent.sourceCodeValueText[data.species.sourceCode] || ""}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
 
     if (data.species.sourceCode === 'I') {
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForI", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForI || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForI] || ""}`, "/sourceCode", "source code"))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForI", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForI || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForI] || ""}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
     }
     if (data.species.sourceCode === 'O') {
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForO", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForO || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForO] || ""}`, "/sourceCode", "source code"))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForO", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForO || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForO] || ""}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
     }
   }
   //Old logic if (data.permitType !== pt.ARTICLE_10) {
@@ -330,7 +359,7 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
     const markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
     for (let i = 0; i < markCount; i++) {
       let markDetails = ''
-      if (data.species.uniqueIdentificationMarks && data.species.uniqueIdentificationMarks[i]) {
+      if (data.species.uniqueIdentificationMarks?.[i]) {
         const mark = data.species.uniqueIdentificationMarks[i]
         const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
         markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
@@ -339,15 +368,16 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
     }
   }
   if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, "/describeLivingAnimal", "sex"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "dateOfBirth", pageContent.rowTextDateOfBirth, data.species.dateOfBirth?.isExactDateUnknown ? data.species.dateOfBirth?.approximateDate : getDateValue(data.species.dateOfBirth), "/describeLivingAnimal", "date of birth"))
+
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, changeLink.describeLivingAnimal.href, "sex"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "dateOfBirth", pageContent.rowTextDateOfBirth, data.species.dateOfBirth?.isExactDateUnknown ? data.species.dateOfBirth?.approximateDate : getDateValue(data.species.dateOfBirth), changeLink.describeLivingAnimal.href, "date of birth"))
 
     if ([pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType)) {
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "maleParentDetails", pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, "/describeLivingAnimal", "male parent details"))
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "femaleParentDetails", pageContent.rowTextFemaleParentDetails, data.species.femaleParentDetails, "/describeLivingAnimal", "female parent details"))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "maleParentDetails", pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, changeLink.describeLivingAnimal.href, "male parent details"))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "femaleParentDetails", pageContent.rowTextFemaleParentDetails, data.species.femaleParentDetails, changeLink.describeLivingAnimal.href, "female parent details"))
     }
     //Old logic if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionLivingAnimal", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", "/describeLivingAnimal", "describe the specimen"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionLivingAnimal", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", changeLink.describeLivingAnimal.href, "describe the specimen"))
   }
   //Old logic if (data.species.specimenType !== "animalLiving" || (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) {
   if (allowPageNavigation(data.submissionProgress, "describe-specimen/" + data.applicationIndex) || (isReadOnly && data.species.specimenDescriptionGeneric)) {
@@ -403,18 +433,22 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
       textDescription = commonContent.radioOptionYes
     } else if (data.a10ExportData?.isExportPermitRequired === false) {
       textDescription = commonContent.radioOptionNo
+    } else {
+      //Do nothing
     }
 
-    if (allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)) {
+    if (shouldDisplayAddExportPermit(data, isReadOnly)) {
       summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, "/addExportPermit", "is export permit required"))
     }
 
-    if (allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)) {
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData?.importerDetails?.countryDesc, "/importerDetails", "importer country"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData?.importerDetails?.name, "/importerDetails", "importer name"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, "/importerDetails", "importer address"))
+    if (shouldDisplayImporterDetails(data, isReadOnly)) {
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData?.importerDetails?.countryDesc, changeLink.importerDetails.href, "importer country"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData?.importerDetails?.name, changeLink.importerDetails.href, "importer name"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, changeLink.importerDetails.href, "importer address"))
     }
   }
+
+
 
   return createSummaryList(
     'summaryListA10ExportData',
@@ -423,7 +457,15 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
   )
 }
 
-function getSummaryListImporterExporterDetails(summaryData, pageContent, data, isReadOnly) {
+function shouldDisplayAddExportPermit(data, isReadOnly) {
+  return allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)
+}
+
+function shouldDisplayImporterDetails(data, isReadOnly) {
+  return allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)
+}
+
+function getSummaryListImporterExporterDetails(summaryData, data, isReadOnly) {
   const summaryListImporterExporterDetailsRows = []
 
   const addressDataItems = [
@@ -438,10 +480,10 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
 
   if (allowPageNavigation(data.submissionProgress, "importer-exporter/" + data.applicationIndex) || (isReadOnly && data.importerExporterDetails)) {
     if (data.permitType !== pt.IMPORT) {
-      summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, data.importerExporterDetails?.countryDesc, "/importerExporterDetails", "country"))
+      summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, data.importerExporterDetails?.countryDesc, changeLink.importerExporterDetails.href, "country"))
     }
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, "/importerExporterDetails", "contact details"))
-    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, "/importerExporterDetails", "contact details"))
+    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, changeLink.importerExporterDetails.href, changeLink.importerExporterDetails.hiddenTextContactDetails))
+    summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, changeLink.importerExporterDetails.href, changeLink.importerExporterDetails.hiddenTextContactDetails))
   }
 
   return createSummaryList(
@@ -451,7 +493,7 @@ function getSummaryListImporterExporterDetails(summaryData, pageContent, data, i
   )
 }
 
-function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListRemarks(summaryData, data, isReadOnly) {
   const summaryListRemarksRows = []
   if (allowPageNavigation(data.submissionProgress, "additional-info/" + data.applicationIndex) || isReadOnly) {
     summaryListRemarksRows.push(createSummaryListRow(summaryData, "comments", pageContent.rowTextRemarks, data.comments, "/additionalInfo", "remarks"))
@@ -468,7 +510,7 @@ function getSummaryListRemarks(summaryData, pageContent, data, isReadOnly) {
   )
 }
 
-function getSummaryListContactDetails(summaryData, pageContent, data) {
+function getSummaryListContactDetails(summaryData, data) {
   const summaryListContactDetailsRows = []
   const addressDataItems = [
     data.applicant.address.addressLine1,
@@ -484,18 +526,16 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
   const contactDetailsData = {
     fullName: data.applicant.fullName,
     businessName: data.applicant.businessName,
-    email: data.applicant.email,
-    hrefPathSuffixContactDetails: "/applicantContactDetails",
-    hrefPathSuffixAddress: "/applicantAddress"
+    email: data.applicant.email
   }
 
   const rowTextFullName = data.isAgent ? pageContent.rowTextFullNameAgent : pageContent.rowTextFullName
-  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-fullName', rowTextFullName, contactDetailsData.fullName, contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
+  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-fullName', rowTextFullName, contactDetailsData.fullName, changeLink.contactDetails.href, changeLink.contactDetails.hiddenText))
   if (!data.isAgent) {
-    summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-businessName', pageContent.rowTextBusinessName, contactDetailsData.businessName, contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
+    summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-businessName', pageContent.rowTextBusinessName, contactDetailsData.businessName, changeLink.contactDetails.href, changeLink.contactDetails.hiddenText))
   }
-  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-email', pageContent.rowTextEmailAddress, contactDetailsData.email, contactDetailsData.hrefPathSuffixContactDetails, "contact details"))
-  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-address', pageContent.rowTextAddress, addressDataValue, contactDetailsData.hrefPathSuffixAddress, "address"))
+  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-email', pageContent.rowTextEmailAddress, contactDetailsData.email, changeLink.contactDetails.href, changeLink.contactDetails.hiddenText))
+  summaryListContactDetailsRows.push(createSummaryListRow(summaryData, 'applicant-address', pageContent.rowTextAddress, addressDataValue, changeLink.applicantAddress.href, changeLink.applicantAddress.hiddenText))
 
   return createSummaryList(
     'summaryListApplicantContactDetails',
@@ -504,7 +544,7 @@ function getSummaryListContactDetails(summaryData, pageContent, data) {
   )
 }
 
-function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnly) {
   const summaryListPermitDetailsCountryOfOriginRows = []
 
   const permitIssueDate = {
@@ -531,9 +571,9 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, da
   }
 
   if (allowPageNavigation(data.submissionProgress, "origin-permit-details/" + data.applicationIndex) || (isReadOnly && countryOfOriginText)) {
-    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOrigin', pageContent.rowTextCountry, countryOfOriginText, "/originPermitDetails", "country of origin permit details"))
-    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitNumber', pageContent.rowTextPermitNumber, countryOfOriginPermitNumberText, "/originPermitDetails", "country of origin permit details"))
-    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitIssueDate', pageContent.rowTextPermitIssueDate, countryOfOriginPermitIssueDateText, "/originPermitDetails", "country of origin permit details"))
+    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOrigin', pageContent.rowTextCountry, countryOfOriginText, changeLink.originPermitDetails.href, changeLink.originPermitDetails.hiddenText))
+    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitNumber', pageContent.rowTextPermitNumber, countryOfOriginPermitNumberText, changeLink.originPermitDetails.href, changeLink.originPermitDetails.hiddenText))
+    summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitIssueDate', pageContent.rowTextPermitIssueDate, countryOfOriginPermitIssueDateText, changeLink.originPermitDetails.href, changeLink.originPermitDetails.hiddenText))
     if (data.permitType === pt.IMPORT && typeof data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin === 'boolean' && !data.permitDetails?.isCountryOfOriginNotKnown) {
       const isExportOrReexportSameAsCountryOfOrigin = pageContent.rowTextIsExportOrReexportSameAsCountryOfOrigin.replace('##COUNTRY##', toPascalCase(countryOfOriginText))
       summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'isExportOrReexportSameAsCountryOfOrigin', isExportOrReexportSameAsCountryOfOrigin, data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/countryOfOriginImport", "country of origin import"))
@@ -547,7 +587,7 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, pageContent, da
   )
 }
 
-function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOnly) {
 
   const summaryListPermitDetailsExportOrReexportRows = []
 
@@ -582,9 +622,9 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
   const sameAsCountryOfOriginShownInOriginPermitDetails = data.permitType === pt.IMPORT && data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin && !data.permitDetails?.isCountryOfOriginNotKnown
 
   if (allowPageNavigation(data.submissionProgress, "export-permit-details/" + data.applicationIndex) || (isReadOnly && exportOrReexportCountryText && !sameAsCountryOfOriginShownInOriginPermitDetails)) {
-    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportCountryText, "/exportPermitDetails", "export permit details"))
-    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitNumberText, "/exportPermitDetails", "export permit details"))
-    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, "/exportPermitDetails", "export permit details"))
+    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportCountryText, changeLink.exportPermitDetails.href, changeLink.exportPermitDetails.hiddenText))
+    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitNumberText, changeLink.exportPermitDetails.href, changeLink.exportPermitDetails.hiddenText))
+    summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, changeLink.exportPermitDetails.href, changeLink.exportPermitDetails.hiddenText))
   }
   return createSummaryList(
     'summaryListExportOrReexportPermitDetails',
@@ -593,7 +633,7 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, pageContent, d
   )
 }
 
-function getSummaryListImportPermitDetails(summaryData, pageContent, data, isReadOnly) {
+function getSummaryListImportPermitDetails(summaryData, data, isReadOnly) {
   const summaryListPermitDetailsImportRows = []
 
   const permitIssueDate = {
@@ -713,41 +753,10 @@ function getDateValue(date) {
   }
 }
 
-function lookupAppContent(data, applicationRef) {
-  let pageTitle = null
-  let pageHeader = null
-  let buttonText = null
-  let showConfirmButton = true
-
-  switch (data.summaryType) {
-    case summaryTypeConst.CHECK:
-      pageTitle = pageContent.defaultTitleCheck
-      pageHeader = pageContent.pageHeaderCheck
-      buttonText = commonContent.confirmAndContinueButton
-      break
-    case summaryTypeConst.COPY:
-    case summaryTypeConst.COPY_AS_NEW:
-      pageTitle = pageContent.defaultTitleCopy
-      pageHeader = pageContent.pageHeaderCopy
-      buttonText = commonContent.confirmAndContinueButton
-      break
-    case summaryTypeConst.VIEW:
-      pageTitle = pageContent.defaultTitleView
-      pageHeader = pageContent.pageHeaderView
-      buttonText = commonContent.returnYourApplicationsButton
-      break
-    case summaryTypeConst.VIEW_SUBMITTED:
-      pageTitle = data.applicationRef
-      pageHeader = data.applicationRef
-      buttonText = commonContent.copyAsNewApplicationButton
-      showConfirmButton = data.isCurrentUsersApplication
-      break
-  }
-
+function getPermitSpecificContent(permitType) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
-  let permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
-  switch (data.permitType) {
+  switch (permitType) {
     case pt.IMPORT:
       headerApplicantContactDetails = pageContent.headerImporterContactDetails
       headingImporterExporterDetails = pageContent.headerExportOrReexporterContactDetails
@@ -767,49 +776,20 @@ function lookupAppContent(data, applicationRef) {
       headerApplicantContactDetails = pageContent.headerArticle10ContactDetails
       break
     default:
-      throw new Error(`Invalid permit type: ${data.permitType}`)
+      throw new Error(`Invalid permit type: ${permitType}`)
   }
+  return { headerApplicantContactDetails, headingImporterExporterDetails }
+}
 
-  const purposeCodeValueText = {
-    B: pageContent.rowTextPurposeCodeB,
-    E: pageContent.rowTextPurposeCodeE,
-    G: pageContent.rowTextPurposeCodeG,
-    H: pageContent.rowTextPurposeCodeH,
-    L: pageContent.rowTextPurposeCodeL,
-    M: pageContent.rowTextPurposeCodeM,
-    N: pageContent.rowTextPurposeCodeN,
-    P: pageContent.rowTextPurposeCodeP,
-    Q: pageContent.rowTextPurposeCodeQ,
-    S: pageContent.rowTextPurposeCodeS,
-    T: pageContent.rowTextPurposeCodeT,
-    Z: pageContent.rowTextPurposeCodeZ,
-  }
+function lookupAppContent(data) {
+  const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data)
+  const permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
 
-  const sourceCodeValueText = {
-    W: pageContent.rowTextSourceCodeW,
-    R: pageContent.rowTextSourceCodeR,
-    D: data.species?.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
-    C: pageContent.rowTextSourceCodeC,
-    F: pageContent.rowTextSourceCodeF,
-    I: pageContent.rowTextSourceCodeI,
-    O: pageContent.rowTextSourceCodeO,
-    X: pageContent.rowTextSourceCodeX,
-    Y: pageContent.rowTextSourceCodeY,
-    A: pageContent.rowTextSourceCodeA,
-    U: data.species?.enterAReason
-  }
+  const { headerApplicantContactDetails, headingImporterExporterDetails } = getPermitSpecificContent(data.permitType)
 
-  const otherSourceCodeValueText = {
-    W: pageContent.rowTextSourceCodeW,
-    R: pageContent.rowTextSourceCodeR,
-    D: data.species?.kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
-    C: pageContent.rowTextSourceCodeC,
-    F: pageContent.rowTextSourceCodeF,
-    A: pageContent.rowTextSourceCodeA,
-    X: pageContent.rowTextSourceCodeX,
-    Y: pageContent.rowTextSourceCodeY,
-    U: pageContent.rowTextSourceCodeU
-  };
+  const purposeCodeValueText = getPurposeCodeValueText()
+  const sourceCodeValueText = getSourceCodeValueText(data.species?.kingdom, data.species?.enterAReason)
+  const otherSourceCodeValueText = getOtherSourceCodeValueText(data.species?.kingdom)
 
   const specimenTypeValue = {
     animalLiving: pageContent.rowTextSpecimenTypeAnimalLiving,
@@ -856,112 +836,181 @@ function lookupAppContent(data, applicationRef) {
   }
 }
 
+function getPurposeCodeValueText() {
+
+  return {
+    B: pageContent.rowTextPurposeCodeB,
+    E: pageContent.rowTextPurposeCodeE,
+    G: pageContent.rowTextPurposeCodeG,
+    H: pageContent.rowTextPurposeCodeH,
+    L: pageContent.rowTextPurposeCodeL,
+    M: pageContent.rowTextPurposeCodeM,
+    N: pageContent.rowTextPurposeCodeN,
+    P: pageContent.rowTextPurposeCodeP,
+    Q: pageContent.rowTextPurposeCodeQ,
+    S: pageContent.rowTextPurposeCodeS,
+    T: pageContent.rowTextPurposeCodeT,
+    Z: pageContent.rowTextPurposeCodeZ
+  }
+}
+
+function getSourceCodeValueText(kingdom, enterAReason) {
+  return {
+    W: pageContent.rowTextSourceCodeW,
+    R: pageContent.rowTextSourceCodeR,
+    D: kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    C: pageContent.rowTextSourceCodeC,
+    F: pageContent.rowTextSourceCodeF,
+    I: pageContent.rowTextSourceCodeI,
+    O: pageContent.rowTextSourceCodeO,
+    X: pageContent.rowTextSourceCodeX,
+    Y: pageContent.rowTextSourceCodeY,
+    A: pageContent.rowTextSourceCodeA,
+    U: enterAReason
+  }
+}
+
+function getOtherSourceCodeValueText(kingdom) {
+  return {
+    W: pageContent.rowTextSourceCodeW,
+    R: pageContent.rowTextSourceCodeR,
+    D: kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    C: pageContent.rowTextSourceCodeC,
+    F: pageContent.rowTextSourceCodeF,
+    A: pageContent.rowTextSourceCodeA,
+    X: pageContent.rowTextSourceCodeX,
+    Y: pageContent.rowTextSourceCodeY,
+    U: pageContent.rowTextSourceCodeU
+  }
+}
+
+function getSummaryTypeSpecificContent(data) {
+
+  let pageTitle = null
+  let pageHeader = null
+  let buttonText = null
+  let showConfirmButton = true
+
+
+  switch (data.summaryType) {
+    case summaryTypeConst.CHECK:
+      pageTitle = pageContent.defaultTitleCheck
+      pageHeader = pageContent.pageHeaderCheck
+      buttonText = commonContent.confirmAndContinueButton
+      break
+    case summaryTypeConst.COPY:
+    case summaryTypeConst.COPY_AS_NEW:
+      pageTitle = pageContent.defaultTitleCopy
+      pageHeader = pageContent.pageHeaderCopy
+      buttonText = commonContent.confirmAndContinueButton
+      break
+    case summaryTypeConst.VIEW:
+      pageTitle = pageContent.defaultTitleView
+      pageHeader = pageContent.pageHeaderView
+      buttonText = commonContent.returnYourApplicationsButton
+      break
+    case summaryTypeConst.VIEW_SUBMITTED:
+      pageTitle = data.applicationRef
+      pageHeader = data.applicationRef
+      buttonText = commonContent.copyAsNewApplicationButton
+      showConfirmButton = data.isCurrentUsersApplication
+      break
+    default:
+      throw new Error(`Invalid summary type: ${data.summaryType}`)
+  }
+  return { pageTitle, pageHeader, buttonText, showConfirmButton }
+}
 
 function createAreYouSureModel(errors, data) {
-  const commonContent = textContent.common
-  const changeType = data.changeRouteData.changeType
-  const areYouSureText = textContent.applicationSummary.areYouSure
+  //const commonContent = textContent.common
 
-  let pageContent = null
-  if (changeType === "permitType") {
-    pageContent = areYouSureText.permitType
-  } else if (changeType === "speciesName") {
-    pageContent = areYouSureText.scientificName
-  } else if (changeType === "multipleSpecimens") {
-    pageContent = areYouSureText.multipleSpecimens
-  } else if (changeType === "deliveryAddress") {
-    pageContent = areYouSureText.deliveryAddress
-  } else if (!data.isAgent) {
-    if (changeType === "applicantContactDetails") {
-      pageContent = areYouSureText.yourContactDetails
-    } else if (changeType === "applicantAddress") {
-      pageContent = areYouSureText.yourAddress
-    }
-  } else if (data.isAgent) {
-    if (changeType === "applicantContactDetails") {
-      switch (data.permitType) {
-        case pt.IMPORT:
-          pageContent = areYouSureText.importerContactDetails
-          break
-        case pt.EXPORT:
-          pageContent = areYouSureText.exporterContactDetails
-          break
-        case pt.MIC:
-        case pt.TEC:
-        case pt.POC:
-        case pt.REEXPORT:
-          pageContent = areYouSureText.reexporterContactDetails
-          break
-        case pt.ARTICLE_10:
-          pageContent = areYouSureText.article10ContactDetails
-          break
-      }
-    } else if (changeType === "applicantAddress") {
-      switch (data.permitType) {
-        case pt.IMPORT:
-          pageContent = areYouSureText.importerAddress
-          break
-        case pt.EXPORT:
-          pageContent = areYouSureText.exporterAddress
-          break
-        case pt.MIC:
-        case pt.TEC:
-        case pt.POC:
-        case pt.REEXPORT:
-          pageContent = areYouSureText.reexporterAddress
-          break
-        case pt.ARTICLE_10:
-          pageContent = areYouSureText.article10Address
-          break
-      }
-    }
-  }
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const pageContentAreYouSure = getPageContentAreYouSure(data)
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentAreYouSure.errorMessages }, ['areYouSure'])
 
   const model = {
     backLink: `${currentPath}/${data.summaryType}/${data.applicationIndex}`,
     formActionPage: `${currentPath}/are-you-sure/${data.summaryType}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    pageHeader: pageContent.pageHeader,
-    pageBody: pageContent.pageBody2 ? `${pageContent.pageBody1} ${data.permitType} ${pageContent.pageBody2}` : pageContent.pageBody1,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContentAreYouSure.defaultTitle + commonContent.pageTitleSuffix,
+    pageHeader: pageContentAreYouSure.pageHeader,
+    pageBody: pageContentAreYouSure.pageBody2 ? `${pageContentAreYouSure.pageBody1} ${data.permitType} ${pageContentAreYouSure.pageBody2}` : pageContentAreYouSure.pageBody1,
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")    
   }
   return { ...commonContent, ...model }
+}
+
+function getPageContentAreYouSure(data) {
+  const changeType = data.changeRouteData.changeType
+  const areYouSureText = textContent.applicationSummary.areYouSure
+
+  let pageContentAreYouSure = null
+  if (changeType === "permitType") {
+    pageContentAreYouSure = areYouSureText.permitType
+  } else if (changeType === "speciesName") {
+    pageContentAreYouSure = areYouSureText.scientificName
+  } else if (changeType === "multipleSpecimens") {
+    pageContentAreYouSure = areYouSureText.multipleSpecimens
+  } else if (changeType === "deliveryAddress") {
+    pageContentAreYouSure = areYouSureText.deliveryAddress
+  } else if (!data.isAgent) {
+    if (changeType === "applicantContactDetails") {
+      pageContentAreYouSure = areYouSureText.yourContactDetails
+    } else if (changeType === "applicantAddress") {
+      pageContentAreYouSure = areYouSureText.yourAddress
+    } else {
+      //Do nothing
+    }
+  } else if (data.isAgent) {
+    if (changeType === "applicantContactDetails") {
+      pageContentAreYouSure = getPageContentApplicantContactDetails(data.permitType, areYouSureText)
+    } else if (changeType === "applicantAddress") {
+      pageContentAreYouSure = getPageContentApplicantAddress(data.permitType, areYouSureText)
+    } else {
+      //Do nothing
+    }
+  } else {
+    //Do nothing
+  }
+  return pageContentAreYouSure
+}
+
+function getPageContentApplicantContactDetails(permitType, areYouSureText) {
+  switch (permitType) {
+    case pt.IMPORT:
+      return areYouSureText.importerContactDetails
+    case pt.EXPORT:
+      return areYouSureText.exporterContactDetails
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
+      return areYouSureText.reexporterContactDetails
+    case pt.ARTICLE_10:
+      return areYouSureText.article10ContactDetails
+    default:
+      throw new Error(`Unknown permit type ${permitType}`)
+  }
+}
+
+function getPageContentApplicantAddress(permitType, areYouSureText) {
+  switch (permitType) {
+    case pt.IMPORT:
+      return areYouSureText.importerAddress
+    case pt.EXPORT:
+      return areYouSureText.exporterAddress
+    case pt.MIC:
+    case pt.TEC:
+    case pt.POC:
+    case pt.REEXPORT:
+      return areYouSureText.reexporterAddress
+    case pt.ARTICLE_10:
+      return areYouSureText.article10Address
+    default:
+      throw new Error(`Unknown permit type ${permitType}`)
+  }
 }
 
 function postFailAction(request, h, err) {
@@ -1008,7 +1057,7 @@ module.exports = [
           summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -1019,15 +1068,15 @@ module.exports = [
 
       let cloneSource = null
       if (summaryType === summaryTypeConst.COPY_AS_NEW || (!submission.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED)) {
-        cloneSource = getYarValue(request, 'cloneSource')
+        cloneSource = getYarValue(request, sessionKey.CLONE_SOURCE)
       }
 
       if (cloneSource?.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED) {
         //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
         const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
         submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
-        setYarValue(request, 'submission', submission)
-        setYarValue(request, 'cloneSource', null)
+        setYarValue(request, sessionKey.SUBMISSION, submission)
+        setYarValue(request, sessionKey.CLONE_SOURCE, null)
       }
 
 
@@ -1081,7 +1130,7 @@ module.exports = [
           applicationIndex: Joi.number().required(),
           changeType: Joi.string().valid(...changeTypes),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -1130,7 +1179,7 @@ module.exports = [
         isAgent: submission.isAgent,
         changeRouteData: changeRouteData,
       }
-      return h.view('are-you-sure', createAreYouSureModel(null, pageData))
+      return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
   //POST for Application Summary Page
@@ -1216,7 +1265,7 @@ module.exports = [
             changeRouteData: changeRouteData,
           }
 
-          return h.view('are-you-sure', createAreYouSureModel(err, pageData)).takeover()
+          return h.view(areYouSureViewName, createAreYouSureModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

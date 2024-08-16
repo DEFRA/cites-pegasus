@@ -1,59 +1,20 @@
-{% extends 'layout.html' %}
+{% extends 'application-basic-layout.html' %}
+{% set showPageHeader = true %}
 
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButton,
-    href: backLink,
-	  attributes: {id: 'linkBack'}
-  }) }}
-
-  {% if errorList %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {{govukErrorSummary ({
-      "titleText": errorSummaryTitle,
-      "errorList": errorList
-      }) }}
-      </div>
-    </div>
-  {% endif %}
+{% block centralContent %}
+  <p>{{pageBodyText1}}</p>
+  <p>{{pageBodyText2}}</p>
+  <p>{{pageBodyText3}}</p>
+  <p>{{pageBodyTextAgent}}</p>
+  {{ govukCheckboxes(inputDeclaration) }}
 {% endblock %}
 
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {% call govukFieldset({
-          legend: {
-            text: pageHeader,
-            classes: "govuk-fieldset__legend--l",
-            isPageHeading: true
-          }
-        }) %}
-
-        <p>{{pageBodyText1}}</p>
-        <p>{{pageBodyText2}}</p>
-        <p>{{pageBodyText3}}</p>
-        <p>{{pageBodyTextAgent}}</p>
-       
-       
-        {{ govukCheckboxes(inputDeclaration) }}
-
-        {{ govukButton({
-                    text: agreeAndSubmitButton,
-                    classes: 'loading-message-trigger',
-                    type: "submit"
-                }) }}
-        {% endcall %}
-      </form>
-    </div>
-  </div>
+{% block submitButton %}
+  {{ govukButton({
+      text: agreeAndSubmitButton,
+      classes: 'loading-message-trigger',
+      type: "submit"
+  }) }}
 {% endblock %}
 
 {% block localJS %}

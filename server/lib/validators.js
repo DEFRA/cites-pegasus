@@ -4,13 +4,14 @@ function isValidDate(day, month, year) {
     const date = new Date(year, month - 1, day)
 
     return Boolean(+date)
-        && date.getDate() == day
-        && date.getMonth() + 1 == month
-        && year >= 100;
+        && date.getDate() === Number(day)
+        && date.getMonth() + 1  === Number(month)
+        && year >= 100
 }
 
 function isAfterMinDate(day, month, year) {
-    const minDate = new Date(1753, 0, 1)
+    const minDateYear = 1753
+    const minDate = new Date(minDateYear, 0, 1)
     const date = new Date(year, month - 1, day)
 
     return date >= minDate
@@ -76,6 +77,7 @@ function checkIfEmptyDateField(day, month, year, fieldName, helpers) {
     if (!year) {
         return helpers.error(errorAnyEmpty, { customLabel: `${fieldName}-year` })
     }
+    return null
 }
 
 function areAllEmpty(...args) {

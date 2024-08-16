@@ -1,18 +1,18 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { stringLength } = require('../lib/constants')
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { NAME_REGEX, BUSINESSNAME_REGEX } = require('../lib/regex-validation')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require('../content/text-content')
-const { getYarValue } = require('../lib/session')
+const { getYarValue, sessionKey } = require('../lib/session')
 const pageId = 'contact-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const contactTypes = ['applicant']
 const nextPath = `${urlPrefix}/postcode`
 const invalidSubmissionPath = `${urlPrefix}/`
-
 
 function createModel(errors, data) {
     const commonContent = textContent.common;
@@ -28,13 +28,60 @@ function createModel(errors, data) {
         pageContent = textContent.contactDetails.agent
     }
 
-    let previousPath = `${urlPrefix}/applying-on-behalf`
+    const previousPath = `${urlPrefix}/applying-on-behalf`
 
-    let defaultTitle = ''
-    let pageHeader = ''
-    let inputHintEmail = ''
+    const { defaultTitle, pageHeader, inputHintEmail } = getPermitSpecificContent(pageContent, data.permitType)
+    const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...textContent.contactDetails.errorMessages, ...pageContent.errorMessages }, ['fullName', 'businessName', 'email'])
+    
+    const backLink = data.backLinkOverride ? data.backLinkOverride : previousPath
 
-    switch (data.permitType) {
+    const model = {
+        backLink: backLink,
+        pageHeader: pageHeader,
+        pageBody: pageContent.pageBody,
+        inputLabelBusinessName: pageContent.inputLabelBusinessName,
+        businessNameValue: data.businessName,
+        isAgent: data.isAgent,
+        formActionPage: `${currentPath}/${data.contactType}`,
+        ...errorList ? { errorList } : {},
+        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
+
+        inputFullName: {
+            label: {
+                text: pageContent.inputLabelFullName
+            },
+            id: "fullName",
+            name: "fullName",
+            classes: "govuk-!-width-two-thirds",
+            autocomplete: "name",
+            ...(data.fullName ? { value: data.fullName } : {}),
+            errorMessage: getFieldError(errorList, '#fullName')
+        },
+
+        inputEmail: {
+            label: {
+                text: pageContent.inputLabelEmail,
+            },
+            hint: {
+                text: inputHintEmail
+            },
+            id: "email",
+            name: "email",
+            classes: "govuk-!-width-two-thirds",
+            autocomplete: "email",
+            ...(data.email ? { value: data.email } : {}),
+            errorMessage: getFieldError(errorList, '#email')
+        }
+    }
+    return { ...commonContent, ...model }
+}
+
+function getPermitSpecificContent(pageContent, permitType) {
+    let defaultTitle
+    let pageHeader
+    let inputHintEmail
+    
+    switch (permitType) {
         case pt.IMPORT:
             defaultTitle = pageContent.defaultTitleImport
             pageHeader = pageContent.pageHeaderImport
@@ -57,81 +104,11 @@ function createModel(errors, data) {
             defaultTitle = pageContent.defaultTitleArticle10
             pageHeader = pageContent.pageHeaderArticle10
             inputHintEmail = pageContent.inputHintEmailArticle10
-            break;
+            break
+        default:
+            throw new Error(`Unknown permit type: ${permitType}`)
     }
-
-    let errorList = null
-    if (errors) {
-        errorList = []
-        const mergedErrorMessages = { ...commonContent.errorMessages, ...textContent.contactDetails.errorMessages, ...pageContent.errorMessages }
-        const fields = ['fullName', 'businessName', 'email']
-        fields.forEach(field => {
-            const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-            if (fieldError) {
-                errorList.push({
-                    text: fieldError,
-                    href: `#${field}`
-                })
-            }
-        })
-    }
-
-    const backLink = data.backLinkOverride ? data.backLinkOverride : previousPath
-
-    const model = {
-        backLink: backLink,
-        pageHeader: pageHeader,
-        pageBody: pageContent.pageBody,
-        inputLabelBusinessName: pageContent.inputLabelBusinessName,
-        businessNameValue: data.businessName,
-        isAgent: data.isAgent,
-        formActionPage: `${currentPath}/${data.contactType}`,
-        ...errorList ? { errorList } : {},
-        pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
-
-        inputFullName: {
-            label: {
-                text: pageContent.inputLabelFullName
-            },
-            id: "fullName",
-            name: "fullName",
-            classes: "govuk-!-width-two-thirds",
-            autocomplete: "name",
-            ...(data.fullName ? { value: data.fullName } : {}),
-            errorMessage: getFieldError(errorList, '#fullName')
-        },
-
-        // inputBusinessName: {
-        //     label: {
-        //         text: pageContent.inputLabelBusinessName,
-        //     },
-        //     hint: {
-        //         text: inputHintBusinessName
-        //     },
-        //     id: "businessName",
-        //     name: "businessName",
-        //     autocomplete: "on",
-        //     classes: "govuk-!-width-two-thirds disabled",
-        //     ...(data.businessName ? { value: data.businessName } : {}),
-        //     errorMessage: getFieldError(errorList, '#businessName')
-        // },
-
-        inputEmail: {
-            label: {
-                text: pageContent.inputLabelEmail,
-            },
-            hint: {
-                text: inputHintEmail
-            },
-            id: "email",
-            name: "email",
-            classes: "govuk-!-width-two-thirds",
-            autocomplete: "email",
-            ...(data.email ? { value: data.email } : {}),
-            errorMessage: getFieldError(errorList, '#email')
-        }
-    }
-    return { ...commonContent, ...model }
+    return { defaultTitle, pageHeader, inputHintEmail }
 }
 
 module.exports = [{
@@ -157,7 +134,7 @@ module.exports = [{
             fullName = submission[request.params.contactType].fullName
             businessName = submission[request.params.contactType].businessName
         } else {
-            const { user } = getYarValue(request, 'CIDMAuth')
+            const { user } = getYarValue(request, sessionKey.CIDM_AUTH)
             businessName = user.organisationName
 
             if ((request.params.contactType === 'applicant' && !submission?.isAgent)
@@ -166,7 +143,7 @@ module.exports = [{
                 //get applicant details from auth credentials
 
                 email = user.email
-                fullName = user.firstName + ' ' + user.lastName
+                fullName = `${user.firstName} ${user.lastName}`
             }
         }
         const pageData = {
@@ -201,17 +178,17 @@ module.exports = [{
             }),
             options: { abortEarly: false },
             payload: Joi.object({
-                fullName: Joi.string().max(150).regex(NAME_REGEX).required(),
-                email: Joi.string().max(150).email().allow("")
+                fullName: Joi.string().max(stringLength.max150).regex(NAME_REGEX).required(),
+                email: Joi.string().max(stringLength.max150).email().allow("")
             }),
             failAction: (request, h, err) => {
                 const submission = getSubmission(request);
-                
+
                 let businessName
                 if (submission[request.params.contactType]) {
                     businessName = submission[request.params.contactType].businessName
                 } else {
-                    const { user } = getYarValue(request, 'CIDMAuth')
+                    const { user } = getYarValue(request, sessionKey.CIDM_AUTH)
                     businessName = user.organisationName
                 }
 
@@ -229,14 +206,14 @@ module.exports = [{
         },
         handler: async (request, h) => {
             const { fullName, email } = request.payload
-            
+
             const submission = getSubmission(request)
-            
+
             let businessName
             if (submission[request.params.contactType]) {
                 businessName = submission[request.params.contactType].businessName
             } else {
-                const { user } = getYarValue(request, 'CIDMAuth')
+                const { user } = getYarValue(request, sessionKey.CIDM_AUTH)
                 businessName = user.organisationName
             }
 
@@ -264,7 +241,7 @@ module.exports = [{
             }
 
             saveDraftSubmission(request, redirectTo)
-            return h.redirect(redirectTo)      
+            return h.redirect(redirectTo)
         }
     },
 }]

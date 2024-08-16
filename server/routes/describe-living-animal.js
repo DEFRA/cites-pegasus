@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked, getErrorList } = require('../lib/helper-functions')
+const { getFieldError, isChecked, getErrorList } = require('../lib/helper-functions')
+const { stringLength } = require('../lib/constants')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
@@ -18,24 +19,33 @@ const nextPathImporterExporter = `${urlPrefix}/importer-exporter`
 const nextPathBreeder = `${urlPrefix}/breeder`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = `${urlPrefix}/`
+const dateOfBirthDateFieldItems = {
+  DATE: "dateOfBirth",
+  DAY: "dateOfBirth-day",
+  DAY_MONTH: "dateOfBirth-day-month",
+  DAY_YEAR: "dateOfBirth-day-year",
+  MONTH: "dateOfBirth-month",
+  MONTH_YEAR: "dateOfBirth-month-year",
+  YEAR: "dateOfBirth-year"
+}
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.describeLivingAnimal
 
-  let dateOfBirthErrors = []
+  const dateOfBirthErrors = []
   const fields = [
-    "dateOfBirth",
-    "dateOfBirth-day",
-    "dateOfBirth-day-month",
-    "dateOfBirth-day-year",
-    "dateOfBirth-month",
-    "dateOfBirth-month-year",
-    "dateOfBirth-year",
+    dateOfBirthDateFieldItems.DATE,
+    dateOfBirthDateFieldItems.DAY,
+    dateOfBirthDateFieldItems.DAY_MONTH,
+    dateOfBirthDateFieldItems.DAY_YEAR,
+    dateOfBirthDateFieldItems.MONTH,
+    dateOfBirthDateFieldItems.MONTH_YEAR,
+    dateOfBirthDateFieldItems.YEAR,
+    "approximateDate",
     "sex",
     "maleParentDetails",
     "femaleParentDetails",
-    "approximateDate",
     "description"
   ]
 
@@ -43,13 +53,13 @@ function createModel(errors, data) {
 
   if (errorList) {
     const dateOfBirthFields = [
-      "dateOfBirth",
-      "dateOfBirth-day",
-      "dateOfBirth-day-month",
-      "dateOfBirth-day-year",
-      "dateOfBirth-month",
-      "dateOfBirth-month-year",
-      "dateOfBirth-year"
+      dateOfBirthDateFieldItems.DATE,
+      dateOfBirthDateFieldItems.DAY,
+      dateOfBirthDateFieldItems.DAY_MONTH,
+      dateOfBirthDateFieldItems.DAY_YEAR,
+      dateOfBirthDateFieldItems.MONTH,
+      dateOfBirthDateFieldItems.MONTH_YEAR,
+      dateOfBirthDateFieldItems.YEAR
     ]
     dateOfBirthFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)
@@ -67,15 +77,6 @@ function createModel(errors, data) {
     { name: 'year', value: data.dateOfBirth.year }
   ]
 
-  let radioOptions = [
-    { text: pageContent.radioOptionSexMale, value: 'M', hasInput: false },
-    { text: pageContent.radioOptionSexFemale, value: 'F', hasInput: false },
-    { text: pageContent.radioOptionSexUndetermined, value: 'U', hasInput: false }
-  ]
-
-  //nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
-  const radioItems = radioOptions.map(x => getRadioItem(data.sex, x, errorList))
-
   const dateOfBirthInputGroupItems = getDateOfBirthInputGroupItems(dateOfBirthComponents, dateOfBirthErrors)
 
   const inputDateOfBirth = {
@@ -86,6 +87,30 @@ function createModel(errors, data) {
     errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
   }
 
+  const backLink = getBackLink(data)
+
+  const model = {
+    backLink,
+    formActionPage: `${currentPath}/${data.applicationIndex}`,
+    ...(errorList ? { errorList } : {}),
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageHeader: pageContent.pageHeader,
+    caption: data.speciesName,
+    inputLabelSex: pageContent.inputLabelSex,
+    inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
+    inputLabelDescription: pageContent.inputLabelDescription,
+    inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
+    inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
+    showParentDetails: [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType),
+    inputDateOfBirth,
+    ...getCheckboxIsExactDateUnknown(pageContent, data, errorList),
+    ...getOtherInputs(pageContent, data, errorList)
+  }
+  return { ...commonContent, ...model }
+}
+
+
+function getCheckboxIsExactDateUnknown(pageContent, data, errorList) {
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
@@ -106,43 +131,37 @@ function createModel(errors, data) {
     }
   })
 
-  const checkboxIsExactDateUnknown = {
-    idPrefix: "isExactDateUnknown",
-    name: "isExactDateUnknown",
-    classes: "govuk-checkboxes--small",
-    items: [
-      {
-        value: true,
-        text: pageContent.checkboxLabelIsExactDateUnknown,
-        checked: data.isExactDateUnknown,
-        conditional: {
-          html: approximateDateInput
+  return {
+    checkboxIsExactDateUnknown: {
+      idPrefix: "isExactDateUnknown",
+      name: "isExactDateUnknown",
+      classes: "govuk-checkboxes--small",
+      items: [
+        {
+          value: true,
+          text: pageContent.checkboxLabelIsExactDateUnknown,
+          checked: data.isExactDateUnknown,
+          conditional: {
+            html: approximateDateInput
+          }
         }
-      }
-    ],
-    errorMessage: getFieldError(errorList, "#isExactDateUnknown")
+      ],
+      errorMessage: getFieldError(errorList, "#isExactDateUnknown")
+    }
   }
-  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
-  if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
-    previousPath = previousPathMultipleSpecimens
-  }
-  
-  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
-  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+}
 
-  const model = {
-    backLink: backLink,
-    formActionPage: `${currentPath}/${data.applicationIndex}`,
-    ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    pageHeader: pageContent.pageHeader,
-    caption: data.speciesName,
-    inputLabelSex: pageContent.inputLabelSex,
-    inputLabelDateOfBirth: pageContent.inputLabelDateOfBirth,
-    inputLabelDescription: pageContent.inputLabelDescription,
-    inputLabelMaleParentDetails: pageContent.inputLabelMaleParentDetails,
-    inputLabelFemaleParentDetails: pageContent.inputLabelFemaleParentDetails,
-    showParentDetails: [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType),
+function getOtherInputs(pageContent, data, errorList) {
+
+  const radioOptions = [
+    { text: pageContent.radioOptionSexMale, value: 'M', hasInput: false },
+    { text: pageContent.radioOptionSexFemale, value: 'F', hasInput: false },
+    { text: pageContent.radioOptionSexUndetermined, value: 'U', hasInput: false }
+  ]
+
+  const radioItems = radioOptions.map(x => getRadioItem(data.sex, x))
+
+  return {
     inputSex: {
       idPrefix: "sex",
       name: "sex",
@@ -152,13 +171,11 @@ function createModel(errors, data) {
       items: radioItems,
       errorMessage: getFieldError(errorList, "#sex")
     },
-    inputDateOfBirth,
-    checkboxIsExactDateUnknown,
 
     inputMaleParentDetails: {
       name: "maleParentDetails",
       id: "maleParentDetails",
-      maxlength: 1000,
+      maxlength: stringLength.max1000,
       hint: {
         text: pageContent.inputHintMaleParentDetails
       },
@@ -168,7 +185,7 @@ function createModel(errors, data) {
     inputFemaleParentDetails: {
       name: "femaleParentDetails",
       id: "femaleParentDetails",
-      maxlength: 1000,
+      maxlength: stringLength.max1000,
       hint: {
         text: pageContent.inputHintFemaleParentDetails
       },
@@ -178,7 +195,7 @@ function createModel(errors, data) {
     inputDescription: {
       name: "description",
       id: "description",
-      maxlength: 500,
+      maxlength: stringLength.max500,
       hint: {
         text: pageContent.inputHintDescription
       },
@@ -186,23 +203,27 @@ function createModel(errors, data) {
       errorMessage: getFieldError(errorList, "#description")
     }
   }
-  return { ...commonContent, ...model }
 }
 
+function getBackLink(data) {
 
-function getRadioItem(sex, radioOption, errorList) {
+  let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
+  if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
+    previousPath = previousPathMultipleSpecimens
+  }
+
+  const defaultBacklink = `${previousPath}/${data.applicationIndex}`
+  return data.backLinkOverride ? data.backLinkOverride : defaultBacklink
+}
+
+function getRadioItem(sex, radioOption) {
 
   const checked = sex ? isChecked(sex, radioOption.value) : false
-
-  //const html = radioOption.hasInput ? getUndeterminedSexReason('undeterminedSexReason', checked ? undeterminedSexReason : null, errorList) : ""
 
   return {
     value: radioOption.value,
     text: radioOption.text,
     checked: checked
-    // conditional: {
-    //   html: html
-    // }
   }
 }
 
@@ -225,11 +246,11 @@ function dateOfBirthValidator(value, helpers) {
     "dateOfBirth-year": year
   } = value
 
-  if(value.isExactDateUnknown && (day || month || year)) {
+  if (value.isExactDateUnknown && (day || month || year)) {
     return helpers.error("any.both", { customLabel: 'dateOfBirth' })
   }
 
-  if ((day + month + year).length === 0){
+  if ((day + month + year).length === 0) {
     return value
   }
 
@@ -263,6 +284,10 @@ function failAction(request, h, err) {
     //undeterminedSexReason: request.payload.undeterminedSexReason
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
+}
+
+function getModifiedParentDetails(permitType, parentDetails) {
+  return [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(permitType) ? parentDetails.replace(/\r/g, '') : null
 }
 
 module.exports = [
@@ -326,11 +351,11 @@ module.exports = [
           isExactDateUnknown: Joi.boolean().default(false),
           approximateDate: Joi.when("isExactDateUnknown", {
             is: true,
-            then: Joi.string().max(150).optional().allow(null, "")
+            then: Joi.string().max(stringLength.max150).optional().allow(null, "")
           }),
           "dateOfBirth-day": Joi.number().optional().allow(null, ""),
           "dateOfBirth-month": Joi.number().optional().allow(null, ""),
-          "dateOfBirth-year": Joi.number().optional().allow(null, "")          
+          "dateOfBirth-year": Joi.number().optional().allow(null, "")
         }).custom(dateOfBirthValidator),
         failAction: failAction
       },
@@ -341,13 +366,14 @@ module.exports = [
         const species = submission.applications[applicationIndex].species
 
         const modifiedDescription = request.payload.description.replace(/\r/g, '')
-        const modifiedMaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        const modifiedFemaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
-        const schema = Joi.object({ 
-          description: Joi.string().min(5).max(500),
-          maleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, ""),
-          femaleParentDetails: Joi.string().min(3).max(1000).optional().allow(null, "") })
-        const result = schema.validate({description: modifiedDescription, maleParentDetails: modifiedMaleParentDetails, femaleParentDetails: modifiedFemaleParentDetails },  { abortEarly: false })
+        const modifiedMaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.maleParentDetails)
+        const modifiedFemaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.femaleParentDetails)
+        const schema = Joi.object({
+          description: Joi.string().min(stringLength.min5).max(stringLength.max500),
+          maleParentDetails: Joi.string().min(stringLength.min3).max(stringLength.max1000).optional().allow(null, ""),
+          femaleParentDetails: Joi.string().min(stringLength.min3).max(stringLength.max1000).optional().allow(null, "")
+        })
+        const result = schema.validate({ description: modifiedDescription, maleParentDetails: modifiedMaleParentDetails, femaleParentDetails: modifiedFemaleParentDetails }, { abortEarly: false })
 
         if (result.error) {
           return failAction(request, h, result.error)
@@ -355,13 +381,13 @@ module.exports = [
 
         species.specimenDescriptionLivingAnimal = request.payload.description.replace(/\r/g, '')
         species.specimenDescriptionGeneric = null
-        species.maleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.maleParentDetails.replace(/\r/g, '') : null
-        species.femaleParentDetails = [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(submission.permitType) ? request.payload.femaleParentDetails.replace(/\r/g, '') : null
+        species.maleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.maleParentDetails)
+        species.femaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.femaleParentDetails)
         species.sex = request.payload.sex
 
         species.dateOfBirth = request.payload.isExactDateUnknown
-        ? { day: null, month: null, year: null, isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: request.payload.approximateDate }
-        : { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]), isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: null }
+          ? { day: null, month: null, year: null, isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: request.payload.approximateDate }
+          : { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]), isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: null }
 
         try {
           setSubmission(request, submission, `${pageId}/${applicationIndex}`)
@@ -377,7 +403,7 @@ module.exports = [
         }
 
         let redirectTo
-        if(submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE){
+        if (submission.permitType === pt.REEXPORT && submission.otherPermitTypeOption === pto.SEMI_COMPLETE) {
           redirectTo = `${nextPathOriginPermitDetails}/${applicationIndex}`
         } else if (submission.permitType === pt.ARTICLE_10) {
           redirectTo = enableBreederPage ? `${nextPathBreeder}/${applicationIndex}` : `${nextPathAcquiredDate}/${applicationIndex}`
@@ -389,6 +415,8 @@ module.exports = [
         return h.redirect(redirectTo)
 
       }
+
     }
   }
 ]
+

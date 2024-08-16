@@ -1,4 +1,4 @@
-const { getYarValue, setYarValue } = require('./session')
+const { getYarValue, setYarValue, sessionKey } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('../lib/permit-type-helper')
@@ -8,9 +8,10 @@ const lodash = require('lodash')
 const config = require('../../config/config')
 const { describe } = require('@hapi/joi/lib/base')
 const { getSubmissionProgress } = require('./submission-progress')
+const { func } = require('@hapi/joi')
 
 function getSubmission(request) {
-    const session = getYarValue(request, 'submission')
+    const session = getYarValue(request, sessionKey.SUBMISSION)
     return lodash.cloneDeep(session)
 }
 
@@ -21,7 +22,7 @@ function createSubmission(request) {
         organisationId: cidmAuth.user.organisationId || null,
         applications: [{ applicationIndex: 0 }]
     }
-    setYarValue(request, 'submission', submission)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
     return submission
 }
 
@@ -31,7 +32,7 @@ function mergeSubmission(request, data, path) {
 
     const mergedSubmission = lodash.merge(existingSubmission, data)
 
-    setYarValue(request, 'submission', mergedSubmission)
+    setYarValue(request, sessionKey.SUBMISSION, mergedSubmission)
 
     return mergedSubmission
 }
@@ -40,11 +41,11 @@ function setSubmission(request, data, path) {
     const existingSubmission = getSubmission(request)
     if (path) { validateSubmission(existingSubmission, path) }
 
-    setYarValue(request, 'submission', data)
+    setYarValue(request, sessionKey.SUBMISSION, data)
 }
 
 function clearSubmission(request) {
-    setYarValue(request, 'submission', null)
+    setYarValue(request, sessionKey.SUBMISSION, null)
 }
 
 function validateSubmission(submission, path, includePageData = false) {
@@ -57,7 +58,7 @@ function validateSubmission(submission, path, includePageData = false) {
         console.log('Application Statuses: ' + JSON.stringify(applicationStatuses))
         throw new Error(`Invalid navigation to ${path}`)
     }
-    
+
     return { applicationStatuses, submissionProgress }
 
 }
@@ -226,8 +227,8 @@ function cloneSubmission(request, applicationIndex) {
 
     migrateSubmissionToNewSchema(submission)
 
-    setYarValue(request, 'submission', submission)
-    setYarValue(request, 'cloneSource', cloneSource)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
+    setYarValue(request, sessionKey.CLONE_SOURCE, cloneSource)
 }
 
 function migrateSubmissionToNewSchema(submission) {
@@ -259,60 +260,76 @@ function migrateSubmissionToNewSchema(submission) {
 
 function migrateApplicationToNewSchema(app, permitType) {
 
-    if (app.species.specimenType === 'animalLiving' && typeof app.species.isMultipleSpecimens !== 'boolean') {
-        app.species.isMultipleSpecimens = app.species.numberOfUnmarkedSpecimens > 1
-    }
+    migrateIsMultipleSpecimens(app.species)
+    migrateNumberOfUnmarkedSpecimens(app.species)
+    migrateUniqueIdentification(app.species)
+    migratePermitDetails(permitType, app.permitDetails)
+    migrateTradeTermCode(app.species)
+}
 
-    if (app.species.numberOfUnmarkedSpecimens && typeof app.species.numberOfUnmarkedSpecimens === "string") {
-        app.species.numberOfUnmarkedSpecimens = parseInt(app.species.numberOfUnmarkedSpecimens)
+function migrateIsMultipleSpecimens(species) {
+    if (species.specimenType === 'animalLiving' && typeof species.isMultipleSpecimens !== 'boolean') {
+        species.isMultipleSpecimens = species.numberOfUnmarkedSpecimens > 1
     }
+}
 
-    if (app.species.uniqueIdentificationMarkType) {
-        if (app.species.uniqueIdentificationMarkType === 'unmarked') {
-            app.species.hasUniqueIdentificationMark = false
-            app.species.uniqueIdentificationMarks = null
+function migrateNumberOfUnmarkedSpecimens(species) {
+    if (species.numberOfUnmarkedSpecimens && typeof species.numberOfUnmarkedSpecimens === "string") {
+        species.numberOfUnmarkedSpecimens = parseInt(species.numberOfUnmarkedSpecimens)
+    }
+}
+
+function migrateUniqueIdentification(species) {
+    if (species.uniqueIdentificationMarkType) {
+        if (species.uniqueIdentificationMarkType === 'unmarked') {
+            species.hasUniqueIdentificationMark = false
+            species.uniqueIdentificationMarks = null
         } else {
-            app.species.hasUniqueIdentificationMark = true
-            app.species.uniqueIdentificationMarks = [{
+            species.hasUniqueIdentificationMark = true
+            species.uniqueIdentificationMarks = [{
                 index: 0,
-                uniqueIdentificationMark: app.species.uniqueIdentificationMark,
-                uniqueIdentificationMarkType: app.species.uniqueIdentificationMarkType
+                uniqueIdentificationMark: species.uniqueIdentificationMark,
+                uniqueIdentificationMarkType: species.uniqueIdentificationMarkType
             }]
         }
-        delete app.species.uniqueIdentificationMark
-        delete app.species.uniqueIdentificationMarkType
+        delete species.uniqueIdentificationMark
+        delete species.uniqueIdentificationMarkType
     }
+}
 
-    if (app.permitDetails) {
-        deleteIfExists(app.permitDetails, 'isCountryOfOriginNotApplicable')
-        deleteIfExists(app.permitDetails, 'isExportOrReexportNotApplicable')
+function migratePermitDetails(permitType, permitDetails) {
+    if (permitDetails) {
+        deleteIfExists(permitDetails, 'isCountryOfOriginNotApplicable')
+        deleteIfExists(permitDetails, 'isExportOrReexportNotApplicable')
 
-        if (app.permitDetails.countryOfOrigin) {
-            app.permitDetails.isCountryOfOriginNotKnown = false
+        if (permitDetails.countryOfOrigin) {
+            permitDetails.isCountryOfOriginNotKnown = false
         }
 
-        if (app.permitDetails.exportOrReexportCountry) {
-            app.permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
-            app.permitDetails.exportOrReexportPermitDetailsNotKnown = false
+        if (permitDetails.exportOrReexportCountry) {
+            permitDetails.isExportOrReexportSameAsCountryOfOrigin = false
+            permitDetails.exportOrReexportPermitDetailsNotKnown = false
         }
 
         if (permitType !== pt.IMPORT) {
-            deleteIfExists(app.permitDetails, 'isExportOrReexportSameAsCountryOfOrigin')
+            deleteIfExists(permitDetails, 'isExportOrReexportSameAsCountryOfOrigin')
         }
 
         if (permitType === pt.ARTICLE_10) {
-            deleteIfExists(app.permitDetails, 'exportOrReexportCountry')
-            deleteIfExists(app.permitDetails, 'exportOrReexportCountryDesc')
-            deleteIfExists(app.permitDetails, 'exportOrReexportPermitNumber')
-            deleteIfExists(app.permitDetails, 'exportOrReexportPermitIssueDate')
-            deleteIfExists(app.permitDetails, 'exportOrReexportPermitDetailsNotKnown')
+            deleteIfExists(permitDetails, 'exportOrReexportCountry')
+            deleteIfExists(permitDetails, 'exportOrReexportCountryDesc')
+            deleteIfExists(permitDetails, 'exportOrReexportPermitNumber')
+            deleteIfExists(permitDetails, 'exportOrReexportPermitIssueDate')
+            deleteIfExists(permitDetails, 'exportOrReexportPermitDetailsNotKnown')
         }
     }
+}
 
-    if (!config.enableNotKnownTradeTermCode && !app.species.tradeTermCode) {
-        app.species.tradeTermCode = null
-        app.species.isTradeTermCode = null
-        app.species.isTradeTermCodeDesc = null
+function migrateTradeTermCode(species) {
+    if (!config.enableNotKnownTradeTermCode && !species.tradeTermCode) {
+        species.tradeTermCode = null
+        species.isTradeTermCode = null
+        species.isTradeTermCodeDesc = null
     }
 }
 
@@ -326,7 +343,7 @@ function createApplication(request) {
     }
 
     applications.push(newApplication)
-    setYarValue(request, 'submission', submission)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
     return newApplication.applicationIndex
 }
 
@@ -350,7 +367,7 @@ function deleteApplication(request, applicationIndex) {
     // Update the applicationIndex of each remaining application to ensure no gaps
     reIndexApplications(applications)
 
-    setYarValue(request, 'submission', submission)
+    setYarValue(request, sessionKey.SUBMISSION, submission)
     return submission
 }
 

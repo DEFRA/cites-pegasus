@@ -1,48 +1,9 @@
-{% extends 'layout.html' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButton,
-    href: backLink,
-	  attributes: {id: 'linkBack'}
-  }) }}
-
-  {% if errorList %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {{govukErrorSummary ({
-      "titleText": errorSummaryTitle,
-      "errorList": errorList
-      }) }}
-    </div>
-  </div>
-{% endif %}
-
-
-
-{% endblock %}
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-l">
-        {{pageHeader}}
-      </h1>
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-        {{ govukCharacterCount (inputComments) }}
-        {% if enableInternalReference %}
-          {{ govukInput(inputInternalReference) }}
-        {% endif %}
-
-        {{ govukButton({
-        text: saveAndContinueButton,
-        type: "submit"
-      }) }}
-      </form>
-    </div>
-  </div>
+{% extends 'application-basic-layout.html' %}
+{% set showPageHeader = true %}
+{% set fullWidth = true %}
+{% block centralContent %}
+  {{ govukCharacterCount (inputComments) }}
+  {% if enableInternalReference %}
+    {{ govukInput(inputInternalReference) }}
+  {% endif %}
 {% endblock %}

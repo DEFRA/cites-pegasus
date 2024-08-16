@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt} = require('../lib/permit-type-helper')
 const config = require('../../config/config')
@@ -9,7 +9,9 @@ const textContent = require("../content/text-content")
 const lodash = require("lodash")
 const nunjucks = require("nunjucks")
 const { checkChangeRouteExit } = require("../lib/change-route")
+const { govukClass, stringLength } = require("../lib/constants")
 const pageId = "source-code"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSpeciesName = `${urlPrefix}/species-name`
 const previousPathSpeciesWarning = `${urlPrefix}/species-warning`
@@ -21,28 +23,7 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const isAnimal = data.kingdom === "Animalia"
   const pageContent = isAnimal ? textContent.sourceCode.animal : textContent.sourceCode.plant
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-    const fields = [
-      "sourceCode",
-      "anotherSourceCodeForI",
-      "anotherSourceCodeForO",
-      "enterAReason"
-    ]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [ "sourceCode", "anotherSourceCodeForI", "anotherSourceCodeForO", "enterAReason" ])
 
   const anotherSourceCodeI = lodash.cloneDeep([
     { text: pageContent.anotherSourceCodePrompt, value: null },
@@ -50,7 +31,7 @@ function createModel(errors, data) {
   ])
 
   anotherSourceCodeI.forEach((e) => {
-    if (e.value === data.anotherSourceCodeForI) e.selected = "true"
+    if (e.value === data.anotherSourceCodeForI) { e.selected = "true" }
   })
 
   const anotherSourceCodeO = lodash.cloneDeep([
@@ -59,7 +40,7 @@ function createModel(errors, data) {
   ])
  
  anotherSourceCodeO.forEach((e) => {
-    if (e.value === data.anotherSourceCodeForO) e.selected = "true"
+    if (e.value === data.anotherSourceCodeForO) { e.selected = "true" }
   })
 
   let renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
@@ -90,7 +71,7 @@ function createModel(errors, data) {
     input: {
       id: "enterAReason",
       name: "enterAReason",
-      maxlength: 300,
+      maxlength: stringLength.max300,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: pageContent.characterCountLabelEnterAReason
@@ -100,17 +81,15 @@ function createModel(errors, data) {
     }
   })
 
-  const defaultBacklink = data.hasRestriction && config.enableSpeciesWarning ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
-  const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-
+  const backLink = getBackLink(data)
+  
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
-    inputSourceCode: {
-      idPrefix: "sourceCode",
+    radios: {
       name: "sourceCode",
       fieldset: {
         legend: {
@@ -119,125 +98,134 @@ function createModel(errors, data) {
           classes: "govuk-fieldset__legend--l"
         }
       },
-      items: [
-        {
-          value: "W",
-          text: pageContent.radioOptionW,
-          hint: { text: pageContent.radioOptionWHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "W")
-        },
-        isAnimal && {
-          value: "R",
-          text: pageContent.radioOptionR,
-          hint: { text: pageContent.radioOptionRHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "R")
-        },
-        {
-          value: "D",
-          text: pageContent.radioOptionD,
-          hint: { text: pageContent.radioOptionDHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "D")
-        },
-        isAnimal && {
-          value: "C",
-          text: pageContent.radioOptionC,
-          hint: { html: pageContent.radioOptionCHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "C")
-        },
-        isAnimal && {
-          value: "F",
-          text: pageContent.radioOptionF,
-          hint: { html: pageContent.radioOptionFHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "F")
-        },
-        !(isAnimal) && {
-          value: "A",
-          text: pageContent.radioOptionA,
-          hint: { text: pageContent.radioOptionAHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "A")
-        },
-        {
-          value: "I",
-          text: pageContent.radioOptionI,
-          hint: { text: pageContent.radioOptionIHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "I"),
-          conditional: {
-            html: sourceInputForI
-          }
-        },
-        {
-          value: "O",
-          text: pageContent.radioOptionO,
-          hint: { text: pageContent.radioOptionOHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "O"),
-          conditional: {
-            html: sourceInputForO
-          }
-        },
-        {
-          value: "X",
-          text: pageContent.radioOptionX,
-          hint: { text: pageContent.radioOptionXHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "X")
-        },
-        !(isAnimal) && {
-          value: "Y",
-          text: pageContent.radioOptionY,
-          hint: { html: pageContent.radioOptionYHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "Y")
-        },
-        {
-          divider: pageContent.dividerText
-        },
-        {
-          value: "U",
-          text: pageContent.radioOptionU,
-          hint: {
-            text: pageContent.radioOptionUHint            
-          },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.sourceCode, "U"),
-          conditional: {
-            html: sourceCharacterCount
-          }
-        }
-      ],
+      items: getItems(pageContent, data, sourceCharacterCount, sourceInputForI, sourceInputForO, isAnimal) ,
       errorMessage: getFieldError(errorList, "#sourceCode")
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getItems(pageContent, data, sourceCharacterCount, sourceInputForI, sourceInputForO, isAnimal) {
+  return [
+    {
+      value: "W",
+      text: pageContent.radioOptionW,
+      hint: { text: pageContent.radioOptionWHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "W")
+    },
+    isAnimal && {
+      value: "R",
+      text: pageContent.radioOptionR,
+      hint: { text: pageContent.radioOptionRHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "R")
+    },
+    {
+      value: "D",
+      text: pageContent.radioOptionD,
+      hint: { text: pageContent.radioOptionDHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "D")
+    },
+    isAnimal && {
+      value: "C",
+      text: pageContent.radioOptionC,
+      hint: { html: pageContent.radioOptionCHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "C")
+    },
+    isAnimal && {
+      value: "F",
+      text: pageContent.radioOptionF,
+      hint: { html: pageContent.radioOptionFHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "F")
+    },
+    !(isAnimal) && {
+      value: "A",
+      text: pageContent.radioOptionA,
+      hint: { text: pageContent.radioOptionAHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "A")
+    },
+    {
+      value: "I",
+      text: pageContent.radioOptionI,
+      hint: { text: pageContent.radioOptionIHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "I"),
+      conditional: {
+        html: sourceInputForI
+      }
+    },
+    {
+      value: "O",
+      text: pageContent.radioOptionO,
+      hint: { text: pageContent.radioOptionOHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "O"),
+      conditional: {
+        html: sourceInputForO
+      }
+    },
+    {
+      value: "X",
+      text: pageContent.radioOptionX,
+      hint: { text: pageContent.radioOptionXHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "X")
+    },
+    !(isAnimal) && {
+      value: "Y",
+      text: pageContent.radioOptionY,
+      hint: { html: pageContent.radioOptionYHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "Y")
+    },
+    {
+      divider: pageContent.dividerText
+    },
+    {
+      value: "U",
+      text: pageContent.radioOptionU,
+      hint: {
+        text: pageContent.radioOptionUHint            
+      },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.sourceCode, "U"),
+      conditional: {
+        html: sourceCharacterCount
+      }
+    }
+  ]
+}
+
+function getBackLink(data) {
+  const defaultBacklink = data.hasRestriction && config.enableSpeciesWarning ? `${previousPathSpeciesWarning}/${data.applicationIndex}` : `${previousPathSpeciesName}/${data.applicationIndex}`
+  return data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 }
 
 function failAction(request, h, err) {
@@ -251,7 +239,7 @@ function failAction(request, h, err) {
     hasRestriction: species.hasRestriction, 
     ...request.payload
   }
-  return h.view(pageId, createModel(err, pageData)).takeover()
+  return h.view(viewName, createModel(err, pageData)).takeover()
 }
 
 const anotherSourceCodesPlantValuesForI = textContent.sourceCode.plant.anotherSourceCodes.filter(x => x.showForI === true).map(
@@ -306,7 +294,7 @@ module.exports = [
         enterAReason: species.enterAReason
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -343,11 +331,11 @@ module.exports = [
 
         const animalSchema = Joi.object({ 
           sourceCode: Joi.string().required().valid("W", "R", "D", "C", "F", "I", "O", "X", "U"),
-          enterAReason: Joi.string().max(300).allow("", null),
+          enterAReason: Joi.string().max(stringLength.max300).allow("", null),
         })
         const plantSchema = Joi.object({ 
           sourceCode:  Joi.string().required().valid("W", "D", "A", "I", "O", "X", "U", "Y"),
-          enterAReason: Joi.string().max(300).allow("", null),
+          enterAReason: Joi.string().max(stringLength.max300).allow("", null),
         })
         const payloadSchema = species.kingdom === "Animalia" ? animalSchema : plantSchema
         const modifiedEnterAReason = request.payload.enterAReason.replace(/\r/g, '')

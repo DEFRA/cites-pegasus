@@ -1,0 +1,21 @@
+{% extends 'application-basic-layout.html' %}
+
+{% block centralContent %}
+  {% call govukFieldset({
+          legend: {
+            text: pageHeader,
+            classes: "govuk-fieldset__legend--l",
+            isPageHeading: true
+          }
+        }) %}
+
+  <p class="govuk-body">{{pageBody}}</p>
+  {% if selectCountry %}
+    {{ govukSelect(selectCountry) }}
+  {% endif %}
+  {{ govukInput(inputPermitNumber) }}
+  {{ govukDateInput(inputPermitIssueDate) }}
+  <p>{{divider}}</p>
+  {{ govukCheckboxes(checkboxNotKnown) }}
+  {% endcall %}
+{% endblock %}

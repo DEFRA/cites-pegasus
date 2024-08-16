@@ -1,10 +1,12 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const textContent = require("../content/text-content")
 const { checkChangeRouteExit } = require("../lib/change-route")
+const { govukClass } = require("../lib/constants")
 const pageId = "purpose-code"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPathSpecimenType = `${urlPrefix}/specimen-type`
@@ -13,26 +15,8 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.purposeCode
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["purposeCode"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["purposeCode"])
+  
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -41,9 +25,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-      
-    inputPurposeCode: {
-      idPrefix: "purposeCode",
+    radios: {
       name: "purposeCode",
       fieldset: {
         legend: {
@@ -52,120 +34,124 @@ function createModel(errors, data) {
           classes: "govuk-fieldset__legend--l"
         }
       },
-      items: [
-        {
-          value: "B",
-          text: pageContent.radioOptionB,
-          hint: { text: pageContent.radioOptionBHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "B")
-        },
-        {
-          value: "E",
-          text: pageContent.radioOptionE,
-          hint: { text: pageContent.radioOptionEHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "E")
-        },
-        {
-          value: "G",
-          text: pageContent.radioOptionG,
-          hint: { text: pageContent.radioOptionGHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "G")
-        },
-        {
-          value: "H",
-          text: pageContent.radioOptionH,
-          hint: { text: pageContent.radioOptionHHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "H")
-        },
-        {
-          value: "L",
-          text: pageContent.radioOptionL,
-          hint: { text: pageContent.radioOptionLHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "L")
-        },
-        {
-          value: "M",
-          text: pageContent.radioOptionM,
-          hint: { text: pageContent.radioOptionMHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "M")
-        },
-        {
-          value: "N",
-          text: pageContent.radioOptionN,
-          hint: { text: pageContent.radioOptionNHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "N")
-        },
-        {
-          value: "P",
-          text: pageContent.radioOptionP,
-          hint: { text: pageContent.radioOptionPHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "P")
-        },
-        {
-          value: "Q",
-          text: pageContent.radioOptionQ,
-          hint: { text: pageContent.radioOptionQHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "Q")
-        },
-        {
-          value: "S",
-          text: pageContent.radioOptionS,
-          hint: { text: pageContent.radioOptionSHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "S")
-        },
-        {
-          value: "T",
-          text: pageContent.radioOptionT,
-          hint: { text: pageContent.radioOptionTHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "T")
-        },
-        {
-          value: "Z",
-          text: pageContent.radioOptionZ,
-          hint: { text: pageContent.radioOptionZHint },
-          label: {
-            classes: "govuk-!-font-weight-bold"
-          },
-          checked: isChecked(data.purposeCode, "Z")
-        }
-      ],
+      items: getItems(pageContent, data),
       errorMessage: getFieldError(errorList, "#purposeCode")
     }
   }
   return { ...commonContent, ...model }
+}
+
+function getItems(pageContent, data) {
+  return [
+    {
+      value: "B",
+      text: pageContent.radioOptionB,
+      hint: { text: pageContent.radioOptionBHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "B")
+    },
+    {
+      value: "E",
+      text: pageContent.radioOptionE,
+      hint: { text: pageContent.radioOptionEHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "E")
+    },
+    {
+      value: "G",
+      text: pageContent.radioOptionG,
+      hint: { text: pageContent.radioOptionGHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "G")
+    },
+    {
+      value: "H",
+      text: pageContent.radioOptionH,
+      hint: { text: pageContent.radioOptionHHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "H")
+    },
+    {
+      value: "L",
+      text: pageContent.radioOptionL,
+      hint: { text: pageContent.radioOptionLHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "L")
+    },
+    {
+      value: "M",
+      text: pageContent.radioOptionM,
+      hint: { text: pageContent.radioOptionMHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "M")
+    },
+    {
+      value: "N",
+      text: pageContent.radioOptionN,
+      hint: { text: pageContent.radioOptionNHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "N")
+    },
+    {
+      value: "P",
+      text: pageContent.radioOptionP,
+      hint: { text: pageContent.radioOptionPHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "P")
+    },
+    {
+      value: "Q",
+      text: pageContent.radioOptionQ,
+      hint: { text: pageContent.radioOptionQHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "Q")
+    },
+    {
+      value: "S",
+      text: pageContent.radioOptionS,
+      hint: { text: pageContent.radioOptionSHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "S")
+    },
+    {
+      value: "T",
+      text: pageContent.radioOptionT,
+      hint: { text: pageContent.radioOptionTHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "T")
+    },
+    {
+      value: "Z",
+      text: pageContent.radioOptionZ,
+      hint: { text: pageContent.radioOptionZHint },
+      label: {
+        classes: govukClass.FONT_WEIGHT_BOLD
+      },
+      checked: isChecked(data.purposeCode, "Z")
+    }
+  ]
 }
 
 module.exports = [
@@ -201,7 +187,7 @@ module.exports = [
         purposeCode: species.purposeCode
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
 
@@ -228,7 +214,7 @@ module.exports = [
             ...request.payload
 
           }
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

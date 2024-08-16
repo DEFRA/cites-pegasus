@@ -7,6 +7,7 @@ const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "already-have-a10"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAcquiredDate = `${urlPrefix}/acquired-date`
 const previousPathBreeder = `${urlPrefix}/breeder`
@@ -54,9 +55,7 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    
-    inputIsA10CertificateNumberKnown: {
-      idPrefix: "isA10CertificateNumberKnown",
+    radios: {
       name: "isA10CertificateNumberKnown",
       fieldset: {
         legend: {
@@ -118,7 +117,7 @@ module.exports = [
         a10CertificateNumber: species.a10CertificateNumber,
         isBreeder: application.isBreeder
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -155,7 +154,7 @@ module.exports = [
             isBreeder: application.isBreeder
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

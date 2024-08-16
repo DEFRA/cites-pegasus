@@ -10,52 +10,12 @@ const contactTypes = ['applicant', 'delivery']
 const invalidSubmissionPath = `${urlPrefix}/`
 const lodash = require('lodash')
 
-function createModel(errors, data) {
-    const commonContent = textContent.common;
-    let pageContent = null
-
-    if (data.contactType === 'applicant') {
-        if (data.isAgent) {
-            pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.agentLed)
-        } else {
-            pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.applicant)
-        }
-    } else {
-        pageContent = lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.delivery)
-    }
-
-    let previousPath = ''
-    if (!data.addressOption || data.addressOption === 'different') {
-        previousPath = data.selectedAddress.uprn ? `${urlPrefix}/select-address/${data.contactType}` : `${urlPrefix}/enter-address/${data.contactType}`
-    } else {
-        previousPath = `${urlPrefix}/select-delivery-address`
-    }
-
-    let defaultTitle = ''
-    let pageHeader = ''
-
-    switch (data.permitType) {
-        case pt.IMPORT:
-            defaultTitle = pageContent.defaultTitleImport
-            pageHeader = pageContent.pageHeaderImport
-            break
-        case pt.EXPORT:
-            defaultTitle = pageContent.defaultTitleExport
-            pageHeader = pageContent.pageHeaderExport
-            break
-        case pt.MIC:
-        case pt.TEC:
-        case pt.POC:
-        case pt.REEXPORT:
-            defaultTitle = pageContent.defaultTitleReexport
-            pageHeader = pageContent.pageHeaderReexport
-            break
-        case pt.ARTICLE_10:
-            defaultTitle = pageContent.defaultTitleArticle10
-            pageHeader = pageContent.pageHeaderArticle10
-            break
-    }
-
+function createModel(_errors, data) {
+    const commonContent = textContent.common
+    const pageContent = getPageContent(data)
+    const previousPath = getPreviousPath(data)
+    const { defaultTitle, pageHeader } = getPermitSpecificContent(pageContent, data.permitType)
+    
     const model = {
         backLink: previousPath,
         pageHeader: pageHeader,
@@ -77,6 +37,55 @@ function createModel(errors, data) {
     return { ...commonContent, ...model }
 }
 
+function getPageContent(data) {
+    if (data.contactType === 'applicant') {
+        if (data.isAgent) {
+            return lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.agentLed)
+        } else {
+            return lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.applicant)
+        }
+    } else {
+        return lodash.merge(textContent.confirmAddress.common, textContent.confirmAddress.delivery)
+    }
+}
+
+function getPreviousPath(data) {
+    if (!data.addressOption || data.addressOption === 'different') {
+        return data.selectedAddress.uprn ? `${urlPrefix}/select-address/${data.contactType}` : `${urlPrefix}/enter-address/${data.contactType}`
+    }
+    return `${urlPrefix}/select-delivery-address`        
+}
+
+function getPermitSpecificContent(pageContent, permitType) {
+    let defaultTitle
+    let pageHeader
+    
+    switch (permitType) {
+        case pt.IMPORT:
+            defaultTitle = pageContent.defaultTitleImport
+            pageHeader = pageContent.pageHeaderImport
+            break
+        case pt.EXPORT:
+            defaultTitle = pageContent.defaultTitleExport
+            pageHeader = pageContent.pageHeaderExport
+            break
+        case pt.MIC:
+        case pt.TEC:
+        case pt.POC:
+        case pt.REEXPORT:
+            defaultTitle = pageContent.defaultTitleReexport
+            pageHeader = pageContent.pageHeaderReexport
+            break
+        case pt.ARTICLE_10:
+            defaultTitle = pageContent.defaultTitleArticle10
+            pageHeader = pageContent.pageHeaderArticle10
+            break
+        default:
+            throw new Error(`Unknown permit type ${permitType}`)
+    }
+    return { defaultTitle, pageHeader }
+}
+
 module.exports = [{
     method: 'GET',
     path: `${currentPath}/{contactType}`,
@@ -85,7 +94,7 @@ module.exports = [{
             params: Joi.object({
                 contactType: Joi.string().valid(...contactTypes)
             }),
-            failAction: (request, h, error) => {
+            failAction: (_request, _h, error) => {
                 console.log(error)
             }
         }

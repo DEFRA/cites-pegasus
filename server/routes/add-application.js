@@ -1,10 +1,10 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, cloneApplication, getCompletedApplications } = require("../lib/submission")
-const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "add-application"
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/your-submission`
 const nextPathContinue = `${urlPrefix}/upload-supporting-documents`
@@ -15,25 +15,7 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.addApplication
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["addApplication"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["addApplication"])
 
   const radioOptionCopyPrevious = pageContent.radioOptionCopyPrevious.replace('##SPECIES_NAME##', data.speciesName)
 
@@ -42,9 +24,8 @@ function createModel(errors, data) {
     formActionPage: currentPath,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-
-    inputAddApplication: {
-      idPrefix: "addApplication",
+    continueWithoutSaveButton: true,
+    radios: {
       name: "addApplication",
       fieldset: {
         legend: {
@@ -132,7 +113,7 @@ module.exports = [
         speciesName: lastApplication.species.speciesName
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
 
@@ -153,7 +134,7 @@ module.exports = [
             addApplication: null,
             speciesName: lastApplication.species.speciesName
           }
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

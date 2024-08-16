@@ -1,10 +1,11 @@
 const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "breeder"
+const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
@@ -12,29 +13,9 @@ const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const nextPathAlreadyHaveA10 = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function getErrors(errors, contentErrorMessages, fields) {
-  const errorList = []
-  if (errors) {
-
-    if (fields?.length > 0) {
-
-      fields.forEach((field) => {
-        const fieldError = findErrorList(errors, [field], contentErrorMessages)[0]
-        if (fieldError) {
-          errorList.push({
-            text: fieldError,
-            href: `#${field}`
-          })
-        }
-      })
-    }
-  }
-  return errorList.length ? errorList : null
-}
-
 function createModel(errors, data) {
   const { common: commonContent, breeder: pageContent } = textContent
-  const errorList = getErrors(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
 
   const defaultBacklink = data.isMultipleSpecimens && data.numberOfUnmarkedSpecimens > 1 ? `${previousPathDescribeSpecimen}/${data.applicationIndex}` : `${previousPathDescribeLivingAnimal}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -46,33 +27,13 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix
       : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-
-    inputBreeder: {
-      idPrefix: "isBreeder",
-      name: "isBreeder",
-      classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: pageContent.pageHeader,
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
-        }
-      },
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-          checked: data.isBreeder
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-          checked: data.isBreeder === false
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#isBreeder")
+    inputName: "isBreeder",
+    pageHeader: pageContent.pageHeader,
+    inputYesChecked: data.isBreeder,
+    errorMessage: getFieldError(errorList, "#isBreeder"),
+    inputClasses: "govuk-radios--inline",
     }
-  }
+ 
   return { ...commonContent, ...model }
 }
 
@@ -109,7 +70,7 @@ module.exports = [
         numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens
       }
 
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -141,7 +102,7 @@ module.exports = [
             numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

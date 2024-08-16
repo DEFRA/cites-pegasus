@@ -5,7 +5,7 @@ const { createPayment } = require('../services/govpay-service')
 const { setSubmissionPayment } = require('../services/dynamics-service')
 const user = require('../lib/user')
 const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
-const { setYarValue, getYarValue } = require('../lib/session')
+const { setYarValue, getYarValue, sessionKey } = require('../lib/session')
 const textContent = require('../content/text-content')
 const { getDomain } = require('../lib/helper-functions')
 const { getPaymentStatus } = require("../services/govpay-service")
@@ -52,7 +52,7 @@ module.exports = [
         params: Joi.object({
           paymentRoute: Joi.string().valid(...paymentRoutes)
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -60,8 +60,8 @@ module.exports = [
     handler: async (request, h) => {
       const cidmAuth = getYarValue(request, 'CIDMAuth')
       const submission = getSubmission(request)
-      let name = cidmAuth.user.firstName + ' ' + cidmAuth.user.lastName
-      let email = cidmAuth.user.email
+      const name = `${cidmAuth.user.firstName} ${cidmAuth.user.lastName}`
+      const email = cidmAuth.user.email
       let amount = submission.paymentDetails.costingValue
       
       if(submission.paymentDetails.feePaid && submission.paymentDetails.remainingAdditionalAmount > 0) {
@@ -79,7 +79,7 @@ module.exports = [
         return h.redirect(invalidSubmissionPath)
       }
 
-      setYarValue(request, 'govpay-paymentRoute', request.params.paymentRoute)
+      setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.params.paymentRoute)
       return h.redirect(response.nextUrl)
     }
   },

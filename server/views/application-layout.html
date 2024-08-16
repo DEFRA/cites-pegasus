@@ -1,12 +1,18 @@
 {% extends 'layout.html' %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -14,7 +20,6 @@
     href: backLink,
 	  attributes: {id: 'linkBack'}
   }) }}
-
   {% if errorList %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -25,32 +30,11 @@
       </div>
     </div>
   {% endif %}
-
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
-
-        {% call govukFieldset({
-          legend: {
-            text: pageHeader,
-            classes: "govuk-fieldset__legend--l",
-            isPageHeading: true
-          }
-        }) %}
-
-        <p class="govuk-body">{{pageBody}}</p>
-        {{ govukInput(inputPermitNumber) }}
-        {{ govukDateInput(inputPermitIssueDate) }}
-        <p>{{divider}}</p>
-        {{ govukCheckboxes(checkboxNotKnown) }}
-        {% endcall %}
-        {{ govukButton({
-              text: saveAndContinueButton,
-              type: "submit"
-            }) }}
-      </form>
+      {% block form %}{% endblock %}
     </div>
   </div>
 {% endblock %}

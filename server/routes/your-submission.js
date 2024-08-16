@@ -1,9 +1,9 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission, moveApplicationToEndOfList, reIndexApplications } = require('../lib/submission')
-const { setYarValue } = require('../lib/session')
+const { setYarValue, sessionKey } = require('../lib/session')
 const textContent = require('../content/text-content')
 const pageId = 'your-submission'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -11,11 +11,13 @@ const nextPathContinue = `${urlPrefix}/add-application`
 const nextPathCheckApplication = `${urlPrefix}/application-summary/check`
 const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
 const nextPathSpeciesName = `${urlPrefix}/species-name`
-const areYouSurePath = `are-you-sure`
+const areYouSurePath = 'are-you-sure'
+const areYouSureViewName = 'application-yes-no-layout'
 const lodash = require('lodash')
+const specimenType = require('./specimen-type')
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createSubmitApplicationModel(errors, data) {
+function createSubmitApplicationModel(_errors, data) {
   const commonContent = textContent.common
 
   let pageContent = null
@@ -40,9 +42,11 @@ function createSubmitApplicationModel(errors, data) {
       pageContent = lodash.merge(yourSubmissionText.common, yourSubmissionText.article10Applications)
       insetText = getA10InsetText(data.permitType, data.applications, pageContent)
       break
+    default:
+      throw new Error(`Unknown permit type ${data.permitType}`)
   }
 
-  
+
 
   const applicationsData = data.applications
   const applicationsTableData = applicationsData.map(application => {
@@ -58,27 +62,16 @@ function createSubmitApplicationModel(errors, data) {
         return { mark: mark.uniqueIdentificationMark, labelMark }
       })
     }
-    let unitsOfMeasurementText = null
-    if (application.species.specimenType === "animalLiving") {
-      if (application.species.numberOfUnmarkedSpecimens > 1) {
-        unitsOfMeasurementText = `Specimen${application.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
-      } else {
-        unitsOfMeasurementText = `Specimen`
-      }
-    } else if (application.species.unitOfMeasurement === "noOfSpecimens") {
-      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
-    } else if (application.species.unitOfMeasurement === "noOfPiecesOrParts") {
-      unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
-    } else {
-      unitsOfMeasurementText = application.species?.unitOfMeasurement
-    }
 
+    const unitsOfMeasurementText = getUnitsOfMeasurementText(application.species, pageContent)
 
-    let quantity = application.species?.quantity
+    let quantity = null
     if (application.species.specimenType === "animalLiving" && application.species.numberOfUnmarkedSpecimens) {
       quantity = application.species.numberOfUnmarkedSpecimens
     } else if (application.species.specimenType === "animalLiving") {
       quantity = 1
+    } else {
+      quantity = application.species?.quantity
     }
 
     const formActionCopy = `${currentPath}/copy/${application.applicationIndex}`
@@ -105,8 +98,26 @@ function createSubmitApplicationModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getUnitsOfMeasurementText(species, pageContent) {
+  let unitsOfMeasurementText = null
+  if (species.specimenType === "animalLiving") {
+    if (species.numberOfUnmarkedSpecimens > 1) {
+      unitsOfMeasurementText = `Specimen${species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
+    } else {
+      unitsOfMeasurementText = `Specimen`
+    }
+  } else if (species.unitOfMeasurement === "noOfSpecimens") {
+    unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
+  } else if (species.unitOfMeasurement === "noOfPiecesOrParts") {
+    unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
+  } else {
+    unitsOfMeasurementText = species?.unitOfMeasurement
+  }
+  return unitsOfMeasurementText
+}
+
 function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
-  if (permitType === pt.EXPORT && a10SourceSubmissionRef){
+  if (permitType === pt.EXPORT && a10SourceSubmissionRef) {
     return pageContent.insetText
   } else {
     return null
@@ -114,7 +125,7 @@ function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
 }
 
 function getA10InsetText(permitType, applications, pageContent) {
-  if (permitType === pt.ARTICLE_10 && applications.some(app => app.a10ExportData?.isExportPermitRequired)){
+  if (permitType === pt.ARTICLE_10 && applications.some(app => app.a10ExportData?.isExportPermitRequired)) {
     return pageContent.insetText
   } else {
     return null
@@ -147,50 +158,20 @@ function createAreYouSureModel(errors, data) {
     formActionPage = `${currentPath}/${areYouSurePath}/permit-type`
   }
 
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages,
-      ...errorMessageRemove
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessageRemove }, ["areYouSure"])
+  
   const model = {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
-    pageBody: pageBody,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    pageBody,
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")
+      
   }
   return { ...commonContent, ...model }
 }
@@ -213,7 +194,7 @@ module.exports = [
 
       const completeApplications = getCompletedApplications(submission, applicationStatuses)
 
-      setYarValue(request, 'cloneSource', null)
+      setYarValue(request, sessionKey.CLONE_SOURCE, null)
 
       const pageData = {
         permitType: submission.permitType,
@@ -239,7 +220,7 @@ module.exports = [
         changeType: 'permit-type',
         permitType: submission.permitType
       }
-      return h.view(areYouSurePath, createAreYouSureModel(null, pageData))
+      return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
   //GET for Add another species link
@@ -282,7 +263,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -305,7 +286,7 @@ module.exports = [
         speciesName: submission.applications[applicationIndex].species.speciesName,
         areYouSure: submission.areYouSure,
       }
-      return h.view(areYouSurePath, createAreYouSureModel(null, pageData))
+      return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
   //POST for submit applications page
@@ -327,7 +308,7 @@ module.exports = [
           return h.view(pageId, createSubmitApplicationModel(err, pageData)).takeover()
         }
       },
-      handler: async (request, h) => {
+      handler: async (_request, h) => {
         return h.redirect(nextPathContinue)
       }
     }
@@ -341,7 +322,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }
@@ -367,7 +348,7 @@ module.exports = [
         params: Joi.object({
           applicationIndex: Joi.number().required(),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       }

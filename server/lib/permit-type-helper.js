@@ -90,6 +90,7 @@ function getPermit(permitTypeOption, useCertificateFor) {
             break
         case pto.ARTICLE_10:
             permit.permitType = pt.ARTICLE_10
+            permit.permitSubType = getA10PermitSubType(useCertificateFor)
             break
         case pto.MIC:
             permit.permitType = pt.MIC
@@ -112,22 +113,20 @@ function getPermit(permitTypeOption, useCertificateFor) {
             break
         default:
             throw new Error(`Invalid permit type option: ${permitTypeOption}`)
-    }
-
-    if (permit.permitType === pt.ARTICLE_10) {
-        switch (useCertificateFor) {
-            case cu.LEGALLY_ACQUIRED:
-                permit.permitSubType = pst.LEGAL_ACQUISITION
-                break
-            case cu.MOVE_LIVE_SPECIMEN:
-                permit.permitSubType = pst.ARTICLE_9_MOVEMENT
-                break
-            default:
-                //This is also OK
-        }
-    }
+    }     
 
     return permit
+}
+
+function getA10PermitSubType(useCertificateFor) {
+    switch (useCertificateFor) {
+        case cu.LEGALLY_ACQUIRED:
+            return pst.LEGAL_ACQUISITION
+        case cu.MOVE_LIVE_SPECIMEN:
+            return pst.ARTICLE_9_MOVEMENT
+        default:
+            return null
+    }
 }
 
 module.exports = {

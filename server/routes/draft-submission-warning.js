@@ -1,40 +1,27 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { createSubmission, deleteDraftSubmission, cloneSubmission, saveDraftSubmission } = require("../lib/submission")
 const { clearChangeRoute } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'draft-submission-warning'
+const areYouSureViewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathLanding = `${urlPrefix}/`
 const previousPathAppSummary = `${urlPrefix}/application-summary/view-submitted`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
-const newSubmissionTypes = ['new', 'copy-as-new']
+const newSubmissionTypeConst = {
+  COPY_AS_NEW: 'copy-as-new',
+  NEW: 'new',
+};
+const newSubmissionTypes = [newSubmissionTypeConst.NEW, newSubmissionTypeConst.COPY_AS_NEW]
 
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.draftSubmissionWarning
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["areYouSure"])
+  
   const backlink = getBacklink(data.newSubmissionType, data.applicationIndex)
 
   const model = {
@@ -43,23 +30,10 @@ function createModel(errors, data) {
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
-
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes,
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo,
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")
   }
 
   return { ...commonContent, ...model }
@@ -67,7 +41,7 @@ function createModel(errors, data) {
 }
 
 function getBacklink(newSubmissionType, applicationIndex) {
-  return newSubmissionType === 'copy-as-new' ? `${previousPathAppSummary}/${applicationIndex}` : previousPathLanding
+  return newSubmissionType === newSubmissionTypeConst.COPY_AS_NEW ? `${previousPathAppSummary}/${applicationIndex}` : previousPathLanding
 }
 
 module.exports = [{
@@ -78,7 +52,7 @@ module.exports = [{
       params: Joi.object({
         newSubmissionType: Joi.string().valid(...newSubmissionTypes).required(),
         applicationIndex: Joi.number().when('newSubmissionType', {
-          is: 'copy-as-new',
+          is: newSubmissionTypeConst.COPY_AS_NEW,
           then: Joi.number().required(),
           otherwise: Joi.number().optional().allow(null, '')
         })
@@ -92,7 +66,7 @@ module.exports = [{
       applicationIndex: request.params.applicationIndex
     }
 
-    return h.view('are-you-sure', createModel(null, pageData));
+    return h.view(areYouSureViewName, createModel(null, pageData));
   }
 },
 {
@@ -103,7 +77,7 @@ module.exports = [{
       params: Joi.object({
         newSubmissionType: Joi.string().valid(...newSubmissionTypes).required(),
         applicationIndex: Joi.number().when('newSubmissionType', {
-          is: 'copy-as-new',
+          is: newSubmissionTypeConst.COPY_AS_NEW,
           then: Joi.number().required(),
           otherwise: Joi.number().optional().allow(null, '')
         })
@@ -117,7 +91,7 @@ module.exports = [{
           applicationIndex: request.params.applicationIndex
         }
         
-        return h.view('are-you-sure', createModel(err, pageData)).takeover()        
+        return h.view(areYouSureViewName, createModel(err, pageData)).takeover()        
       }
     }
   },
@@ -125,7 +99,7 @@ module.exports = [{
     const { newSubmissionType, applicationIndex } = request.params
 
     if (request.payload.areYouSure) {
-      if (newSubmissionType === 'copy-as-new') {
+      if (newSubmissionType === newSubmissionTypeConst.COPY_AS_NEW) {
         cloneSubmission(request, applicationIndex)
         saveDraftSubmission(request, `${nextPathCopyAsNewApplication}/0`)
         return h.redirect(`${nextPathCopyAsNewApplication}/0`)

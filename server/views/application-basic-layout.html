@@ -1,0 +1,41 @@
+{% extends 'application-layout.html' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+  {% if fullWidth %}
+    <div class="govuk-grid-column-full">
+  {% else %}
+    <div class="govuk-grid-column-two-thirds">
+  {% endif %}
+      {% if showPageHeader %}
+        <h1 class="govuk-heading-l">
+          {{pageHeader}}
+        </h1>
+      {% endif %}
+      {% if noFormAction %}
+        <form method="POST" autocomplete="off" novalidate="novalidate">
+      {% else %}
+        <form method="POST" action="{{ formActionPage }}" autocomplete="off" novalidate="novalidate">
+      {% endif %}
+
+        {% block centralContent%}{% endblock %}
+
+        {% block submitButton %}
+        {% if continueWithoutSaveButton %}
+          {{ govukButton({
+            text: continueButton,
+            type: "submit"
+          }) }}
+        {% else %}
+          {{ govukButton({
+              text: saveAndContinueButton,
+              type: "submit"
+            }) }}
+        {% endif %}
+        {% endblock %}
+
+        {% block lowerContent %}{% endblock %}
+      </form>
+    </div>
+  </div>
+{% endblock %}

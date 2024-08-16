@@ -1,11 +1,12 @@
 const Joi = require('joi')
 const { urlPrefix } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
 const textContent = require('../content/text-content')
 const pageId = 'other-permit-type'
+const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/permit-type`
 const nextPathApplyingOnBehalf = `${urlPrefix}/applying-on-behalf`
@@ -18,34 +19,18 @@ const previousPathYourSubmission = `${urlPrefix}/your-submission`
 function createModel(errors, data) {
   const commonContent = textContent.common;
   const pageContent = textContent.otherPermitType;
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = { ...commonContent.errorMessages, ...pageContent.errorMessages }
-    const fields = ['otherPermitTypeOption']
-    fields.forEach(field => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
-  let defaultBacklink = previousPath
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [ "otherPermitTypeOption" ])
   
+  const defaultBacklink = previousPath
+
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
     backLink: backLink,
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputOtherPermitType: {
-      idPrefix: "otherPermitTypeOption",
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    radios: {
       name: "otherPermitTypeOption",
       fieldset: {
         legend: {
@@ -92,6 +77,27 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
+function getRedirect(otherPermitTypeOption) {
+  let redirectTo = null
+  switch (otherPermitTypeOption) {
+    case pto.MIC:
+    case pto.TEC:
+    case pto.POC:
+      redirectTo = nextPathGuidanceCompletion
+      break
+    case pto.SEMI_COMPLETE:
+    case pto.DRAFT:
+      redirectTo = nextPathApplyingOnBehalf
+      break
+    case pto.OTHER:
+      redirectTo = cannotUseServicePath
+      break
+    default:
+      throw new Error(`Unknown other permit type ${otherPermitTypeOption}`)
+  }
+  return redirectTo
+}
+
 module.exports = [{
   method: 'GET',
   path: currentPath,
@@ -114,7 +120,7 @@ module.exports = [{
       fromYourSubmission: fromYourSubmission
     }
 
-    return h.view(pageId, createModel(null, pageData));
+    return h.view(viewName, createModel(null, pageData));
   }
 },
 {
@@ -135,7 +141,7 @@ module.exports = [{
           fromYourSubmission: applicationStatuses.some((application) => application.status === "complete")
         }
 
-        return h.view(pageId, createModel(err, pageData)).takeover()
+        return h.view(viewName, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
@@ -151,11 +157,11 @@ module.exports = [{
       }
 
       submission.otherPermitTypeOption = request.payload.otherPermitTypeOption
-      
+
       const permit = getPermit(request.payload.otherPermitTypeOption, submission.applications[0].useCertificateFor)
       submission.permitType = permit.permitType
       submission.applications[0].permitSubType = permit.permitSubType
-      
+
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -173,21 +179,7 @@ module.exports = [{
         return h.redirect(exitChangeRouteUrl)
       }
 
-      let redirectTo
-      switch (request.payload.otherPermitTypeOption) {
-        case pto.MIC:
-        case pto.TEC:
-        case pto.POC:
-          redirectTo = nextPathGuidanceCompletion
-          break
-        case pto.SEMI_COMPLETE:
-        case pto.DRAFT:
-          redirectTo = nextPathApplyingOnBehalf
-          break
-        case pto.OTHER:
-          redirectTo = cannotUseServicePath
-          break
-      }
+      const redirectTo = getRedirect(request.payload.otherPermitTypeOption)
       saveDraftSubmission(request, redirectTo)
       return h.redirect(redirectTo)
     }

@@ -2,18 +2,29 @@ const Joi = require("joi")
 const { urlPrefix } = require("../../config/config")
 const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { stringLength } = require('../lib/constants')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const { dateValidator } = require("../lib/validators")
 const { COMMENTS_REGEX } = require("../lib/regex-validation")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const pageId = "import-permit-details"
+const viewName = 'permit-details'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const previousPathExportPermitDetails = `${urlPrefix}/export-permit-details`
 const nextPath = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 const assetPath = `${urlPrefix}/assets`
+const permitIssueDateFieldItems = {
+  DATE: "importPermitIssueDate",
+  DAY: "importPermitIssueDate-day",
+  DAY_MONTH: "importPermitIssueDate-day-month",
+  DAY_YEAR: "importPermitIssueDate-day-year",
+  MONTH: "importPermitIssueDate-month",
+  MONTH_YEAR: "importPermitIssueDate-month-year",
+  YEAR: "importPermitIssueDate-year"
+}
 
 function createModel(errors, data) {
   const commonContent = textContent.common
@@ -22,31 +33,32 @@ function createModel(errors, data) {
   const defaultBacklink = data.permitType === pt.ARTICLE_10 ? `${previousPathOriginPermitDetails}/${data.applicationIndex}` : `${previousPathExportPermitDetails}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
-  let importPermitIssueDateErrors = []
+  const importPermitIssueDateErrors = []
+
 
   const errorList = getErrorList(
     errors,
     { ...commonContent.errorMessages, ...pageContent.errorMessages },
     ["importPermitNumber",
-      "importPermitIssueDate",
-      "importPermitIssueDate-day",
-      "importPermitIssueDate-day-month",
-      "importPermitIssueDate-day-year",
-      "importPermitIssueDate-month",
-      "importPermitIssueDate-month-year",
-      "importPermitIssueDate-year",
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR,
       "importPermitDetailsNotKnown"]
   )
 
   if (errorList) {
     const permitIssueDateFields = [
-      "importPermitIssueDate",
-      "importPermitIssueDate-day",
-      "importPermitIssueDate-day-month",
-      "importPermitIssueDate-day-year",
-      "importPermitIssueDate-month",
-      "importPermitIssueDate-month-year",
-      "importPermitIssueDate-year"
+      permitIssueDateFieldItems.DATE,
+      permitIssueDateFieldItems.DAY,
+      permitIssueDateFieldItems.DAY_MONTH,
+      permitIssueDateFieldItems.DAY_YEAR,
+      permitIssueDateFieldItems.MONTH,
+      permitIssueDateFieldItems.MONTH_YEAR,
+      permitIssueDateFieldItems.YEAR
     ]
     permitIssueDateFields.forEach((field) => {
       const error = getFieldError(errorList, "#" + field)
@@ -59,62 +71,6 @@ function createModel(errors, data) {
     })
   }
 
-  const importPermitIssueDateErrorMessage = importPermitIssueDateErrors[0]?.message
-
-  const importPermitIssueDateComponents = [
-    { name: "day", value: data.importPermitIssueDateDay },
-    { name: "month", value: data.importPermitIssueDateMonth },
-    { name: "year", value: data.importPermitIssueDateYear }
-  ]
-
-  const inputPermitNumber = {
-    label: {
-      text: pageContent.inputLabelPermitNumber
-    },
-    id: "importPermitNumber",
-    name: "importPermitNumber",
-    classes: "govuk-input govuk-input--width-20",
-    autocomplete: "on",
-    ...(data.importPermitNumber
-      ? { value: data.importPermitNumber }
-      : {}),
-    errorMessage: getFieldError(errorList, "#importPermitNumber")
-  }
-
-  const inputPermitIssueDate = {
-    id: "importPermitIssueDate",
-    name: "importPermitIssueDate",
-    namePrefix: "importPermitIssueDate",
-    fieldset: {
-      legend: {
-        text: pageContent.inputLabelPermitIssueDate
-      }
-    },
-    hint: {
-      text: pageContent.inputLabelHintPermitIssueDate
-    },
-    items: getPermitIssueDateInputGroupItems(
-      importPermitIssueDateComponents,
-      importPermitIssueDateErrors
-    ),
-    errorMessage: importPermitIssueDateErrorMessage
-      ? { html: importPermitIssueDateErrorMessage }
-      : null
-  }
-
-  const checkboxNotKnown = {
-    idPrefix: "importPermitDetailsNotKnown",
-    name: "importPermitDetailsNotKnown",
-    items: [
-      {
-        value: true,
-        text: pageContent.checkboxLabelNotKnown,
-        checked: data.importPermitDetailsNotKnown
-      }
-    ],
-    errorMessage: getFieldError(errorList, "#importPermitDetailsNotKnown")
-  }
-
   const model = {
     backLink: backLink,
     assetPath,
@@ -124,11 +80,69 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     divider: pageContent.dividerText,
-    inputPermitNumber,
-    inputPermitIssueDate,
-    checkboxNotKnown
+    ...getInputs(pageContent, data, errorList, importPermitIssueDateErrors)
   }
   return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, data, errorList, importPermitIssueDateErrors) {
+  const importPermitIssueDateErrorMessage = importPermitIssueDateErrors[0]?.message
+
+  const importPermitIssueDateComponents = [
+    { name: "day", value: data.importPermitIssueDateDay },
+    { name: "month", value: data.importPermitIssueDateMonth },
+    { name: "year", value: data.importPermitIssueDateYear }
+  ]
+
+  return {
+    inputPermitNumber: {
+      label: {
+        text: pageContent.inputLabelPermitNumber
+      },
+      id: "importPermitNumber",
+      name: "importPermitNumber",
+      classes: "govuk-input govuk-input--width-20",
+      autocomplete: "on",
+      ...(data.importPermitNumber
+        ? { value: data.importPermitNumber }
+        : {}),
+      errorMessage: getFieldError(errorList, "#importPermitNumber")
+    },
+
+    inputPermitIssueDate: {
+      id: "importPermitIssueDate",
+      name: "importPermitIssueDate",
+      namePrefix: "importPermitIssueDate",
+      fieldset: {
+        legend: {
+          text: pageContent.inputLabelPermitIssueDate
+        }
+      },
+      hint: {
+        text: pageContent.inputLabelHintPermitIssueDate
+      },
+      items: getPermitIssueDateInputGroupItems(
+        importPermitIssueDateComponents,
+        importPermitIssueDateErrors
+      ),
+      errorMessage: importPermitIssueDateErrorMessage
+        ? { html: importPermitIssueDateErrorMessage }
+        : null
+    },
+
+    checkboxNotKnown: {
+      idPrefix: "importPermitDetailsNotKnown",
+      name: "importPermitDetailsNotKnown",
+      items: [
+        {
+          value: true,
+          text: pageContent.checkboxLabelNotKnown,
+          checked: data.importPermitDetailsNotKnown
+        }
+      ],
+      errorMessage: getFieldError(errorList, "#importPermitDetailsNotKnown")
+    }
+  }
 }
 
 function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
@@ -152,10 +166,10 @@ function getPermitIssueDateInputGroupItems(components, permitIssueDateErrors) {
 
 function permitIssueDateValidator(value, helpers) {
 
-  const day = value["importPermitIssueDate-day"]
-  const month = value["importPermitIssueDate-month"]
-  const year = value["importPermitIssueDate-year"]
-  const fieldName = "importPermitIssueDate"
+  const day = value[permitIssueDateFieldItems.DAY]
+  const month = value[permitIssueDateFieldItems.MONTH]
+  const year = value[permitIssueDateFieldItems.YEAR]
+  const fieldName = permitIssueDateFieldItems.DATE
   const dateValidatorResponse = dateValidator(day, month, year, false, fieldName, helpers)
 
   return dateValidatorResponse === null ? value : dateValidatorResponse
@@ -167,7 +181,7 @@ const payloadSchema = Joi.object({
 
   importPermitNumber: Joi.when("importPermitDetailsNotKnown", {
     is: false,
-    then: Joi.string().min(1).max(27).regex(COMMENTS_REGEX).required(),
+    then: Joi.string().min(stringLength.min1).max(stringLength.max27).regex(COMMENTS_REGEX).required(),
     //otherwise: Joi.string().length(0)
   }),
   importPermitIssueDate: Joi.when("importPermitDetailsNotKnown", {
@@ -216,7 +230,7 @@ module.exports = [
         importPermitDetailsNotKnown: permitDetails?.importPermitDetailsNotKnown,
 
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -239,7 +253,7 @@ module.exports = [
           "importPermitIssueDate-year": importYear,
         } = request.payload
         const importPermitDetailsNotKnown = stringToBool(request.payload.importPermitDetailsNotKnown, false)
-        
+
 
         const requestPayload = {
           importPermitNumber: importPermitNumber,
@@ -264,7 +278,7 @@ module.exports = [
             importPermitIssueDateYear: importYear,
             importPermitDetailsNotKnown
           }
-          return h.view(pageId, createModel(result.error, pageData)).takeover()
+          return h.view(viewName, createModel(result.error, pageData)).takeover()
         }
 
         const permitDetails = submission.applications[applicationIndex].permitDetails || {}

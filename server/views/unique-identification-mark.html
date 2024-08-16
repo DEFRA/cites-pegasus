@@ -1,37 +1,11 @@
-{% extends 'layout.html' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/select/macro.njk" import govukSelect %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
+{% extends 'application-basic-layout.html' %}
+{% set showPageHeader = true %}
+{% set noFormAction = true %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: backLinkButton,
-    href: backLink,
-	  attributes: {id: 'linkBack'}
-  }) }}
-
-  {% if errorList %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {{govukErrorSummary ({
-        "titleText": errorSummaryTitle,
-        "errorList": errorList
-        }) }}
-      </div>
-    </div>
-  {% endif %}
-
-{% endblock %}
-{% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-l moj-add-another__heading" tabindex="-1">{{pageHeader}}</h2>
+{% block centralContent %}
       <p>{{pageBody}}</p>
-      <form method="POST" autocomplete="off" novalidate="novalidate">
-        <input type="hidden" id="numberOfMarks" name="numberOfMarks" min="1" value="{{ numberOfMarks }}">
+      
+        <input type="hidden" id="numberOfMarks" name="numberOfMarks" min="1" value="{{ numberOfMarks }}"/>
         {% for mark in marks %}
           <div id="mark{{mark.markIndex}}">
             {% call govukFieldset(mark.fieldsetMark) %}
@@ -61,15 +35,13 @@
           </div>
         {% endfor %}
         <br/>
-        {{ govukButton({
-          text: saveAndContinueButton,
-          type: "submit",
-          attributes: {
-              formAction: formActionPage + '/continue'
-            }
-        }) }}
-
-      </form>
-    </div>
-  </div>
+{% endblock %}
+{% block submitButton %}
+  {{ govukButton({
+    text: saveAndContinueButton,
+    type: "submit",
+    attributes: {
+        formAction: formActionPage + '/continue'
+      }
+  }) }}
 {% endblock %}

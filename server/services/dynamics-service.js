@@ -1,11 +1,19 @@
-const MSAL = require('@azure/msal-node');
-const Wreck = require('@hapi/wreck');
-const { getYarValue, setYarValue } = require('../lib/session')
-const moment = require('moment');
+const MSAL = require('@azure/msal-node')
+const Wreck = require('@hapi/wreck')
+const moment = require('moment')
 const config = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
-const lodash = require('lodash');
+const { httpStatusCode } = require('../lib/constants')
+const lodash = require('lodash')
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
+const httpResponsePrefix = 'HTTP Response Payload: '
+const collectionExpandoString = '#Collection(Microsoft.Dynamics.CRM.expando)'
+const countString = '@odata.count'
+const dynamicsStatusCodeConst = {
+  awaitingPayment: 1,
+  inProgress: 149900002,
+  awaitingAdditionalPayment: 149900003
+}
 
 async function getClientCredentialsToken() {
   const clientId = await readSecret('DYNAMICS-API-CLIENT-ID')
@@ -88,7 +96,7 @@ async function postSubmission(server, submission) {
 
     const { payload } = await Wreck.post(url, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
     return payload
   } catch (err) {
@@ -106,7 +114,7 @@ function addOdataTypeProperty(obj) {
   }
 
   if (Array.isArray(obj)) {
-    obj.forEach((item, index) => {
+    obj.forEach((item, _index) => {
       addOdataTypeProperty(item);
     });
   } else {
@@ -129,14 +137,14 @@ function mapSubmissionToPayload(submission) {
   addOdataTypeProperty(payload)
 
   if (payload.supportingDocuments) {
-    payload.supportingDocuments["files@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+    payload.supportingDocuments["files@odata.type"] = collectionExpandoString
   }
 
   if (payload.applications) {
-    payload["applications@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)"
+    payload["applications@odata.type"] = collectionExpandoString
     payload.applications.forEach(application => {
-      if(application.species?.uniqueIdentificationMarks){
-        application.species["uniqueIdentificationMarks@odata.type"] = "#Collection(Microsoft.Dynamics.CRM.expando)" 
+      if (application.species?.uniqueIdentificationMarks) {
+        application.species["uniqueIdentificationMarks@odata.type"] = collectionExpandoString
       }
     })
   }
@@ -168,26 +176,27 @@ async function getSpecies(server, speciesName) {
     console.log(url)
     const { payload } = await Wreck.get(url, options)
 
-    
+
 
     if (payload?.value?.length) {
-      if (config.enableSpeciesWarning && payload.value[0].cites_warningmessage){
-        return { 
-          scientificName: payload.value[0].cites_name, 
-          kingdom: payload.value[0].cites_kingdom, 
+      if (config.enableSpeciesWarning && payload.value[0].cites_warningmessage) {
+        return {
+          scientificName: payload.value[0].cites_name,
+          kingdom: payload.value[0].cites_kingdom,
           hasRestriction: payload.value[0].cites_restrictionsapply,
-          warningMessage: payload.value[0].cites_warningmessage}
+          warningMessage: payload.value[0].cites_warningmessage
+        }
       } else {
-        return { 
-          scientificName: payload.value[0].cites_name, 
-          kingdom: payload.value[0].cites_kingdom, 
+        return {
+          scientificName: payload.value[0].cites_name,
+          kingdom: payload.value[0].cites_kingdom,
         }
       }
     }
 
     return null
   } catch (err) {
-    if (err.data?.res?.statusCode === 404) {
+    if (err.data?.res?.statusCode === httpStatusCode.NOT_FOUND) {
       //No species match
       return null
     }
@@ -210,7 +219,7 @@ async function getSpecieses(server, speciesName) {
     const select = `$select=cites_name,cites_kingdom,cites_restrictionsapply,cites_warningmessage`
     const orderBy = `$orderby=cites_name asc`
     const count = `$count=true`
-    
+
     const speciesNameSegments = speciesName.trim().split(/\s+/)
     const filterParts = speciesNameSegments.map(segment => `contains(cites_name, '${segment}') eq true`)
     filterParts.push('statecode eq 0') //Removes deactivated species
@@ -225,16 +234,14 @@ async function getSpecieses(server, speciesName) {
     const response = await Wreck.get(url, options)
 
     const { payload } = response
-    
-    if (payload && payload["@odata.count"] > 0) {
 
-      if (Array.isArray(payload.value) && payload.value.length > 0) {
-        return {
-          count: payload["@odata.count"],
-          items: payload.value.map(formatItem)      
-        }
+    if (payload && payload[countString] > 0 && Array.isArray(payload.value) && payload.value.length > 0) {
+      return {
+        count: payload[countString],
+        items: payload.value.map(formatItem)
       }
     }
+
 
     return {
       count: 0,
@@ -242,12 +249,12 @@ async function getSpecieses(server, speciesName) {
     }
 
   } catch (err) {
-    if (err.data?.res?.statusCode === 404) {
+    if (err.data?.res?.statusCode === httpStatusCode.NOT_FOUND) {
       //No species match
       return {
-      count: 0,
-      items: []
-    }
+        count: 0,
+        items: []
+      }
     }
 
     if (err.data?.payload) {
@@ -259,19 +266,16 @@ async function getSpecieses(server, speciesName) {
 }
 
 function formatItem(item) {
-  if (config.enableSpeciesWarning && item.cites_warningmessage) {
-    return {
-      scientificName: item.cites_name,
-      kingdom: item.cites_kingdom,
-      hasRestriction: item.cites_restrictionsapply,
-      warningMessage: item.cites_warningmessage,
-    };
-  } else {
-    return {
-      scientificName: item.cites_name,
-      kingdom: item.cites_kingdom,
-    };
+  const response = {
+    scientificName: item.cites_name,
+    kingdom: item.cites_kingdom
   }
+
+  if (config.enableSpeciesWarning && item.cites_warningmessage) {
+    response.hasRestriction = item.cites_restrictionsapply
+    response.warningMessage = item.cites_warningmessage    
+  }
+  return response
 }
 
 async function getCountries(server) {
@@ -332,13 +336,13 @@ function getPortalSubmissionStatus(dynamicsStatuscode, dynamicsStatecode) {
   if (dynamicsStatecode !== 0) {
     return 'closed'
   }
-
+  
   switch (dynamicsStatuscode) {
-    case 1:
+    case dynamicsStatusCodeConst.awaitingPayment:
       return 'awaitingPayment'
-    case 149900002:
+    case dynamicsStatusCodeConst.inProgress:
       return 'inProgress'
-    case 149900003:
+    case dynamicsStatusCodeConst.awaitingAdditionalPayment:
       return 'awaitingAdditionalPayment'
     default:
       return ''
@@ -349,15 +353,15 @@ function getDynamicsSubmissionStatuses(portalStatuses) {
   const statuses = [];
 
   if (portalStatuses.includes('awaitingPayment')) {
-    statuses.push(1)
+    statuses.push(dynamicsStatusCodeConst.awaitingPayment)
   }
 
   if (portalStatuses.includes('awaitingAdditionalPayment')) {
-    statuses.push(149900003)
+    statuses.push(dynamicsStatusCodeConst.awaitingAdditionalPayment)
   }
-  
+
   if (portalStatuses.includes('inProgress')) {
-    statuses.push(149900002)
+    statuses.push(dynamicsStatusCodeConst.inProgress)
   }
 
   return statuses
@@ -371,7 +375,7 @@ const dynamicsPermitTypesMappings = {
 }
 
 function reverseMapper(mapping, value) {
-  const match = Object.entries(mapping).find(x => x[1] == value)
+  const match = Object.entries(mapping).find(x => x[1] === value)
   return match ? match[0] : value.toString()
 }
 
@@ -380,34 +384,7 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_permittype;$top=1)"
   const orderby = "$orderby=createdon desc"
   const count = "$count=true"
-  const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
-  const filterParts = [
-    `_cites_organisation_value eq ${organisationIdValue}`,
-    "cites_submissionmethod eq 149900000",
-    "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
-  ]
-  
-  if(!submittedByFilterEnabled || submittedBy === 'me') {
-    filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
-  }
-
-  if (statuses && statuses.length > 0) {
-    const statusMappedList = getDynamicsSubmissionStatuses(statuses).map(x => `'${x}'`).join(",")
-    if(statuses.includes('closed')) {
-      if(statusMappedList){
-        filterParts.push(`(Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}]) or Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1']))`)
-      } else {
-        filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1'])`)
-      }
-    } else {
-      filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
-    }
-  }
-
-  if (permitTypes && permitTypes.length > 0) {
-    const permitTypeMappedList = permitTypes.map(x => `'${dynamicsPermitTypesMappings[x]}'`).join(",")
-    filterParts.push(`cites_cites_submission_incident_submission/any(o1:(Microsoft.Dynamics.CRM.In(PropertyName='cites_permittype',PropertyValues=[${permitTypeMappedList}])))`)
-  }
+  const filterParts = getFilterParts(submittedByFilterEnabled, submittedBy, contactId, organisationId, statuses, permitTypes)
 
   if (searchTerm) {
 
@@ -421,7 +398,7 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
       `cites_cites_submission_incident_submission/any(o5:(contains(o5/cites_partyaddresspostcode, '${encodedSearchTerm}')))`,
       `contains(cites_applicantfullname,'${encodedSearchTerm}')`,
     ]
-    if(config.enableInternalReference){
+    if (config.enableInternalReference) {
       searchTermParts.push(`cites_cites_submission_incident_submission/any(o6:(o6/cites_internalreference eq '${encodedSearchTerm}'))`)
     }
     filterParts.push(`(${searchTermParts.join(" or ")})`)
@@ -430,6 +407,39 @@ async function getNewSubmissionsQueryUrl(contactId, organisationId, permitTypes,
   const filter = `$filter=${filterParts.join(" and ")}`
 
   return `${apiUrl}cites_submissions?${select}&${expand}&${orderby}&${count}&${filter}`
+}
+
+function getFilterParts(submittedByFilterEnabled, submittedBy, contactId, organisationId, statuses, permitTypes) {
+
+  const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
+  const filterParts = [
+    `_cites_organisation_value eq ${organisationIdValue}`,
+    "cites_submissionmethod eq 149900000",
+    "cites_cites_submission_incident_submission/any(o2:(o2/incidentid ne null))"
+  ]
+
+  if (!submittedByFilterEnabled || submittedBy === 'me') {
+    filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
+  }
+
+  if (statuses && statuses.length > 0) {
+    const statusMappedList = getDynamicsSubmissionStatuses(statuses).map(x => `'${x}'`).join(",")
+    if (statuses.includes('closed')) {
+      if (statusMappedList) {
+        filterParts.push(`(Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}]) or Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1']))`)
+      } else {
+        filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statecode',PropertyValues=['1'])`)
+      }
+    } else {
+      filterParts.push(`Microsoft.Dynamics.CRM.In(PropertyName='statuscode',PropertyValues=[${statusMappedList}])`)
+    }
+  }
+
+  if (permitTypes && permitTypes.length > 0) {
+    const permitTypeMappedList = permitTypes.map(x => `'${dynamicsPermitTypesMappings[x]}'`).join(",")
+    filterParts.push(`cites_cites_submission_incident_submission/any(o1:(Microsoft.Dynamics.CRM.In(PropertyName='cites_permittype',PropertyValues=[${permitTypeMappedList}])))`)
+  }
+  return filterParts
 }
 
 async function getSubmissions(server, query, pageSize) {
@@ -449,7 +459,7 @@ async function getSubmissions(server, query, pageSize) {
 
 
     if (payload) {
-      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2));
       //log('HTTP Response Payload', payload)
       return {
         submissions: payload.value.map(x => {
@@ -464,7 +474,7 @@ async function getSubmissions(server, query, pageSize) {
           }
         }),
         nextQueryUrl: payload["@odata.nextLink"],
-        totalSubmissions: payload['@odata.count']
+        totalSubmissions: payload[countString]
       };
     }
 
@@ -479,10 +489,15 @@ async function getSubmissions(server, query, pageSize) {
 }
 
 function getPaymentCalculationType(dynamicsType) {
+  const dynamicsPaymentCalcTypeConst = {
+    simple: 149900000,
+    complex: 149900001
+  }
+  
   switch (dynamicsType) {
-    case 149900000:
+    case dynamicsPaymentCalcTypeConst.simple:
       return "simple"
-    case 149900001:
+    case dynamicsPaymentCalcTypeConst.complex:
       return "complex"
     default:
       throw new Error("Unknown Dynamics Payment Calculation Type.")
@@ -491,11 +506,11 @@ function getPaymentCalculationType(dynamicsType) {
 
 function updateSubmissionSchema(jsonContent) {
   jsonContent.applications.forEach(jsonApplication => {
-    if(jsonApplication.species.hasOwnProperty("parentDetails") && !jsonApplication.species.hasOwnProperty("maleParentDetails")) {
+    if (jsonApplication.species.hasOwnProperty("parentDetails") && !jsonApplication.species.hasOwnProperty("maleParentDetails")) {
       jsonApplication.species.maleParentDetails = jsonApplication.species.parentDetails
       jsonApplication.species.femaleParentDetails = null
       delete jsonApplication.species.parentDetails
-    }    
+    }
   })
   return jsonContent
 }
@@ -505,13 +520,13 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
   const select = "$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,cites_remainingadditionalamount,cites_additionalamountpaid,statuscode,statecode"
   const expand = "$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)"
   const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
-      
+
   const filterParts = [
-    `cites_submissionreference eq '${submissionRef}'`,    
+    `cites_submissionreference eq '${submissionRef}'`,
     `_cites_organisation_value eq ${organisationIdValue}`
   ]
 
-  if(contactId) {
+  if (contactId) {
     filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
   }
 
@@ -532,9 +547,9 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
     const { payload } = response
 
     if (payload) {
-      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2));
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2));
 
-      if (payload.value.length == 0) {
+      if (payload.value.length === 0) {
         throw new Error(`Submission not found with reference '${submissionRef}' and contact '${contactId}'`)
       }
 
@@ -554,7 +569,7 @@ async function getSubmission(server, contactId, organisationId, submissionRef) {
       }
 
       jsonContent.applications.forEach(jsonApplication => {
-        const dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex == jsonApplication.applicationIndex)
+        const dynamicsApplication = dynamicsApplications.find(x => x.cites_portalapplicationindex === jsonApplication.applicationIndex)
         jsonApplication.applicationRef = dynamicsApplication?.cites_applicationreference
       })
 
@@ -582,12 +597,12 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     const top = "$top=1"
     const select = "$select=cites_submissionreference"
     const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
-    
+
     const filterParts = [
       `$filter=_cites_organisation_value eq ${organisationIdValue}`
     ]
 
-    if(contactId) {
+    if (contactId) {
       filterParts.push(`_cites_submissionagent_value eq '${contactId}'`)
     }
 
@@ -607,9 +622,9 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
     const { payload } = await Wreck.get(url, options)
 
     if (payload) {
-      console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
-      if (payload.value.length == 0) {
+      if (payload.value.length === 0) {
         throw new Error(`Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`)
       }
     }
@@ -623,7 +638,7 @@ async function validateSubmission(accessToken, contactId, organisationId, submis
   }
 }
 
-function getDynamicsSubmissionStatus(portalStatus){
+function getDynamicsSubmissionStatus(portalStatus) {
   const results = getDynamicsSubmissionStatuses([portalStatus])
   return results[0]
 }
@@ -640,14 +655,14 @@ async function setSubmissionPayment(params) {
       statuscode: 149900002
     }
 
-    if(params.isAdditionalPayment) {
+    if (params.isAdditionalPayment) {
       requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
       requestPayload.cites_additionalpaymentreference = params.paymentRef
       requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
     } else {
       requestPayload.cites_paymentmethod = 149900000 // Gov Pay
       requestPayload.cites_paymentreference = params.paymentRef
-      requestPayload.cites_totalfeeamount = params.paymentValue      
+      requestPayload.cites_totalfeeamount = params.paymentValue
     }
 
     const options = {
@@ -660,7 +675,7 @@ async function setSubmissionPayment(params) {
 
     const { payload } = await Wreck.patch(url, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
   } catch (err) {
     if (err.data?.payload) {

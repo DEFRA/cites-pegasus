@@ -1,12 +1,13 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getFieldError, getErrorList } = require("../lib/helper-functions")
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { dateValidator } = require("../lib/validators")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
 const pageId = "acquired-date"
+const viewName = 'application-date-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
@@ -19,36 +20,19 @@ function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.acquiredDate
 
-  const acquiredDateErrors = []
-  let errorList = null
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [
+    "acquiredDate",
+    "acquiredDate-day",
+    "acquiredDate-day-month",
+    "acquiredDate-day-year",
+    "acquiredDate-month",
+    "acquiredDate-month-year",
+    "acquiredDate-year",
+    "isExactDateUnknown",
+    "approximateDate"
+  ])
 
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = [
-      "acquiredDate",
-      "acquiredDate-day",
-      "acquiredDate-day-month",
-      "acquiredDate-day-year",
-      "acquiredDate-month",
-      "acquiredDate-month-year",
-      "acquiredDate-year",
-      "isExactDateUnknown",
-      "approximateDate"
-    ]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const acquiredDateErrors = []
 
   if (errorList) {
     const acquiredDateFields = [
@@ -67,14 +51,6 @@ function createModel(errors, data) {
       }
     })
   }
-
-  const acquiredDateErrorMessage = acquiredDateErrors.map(item => { return item.message }).join('</p> <p class="govuk-error-message">')
-
-  const acquiredDateComponents = [
-    { name: 'day', value: data.acquiredDateDay },
-    { name: 'month', value: data.acquiredDateMonth },
-    { name: 'year', value: data.acquiredDateYear }
-  ]
 
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
@@ -104,7 +80,6 @@ function createModel(errors, data) {
     previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
   }
 
-
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -112,8 +87,23 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputAcquiredDate: {
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    ...getInputs(pageContent, acquiredDateErrors, data, approximateDateInput, errorList)
+  }
+  return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, acquiredDateErrors, data, approximateDateInput, errorList) {
+
+  const acquiredDateErrorMessage = acquiredDateErrors.map(item => { return item.message }).join('</p> <p class="govuk-error-message">')
+
+  const acquiredDateComponents = [
+    { name: 'day', value: data.acquiredDateDay },
+    { name: 'month', value: data.acquiredDateMonth },
+    { name: 'year', value: data.acquiredDateYear }
+  ]
+  return {
+    inputDate: {
       id: "acquiredDate",
       name: "acquiredDate",
       namePrefix: "acquiredDate",
@@ -148,7 +138,6 @@ function createModel(errors, data) {
       errorMessage: getFieldError(errorList, "#isExactDateUnknown")
     }
   }
-  return { ...commonContent, ...model }
 }
 
 function getAcquiredDateInputGroupItems(components, acquiredDateErrors) {
@@ -218,7 +207,7 @@ module.exports = [
         isExactDateUnknown: species.acquiredDate?.isExactDateUnknown,
         approximateDate: species.acquiredDate?.approximateDate
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(viewName, createModel(null, pageData))
     }
   },
   {
@@ -259,7 +248,7 @@ module.exports = [
             approximateDate: approximateDate
           }
 
-          return h.view(pageId, createModel(err, pageData)).takeover()
+          return h.view(viewName, createModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {

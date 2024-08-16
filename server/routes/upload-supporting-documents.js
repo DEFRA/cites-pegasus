@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, documentUploadMaxFilesLimit } = require('../../config/config')
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
 const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists, AVScanResult } = require("../services/blob-storage-service")
 const textContent = require('../content/text-content')
@@ -10,35 +10,16 @@ const assetPath = `${urlPrefix}/assets`
 const previousPath = `${urlPrefix}/add-application`
 const nextPath = `${urlPrefix}/declaration`
 const invalidSubmissionPath = `${urlPrefix}/`
-const Boom = require('@hapi/boom');
 const maxFileSizeBytes = 10485760
 const pageSize = 15
+const multiPartFormData = 'multipart/form-data'
 
 function createModel(errors, data) {
 
   const commonContent = textContent.common
   const pageContent = textContent.uploadSupportingDocuments
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename", "file"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field.split('.')[0]}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename", "file"])
+  
   const documents = data.files?.map((file) => {
     return {
       ...file,
@@ -48,7 +29,7 @@ function createModel(errors, data) {
 
   const sortedDocuments = documents.sort((a, b) => (b.uploadTimestamp || 1) - (a.uploadTimestamp || 1))
 
-  const pagination = getPaginationControl(sortedDocuments.length, data.pageNo || 1, pageSize, currentPath)
+  const pagination = getPaginationControl(sortedDocuments.length, data.pageNo || 1, currentPath)
 
   const startIndex = (data.pageNo - 1) * pageSize
   const endIndex = startIndex + pageSize
@@ -86,7 +67,7 @@ function createModel(errors, data) {
   return { ...commonContent, ...pageContent, ...model }
 }
 
-function getPaginationControl(totalItems, pageNo, pageSize, url) {
+function getPaginationControl(totalItems, pageNo, url) {
   if (totalItems <= pageSize) {
     return null
   }
@@ -148,7 +129,67 @@ function failAction(request, h, err) {
 }
 
 function getMaxDocs(applicationsCount) {
-  return Math.min(5 + (applicationsCount * 5), documentUploadMaxFilesLimit)
+  const maxDocsMultiplier = 5
+  return Math.min(maxDocsMultiplier + (applicationsCount * maxDocsMultiplier), documentUploadMaxFilesLimit)
+}
+
+function getAVError(avScanResult) {
+  const avError = {
+    details: [
+      {
+        type: 'upload.exception',
+        context: { label: 'fileUpload', key: 'fileUpload' }
+      }
+    ]
+  }
+
+  switch (avScanResult) {
+    case AVScanResult.MALICIOUS:
+      avError.details[0].type = 'av-malicious.exception'
+      break
+    case AVScanResult.TIMEOUT:
+      avError.details[0].type = 'av-timeout.exception'
+      break
+    default:
+      avError.details[0].type = 'av-unknown.exception'
+  }
+  return avError
+}
+
+function validateRequest(request) {
+  if (request.headers["content-length"] > maxFileSizeBytes) {
+    return {
+      details: [
+        {
+          type: 'any.filesize',
+          context: { label: 'fileUpload', key: 'fileUpload' }
+        }
+      ]
+    }
+  }
+
+  let payloadSchema = null
+  if (Array.isArray(request.payload.fileUpload)) {
+    payloadSchema = Joi.object({ fileUpload: Joi.array().items(fileSchema) })
+  } else {
+    payloadSchema = Joi.object({ fileUpload: fileSchema })
+  }
+
+  const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' })
+
+  return error
+}
+
+function getFileUploadError(type) {
+  return {
+    details: [
+      {
+        path: ['fileUpload'],
+        type,
+        context: { label: 'fileUpload', key: 'fileUpload' }
+      }
+    ]
+  }
 }
 
 module.exports = [
@@ -198,35 +239,14 @@ module.exports = [
         maxBytes: 20971520, // 20 MB limit
         output: 'stream',
         parse: true,
-        allow: 'multipart/form-data',
+        allow: multiPartFormData,
         multipart: true,
         timeout: false
       },
       handler: async (request, h) => {
-        if (request.headers["content-length"] > maxFileSizeBytes) {
-          const error = {
-            details: [
-              {
-                type: 'any.filesize',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
-          return failAction(request, h, error)
-        }
-
-        let payloadSchema = null
-        if (Array.isArray(request.payload.fileUpload)) {
-          payloadSchema = Joi.object({ fileUpload: Joi.array().items(fileSchema) })
-        } else {
-          payloadSchema = Joi.object({ fileUpload: fileSchema })
-        }
-
-        const { error } = payloadSchema.validate(request.payload, { label: 'fileUpload' });
-
-        // If there was an error, return a 400 Bad Request response
-        if (error) {
-          return failAction(request, h, error)
+        const requestValidationError = validateRequest(request)
+        if (requestValidationError) {
+          return failAction(request, h, requestValidationError)
         }
 
         const submission = getSubmission(request)
@@ -240,30 +260,14 @@ module.exports = [
         const maxFilesCount = getMaxDocs(submission.applications.length)
 
         if (docs.files.length >= maxFilesCount) {
-          const error = {
-            details: [
-              {
-                path: ['fileUpload'],
-                type: 'any.maxfiles',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
+          const error = getFileUploadError('any.maxfiles')
           return failAction(request, h, error)
         }
 
 
         const existingFile = docs.files.find(file => file.fileName === request.payload.fileUpload.hapi.filename)
         if (existingFile) {
-          const error = {
-            details: [
-              {
-                path: ['fileUpload'],
-                type: 'any.existing',
-                context: { label: 'fileUpload', key: 'fileUpload' }
-              }
-            ]
-          }
+          const error = getFileUploadError('any.existing')
           return failAction(request, h, error)
         }
 
@@ -282,31 +286,13 @@ module.exports = [
 
           const fileSaveResult = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
 
-          
-          if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
-            const avError = {
-              details: [
-                {
-                  type: 'upload.exception',
-                  context: { label: 'fileUpload', key: 'fileUpload' }
-                }
-              ]
-            }
 
-            switch (fileSaveResult.avScanResult) {
-              case AVScanResult.MALICIOUS:
-                avError.details[0].type = 'av-malicious.exception'
-                break
-              case AVScanResult.TIMEOUT:
-                avError.details[0].type = 'av-timeout.exception'
-                break
-              default:
-                avError.details[0].type = 'av-unknown.exception'
-            }
-            
+          if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
+            const avError = getAVError(fileSaveResult.avScanResult)
+
             return failAction(request, h, avError)
           }
-          
+
           console.log(`File added to blob container with url ${fileSaveResult.url}`)
           docs.files.push({ fileName: request.payload.fileUpload.hapi.filename, blobUrl: fileSaveResult.url, uploadTimestamp: Date.now() })
 
@@ -348,7 +334,7 @@ module.exports = [
     path: `${currentPath}/delete/{fileName}`,
     options: {
       payload: {
-        allow: 'multipart/form-data',
+        allow: multiPartFormData,
         multipart: true
       },
       handler: async (request, h) => {
@@ -408,7 +394,7 @@ module.exports = [
     path: `${currentPath}/continue`,
     options: {
       payload: {
-        allow: 'multipart/form-data',
+        allow: multiPartFormData,
         multipart: true
       },
       handler: async (request, h) => {

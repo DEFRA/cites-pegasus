@@ -1,0 +1,15 @@
+{% extends 'application-basic-layout.html' %}
+
+{% block centralContent %}
+  {% if pageHeader%}
+    <h1 class="govuk-heading-l">
+      {{pageHeader}}
+    </h1>
+  {% endif %}
+  {% if pageBody%}
+    <p class="govuk-body">{{pageBody | safe}}</p>
+  {% endif %}
+  <p class="govuk-body">{{pageBody1 | safe}}</p>
+  <p class="govuk-body">{{pageBody2 | safe}}</p>
+  {{ govukRadios(radios) }}
+{% endblock %}

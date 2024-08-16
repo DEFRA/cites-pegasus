@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const { urlPrefix, enableInternalReference } = require("../../config/config")
-const { findErrorList, getFieldError } = require('../lib/helper-functions')
-const { setYarValue, getYarValue } = require('../lib/session')
+const { setYarValue, getYarValue, sessionKey } = require('../lib/session')
 const dynamics = require("../services/dynamics-service")
 const user = require('../lib/user')
 const textContent = require('../content/text-content')
@@ -12,7 +11,7 @@ const nextPathViewApplication = `${urlPrefix}/application-summary/view-submitted
 const invalidSubmissionPath = `${urlPrefix}/`
 const pageSize = 15
 
-function createModel(errors, data) {
+function createModel(data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmission
 
@@ -56,6 +55,8 @@ function createModel(errors, data) {
   } else if(data.showAdditionalPayNowNotification){
     notificationHeader = pageContent.notificationHeaderAdditionalPayment.replace('##COST##', data.remainingAdditionalAmount.toFixed(2))
     notificationContent = pageContent.notificationContent.replace('##PAYMENT_LINK##', paymentLink)  
+  } else {
+    //Do nothing
   }
 
 
@@ -166,9 +167,9 @@ module.exports = [
         remainingAdditionalAmount: submission.paymentDetails?.remainingAdditionalAmount
       }
 
-      setYarValue(request, 'submission', submission)
+      setYarValue(request, sessionKey.SUBMISSION, submission)
       
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(pageId, createModel(pageData))
     }
   }
 ]

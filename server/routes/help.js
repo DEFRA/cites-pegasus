@@ -3,7 +3,7 @@ const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
 const pageId = 'help'
 const currentPath = `${urlPrefix}/${pageId}`
 
-function createModel(data){
+function createModel(){
   const commonContent = textContent.common
   const pageContent = textContent.help
   const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix
@@ -13,7 +13,7 @@ function createModel(data){
 module.exports = [{
   method: 'GET',
   path: currentPath,
-  handler: (request, h) => {
-    return h.view(pageId, createModel(request.headers.referer));  
+  handler: (_request, h) => {
+    return h.view(pageId, createModel());  
   }
 }]

@@ -20,7 +20,7 @@ async function getBlobServiceClient(server) {
     }
 }
 
-async function createContainer(server, containerName, attemptNo = 1) {
+async function createContainer(server, containerName) {
 
     try {
         const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
@@ -44,15 +44,16 @@ async function createContainerWithTimestamp(server, name, attemptNo = 1) {
 
     catch (err) {
         console.log(containerName)
+        const maxAttempts = 5
         if (err.code === 'ContainerAlreadyExists') {
-            if (attemptNo >= 5) {
-                console.error("Unable to find unique container name after 5 attempts")
-                throw new Error("Unable to find unique container name after 5 attempts", err)
+            if (attemptNo >= maxAttempts) {
+                console.error(`Unable to find unique container name after ${maxAttempts} attempts`)
+                throw new Error(`Unable to find unique container name after ${maxAttempts} attempts`, err)
             }
 
             await new Promise(resolve => setTimeout(resolve, 100));//wait 100ms
 
-            return await createContainerWithTimestamp(server, name, attemptNo + 1)
+            return createContainerWithTimestamp(server, name, attemptNo + 1)
         }
         throw err
     }
@@ -229,7 +230,7 @@ function streamToBuffer(readableStream) {
 
 async function checkContainerExists(server, containerName) {
     const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
-    return await containerClient.exists()
+    return containerClient.exists()
 }
 
 async function listContainerNames(server, maxPageSize) {
@@ -240,7 +241,7 @@ async function listContainerNames(server, maxPageSize) {
         //prefix: containerNamePrefix
     }
     const iterator = server.app.blobServiceClient.listContainers(options).byPage({ maxPageSize })
-    let response = (await iterator.next()).value
+    const response = (await iterator.next()).value
     if (response.containerItems) {
         return response.containerItems.map(container => container.name)
     }

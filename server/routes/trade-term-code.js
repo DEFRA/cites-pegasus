@@ -1,8 +1,9 @@
 const Joi = require("joi")
 const { urlPrefix, enableNotKnownTradeTermCode } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { ALPHA_REGEX } = require("../lib/regex-validation")
+const { stringLength } = require("../lib/constants")
 const { checkChangeRouteExit } = require("../lib/change-route")
 const textContent = require("../content/text-content")
 const nunjucks = require("nunjucks")
@@ -17,26 +18,8 @@ const unknownTradeTermCodeValue = 'UKN'
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.tradeTermCode
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["tradeTermCode"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['tradeTermCode'])
+  
   const tradeTermCodes = []
 
   tradeTermCodes.push({
@@ -133,7 +116,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          tradeTermCode: Joi.string().length(3).regex(ALPHA_REGEX).required()
+          tradeTermCode: Joi.string().length(stringLength.min3).regex(ALPHA_REGEX).required()
         }
         ),
 

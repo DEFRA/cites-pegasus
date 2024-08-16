@@ -1,14 +1,15 @@
 const Joi = require("joi")
 const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
-const { findErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { clearChangeRoute } = require("../lib/change-route")
-const { getYarValue, setYarValue } = require('../lib/session')
+const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
 const user = require('../lib/user')
 const { createSubmission, getDraftSubmissionDetails, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
 const dynamics = require("../services/dynamics-service")
 const textContent = require("../content/text-content")
 const pageId = "my-submissions"
+const areYouSureViewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathMySubmission = `${urlPrefix}/my-submission`
@@ -22,7 +23,7 @@ const statuses = ['awaitingPayment', 'awaitingAdditionalPayment', 'inProgress', 
 const pageSize = 15
 
 
-function createModel(errors, data) {
+function createModel(data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmissions
 
@@ -54,15 +55,8 @@ function createModel(errors, data) {
 
   const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
 
-  let pagebodyNoApplicationsFound = null
-  let pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
-  if (data.noApplicationMadeBefore && submissionsData.length === 0) {
-    pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
-    pageBodyNewApplicationFromPrevious = null
-  } else if ((data.noApplicationFound || data.noMatchingApplication) && submissionsData.length === 0) {
-    pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
-    pageBodyNewApplicationFromPrevious = null
-  }
+
+  const { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious } = getPageBodyContent(data, pageContent)
 
   const pageHeader = data.organisationName ? pageContent.pageHeaderOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.pageHeader
   const pageTitle = (data.organisationName ? pageContent.defaultTitleOrganisation.replace('##ORGANISATION_NAME##', data.organisationName) : pageContent.defaultTitle) + commonContent.pageTitleSuffix
@@ -71,7 +65,7 @@ function createModel(errors, data) {
     pageHeader,
     draftNotificationTitle: pageContent.draftNotificationTitle,
     draftNotificationHeader: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationHeaderExportSubmission : pageContent.draftNotificationHeader,
-    draftNotificationBody: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationBodyExportSubmission :  pageContent.draftNotificationBody,
+    draftNotificationBody: data.draftSubmissionDetail.a10SourceSubmissionRef ? pageContent.draftNotificationBodyExportSubmission : pageContent.draftNotificationBody,
     draftContinue: pageContent.draftContinue,
     draftDelete: pageContent.draftDelete,
     draftContinuePath: draftContinuePath,
@@ -90,24 +84,27 @@ function createModel(errors, data) {
     tableHeadReferenceNumber: pageContent.rowTextReferenceNumber,
     tableHeadApplicationDate: pageContent.rowTextApplicationDate,
     tableHeadStatus: pageContent.rowTextStatus,
-    //textPagination: textPagination,
     pagebodyNoApplicationsFound: pagebodyNoApplicationsFound,
     formActionStartNewApplication: `${currentPath}/new-application`,
     organisationName: data.organisationName,
+    ...getInputs(pageContent, commonContent, data, textPagination)
+  }
+  return { ...commonContent, ...model }
+}
+
+function getInputs(pageContent, commonContent, data, textPagination) {
+  return {
     inputSearch: {
       id: "searchTerm",
       name: "searchTerm",
       classes: "govuk-grid-column-one-half",
       inputmode: "search",
       autocomplete: "on",
-      label: {
-        text: pageContent.inputLabelSearch
-      },
+      label: { text: pageContent.inputLabelSearch },
       ...(data.searchTerm ? { value: data.searchTerm } : {}),
     },
 
     checkboxPermitType: {
-      idPrefix: "permitTypes",
       name: "permitTypes",
       items: [
         {
@@ -133,7 +130,6 @@ function createModel(errors, data) {
       ],
     },
     checkboxStatus: {
-      idPrefix: "statuses",
       name: "statuses",
       items: [
         {
@@ -155,54 +151,47 @@ function createModel(errors, data) {
           value: "closed",
           text: commonContent.statusDescriptionClosed,
           checked: isChecked(data.statuses, "closed")
-        }        
+        }
       ],
-    },   
+    },
     checkboxSubmittedBy: {
-      idPrefix: "submittedBy",
       name: "submittedBy",
       items: [
         {
           value: "me",
           text: pageContent.submittedByDescriptionMe,
           checked: isChecked(data.submittedBy, "me")
-        }        
+        }
       ],
     },
     showCheckboxSubmittedBy: data.submittedByFilterEnabled,
-    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, pageSize, textPagination) : ""
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, textPagination) : ""
   }
-  return { ...commonContent, ...model }
+}
+
+function getPageBodyContent(data, pageContent) {
+  let pagebodyNoApplicationsFound = null
+  let pageBodyNewApplicationFromPrevious = null
+  if (data.noApplicationMadeBefore && data.submissions.length === 0) {
+    pagebodyNoApplicationsFound = pageContent.pagebodyZeroApplication
+  } else if ((data.noApplicationFound || data.noMatchingApplication) && data.submissions.length === 0) {
+    pagebodyNoApplicationsFound = pageContent.pagebodyNoApplicationsFound
+  } else {
+    pageBodyNewApplicationFromPrevious = pageContent.pageBodyNewApplicationFromPrevious
+  }
+  return { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious }
 }
 
 function createAreYouSureModel(errors) {
   const commonContent = textContent.common
-  
   const pageContent = textContent.mySubmissions.areYouSureDraftDelete
   const defaultTitle = pageContent.defaultTitle
-  const pageHeader =pageContent.pageHeader
-  const pageBody= `${pageContent.pageBody1}`
-  const formActionPage= `${currentPath}/draft-delete`  
-  
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages,
-    }
-    const fields = ["areYouSure"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const pageHeader = pageContent.pageHeader
+  const pageBody = `${pageContent.pageBody1}`
+  const formActionPage = `${currentPath}/draft-delete`
 
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['areYouSure'])
+    
   const model = {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
@@ -210,23 +199,10 @@ function createAreYouSureModel(errors) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageHeader,
     pageBody: pageBody,
-  
-    inputAreYouSure: {
-      idPrefix: "areYouSure",
-      name: "areYouSure",
-      classes: "govuk-radios--inline",
-      items: [
-        {
-          value: true,
-          text: commonContent.radioOptionYes  
-        },
-        {
-          value: false,
-          text: commonContent.radioOptionNo
-        }
-      ],
-      errorMessage: getFieldError(errorList, "#areYouSure")
-    }
+    continueWithoutSaveButton: true,
+    inputName: "areYouSure",
+    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, "#areYouSure")
   }
   return { ...commonContent, ...model }
 }
@@ -238,7 +214,7 @@ function getApplicationDate(date) {
   return formattedDate
 }
 
-function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
+function paginate(totalSubmissions, currentPage, textPagination) {
   const totalPages = Math.ceil(totalSubmissions / pageSize);
 
   const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
@@ -267,7 +243,7 @@ function paginate(totalSubmissions, currentPage, pageSize, textPagination) {
 }
 
 async function getSubmissionsData(request, pageNo, filterData) {
-  let queryUrls = getYarValue(request, 'mySubmissions-queryUrls')
+  let queryUrls = getYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS)
   const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
 
   if (!queryUrls) {
@@ -291,7 +267,7 @@ async function getSubmissionsData(request, pageNo, filterData) {
 
 
 
-  setYarValue(request, 'mySubmissions-queryUrls', queryUrls)
+  setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, queryUrls)
 
   return { submissions, totalSubmissions }
 }
@@ -300,7 +276,7 @@ module.exports = [
   {
     method: 'GET',
     path: `${urlPrefix}/`,
-    handler: (request, h) => {
+    handler: (_request, h) => {
       return h.redirect(currentPath)
     }
   },
@@ -321,12 +297,12 @@ module.exports = [
       const pageNo = request.params.pageNo
 
       if (!pageNo) {
-        setYarValue(request, 'mySubmissions-queryUrls', null)
-        setYarValue(request, 'mySubmissions-filterData', null)
+        setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, null)
+        setYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA, null)
         return h.redirect(`${currentPath}/1`)
       }
 
-      let filterData = getYarValue(request, 'mySubmissions-filterData')
+      let filterData = getYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA)
 
       if (!filterData) {
         filterData = { submittedBy: "me" }
@@ -353,7 +329,7 @@ module.exports = [
         draftSubmissionDetail,
         submittedByFilterEnabled
       }
-      return h.view(pageId, createModel(null, pageData))
+      return h.view(pageId, createModel(pageData))
     }
   },
   //POST for start new application button
@@ -362,7 +338,7 @@ module.exports = [
     path: `${currentPath}/new-application`,
     options: {
       validate: {
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       },
@@ -398,7 +374,7 @@ module.exports = [
             ),
           submittedBy: Joi.string().allow(''),
         }),
-        failAction: (request, h, error) => {
+        failAction: (_request, _h, error) => {
           console.log(error)
         }
       },
@@ -406,26 +382,26 @@ module.exports = [
 
         const pageNo = 1
 
-        let permitTypes = null
+        let filterPermitTypes = null
 
         if (request.payload.permitTypes) {
           if (Array.isArray(request.payload.permitTypes)) {
-            permitTypes = request.payload.permitTypes
+            filterPermitTypes = request.payload.permitTypes
           } else {
-            permitTypes = [request.payload.permitTypes]
+            filterPermitTypes = [request.payload.permitTypes]
           }
         }
 
         const filterData = {
-          permitTypes: permitTypes,
+          permitTypes: filterPermitTypes,
           statuses: request.payload.statuses,
           searchTerm: request.payload.searchTerm,
           submittedBy: request.payload.submittedBy
         }
 
         try {
-          setYarValue(request, 'mySubmissions-queryUrls', null)
-          setYarValue(request, 'mySubmissions-filterData', filterData)
+          setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, null)
+          setYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA, filterData)
         } catch (err) {
           console.error(err)
           return h.redirect(invalidSubmissionPath)
@@ -451,7 +427,7 @@ module.exports = [
           submittedByFilterEnabled
         }
 
-        return h.view(pageId, createModel(null, pageData))
+        return h.view(pageId, createModel(pageData))
       }
     }
   },
@@ -483,8 +459,8 @@ module.exports = [
   {
     method: "GET",
     path: `${currentPath}/draft-delete`,
-    handler: async (request, h) => {
-      return h.view('are-you-sure', createAreYouSureModel(null))
+    handler: async (_request, h) => {
+      return h.view(areYouSureViewName, createAreYouSureModel(null))
     }
   },
   {
@@ -496,12 +472,12 @@ module.exports = [
         payload: Joi.object({
           areYouSure: Joi.boolean().required()
         }),
-        failAction: (request, h, err) => {
-          return h.view('are-you-sure', createAreYouSureModel(err)).takeover()
+        failAction: (_request, h, err) => {
+          return h.view(areYouSureViewName, createAreYouSureModel(err)).takeover()
         }
       },
-      handler: async (request, h) => {     
-        if(request.payload.areYouSure){
+      handler: async (request, h) => {
+        if (request.payload.areYouSure) {
           await deleteDraftSubmission(request)
         }
         return h.redirect(currentPath)

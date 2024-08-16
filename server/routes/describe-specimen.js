@@ -1,7 +1,8 @@
 const Joi = require("joi")
 const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const { stringLength } = require('../lib/constants')
 const { checkChangeRouteExit } = require("../lib/change-route")
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require("../content/text-content")
@@ -21,26 +22,8 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.specimenDescriptionGeneric
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["specimenDescriptionGeneric"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["specimenDescriptionGeneric"])
+  
   let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
   if (data.specimenType === 'animalLiving' && data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens
@@ -54,10 +37,11 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,    
+    fullWidth: true,
     inputSpecimenDescriptionGeneric: {
       id: "specimenDescriptionGeneric",
       name: "specimenDescriptionGeneric",
-      maxlength: 500,
+      maxlength: stringLength.max500,
       classes: "govuk-textarea govuk-js-character-count",
       label: {
         text: `${pageContent.pageHeader}`,
@@ -147,7 +131,7 @@ module.exports = [
         const { applicationIndex } = request.params
 
         const modifiedDescription = request.payload.specimenDescriptionGeneric.replace(/\r/g, '')
-        const schema = Joi.object({ specimenDescriptionGeneric: Joi.string().min(5).max(500) })
+        const schema = Joi.object({ specimenDescriptionGeneric: Joi.string().min(stringLength.min5).max(stringLength.max500) })
         const result = schema.validate({ specimenDescriptionGeneric: modifiedDescription }, { abortEarly: false })
 
         if (result.error) {

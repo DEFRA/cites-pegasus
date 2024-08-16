@@ -1,6 +1,6 @@
 const Joi = require("joi")
 const { urlPrefix, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
 const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { checkChangeRouteExit } = require("../lib/change-route")
@@ -23,25 +23,7 @@ const internalReferenceMaxLength = 30
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.additionalInfo
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["comments", "internalReference"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["comments", "internalReference"])
 
   const previousPath = getPreviousPath(data.permitType, data.isEverImportedExported, data.permitDetails)
 

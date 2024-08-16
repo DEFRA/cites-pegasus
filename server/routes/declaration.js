@@ -1,7 +1,8 @@
 const Joi = require("joi")
 const { urlPrefix, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { findErrorList, getFieldError } = require("../lib/helper-functions")
-const { permitType: pt} = require('../lib/permit-type-helper')
+const { getErrorList, getFieldError } = require("../lib/helper-functions")
+const { permitType: pt } = require('../lib/permit-type-helper')
+const { httpStatusCode } = require("../lib/constants")
 const config = require('../../config/config')
 const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission, setSubmission, generateExportSubmissionFromA10, saveGeneratedDraftSubmission, reIndexApplications } = require("../lib/submission")
 const { postSubmission } = require("../services/dynamics-service")
@@ -15,27 +16,8 @@ const invalidSubmissionPath = `${urlPrefix}/`
 function createModel(errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.declaration
-
-  let errorList = null
-  if (errors) {
-    errorList = []
-    const mergedErrorMessages = {
-      ...commonContent.errorMessages,
-      ...pageContent.errorMessages
-    }
-    const fields = ["declaration"]
-    fields.forEach((field) => {
-      const fieldError = findErrorList(errors, [field], mergedErrorMessages)[0]
-      if (fieldError) {
-        errorList.push({
-          text: fieldError,
-          href: `#${field}`
-        })
-      }
-    })
-  }
-
-
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["declaration"])
+  
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -105,7 +87,7 @@ module.exports = [
         deleteInProgressApplications(request)
 
         const submission = getSubmission(request)
-        
+
         let response
         try {
           response = await postSubmission(request.server, submission)
@@ -131,13 +113,12 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        if (submission.permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s){
-          if(submission.applications.some(app => app.a10ExportData.isExportPermitRequired)) {
-            const exportSubmission = generateExportSubmissionFromA10(submission, submission.submissionRef)
-            reIndexApplications(exportSubmission.applications)
-            await saveGeneratedDraftSubmission(request, `${urlPrefix}/your-submission`, exportSubmission)
-          }
+        if (submission.permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s && submission.applications.some(app => app.a10ExportData.isExportPermitRequired)) {
+          const exportSubmission = generateExportSubmissionFromA10(submission, submission.submissionRef)
+          reIndexApplications(exportSubmission.applications)
+          await saveGeneratedDraftSubmission(request, `${urlPrefix}/your-submission`, exportSubmission)
         }
+
 
         return h.redirect(nextPath)
       }
@@ -156,12 +137,12 @@ module.exports = [
       },
       handler: async (request, h) => {
         if (config.env === 'prod' || config.env === 'production' || config.env === 'live') {
-          return h.response().code(403)
+          return h.response().code(httpStatusCode.FORBIDDEN)
         }
-        
+
         setSubmission(request, request.payload.submission)
 
-        return h.response().code(200)
+        return h.response().code(httpStatusCode.SUCCESS)
       }
     }
   }
