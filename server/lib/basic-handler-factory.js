@@ -1,5 +1,5 @@
 const { urlPrefix } = require("../../config/config")
-const { getSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission');
+const { getSubmission, validateSubmission, saveDraftSubmission } = require('./submission');
 const invalidSubmissionPath = `${urlPrefix}/`
 
 function createGetHandler(pageId, path, pathValidation, viewName, createModel) {

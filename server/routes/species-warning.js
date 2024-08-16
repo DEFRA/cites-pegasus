@@ -7,7 +7,7 @@ const currentPathWithParams = `${currentPath}/{applicationIndex}`
 const previousPath = `${urlPrefix}/species-name`
 const nextPath = `${urlPrefix}/source-code`
 const { getContent } = require('../lib/helper-functions')
-const { createGetHandler, createPostHandler } = require('../lib/handler-factory')
+const { createGetHandler, createPostHandler } = require('../lib/basic-handler-factory')
 
 function createModel(data) {
   const { commonContent, pageContent } = getContent("speciesWarning")

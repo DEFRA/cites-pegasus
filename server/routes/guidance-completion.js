@@ -5,7 +5,7 @@ const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/other-permit-type`
 const nextPath = `${urlPrefix}/applying-on-behalf`
 const { getContent } = require('../lib/helper-functions')
-const { createGetHandler, createPostHandler } = require('../lib/handler-factory')
+const { createGetHandler, createPostHandler } = require('../lib/basic-handler-factory')
 
 function createModel() {
   const { commonContent, pageContent } = getContent("guidanceCompletion")
