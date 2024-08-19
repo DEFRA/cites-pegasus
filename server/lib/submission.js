@@ -2,7 +2,7 @@ const { getYarValue, setYarValue, sessionKey } = require('./session')
 const { createContainer, checkContainerExists, saveObjectToContainer, checkFileExists, deleteFileFromContainer, getObjectFromContainer } = require('../services/blob-storage-service')
 const { deliveryType: dt } = require("../lib/constants")
 const { permitType: pt, permitTypeOption: pto, permitSubType: pst } = require('../lib/permit-type-helper')
-const { deleteIfExists } = require("../lib/helper-functions")
+const { deleteIfExists, replaceBaseUrl } = require("../lib/helper-functions")
 const { Color } = require('./console-colours')
 const lodash = require('lodash')
 const config = require('../../config/config')
@@ -146,6 +146,7 @@ async function loadDraftSubmission(request) {
         const containerName = getContainerName(request)
         const submissionFileName = getSubmissionFileName(request)
         const draftSubmission = await getObjectFromContainer(request.server, containerName, submissionFileName)
+        migrateDraftSubmission(draftSubmission)
         setSubmission(request, draftSubmission, null)
         return draftSubmission
     }
@@ -153,6 +154,14 @@ async function loadDraftSubmission(request) {
         console.log(err)
         throw err
     }
+}
+
+function migrateDraftSubmission(submission) {
+    const files = submission?.supportingDocuments?.files
+    if(files && files.length > 0 && config.storageAccountUrl) {
+        //Update the storage account link as this was changed as part of R7.4 so drafts from before this release will have broken document links.
+        files.map(file => {file.blobUrl = replaceBaseUrl(file.blobUrl, config.storageAccountUrl)})
+    }    
 }
 
 async function deleteDraftSubmission(request) {

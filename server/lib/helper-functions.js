@@ -166,6 +166,34 @@ function getContent(page) {
   }
 }
 
+function replaceHostname(urlString, newHostname) {
+  try {
+    const url = new URL(urlString)
+    url.hostname = newHostname
+    return url.toString();
+  } catch (error) {
+    console.error("Invalid URL provided:", urlString)
+    throw new Error("Invalid URL provided:", urlString)
+  }
+}
+
+function replaceBaseUrl(originalUrl, newBaseUrl) {
+  try {
+    let url = new URL(originalUrl)
+    let newBase = new URL(newBaseUrl)
+
+    url.protocol = newBase.protocol;
+    url.hostname = newBase.hostname;
+    url.port = newBase.port;  // Keep the port if the new base URL has it
+  
+    return url.toString();
+  } catch (error) {
+    console.error("Invalid URL provided:", urlString)
+    throw new Error("Invalid URL provided:", urlString)
+  }
+}
+
+
 module.exports = {
   isChecked,
   setLabelData,
@@ -190,5 +218,7 @@ module.exports = {
   deleteIfExists,
   stringToBool,
   getCountries,
-  getContent
+  getContent,
+  replaceHostname,
+  replaceBaseUrl
 }
