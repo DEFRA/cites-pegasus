@@ -168,8 +168,8 @@ function getContent(page) {
 
 function replaceBaseUrl(originalUrl, newBaseUrl) {
   try {
-    let url = new URL(originalUrl)
-    let newBase = new URL(newBaseUrl)
+    const url = new URL(originalUrl)
+    const newBase = new URL(newBaseUrl)
 
     url.protocol = newBase.protocol;
     url.hostname = newBase.hostname;
