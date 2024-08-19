@@ -19,7 +19,8 @@ module.exports = {
         cookieOptions: {
           password: cookiePassword,
           isSecure: config.cookieOptions.isSecure,
-          ttl: config.sessionCacheTTL
+          ttl: config.sessionCacheTTL,
+          isSameSite: 'Strict'
         }//,
         // customSessionIDGenerator: function (request) {
         //   // const sessionID = Uuid.v4()
