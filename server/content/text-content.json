@@ -471,11 +471,11 @@
     },
     "javascriptBody": {
       "bodyText1": "Start typing to see a list of scientific names. Select the correct one for your specimen before continuing.",
-      "bodyText2": "You can also <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
+      "bodyText2": "You can also <a target='_blank' rel='noopener noreferrer' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
       "bodyText3": ""
     },
     "noJavascriptBody": {
-      "bodyText1": "Enter the exact scientific name. You can <a target='_blank' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
+      "bodyText1": "Enter the exact scientific name. You can <a target='_blank' rel='noopener noreferrer' href='https://speciesplus.net/'>search for the scientific name on Species+</a> (opens in a new tab).",
       "bodyText2": "If you are applying for a hybrid species that is not listed, enter 'plant hybrid' or 'animal hybrid'.",
       "bodyText3": "Applications made using this description will be rejected if the species name is listed."
     }
@@ -484,7 +484,7 @@
     "pageTitle": "We could not confirm the scientific name",
     "pageHeader": "We could not confirm the scientific name",
     "bodyText1": "We have been unable to confirm your specimen's scientific name, check your spelling is correct. If you are unable to find its name and it is a hybrid then enter 'plant hybrid' or 'animal hybrid'.",
-    "bodyText2": "You can <a target='_blank' href='https://speciesplus.net/'>check scientific names on Species+ (opens in a new tab)</a>",
+    "bodyText2": "You can <a target='_blank' rel='noopener noreferrer' href='https://speciesplus.net/'>check scientific names on Species+ (opens in a new tab)</a>",
     "searchAgainButton": "Search again"
   },
   "sourceCode": {
@@ -498,9 +498,9 @@
       "radioOptionD": "D",
       "radioOptionDHint": "Animals bred in captivity by a CITES-registered breeder",
       "radioOptionC": "C",
-      "radioOptionCHint": "Animals bred in captivity to second generation specimens or that meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-12-10-R15.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
+      "radioOptionCHint": "Animals bred in captivity to second generation specimens or that meet the <a target='_blank' rel='noopener noreferrer' href='https://cites.org/sites/default/files/document/E-Res-12-10-R15.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
       "radioOptionF": "F",
-      "radioOptionFHint": "Animals born in captivity to first generation specimens or that do not meet the <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-10-16-R11_0.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
+      "radioOptionFHint": "Animals born in captivity to first generation specimens or that do not meet the <a target='_blank' rel='noopener noreferrer' href='https://cites.org/sites/default/files/document/E-Res-10-16-R11_0.pdf'>Commission Regulation criteria</a> (opens in a new tab)",
       "radioOptionI": "I",
       "radioOptionIHint": "Confiscated or seized",
       "radioOptionO": "O",
@@ -581,7 +581,7 @@
       "radioOptionX": "X",
       "radioOptionXHint": "Taken from the marine environment not under the jurisdiction of any State (sometime known as the high seas)",
       "radioOptionY": "Y",
-      "radioOptionYHint": "Plants that meet the definition for <a target='_blank' href='https://cites.org/sites/default/files/document/E-Res-11-11-R18_0.pdf'>assisted production</a> (opens in a new tab)",
+      "radioOptionYHint": "Plants that meet the definition for <a target='_blank' rel='noopener noreferrer' href='https://cites.org/sites/default/files/document/E-Res-11-11-R18_0.pdf'>assisted production</a> (opens in a new tab)",
       "radioOptionU": "U",
       "radioOptionUHint": "I do not know",
       "characterCountLabelEnterAReason": "Enter a reason",
@@ -713,7 +713,7 @@
   "tradeTermCode": {
     "defaultTitle": "What is the CITES trade term code?",
     "pageHeader": "What is the CITES trade term code?",
-    "pageBody": "You can find more information on each trade term code ​in <a target='_blank' href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/968365/guid-fed0172.pdf'>Annex A of the guidance</a> (opens in a new tab).",
+    "pageBody": "You can find more information on each trade term code ​in <a target='_blank' rel='noopener noreferrer' href='https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/968365/guid-fed0172.pdf'>Annex A of the guidance</a> (opens in a new tab).",
     "pageBody2": "If you are unsure of your CITES trade term, select ‘not known’.",
     "tradeTermCodeSelectDefault": "Select a trade term code",
     "tradeTermCodeUnknown": "Not known",
@@ -1588,7 +1588,7 @@
     "defaultTitle": "Pay for your CITES application",
     "pageHeader": "Pay for your CITES application",
     "pageBody": "You must pay for your application before we can start processing it.",
-    "pageBody2": "Please select pay later if you have a valid Fee Waiver. For more information relating to Fee Waivers see: <a target='_blank' href='https://www.gov.uk/government/publications/endangered-species-application-for-a-waiver-from-paying-permit-fees'>Endangered species: apply for a waiver from paying permit fees - GOV.UK (www.gov.uk)</a>",
+    "pageBody2": "Please select pay later if you have a valid Fee Waiver. For more information relating to Fee Waivers see: <a target='_blank' rel='noopener noreferrer' href='https://www.gov.uk/government/publications/endangered-species-application-for-a-waiver-from-paying-permit-fees'>Endangered species: apply for a waiver from paying permit fees - GOV.UK (www.gov.uk)</a>",
     "pageHeader2": "Do you want to pay for your application now?",
     "headingPaymentAmount": "Payment amount",
     "radioOptionYes": "Yes",
@@ -1683,8 +1683,8 @@
     "heading11": "Complaints",
     "heading12": "Defra’s personal information charter",
     "pageBodyText1": "The data controller is the Department for Environment, Food and Rural Affairs (Defra). The Animal and Plant Health Agency (APHA), an executive agency of Defra will collect your data.",
-    "pageBodyText2": "If you have any questions about how Defra uses your data or your associated rights, email Defra’s Data Protection Manager <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3Adata.protection%40Defra.gov.uk'>data.protection@Defra.gov.uk</a>",
-    "pageBodyText3": "The Data Protection Officer responsible for monitoring that Defra is meeting the requirements of the legislation can be contacted by email at: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3ADefraGroupDataProtectionOfficer%40Defra.gov.uk'>DefraGroupDataProtectionOfficer@Defra.gov.uk.</a>",
+    "pageBodyText2": "If you have any questions about how Defra uses your data or your associated rights, email Defra’s Data Protection Manager <a target='_blank' rel='noopener noreferrer' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3Adata.protection%40Defra.gov.uk'>data.protection@Defra.gov.uk</a>",
+    "pageBodyText3": "The Data Protection Officer responsible for monitoring that Defra is meeting the requirements of the legislation can be contacted by email at: <a target='_blank' rel='noopener noreferrer' href='https://outlook.office365.com/mail/deeplink/compose?mailtouri=mailto%3ADefraGroupDataProtectionOfficer%40Defra.gov.uk'>DefraGroupDataProtectionOfficer@Defra.gov.uk.</a>",
     "pageBodyText4": "Defra and APHA will use personal data that you or someone authorised to act on your behalf provide. The personal data that we process are your name, email address and postal address. We also process details of your CITES specimen to:",
     "bulletList1Items": [
       {
@@ -1728,9 +1728,9 @@
     "pageBodyText16": "We will not share your data with any other third parties, except where we are required to do so by law or court order, to detect or prevent crime, or to apprehend or prosecute offenders.",
     "pageBodyText17": "Under CITES, there is a statutory requirement for us to hold data on CITES where an applicant has applied for a permit. This application would have been under the provisions governing exemptions in the agreement.",
     "pageBodyText18": "Personal data will be held for seven years from the date we receive your application. It will be reviewed to determine whether a further retention period is required to ensure compliance with and appropriate enforcement of CITES. Data will be manually deleted once it has been determined it is appropriate to do so.",
-    "pageBodyText19": "Find out about your <a target='_blank' href='https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/individual-rights/'>individual rights</a> under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).",
-    "pageBodyText20": "You have the right to <a target='_blank' href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
-    "pageBodyText21": "Defra’s <a target='_blank' href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
+    "pageBodyText19": "Find out about your <a target='_blank' rel='noopener noreferrer' href='https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/individual-rights/'>individual rights</a> under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).",
+    "pageBodyText20": "You have the right to <a target='_blank' rel='noopener noreferrer' href='https://ico.org.uk/make-a-complaint/'>make a complaint</a> to the Information Commissioner’s Office at any time.",
+    "pageBodyText21": "Defra’s <a target='_blank' rel='noopener noreferrer' href=' https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs/about/personal-information-charter'>personal information charter</a>, which also applies to APHA’s use of personal data, explains more about your rights over your personal data. This Charter broadly sets out Defra’s standards for requesting or storing personal information."
   },
   "cookies": {
     "defaultTitle": "Cookies",
@@ -1750,14 +1750,14 @@
     "tableRow6": "When you close your browser"
   },
   "accessibility": {
-    "defaultTitle": "Accessibility statement for ‘Apply for a CITES permit' to move or trade endangered species",
-    "pageHeader": "Accessibility statement for ‘Apply for a CITES permit' to move or trade endangered species",
+    "defaultTitle": "Accessibility statement for 'Apply for a CITES permit' to move or trade endangered species",
+    "pageHeader": "Accessibility statement for 'Apply for a CITES permit' to move or trade endangered species",
     "heading1": "How accessible this website is",
     "heading2": "Feedback and contact information",
     "heading3": "Enforcement procedure",
     "heading4": "Technical information about this service’s accessibility",
     "heading5": "Preparation of this accessibility statement",
-    "pageBodyText1": "This accessibility statement applies to the digital service of the ‘Apply for a CITES permit' to move or trade endangered species.",
+    "pageBodyText1": "This accessibility statement applies to the digital service of the 'Apply for a CITES permit' to move or trade endangered species.",
     "pageBodyText2": "This service is run by the Department for Environment, Farming and Rural Affairs (Defra). We want as many people as possible to be able to use this service. For example, that means you should be able to:",
     "bulletList1Items": [
       {
@@ -1777,7 +1777,7 @@
       }
     ],
     "pageBodyText3": "We’ve also made the text in the service as simple as possible to understand.",
-    "pageBodyText4": "<a target='_blank' href='https://mcmw.abilitynet.org.uk/'>AbilityNet</a> has advice on making your device easier to use if you have a disability.",
+    "pageBodyText4": "<a target='_blank' rel='noopener noreferrer' href='https://mcmw.abilitynet.org.uk/'>AbilityNet</a> has advice on making your device easier to use if you have a disability.",
     "pageBodyText5": "This service has been tested internally by the team developing it. It has also been developed using GOV.UK patterns, which are rigorously tested for accessibility issues.",
     "pageBodyText6": "Let us know if you:",
     "bulletList2Items": [
@@ -1788,7 +1788,7 @@
         "bulletListItem": "find any problems not listed on this page or think we’re not meeting accessibility requirements"
       }
     ],
-    "pageBodyText7": "Contact: <a target='_blank' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>help@apha.gov.uk</a>",
+    "pageBodyText7": "Contact: <a target='_blank' rel='noopener noreferrer' href='https://outlook.office365.com/mail/deeplink/compose/?mailtouri=mailto%3ahelp%40apha.gov.uk'>help@apha.gov.uk</a>",
     "pageBodyText8": "The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, contact the Equality Advisory and Support Service (EASS).",
     "pageBodyText9": "Defra is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.",
     "pageBodyText10": "This statement was prepared on 15 May 2023."
@@ -1815,6 +1815,6 @@
     "pageHeader": "Endangered plant and animal species (CITES)",
     "pageBody1": "If you need help completing your CITES application, call 0117 372 3700.",
     "pageBody2": "For any other queries about importing or exporting endangered animal and plant species listed by the Convention on International Trade in Endangered Species of Wild Fauna and Flora (CITES), call 0117 372 3700 or email <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'>wildlife.licensing@apha.gov.uk</a>.",
-    "pageBody3": "Find out more about how to <a target='_blank' href='https://www.gov.uk/guidance/apply-for-cites-permits-and-certificates-to-trade-endangered-species'>apply to import, export or re-export endangered animal and plant species</a>."
+    "pageBody3": "Find out more about how to <a target='_blank' rel='noopener noreferrer' href='https://www.gov.uk/guidance/apply-for-cites-permits-and-certificates-to-trade-endangered-species'>apply to import, export or re-export endangered animal and plant species</a>."
   }
 }
