@@ -77,6 +77,7 @@ async function createServer() {
   await server.register(require('./plugins/logging'))
   await server.register(require('./plugins/yar'))
   await server.register(require('blipp'))
+  await server.register(require('./plugins/security-headers-plugin'))
 
   await server.initialize();
   console.log(`###### CITES PORTAL STARTUP: Server initialized - Ready to start ######`)

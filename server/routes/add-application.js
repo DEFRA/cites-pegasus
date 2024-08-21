@@ -104,7 +104,7 @@ module.exports = [
 
       let addApplication = null
 
-      if(request.headers.referer.endsWith(nextPathContinue)) {
+      if(request.headers.referer?.endsWith(nextPathContinue)) {
         addApplication = 'no'
       }
 
