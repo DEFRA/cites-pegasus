@@ -63,9 +63,10 @@ async function createContainerWithTimestamp(server, name, attemptNo = 1) {
 
 async function saveFileToContainer(server, containerName, filename, data) {
     try {
-        const containerClient = server.app.blobServiceClient.getContainerClient(containerName);
-        const blockBlobClient = containerClient.getBlockBlobClient(filename);
-        await blockBlobClient.uploadData(data);
+        const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
+        const blockBlobClient = containerClient.getBlockBlobClient(filename)
+        await blockBlobClient.uploadData(data)
+        console.log(`File ${filename} saved to container ${containerName}`)
         const avScanResult = await getAVScanStatus(blockBlobClient)
         let url = blockBlobClient.url
 
@@ -98,7 +99,7 @@ async function getAVScanStatus(blockBlobClient) {
     return new Promise((resolve, reject) => {
 
         async function checkScan() {
-            console.log(`Check if AV scan is complete`)
+            console.log(`Check if AV scan is complete for file ${blockBlobClient._name} in container ${blockBlobClient.url}`)
             try {
                 const scanResult = await getAVScanResult(blockBlobClient)
                 if (scanResult !== AVScanResult.PROCESSING) {
