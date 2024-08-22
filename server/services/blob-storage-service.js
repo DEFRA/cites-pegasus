@@ -65,9 +65,12 @@ async function saveFileToContainer(server, containerName, filename, data) {
     try {
         const containerClient = server.app.blobServiceClient.getContainerClient(containerName)
         const blockBlobClient = containerClient.getBlockBlobClient(filename)
+        console.log(`Upload Starting for file ${filename} in container ${containerName}`)
         await blockBlobClient.uploadData(data)
-        console.log(`File ${filename} saved to container ${containerName}`)
+        console.log(`Upload Completed for file ${filename} in container ${containerName}`)
+        console.log(`AV scan starting for file ${filename} in container ${containerName}`)
         const avScanResult = await getAVScanStatus(blockBlobClient)
+        console.log(`AV scan completed for file ${filename} in container ${containerName}`)
         let url = blockBlobClient.url
 
         if (avScanResult !== AVScanResult.SUCCESS) {
