@@ -1,7 +1,7 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const config = require('../../config/config')
 
-const { DefaultAzureCredential } = require("@azure/identity")
+const { DefaultAzureCredential } = require("@azure/identity");
 
 const AVScanResult = {
     SUCCESS: 'success',
@@ -68,18 +68,18 @@ async function saveFileToContainer(server, containerName, filename, data) {
         console.log(`Upload Starting for file ${filename} in container ${containerName}`)
         await blockBlobClient.uploadData(data)
         console.log(`Upload Completed for file ${filename} in container ${containerName}`)
-        console.log(`AV scan starting for file ${filename} in container ${containerName}`)
-        const avScanResult = await getAVScanStatus(blockBlobClient)
-        console.log(`AV scan completed for file ${filename} in container ${containerName}`)
+        console.log(`Polling for AV scan result starting for file ${filename} in container ${containerName}`)
+        const avScanResult = await pollForAVScanStatus(blockBlobClient)
+        console.log(`Polling for AV scan result completed with result '${avScanResult}' for file ${filename} in container ${containerName}`)
         let url = blockBlobClient.url
 
         if (avScanResult !== AVScanResult.SUCCESS) {
             deleteFileFromContainer(server, containerName, filename).then(() => {
                 console.log(`File ${filename} deleted from storage account because of AV scan result: ${avScanResult}`)
             })
-            .catch(() => {
-                //Do nothing
-            })
+                .catch(() => {
+                    //Do nothing
+                })
 
             url = null
         }
@@ -95,46 +95,39 @@ async function saveFileToContainer(server, containerName, filename, data) {
     }
 }
 
-let scanCheckIntervalId
-let timeoutId
+async function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-async function getAVScanStatus(blockBlobClient) {
-    return new Promise((resolve, reject) => {
+async function pollForAVScanStatus(blockBlobClient) {
+    const startTime = Date.now()
+    let awaitingScanResult = true
 
-        async function checkScan() {
-            console.log(`Check if AV scan is complete for file ${blockBlobClient._name} in container ${blockBlobClient.url}`)
-            try {
-                const scanResult = await getAVScanResult(blockBlobClient)
-                if (scanResult !== AVScanResult.PROCESSING) {
-                    clearInterval(scanCheckIntervalId)
-                    clearTimeout(timeoutId)
-                    resolve(scanResult)
-                }
-            } catch (err) {
-                clearInterval(scanCheckIntervalId)
-                clearTimeout(timeoutId)
-                reject(new Error(err.message))
-            }
+    while (awaitingScanResult) {
+        console.log(`Check if AV scan is complete for file ${blockBlobClient._name} in container ${blockBlobClient.url}`)
+        const scanResult = await getAVScanResult(blockBlobClient)
+        if (scanResult !== AVScanResult.PROCESSING) {
+            return scanResult
         }
 
-        // Run the scan check immediately
-        checkScan()
+        if (Date.now() - startTime > config.antiVirusTimeout) {
+            console.log("AV scan status polling timed out.");
+            awaitingScanResult = false
+        } else {
+            await delay(config.antiVirusCheckInterval)
+        }
+    }
 
-        scanCheckIntervalId = setInterval(checkScan, config.antiVirusCheckInterval)
-
-        timeoutId = setTimeout(() => {
-            clearInterval(scanCheckIntervalId);
-            resolve(AVScanResult.TIMEOUT)
-        }, config.antiVirusTimeout)
-    })
+    return AVScanResult.TIMEOUT
 }
+
 
 async function getAVScanResult(blockBlobClient) {
     try {
         const tagsResponse = await blockBlobClient.getTags()
         if (tagsResponse.tags?.['Malware Scanning scan result']) {
             const scanResult = tagsResponse.tags['Malware Scanning scan result']
-            
+
             switch (scanResult.toUpperCase()) {
                 case 'NO THREATS FOUND':
                     return AVScanResult.SUCCESS
@@ -181,7 +174,7 @@ async function deleteFileFromContainer(server, containerName, fileName) {
         const blockBlobClient = containerClient.getBlockBlobClient(fileName);
         if (await checkContainerExists(server, containerName)) {
             await blockBlobClient.deleteIfExists({ deleteSnapshots: 'include' });
-        }        
+        }
     }
     catch (err) {
         console.log(err)
