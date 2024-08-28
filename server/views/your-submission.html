@@ -72,6 +72,7 @@
                     }
                   }) }}
                 </td>
+                {% if applicationsData.length > 1 %}
                 <td class="govuk-table__cell">
                   {{ govukButton({
                     text: removeButton,
@@ -83,6 +84,7 @@
                     }
                   }) }}
                 </td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>
