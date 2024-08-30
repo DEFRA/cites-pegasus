@@ -5,6 +5,7 @@ let applicationStatuses
 let submissionProgress
 let completeApplications
 
+
 function getSubmissionProgress(submission, includePageData) {
     if (!submission) {
         return { submissionProgress, applicationStatuses }
@@ -14,7 +15,9 @@ function getSubmissionProgress(submission, includePageData) {
     submissionProgress = []
     completeApplications = 0
 
+
     if (submission.submissionRef) {
+        //Submitted application
         submissionProgress.push(getPageProgess('pay-application'))
         if (submission.paymentDetails) {
             submissionProgress.push(getPageProgess('application-complete'))
