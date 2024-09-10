@@ -72,7 +72,7 @@
                     }
                   }) }}
                 </td>
-                {% if applicationsData.length > 1 %}
+                {# {% if applicationsData.length > 1 %} //This is a fix to stop the remove button showing when there is only 1 application in the list, enable this if the fix is required #} 
                 <td class="govuk-table__cell">
                   {{ govukButton({
                     text: removeButton,
@@ -84,7 +84,7 @@
                     }
                   }) }}
                 </td>
-                {% endif %}
+                {# {% endif %} #}
               </tr>
             {% endfor %}
           </tbody>
