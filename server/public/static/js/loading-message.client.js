@@ -1,15 +1,15 @@
 const containerId = "loading-overlay-container"
-window.onpageshow = function (_event) {
+window.addEventListener('pageshow', function (_event) {
     //Clears the loading message when the page is accessed via the back button
     hideLoadingMessage()
-}
+})
 
-window.onload = function () {
+window.addEventListener('load',function () {
     const triggers = document.querySelectorAll(".loading-message-trigger")
     triggers.forEach(element => {
         element.addEventListener("click", showLoadingMessage)
     })
-}
+})
 
 function hideLoadingMessage() {
     const elementToHide = document.querySelectorAll(".hide-when-loading")
