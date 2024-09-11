@@ -1,4 +1,4 @@
-window.onload = function () {
+window.addEventListener('load', function () {
 
     const helpBar = document.querySelector('.help-bar');
 
@@ -6,4 +6,4 @@ window.onload = function () {
         // Hide the helpBar div
         helpBar.style.display = 'none';
     }
-}
+})

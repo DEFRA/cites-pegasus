@@ -1,6 +1,6 @@
-window.onload = function () {
+window.addEventListener('load', function () {
   const input = document.getElementById('fileUpload');
-
+    
   const clientJSConfig = JSON.parse(document.getElementById('clientJSConfig').value);
   input.addEventListener('change', function () {
     if (input.files.length > 0) {
@@ -11,7 +11,7 @@ window.onload = function () {
           .size;
 
         removeErrors();
-        
+
         if (fileSize >= clientJSConfig.maxFileSizeBytes) {
           showErrors(clientJSConfig);
         }
@@ -19,7 +19,7 @@ window.onload = function () {
     }
 
     function showErrors(config) {
-      
+
       const errorMessage = config.fileSizeErrorText
       input.value = "";
       //Inline error message
@@ -69,5 +69,4 @@ window.onload = function () {
       }
     }
   });
-}
-
+})

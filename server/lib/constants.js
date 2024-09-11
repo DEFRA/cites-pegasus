@@ -17,6 +17,7 @@ module.exports = {
         UNAUTHORIZED: 401,
         FORBIDDEN: 403,
         NOT_FOUND: 404,
+        PAYLOAD_TOO_LARGE: 413,
         INTERNAL_SERVER_ERROR: 500
     },
     summaryType: {
