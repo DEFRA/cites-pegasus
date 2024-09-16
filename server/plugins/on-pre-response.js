@@ -23,7 +23,7 @@ const onPreResponse = {
             `connect-src 'self' https://www.googletagmanager.com;`
             
             if (!response.isBoom) {
-                response.header('Content-Security-Policy', cspWithNonce)
+                //response.header('Content-Security-Policy', cspWithNonce)
                 response.header('X-Permitted-Cross-Domain-Policies', 'none')
                 response.header('Referrer-Policy', 'no-referrer-when-downgrade')
                 response.header('Permissions-Policy', 'geolocation=(), camera=(), microphone=()')
