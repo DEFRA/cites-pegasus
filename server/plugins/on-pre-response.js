@@ -23,6 +23,10 @@ const onPreResponse = {
             `connect-src 'self' https://www.googletagmanager.com;`
             
             if (!response.isBoom) {
+                //Access-Control-Allow-Origin
+                //Remove all X-Powered-By headers,
+                //all X-XSS-Protection headers. Best Practice is to have the Referrer-Policy strict-origin-when-cross-origin instead of the current configuration - Low
+            
                 //response.header('Content-Security-Policy', cspWithNonce)
                 response.header('X-Permitted-Cross-Domain-Policies', 'none')
                 response.header('Referrer-Policy', 'no-referrer-when-downgrade')
