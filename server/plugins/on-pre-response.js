@@ -15,12 +15,12 @@ const onPreResponse = {
             `connect-src 'self' https://www.googletagmanager.com;`
             
             const nonce = crypto.randomBytes(16).toString('base64')
-            // const cspWithNonce =
-            // `default-src 'self'; ` +
-            // `style-src 'self' 'unsafe-inline'; ` +
-            // `script-src 'self' 'nonce-${nonce}'; ` +
-            // `img-src 'self' https://www.googletagmanager.com; ` +
-            // `connect-src 'self' https://www.googletagmanager.com;`
+            const cspWithNonce =
+            `default-src 'self'; ` +
+            `style-src 'self' 'unsafe-inline'; ` +
+            `script-src 'self' 'nonce-${nonce}'; ` +
+            `img-src 'self' https://www.googletagmanager.com; ` +
+            `connect-src 'self' https://www.googletagmanager.com;`
             
             if (!response.isBoom) {
                 //Access-Control-Allow-Origin
