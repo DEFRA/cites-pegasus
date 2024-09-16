@@ -10,7 +10,7 @@
   <!--<![endif]-->
   {% if googleTagId %}
   <!-- Google Tag Manager - Basic -->
-    {# <script async="async" src="https://www.googletagmanager.com/gtag/js?id={{googleTagId}}"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id={{googleTagId}}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -18,11 +18,11 @@
       }
       gtag('js', new Date());
       gtag('config', '{{googleTagId}}');
-    </script> #}
+    </script>
     <!-- End Google Tag Manager -->
 
     <!-- Google Tag Manager - Nonce Aware -->
-    <script nonce="{{cspNonce}}">
+    {# <script nonce="{{cspNonce}}">
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
         w[l].push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
@@ -39,7 +39,7 @@
           .parentNode
           .insertBefore(j, f);
       })(window, document, 'script', 'dataLayer', '{{googleTagId}}');
-    </script>
+    </script> #}
     <!-- End Google Tag Manager -->
   {% endif %}
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
