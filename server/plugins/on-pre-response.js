@@ -30,7 +30,7 @@ const onPreResponse = {
                 response.header('X-Permitted-Cross-Domain-Policies', 'none')
                 response.header('Referrer-Policy', 'no-referrer-when-downgrade') //Best Practice is to have the Referrer-Policy strict-origin-when-cross-origin instead of the current configuration - Low
                 response.header('Permissions-Policy', 'geolocation=(), camera=(), microphone=()')
-                if(response.source?.compiled?.settings?.contentType === 'text/html'){ //Adds this cspNonce variable to all pages so that it can be accessed by the templates
+                if(response.source?.compiled?.settings?.contentType === 'text/html' && response.source.context){ //Adds this cspNonce variable to all pages so that it can be accessed by the templates
                     response.source.context.cspNonce = nonce
                 }                
             }
