@@ -1,105 +1,105 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "specimen-origin"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'specimen-origin'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/source-code`
 const nextPath = `${urlPrefix}/use-certificate-for`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.specimenOrigin
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["specimenOrigin"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['specimenOrigin'])
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     radios: {
-      name: "specimenOrigin",
+      name: 'specimenOrigin',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       hint: {
         text: pageContent.hintText
       },
       items: getItems(pageContent, data),
-      errorMessage: getFieldError(errorList, "#specimenOrigin")
+      errorMessage: getFieldError(errorList, '#specimenOrigin')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function getItems(pageContent, data) {
+function getItems (pageContent, data) {
   return [
     {
-      value: "a",
+      value: 'a',
       text: pageContent.radioOptionA,
       checked: isChecked(
         data.specimenOrigin,
-        "a"
+        'a'
       )
     },
     {
-      value: "b",
+      value: 'b',
       text: pageContent.radioOptionB,
       checked: isChecked(
         data.specimenOrigin,
-        "b"
+        'b'
       )
     },
     {
-      value: "c",
+      value: 'c',
       text: pageContent.radioOptionC,
       checked: isChecked(
         data.specimenOrigin,
-        "c"
+        'c'
       )
     },
     {
-      value: "d",
+      value: 'd',
       text: pageContent.radioOptionD,
       checked: isChecked(
         data.specimenOrigin,
-        "d"
+        'd'
       )
     },
     {
-      value: "e",
+      value: 'e',
       text: pageContent.radioOptionE,
       checked: isChecked(
         data.specimenOrigin,
-        "e"
+        'e'
       )
     },
     {
-      value: "f",
+      value: 'f',
       text: pageContent.radioOptionF,
       checked: isChecked(
         data.specimenOrigin,
-        "f"
+        'f'
       )
     },
     {
-      value: "g",
+      value: 'g',
       text: pageContent.radioOptionG,
       checked: isChecked(
         data.specimenOrigin,
-        "g"
+        'g'
       )
     }
   ]
@@ -107,7 +107,7 @@ function getItems(pageContent, data) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -138,7 +138,7 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -147,7 +147,7 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          specimenOrigin: Joi.string().valid("a", "b", "c", "d", "e", "f", "g").required()
+          specimenOrigin: Joi.string().valid('a', 'b', 'c', 'd', 'e', 'f', 'g').required()
         }),
         failAction: (request, h, err) => {
           const pageData = {
@@ -162,7 +162,7 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
-        
+
         species.specimenOrigin = request.payload.specimenOrigin
 
         try {
@@ -184,7 +184,6 @@ module.exports = [
         const redirectTo = `${nextPath}/${applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-        
       }
     }
   }

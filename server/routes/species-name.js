@@ -1,11 +1,11 @@
-const Joi = require("joi")
-const { urlPrefix, enableDeliveryType, enableSpeciesNameTypeahead } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { getSpecies, getSpecieses } = require("../services/dynamics-service")
-const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "species-name"
+const Joi = require('joi')
+const { urlPrefix, enableDeliveryType, enableSpeciesNameTypeahead } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { getSpecies, getSpecieses } = require('../services/dynamics-service')
+const { checkChangeRouteExit, setDataRemoved } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'species-name'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathSourceCode = `${urlPrefix}/source-code`
 const nextPathSpeciesWarning = `${urlPrefix}/species-warning`
@@ -14,13 +14,13 @@ const unknownSpeciesPath = `${urlPrefix}/could-not-confirm`
 const addApplication = `${urlPrefix}/add-application`
 const minLengthAutoComplete = 3
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.speciesName
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["speciesName"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['speciesName'])
 
-  const previousPathOld = (data.deliveryAddressOption === "different" ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`)
+  const previousPathOld = (data.deliveryAddressOption === 'different' ? `${urlPrefix}/confirm-address/delivery` : `${urlPrefix}/select-delivery-address`)
   const previousPath = enableDeliveryType ? `${urlPrefix}/delivery-type` : previousPathOld
   const defaultBacklink = data.applicationIndex === 0 ? previousPath : addApplication
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -28,10 +28,10 @@ function createModel(errors, data) {
   let speciesResultSelectItems
   if (data.speciesSearchResults && data.speciesSearchResults.count > 0) {
     speciesResultSelectItems = data.speciesSearchResults.items.map(item => ({ text: item.scientificName, value: item.scientificName }))
-    speciesResultSelectItems.unshift({ text: 'Please select', value: null });
+    speciesResultSelectItems.unshift({ text: 'Please select', value: null })
   }
 
-  const errorMessage = getFieldError(errorList, "#speciesName")
+  const errorMessage = getFieldError(errorList, '#speciesName')
 
   const model = {
     backLink: backLink,
@@ -47,14 +47,14 @@ function createModel(errors, data) {
     noJavascriptBody: pageContent.noJavascriptBody,
     speciesSearchResults: data.speciesSearchResults,
     speciesSearchResultsCount: data.speciesSearchResults?.count,
-    //selectSpecies,
+    // selectSpecies,
     errorMessage: errorMessage?.text,
     enableSpeciesNameTypeahead,
     inputSpeciesName: {
-      id: "speciesName",
-      name: "speciesName",
-      classes: "govuk-!-width-two-thirds",
-      autocomplete: "on",
+      id: 'speciesName',
+      name: 'speciesName',
+      classes: 'govuk-!-width-two-thirds',
+      autocomplete: 'on',
       ...(data.speciesName ? { value: data.speciesName } : {}),
       errorMessage
     }
@@ -62,8 +62,8 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function getRedirect(speciesData, species, applicationIndex) {
-  if (!speciesData?.scientificName || (speciesData.kingdom !== "Animalia" && speciesData.kingdom !== "Plantae")) {
+function getRedirect (speciesData, species, applicationIndex) {
+  if (!speciesData?.scientificName || (speciesData.kingdom !== 'Animalia' && speciesData.kingdom !== 'Plantae')) {
     return `${unknownSpeciesPath}/${applicationIndex}`
   } else if (species.hasRestriction) {
     return `${nextPathSpeciesWarning}/${applicationIndex}`
@@ -74,7 +74,7 @@ function getRedirect(speciesData, species, applicationIndex) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -92,10 +92,9 @@ module.exports = [
       }
 
       if (applicationIndex + 1 > submission.applications.length) {
-        console.log("Invalid application index")
+        console.log('Invalid application index')
         return h.redirect(invalidSubmissionPath)
       }
-
 
       try {
         validateSubmission(submission, `${pageId}/${applicationIndex}`)
@@ -116,7 +115,7 @@ module.exports = [
     }
   },
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/search/{query}`,
     options: {
       validate: {
@@ -135,7 +134,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -169,7 +168,7 @@ module.exports = [
           return h.redirect(invalidSubmissionPath)
         }
 
-        const isMajorChange = application.species && application.species?.kingdom !== speciesData?.kingdom //Change from plant to animal or vice versa is major, change within kingdom is minor
+        const isMajorChange = application.species && application.species?.kingdom !== speciesData?.kingdom // Change from plant to animal or vice versa is major, change within kingdom is minor
 
         if (!application.species) {
           application.species = {}
@@ -184,7 +183,7 @@ module.exports = [
         species.warningMessage = speciesData?.warningMessage
 
         if (isMajorChange) {
-          //If changing kingdom, remove all other species data as far as the specimen description pages
+          // If changing kingdom, remove all other species data as far as the specimen description pages
           species.sourceCode = null
           species.anotherSourceCodeForI = null
           species.anotherSourceCodeForO = null
@@ -237,4 +236,3 @@ module.exports = [
     }
   }
 ]
-

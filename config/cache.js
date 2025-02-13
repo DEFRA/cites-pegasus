@@ -1,4 +1,3 @@
-const Joi = require('joi')
 const { readSecret } = require('../server/lib/key-vault')
 require('dotenv').config()
 const config = require('./config')
@@ -7,16 +6,13 @@ const catboxMemory = require('@hapi/catbox-memory')
 
 const cacheName = 'session'
 
-async function getCacheConfig() {
-
+async function getCacheConfig () {
   if (config.useRedis) {
-
     let redisPassword = null
     try {
       const secret = await readSecret('REDIS-PASSWORD')
-      redisPassword = secret.value      
-    }
-    catch(err){
+      redisPassword = secret.value
+    } catch (err) {
       console.error(err)
       throw new Error('Unable to read redis password from key vault')
     }
@@ -28,10 +24,9 @@ async function getCacheConfig() {
       partition: config.redisPartition
     }
 
-    if(config.redisPort !== '6379'){
+    if (config.redisPort !== '6379') {
       redisOptions.tls = { host: config.redisHostname }
     }
-
 
     return {
       name: cacheName,
@@ -44,15 +39,14 @@ async function getCacheConfig() {
 
   const memoryOptions = {
     maxByteSize: config.memoryCacheMaxByteSize
-    //minCleanupIntervalMsec: 1000 //1sec
-    //cloneBuffersOnGet: false
+    // minCleanupIntervalMsec: 1000 //1sec
+    // cloneBuffersOnGet: false
   }
 
   return {
     name: cacheName,
     engine: new catboxMemory.Engine(memoryOptions)
   }
-
 }
 
-module.exports = { getCacheConfig }//result.value
+module.exports = { getCacheConfig }// result.value

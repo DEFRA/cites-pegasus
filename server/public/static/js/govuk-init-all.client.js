@@ -1,3 +1,3 @@
 window
-      .GOVUKFrontend
-      .initAll()
+  .GOVUKFrontend
+  .initAll()

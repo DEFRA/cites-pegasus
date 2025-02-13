@@ -56,5 +56,17 @@
     "nodemon": "^2.0.20",
     "sinon": "^17.0.1",
     "standard": "16.0.4"
+  },
+  "standard": {
+    "ignore": [
+      "server/public/*"
+    ],
+    "globals": [
+      "jest",
+      "test",
+      "expect",
+      "beforeEach",
+      "describe"
+    ]
   }
 }

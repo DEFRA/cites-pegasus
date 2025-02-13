@@ -1,13 +1,12 @@
-const Joi = require("joi")
-const { urlPrefix, enableNotKnownTradeTermCode } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { ALPHA_REGEX } = require("../lib/regex-validation")
-const { stringLength } = require("../lib/constants")
-const { checkChangeRouteExit } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const nunjucks = require("nunjucks")
-const pageId = "trade-term-code"
+const Joi = require('joi')
+const { urlPrefix, enableNotKnownTradeTermCode } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { ALPHA_REGEX } = require('../lib/regex-validation')
+const { stringLength } = require('../lib/constants')
+const { checkChangeRouteExit } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'trade-term-code'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathQuantity = `${urlPrefix}/quantity`
 const previousPathCreatedDate = `${urlPrefix}/created-date`
@@ -15,11 +14,11 @@ const nextPath = `${urlPrefix}/has-unique-identification-mark`
 const invalidSubmissionPath = `${urlPrefix}/`
 const unknownTradeTermCodeValue = 'UKN'
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.tradeTermCode
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['tradeTermCode'])
-  
+
   const tradeTermCodes = []
 
   tradeTermCodes.push({
@@ -28,13 +27,13 @@ function createModel(errors, data) {
     selected: false
   })
 
-if(enableNotKnownTradeTermCode){
-  tradeTermCodes.push({
-    text: pageContent.tradeTermCodeUnknown,
-    value: unknownTradeTermCodeValue,
-    selected: data.isTradeTermCode === false
-  })  
-}
+  if (enableNotKnownTradeTermCode) {
+    tradeTermCodes.push({
+      text: pageContent.tradeTermCodeUnknown,
+      value: unknownTradeTermCodeValue,
+      selected: data.isTradeTermCode === false
+    })
+  }
 
   tradeTermCodes.push(...data.tradeTermCodes.map(tradeTermCode => {
     return {
@@ -45,13 +44,12 @@ if(enableNotKnownTradeTermCode){
   }))
 
   const selectTradeTermCode = {
-    id: "tradeTermCode",
-    name: "tradeTermCode",
-    classes: "govuk-!-width-2",
+    id: 'tradeTermCode',
+    name: 'tradeTermCode',
+    classes: 'govuk-!-width-2',
     items: tradeTermCodes,
     errorMessage: getFieldError(errorList, '#tradeTermCode')
   }
-
 
   const defaultBacklink = data.createdDate ? `${previousPathCreatedDate}/${data.applicationIndex}` : `${previousPathQuantity}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -65,14 +63,14 @@ if(enableNotKnownTradeTermCode){
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     pageBody2: pageContent.pageBody2,
-    selectTradeTermCode    
+    selectTradeTermCode
   }
   return { ...commonContent, ...model }
 }
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -107,7 +105,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -126,7 +124,7 @@ module.exports = [
           const species = submission.applications[applicationIndex].species
 
           let isTradeTermCode = null
-          if(request.payload.tradeTermCode){
+          if (request.payload.tradeTermCode) {
             isTradeTermCode = request.payload.tradeTermCode !== unknownTradeTermCodeValue
           }
 
@@ -134,7 +132,7 @@ module.exports = [
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,
             speciesName: species.speciesName,
-            isTradeTermCode, 
+            isTradeTermCode,
             tradeTermCode: request.payload.tradeTermCode,
             createdDate: species.createdDate,
             tradeTermCodes: request.server.app.tradeTermCodes
@@ -151,9 +149,9 @@ module.exports = [
 
         if (request.payload.tradeTermCode === unknownTradeTermCodeValue) {
           species.isTradeTermCode = false
-          species.tradeTermCode = ""
-          species.tradeTermCodeDesc = ""
-        } else {               
+          species.tradeTermCode = ''
+          species.tradeTermCodeDesc = ''
+        } else {
           species.isTradeTermCode = true
           species.tradeTermCode = request.payload.tradeTermCode.toUpperCase()
           species.tradeTermCodeDesc = selectedTradeTermCode.name
@@ -175,7 +173,6 @@ module.exports = [
         const redirectTo = `${nextPath}/${applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-        
       }
     }
   }

@@ -1,9 +1,9 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, cloneApplication, getCompletedApplications } = require("../lib/submission")
-const textContent = require("../content/text-content")
-const pageId = "add-application"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getSubmission, validateSubmission, cloneApplication, getCompletedApplications } = require('../lib/submission')
+const textContent = require('../content/text-content')
+const pageId = 'add-application'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/your-submission`
@@ -12,10 +12,10 @@ const nextPathAddSpecies = `${urlPrefix}/your-submission/create-application`
 const nextPathCopyApplication = `${urlPrefix}/application-summary/copy`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.addApplication
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["addApplication"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['addApplication'])
 
   const radioOptionCopyPrevious = pageContent.radioOptionCopyPrevious.replace('##SPECIES_NAME##', data.speciesName)
 
@@ -26,47 +26,47 @@ function createModel(errors, data) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     continueWithoutSaveButton: true,
     radios: {
-      name: "addApplication",
+      name: 'addApplication',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       items: [
         {
-          value: "copyPrevious",
+          value: 'copyPrevious',
           text: radioOptionCopyPrevious,
           checked: isChecked(
             data.addApplication,
-            "copyPrevious"
+            'copyPrevious'
           )
         },
         {
-          value: "addNew",
+          value: 'addNew',
           text: pageContent.radioOptionAddNew,
           checked: isChecked(
             data.addApplication,
-            "addNew"
+            'addNew'
           )
         },
         {
-          value: "no",
+          value: 'no',
           text: pageContent.radioOptionNo,
           checked: isChecked(
             data.addApplication,
-            "no"
+            'no'
           )
         }
       ],
-      errorMessage: getFieldError(errorList, "#addApplication")
+      errorMessage: getFieldError(errorList, '#addApplication')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function copyPrevious(request, h) {
+function copyPrevious (request, h) {
   const submission = getSubmission(request)
   const lastApplication = getLastCompletedApplication(submission)
 
@@ -80,12 +80,12 @@ function copyPrevious(request, h) {
   return h.redirect(`${nextPathCopyApplication}/${newApplicationIndex}`)
 }
 
-function getLastCompletedApplication(submission) {
-    try {
+function getLastCompletedApplication (submission) {
+  try {
     const { applicationStatuses } = validateSubmission(submission, pageId)
-    
+
     const completeApplications = getCompletedApplications(submission, applicationStatuses)
-    
+
     return completeApplications[completeApplications.length - 1]
   } catch (err) {
     console.error(err)
@@ -95,7 +95,7 @@ function getLastCompletedApplication(submission) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: currentPath,
     handler: async (request, h) => {
       const submission = getSubmission(request)
@@ -104,7 +104,7 @@ module.exports = [
 
       let addApplication = null
 
-      if(request.headers.referer?.endsWith(nextPathContinue)) {
+      if (request.headers.referer?.endsWith(nextPathContinue)) {
         addApplication = 'no'
       }
 
@@ -118,13 +118,13 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: currentPath,
     options: {
       validate: {
         options: { abortEarly: false },
         payload: Joi.object({
-          addApplication: Joi.string().valid("copyPrevious", "addNew", "no").required()
+          addApplication: Joi.string().valid('copyPrevious', 'addNew', 'no').required()
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
@@ -138,7 +138,6 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-
         switch (request.payload.addApplication) {
           case 'copyPrevious':
             return copyPrevious(request, h)
@@ -147,8 +146,8 @@ module.exports = [
           case 'no':
             return h.redirect(nextPathContinue)
           default:
-            throw new Error("unknown add application value")
-        }       
+            throw new Error('unknown add application value')
+        }
       }
     }
   }

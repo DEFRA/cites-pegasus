@@ -1,14 +1,12 @@
-const Joi = require("joi")
+const Joi = require('joi')
 const { urlPrefix } = require('../../config/config')
-const config = require('../../config/config')
 const { createPayment } = require('../services/govpay-service')
 const { setSubmissionPayment } = require('../services/dynamics-service')
 const user = require('../lib/user')
-const { mergeSubmission, getSubmission, validateSubmission } = require('../lib/submission')
+const { mergeSubmission, getSubmission } = require('../lib/submission')
 const { setYarValue, getYarValue, sessionKey } = require('../lib/session')
 const textContent = require('../content/text-content')
-const { getDomain } = require('../lib/helper-functions')
-const { getPaymentStatus } = require("../services/govpay-service")
+const { getPaymentStatus } = require('../services/govpay-service')
 const pageId = 'govpay'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathFailed = `${urlPrefix}/payment-problem`
@@ -17,29 +15,28 @@ const nextPathSuccessNewApplication = `${urlPrefix}/application-complete`
 const nextPathSuccessAccountFlow = `${urlPrefix}/payment-success`
 const paymentRoutes = ['account', 'new-application']
 
-async function getFinishedPaymentStatus(paymentId) {
+async function getFinishedPaymentStatus (paymentId) {
+  const timeoutMs = 60000 // 1 minute timeout
+  const intervalMs = 2000 // 2 seconds interval
 
-  const timeoutMs = 60000; // 1 minute timeout
-  const intervalMs = 2000; // 2 seconds interval
-
-  const startTimestamp = Date.now();
+  const startTimestamp = Date.now()
 
   while (true) {
-    const statusResponse = await getPaymentStatus(paymentId);
+    const statusResponse = await getPaymentStatus(paymentId)
     console.log(statusResponse.status)
 
     if (statusResponse.finished) {
-      return statusResponse;
+      return statusResponse
     }
 
-    const elapsedMs = Date.now() - startTimestamp;
+    const elapsedMs = Date.now() - startTimestamp
 
     if (elapsedMs >= timeoutMs) {
-      console.log('Timeout reached getting payment status');
-      return statusResponse;
+      console.log('Timeout reached getting payment status')
+      return statusResponse
     }
 
-    await new Promise(resolve => setTimeout(resolve, intervalMs));
+    await new Promise(resolve => setTimeout(resolve, intervalMs))
   }
 }
 
@@ -63,8 +60,8 @@ module.exports = [
       const name = `${cidmAuth.user.firstName} ${cidmAuth.user.lastName}`
       const email = cidmAuth.user.email
       let amount = submission.paymentDetails.costingValue
-      
-      if(submission.paymentDetails.feePaid && submission.paymentDetails.remainingAdditionalAmount > 0) {
+
+      if (submission.paymentDetails.feePaid && submission.paymentDetails.remainingAdditionalAmount > 0) {
         amount = submission.paymentDetails.remainingAdditionalAmount
       }
 
@@ -105,7 +102,7 @@ module.exports = [
 
       const paymentId = submission.paymentDetails.paymentId
       const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid
-      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0         
+      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
 
       const paymentStatus = await getFinishedPaymentStatus(paymentId)
 
@@ -118,15 +115,15 @@ module.exports = [
         return h.redirect(invalidSubmissionPath)
       }
       const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
-      
+
       if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
         return h.redirect(`${nextPathFailed}/${paymentRoute}`)
       }
 
-      const { user: { contactId, organisationId } } = getYarValue(request, 'CIDMAuth')  
+      const { user: { contactId, organisationId } } = getYarValue(request, 'CIDMAuth')
 
       let contactIdFilter = contactId
-      if(user.hasOrganisationWideAccess(request)) {
+      if (user.hasOrganisationWideAccess(request)) {
         contactIdFilter = null
       }
 
@@ -141,14 +138,13 @@ module.exports = [
         previousAdditionalAmountPaid
       }
 
-      await setSubmissionPayment(submissionPaymentParams)      
-      
-      if(paymentRoute === 'new-application') {
+      await setSubmissionPayment(submissionPaymentParams)
+
+      if (paymentRoute === 'new-application') {
         return h.redirect(nextPathSuccessNewApplication)
       } else {
         return h.redirect(nextPathSuccessAccountFlow)
       }
-
     }
   }
 ]

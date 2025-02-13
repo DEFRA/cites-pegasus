@@ -14,12 +14,12 @@ const schema = Joi.object().keys({
   cidmCallbackUrl: Joi.string().required(),
   cidmApiDiscoveryUrl: Joi.string().required(),
   cidmAccountManagementUrl: Joi.string().required(),
-  cidmPostLogoutRedirectUrl: Joi.string().allow("", null),
+  cidmPostLogoutRedirectUrl: Joi.string().allow('', null),
   serviceRoleAdminUser: Joi.string().required(),
   addressLookupBaseUrl: Joi.string().required(),
   addressLookupAPICertName: Joi.string().required(),
-  appInsightsInstrumentationKey: Joi.string().allow("", null),
-  appInsightsInstrumentationCloudRole: Joi.string().allow("", null),
+  appInsightsInstrumentationKey: Joi.string().allow('', null),
+  appInsightsInstrumentationCloudRole: Joi.string().allow('', null),
   documentUploadMaxFilesLimit: Joi.number(),
   enableSpeciesWarning: Joi.boolean(),
   enableDraftSubmission: Joi.boolean(),
@@ -35,11 +35,11 @@ const schema = Joi.object().keys({
   maxNumberOfUniqueIdentifiers: Joi.number().min(1),
   cookieOptions: Joi.object({
     ttl: Joi.number(),
-    //encoding: Joi.string().valid('base64json').default('base64json'),
-    isSecure: Joi.bool().default(true),
-    //isHttpOnly: Joi.bool().default(true),
-    //clearInvalid: Joi.bool().default(false),
-    //strictHeader: Joi.bool().default(true)
+    // encoding: Joi.string().valid('base64json').default('base64json'),
+    isSecure: Joi.bool().default(true)
+    // isHttpOnly: Joi.bool().default(true),
+    // clearInvalid: Joi.bool().default(false),
+    // strictHeader: Joi.bool().default(true)
   }),
   azureAPIManagement: Joi.object({
     clientId: Joi.string().required(),
@@ -56,7 +56,7 @@ const schema = Joi.object().keys({
   }),
   govpayPaymentsURL: Joi.string().required(),
   govpayCallbackURL: Joi.string().required(),
-  googleTagId: Joi.string().allow("", null),
+  googleTagId: Joi.string().allow('', null),
   storageAccountUrl: Joi.string().required(),
   useRedis: Joi.boolean().required(),
   redisHostname: Joi.string().when('useRedis', {
@@ -80,7 +80,7 @@ const schema = Joi.object().keys({
     otherwise: Joi.string().required()
   }),
   sessionCacheTTL: Joi.number(),
-  antiVirusTimeout:  Joi.number(),
+  antiVirusTimeout: Joi.number(),
   antiVirusCheckInterval: Joi.number()
 })
 
@@ -114,11 +114,11 @@ const config = {
   enableNotKnownTradeTermCode: process.env.ENABLE_NOT_KNOWN_TRADE_TERM_CODE || false,
   cookieOptions: {
     ttl: process.env.COOKIE_TTL_IN_MILLIS,
-    //encoding: 'base64json',
-    isSecure: true, //process.env.NODE_ENV === 'production',
-    //isHttpOnly: true,
-    //clearInvalid: false,
-    //strictHeader: true
+    // encoding: 'base64json',
+    isSecure: true // process.env.NODE_ENV === 'production',
+    // isHttpOnly: true,
+    // clearInvalid: false,
+    // strictHeader: true
   },
   dynamicsAPI: {
     knownAuthority: process.env.KNOWN_AUTHORITY,

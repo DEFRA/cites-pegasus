@@ -1,49 +1,49 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { stringLength } = require('../lib/constants')
-const { checkChangeRouteExit } = require("../lib/change-route")
-const { dateValidator } = require("../lib/validators")
-const textContent = require("../content/text-content")
-const nunjucks = require("nunjucks")
-const pageId = "created-date"
+const { checkChangeRouteExit } = require('../lib/change-route')
+const { dateValidator } = require('../lib/validators')
+const textContent = require('../content/text-content')
+const nunjucks = require('nunjucks')
+const pageId = 'created-date'
 const viewName = 'application-date-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/quantity`
 const nextPath = `${urlPrefix}/trade-term-code`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.createdDate
 
   const createdDateErrors = []
 
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [
-    "createdDate",
-    "createdDate-day",
-    "createdDate-day-month",
-    "createdDate-day-year",
-    "createdDate-month",
-    "createdDate-month-year",
-    "createdDate-year",
-    "isExactDateUnknown",
-    "approximateDate"
+    'createdDate',
+    'createdDate-day',
+    'createdDate-day-month',
+    'createdDate-day-year',
+    'createdDate-month',
+    'createdDate-month-year',
+    'createdDate-year',
+    'isExactDateUnknown',
+    'approximateDate'
   ])
 
   if (errorList) {
     const createdDateFields = [
-      "createdDate",
-      "createdDate-day",
-      "createdDate-day-month",
-      "createdDate-day-year",
-      "createdDate-month",
-      "createdDate-month-year",
-      "createdDate-year"
+      'createdDate',
+      'createdDate-day',
+      'createdDate-day-month',
+      'createdDate-day-year',
+      'createdDate-month',
+      'createdDate-month-year',
+      'createdDate-year'
     ]
     createdDateFields.forEach((field) => {
-      const error = getFieldError(errorList, "#" + field)
+      const error = getFieldError(errorList, '#' + field)
       if (error) {
         createdDateErrors.push({ field: field, message: error.text })
       }
@@ -56,10 +56,10 @@ function createModel(errors, data) {
 
   const approximateDateInput = nunjucks.renderString(renderString, {
     input: {
-      id: "approximateDate",
-      name: "approximateDate",
-      classes: "govuk-input govuk-!-width-two-thirds",
-      autocomplete: "on",
+      id: 'approximateDate',
+      name: 'approximateDate',
+      classes: 'govuk-input govuk-!-width-two-thirds',
+      autocomplete: 'on',
       label: {
         text: pageContent.inputLabelApproximateDate
       },
@@ -69,7 +69,7 @@ function createModel(errors, data) {
       ...(data.approximateDate
         ? { value: data.approximateDate }
         : {}),
-      errorMessage: getFieldError(errorList, "#approximateDate")
+      errorMessage: getFieldError(errorList, '#approximateDate')
     }
   })
 
@@ -86,7 +86,7 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function getInputs(pageContent, errorList, data, approximateDateInput, createdDateErrors) {
+function getInputs (pageContent, errorList, data, approximateDateInput, createdDateErrors) {
   const createdDateErrorMessage = createdDateErrors.map(item => { return item.message }).join('</p> <p class="govuk-error-message">')
 
   const createdDateComponents = [
@@ -97,14 +97,14 @@ function getInputs(pageContent, errorList, data, approximateDateInput, createdDa
 
   return {
     inputDate: {
-      id: "createdDate",
-      name: "createdDate",
-      namePrefix: "createdDate",
+      id: 'createdDate',
+      name: 'createdDate',
+      namePrefix: 'createdDate',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       hint: {
@@ -115,9 +115,9 @@ function getInputs(pageContent, errorList, data, approximateDateInput, createdDa
     },
 
     checkboxIsExactDateUnknown: {
-      idPrefix: "isExactDateUnknown",
-      name: "isExactDateUnknown",
-      classes: "govuk-checkboxes--small",
+      idPrefix: 'isExactDateUnknown',
+      name: 'isExactDateUnknown',
+      classes: 'govuk-checkboxes--small',
       items: [
         {
           value: true,
@@ -128,13 +128,12 @@ function getInputs(pageContent, errorList, data, approximateDateInput, createdDa
           }
         }
       ],
-      errorMessage: getFieldError(errorList, "#isExactDateUnknown")
+      errorMessage: getFieldError(errorList, '#isExactDateUnknown')
     }
   }
 }
 
-function getCreatedDateInputGroupItems(components, createdDateErrors) {
-
+function getCreatedDateInputGroupItems (components, createdDateErrors) {
   return components.map(component => {
     let classes = component.name === 'year' ? 'govuk-input--width-4' : 'govuk-input--width-2'
     const inputError = createdDateErrors.filter(item => item.field.includes('-' + component.name) || item.field === 'createdDate')
@@ -145,15 +144,16 @@ function getCreatedDateInputGroupItems(components, createdDateErrors) {
   })
 }
 
-function createdDateValidator(value, helpers) {
+function createdDateValidator (value, helpers) {
   const {
-    "createdDate-day": day,
-    "createdDate-month": month,
-    "createdDate-year": year,
-    isExactDateUnknown } = value
+    'createdDate-day': day,
+    'createdDate-month': month,
+    'createdDate-year': year,
+    isExactDateUnknown
+  } = value
 
   if (value.isExactDateUnknown && (day || month || year)) {
-    return helpers.error("any.both", { customLabel: 'createdDate' })
+    return helpers.error('any.both', { customLabel: 'createdDate' })
   }
 
   if (!isExactDateUnknown) {
@@ -167,7 +167,7 @@ function createdDateValidator(value, helpers) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -203,7 +203,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -212,20 +212,20 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          isExactDateUnknown: Joi.boolean().default(false),//.allow(null),
-          approximateDate: Joi.when("isExactDateUnknown", {
+          isExactDateUnknown: Joi.boolean().default(false), // .allow(null),
+          approximateDate: Joi.when('isExactDateUnknown', {
             is: true,
             then: Joi.string().max(stringLength.max150).required()
           }),
-          "createdDate-day": Joi.any().optional(),
-          "createdDate-month": Joi.any().optional(),
-          "createdDate-year": Joi.any().optional(),
+          'createdDate-day': Joi.any().optional(),
+          'createdDate-month': Joi.any().optional(),
+          'createdDate-year': Joi.any().optional()
         }).custom(createdDateValidator),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
           const submission = getSubmission(request)
 
-          const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
+          const { 'createdDate-day': day, 'createdDate-month': month, 'createdDate-year': year, isExactDateUnknown, approximateDate } = request.payload
 
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
@@ -246,7 +246,7 @@ module.exports = [
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
 
-        const { "createdDate-day": day, "createdDate-month": month, "createdDate-year": year, isExactDateUnknown, approximateDate } = request.payload
+        const { 'createdDate-day': day, 'createdDate-month': month, 'createdDate-year': year, isExactDateUnknown, approximateDate } = request.payload
         species.createdDate = isExactDateUnknown
           ? { day: null, month: null, year: null, isExactDateUnknown: isExactDateUnknown, approximateDate: approximateDate }
           : { day: parseInt(day), month: parseInt(month), year: parseInt(year), isExactDateUnknown: isExactDateUnknown, approximateDate: null }
@@ -267,9 +267,7 @@ module.exports = [
         const redirectTo = `${nextPath}/${applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
       }
     }
   }
 ]
-

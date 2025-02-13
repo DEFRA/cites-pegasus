@@ -14,11 +14,11 @@ const register = (server, _options) => {
       .setUseDiskRetryCaching(true)
     appInsights.defaultClient.context.tags[appInsights.defaultClient.context.keys.cloudRole] = config.appInsightsInstrumentationCloudRole
     appInsights.start()
-    //Register a server extension point to log requests
+    // Register a server extension point to log requests
     server.ext('onRequest', (request, h) => {
-      const telemetry = { 
-        name: `${request.method.toUpperCase()} ${request.path}`, 
-        url: request.path 
+      const telemetry = {
+        name: `${request.method.toUpperCase()} ${request.path}`,
+        url: request.path
       }
 
       appInsights.defaultClient.trackRequest(telemetry)
@@ -27,44 +27,44 @@ const register = (server, _options) => {
 
     // Register a server extension point to log payload details
     server.ext('onPostAuth', (request, h) => {
-      const telemetry = { 
-        name: `${request.method.toUpperCase()} ${request.path}`, 
+      const telemetry = {
+        name: `${request.method.toUpperCase()} ${request.path}`,
         properties: {
-                // Add custom properties
-                method: request.method,
-                //headers: request.headers,
-                query: request.query,
-                payload: request.payload,
-                // Add more details as needed
-              },
-        url: request.path 
+          // Add custom properties
+          method: request.method,
+          // headers: request.headers,
+          query: request.query,
+          payload: request.payload
+          // Add more details as needed
+        },
+        url: request.path
       }
 
       appInsights.defaultClient.trackRequest(telemetry)
       return h.continue
-    });
-  
+    })
+
     // Register a server extension point to log responses
     server.ext('onPreResponse', (request, h) => {
       const telemetry = {
-        name: `${request.method.toUpperCase()} ${request.path}`, 
+        name: `${request.method.toUpperCase()} ${request.path}`,
         url: request.path,
         resultCode: request.response.statusCode,
-        success: request.response.statusCode >= httpStatusCode.OK && request.response.statusCode < httpStatusCode.BAD_REQUEST,
-      };
+        success: request.response.statusCode >= httpStatusCode.OK && request.response.statusCode < httpStatusCode.BAD_REQUEST
+      }
       appInsights.defaultClient.trackRequest(telemetry)
       return h.continue
-    });
-  
+    })
+
     // Register a server extension point to log exceptions
     server.ext('onPreResponse', (request, h) => {
       if (request.response instanceof Error) {
         const telemetry = {
           exception: request.response,
           properties: {
-            requestPath: request.path,
-          },
-        };
+            requestPath: request.path
+          }
+        }
         appInsights.defaultClient.trackException(telemetry)
       }
       return h.continue
@@ -78,5 +78,5 @@ const register = (server, _options) => {
 
 module.exports = {
   name: 'app-insights-plugin',
-  register,
+  register
 }

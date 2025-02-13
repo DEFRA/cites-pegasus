@@ -1,7 +1,4 @@
-const jwtAuth = require('hapi-auth-jwt2');
-const jwksClient = require('jwks-rsa');
-const { decode } = require('jsonwebtoken');
-const { client } = require('../services/oidc-client')
+const jwtAuth = require('hapi-auth-jwt2')
 const { readSecret } = require('../lib/key-vault')
 const { getYarValue, sessionKey } = require('../lib/session')
 const { httpStatusCode } = require('../lib/constants')
@@ -10,7 +7,6 @@ module.exports = {
   plugin: {
     name: 'oidc-auth',
     register: async (server, _options) => {
-
       await server.register(jwtAuth)
 
       const secret = (await readSecret('SESSION-COOKIE-PASSWORD')).value
@@ -25,21 +21,20 @@ module.exports = {
           } else {
             return { isValid: false }
           }
-
         },
-        verifyOptions: { algorithms: ['HS256'] },
-      };
+        verifyOptions: { algorithms: ['HS256'] }
+      }
 
-      server.auth.strategy('jwt', 'jwt', authOptions);
-      server.auth.default('jwt');
+      server.auth.strategy('jwt', 'jwt', authOptions)
+      server.auth.default('jwt')
 
       server.ext('onPreResponse', (request, h) => {
-        const response = request.response;
+        const response = request.response
         if (response.isBoom && response.output.statusCode === httpStatusCode.UNAUTHORIZED) {
-          return h.redirect('/login');
+          return h.redirect('/login')
         }
-        return h.continue;
-      });
+        return h.continue
+      })
     }
   }
 }

@@ -1,13 +1,13 @@
-const Joi = require("joi")
-const { urlPrefix, enableBreederPage } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const Joi = require('joi')
+const { urlPrefix, enableBreederPage } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { stringLength } = require('../lib/constants')
-const { checkChangeRouteExit } = require("../lib/change-route")
+const { checkChangeRouteExit } = require('../lib/change-route')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
-const textContent = require("../content/text-content")
-const { COMMENTS_REGEX } = require("../lib/regex-validation")
-const pageId = "describe-specimen"
+const textContent = require('../content/text-content')
+const { COMMENTS_REGEX } = require('../lib/regex-validation')
+const pageId = 'describe-specimen'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
 const previousPathHasUniqueMark = `${urlPrefix}/has-unique-identification-mark`
@@ -19,11 +19,11 @@ const nextPathBreeder = `${urlPrefix}/breeder`
 
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.specimenDescriptionGeneric
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["specimenDescriptionGeneric"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['specimenDescriptionGeneric'])
+
   let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
   if (data.specimenType === 'animalLiving' && data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens
@@ -36,26 +36,26 @@ function createModel(errors, data) {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,    
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     fullWidth: true,
     inputSpecimenDescriptionGeneric: {
-      id: "specimenDescriptionGeneric",
-      name: "specimenDescriptionGeneric",
+      id: 'specimenDescriptionGeneric',
+      name: 'specimenDescriptionGeneric',
       maxlength: stringLength.max500,
-      classes: "govuk-textarea govuk-js-character-count",
+      classes: 'govuk-textarea govuk-js-character-count',
       label: {
         text: `${pageContent.pageHeader}`,
         isPageHeading: true,
-        classes: "govuk-label--l"
+        classes: 'govuk-label--l'
       },
       ...(data.specimenDescriptionGeneric ? { value: data.specimenDescriptionGeneric } : {}),
-      errorMessage: getFieldError(errorList, "#specimenDescriptionGeneric")
+      errorMessage: getFieldError(errorList, '#specimenDescriptionGeneric')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
   const species = submission.applications[applicationIndex].species
@@ -75,7 +75,7 @@ function failAction(request, h, err) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -105,7 +105,7 @@ module.exports = [
         numberOfSpecimens: species.numberOfUnmarkedSpecimens,
         specimenType: species.specimenType,
         specimenDescriptionGeneric: species.specimenDescriptionGeneric,
-        hasUniqueIdentificationMark: species.hasUniqueIdentificationMark,
+        hasUniqueIdentificationMark: species.hasUniqueIdentificationMark
       }
 
       return h.view(pageId, createModel(null, pageData))
@@ -113,7 +113,7 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
