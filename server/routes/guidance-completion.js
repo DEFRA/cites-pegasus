@@ -1,4 +1,4 @@
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const pageId = 'guidance-completion'
 const viewName = 'warning'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -7,9 +7,9 @@ const nextPath = `${urlPrefix}/applying-on-behalf`
 const { getContent } = require('../lib/helper-functions')
 const { createGetHandler, createPostHandler } = require('../lib/basic-handler-factory')
 
-function createModel() {
-  const { commonContent, pageContent } = getContent("guidanceCompletion")
-  
+function createModel () {
+  const { commonContent, pageContent } = getContent('guidanceCompletion')
+
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -19,7 +19,6 @@ function createModel() {
   }
 
   return { ...commonContent, ...model }
-
 }
 
 module.exports = [

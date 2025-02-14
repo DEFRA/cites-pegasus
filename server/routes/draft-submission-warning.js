@@ -1,8 +1,8 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { createSubmission, deleteDraftSubmission, cloneSubmission, saveDraftSubmission } = require("../lib/submission")
-const { clearChangeRoute } = require("../lib/change-route")
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { createSubmission, deleteDraftSubmission, cloneSubmission, saveDraftSubmission } = require('../lib/submission')
+const { clearChangeRoute } = require('../lib/change-route')
 const textContent = require('../content/text-content')
 const pageId = 'draft-submission-warning'
 const areYouSureViewName = 'application-yes-no-layout'
@@ -13,15 +13,15 @@ const nextPathPermitType = `${urlPrefix}/permit-type`
 const nextPathCopyAsNewApplication = `${urlPrefix}/application-summary/copy-as-new`
 const newSubmissionTypeConst = {
   COPY_AS_NEW: 'copy-as-new',
-  NEW: 'new',
-};
+  NEW: 'new'
+}
 const newSubmissionTypes = [newSubmissionTypeConst.NEW, newSubmissionTypeConst.COPY_AS_NEW]
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.draftSubmissionWarning
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["areYouSure"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['areYouSure'])
+
   const backlink = getBacklink(data.newSubmissionType, data.applicationIndex)
 
   const model = {
@@ -31,16 +31,15 @@ function createModel(errors, data) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     pageHeader: pageContent.pageHeader,
     continueWithoutSaveButton: true,
-    inputName: "areYouSure",
-    inputClasses: "govuk-radios--inline",
-    errorMessage: getFieldError(errorList, "#areYouSure")
+    inputName: 'areYouSure',
+    inputClasses: 'govuk-radios--inline',
+    errorMessage: getFieldError(errorList, '#areYouSure')
   }
 
   return { ...commonContent, ...model }
-
 }
 
-function getBacklink(newSubmissionType, applicationIndex) {
+function getBacklink (newSubmissionType, applicationIndex) {
   return newSubmissionType === newSubmissionTypeConst.COPY_AS_NEW ? `${previousPathAppSummary}/${applicationIndex}` : previousPathLanding
 }
 
@@ -60,13 +59,12 @@ module.exports = [{
     }
   },
   handler: async (request, h) => {
-
     const pageData = {
       newSubmissionType: request.params.newSubmissionType,
       applicationIndex: request.params.applicationIndex
     }
 
-    return h.view(areYouSureViewName, createModel(null, pageData));
+    return h.view(areYouSureViewName, createModel(null, pageData))
   }
 },
 {
@@ -90,8 +88,8 @@ module.exports = [{
           newSubmissionType: request.params.newSubmissionType,
           applicationIndex: request.params.applicationIndex
         }
-        
-        return h.view(areYouSureViewName, createModel(err, pageData)).takeover()        
+
+        return h.view(areYouSureViewName, createModel(err, pageData)).takeover()
       }
     }
   },

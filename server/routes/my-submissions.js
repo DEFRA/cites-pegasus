@@ -1,14 +1,14 @@
-const Joi = require("joi")
-const { urlPrefix, enableFilterSubmittedBy } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { permitType: pt } = require('../lib/permit-type-helper')
-const { clearChangeRoute } = require("../lib/change-route")
+const { clearChangeRoute } = require('../lib/change-route')
 const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
 const user = require('../lib/user')
-const { createSubmission, getDraftSubmissionDetails, loadDraftSubmission, deleteDraftSubmission } = require("../lib/submission")
-const dynamics = require("../services/dynamics-service")
-const textContent = require("../content/text-content")
-const pageId = "my-submissions"
+const { createSubmission, getDraftSubmissionDetails, loadDraftSubmission, deleteDraftSubmission } = require('../lib/submission')
+const dynamics = require('../services/dynamics-service')
+const textContent = require('../content/text-content')
+const pageId = 'my-submissions'
 const areYouSureViewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathPermitType = `${urlPrefix}/permit-type`
@@ -22,8 +22,7 @@ const statuses = ['awaitingPayment', 'awaitingAdditionalPayment', 'inProgress', 
 
 const pageSize = 15
 
-
-function createModel(data) {
+function createModel (data) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmissions
 
@@ -39,7 +38,7 @@ function createModel(data) {
     refused: commonContent.statusDescriptionRefused,
     cancelled: commonContent.statusDescriptionCancelled,
     closed: commonContent.statusDescriptionClosed
-  };
+  }
 
   const submissionsTableData = submissionsData.map(submission => {
     const referenceNumber = submission.submissionRef
@@ -54,7 +53,6 @@ function createModel(data) {
   const endIndex = data.totalSubmissions <= startIndex + pageSize ? data.totalSubmissions : startIndex + pageSize
 
   const textPagination = `${startIndex + 1} to ${endIndex} of ${data.totalSubmissions}`
-
 
   const { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious } = getPageBodyContent(data, pageContent)
 
@@ -92,20 +90,20 @@ function createModel(data) {
   return { ...commonContent, ...model }
 }
 
-function getInputs(pageContent, commonContent, data, textPagination) {
+function getInputs (pageContent, commonContent, data, textPagination) {
   return {
     inputSearch: {
-      id: "searchTerm",
-      name: "searchTerm",
-      classes: "govuk-grid-column-one-half",
-      inputmode: "search",
-      autocomplete: "on",
+      id: 'searchTerm',
+      name: 'searchTerm',
+      classes: 'govuk-grid-column-one-half',
+      inputmode: 'search',
+      autocomplete: 'on',
       label: { text: pageContent.inputLabelSearch },
-      ...(data.searchTerm ? { value: data.searchTerm } : {}),
+      ...(data.searchTerm ? { value: data.searchTerm } : {})
     },
 
     checkboxPermitType: {
-      name: "permitTypes",
+      name: 'permitTypes',
       items: [
         {
           value: pt.IMPORT,
@@ -127,49 +125,49 @@ function getInputs(pageContent, commonContent, data, textPagination) {
           text: commonContent.permitTypeDescriptionArticle10,
           checked: isChecked(data.permitTypes, pt.ARTICLE_10)
         }
-      ],
+      ]
     },
     checkboxStatus: {
-      name: "statuses",
+      name: 'statuses',
       items: [
         {
-          value: "inProgress",
+          value: 'inProgress',
           text: commonContent.statusDescriptionInProgress,
-          checked: isChecked(data.statuses, "inProgress")
+          checked: isChecked(data.statuses, 'inProgress')
         },
         {
-          value: "awaitingPayment",
+          value: 'awaitingPayment',
           text: commonContent.statusDescriptionAwaitingPayment,
-          checked: isChecked(data.statuses, "awaitingPayment")
+          checked: isChecked(data.statuses, 'awaitingPayment')
         },
         {
-          value: "awaitingAdditionalPayment",
+          value: 'awaitingAdditionalPayment',
           text: commonContent.statusDescriptionAwaitingAdditionalPayment,
-          checked: isChecked(data.statuses, "awaitingAdditionalPayment")
+          checked: isChecked(data.statuses, 'awaitingAdditionalPayment')
         },
         {
-          value: "closed",
+          value: 'closed',
           text: commonContent.statusDescriptionClosed,
-          checked: isChecked(data.statuses, "closed")
+          checked: isChecked(data.statuses, 'closed')
         }
-      ],
+      ]
     },
     checkboxSubmittedBy: {
-      name: "submittedBy",
+      name: 'submittedBy',
       items: [
         {
-          value: "me",
+          value: 'me',
           text: pageContent.submittedByDescriptionMe,
-          checked: isChecked(data.submittedBy, "me")
+          checked: isChecked(data.submittedBy, 'me')
         }
-      ],
+      ]
     },
     showCheckboxSubmittedBy: data.submittedByFilterEnabled,
-    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, textPagination) : ""
+    inputPagination: data.totalSubmissions > pageSize ? paginate(data.totalSubmissions, data.pageNo || 1, textPagination) : ''
   }
 }
 
-function getPageBodyContent(data, pageContent) {
+function getPageBodyContent (data, pageContent) {
   let pagebodyNoApplicationsFound = null
   let pageBodyNewApplicationFromPrevious = null
   if (data.noApplicationMadeBefore && data.submissions.length === 0) {
@@ -182,7 +180,7 @@ function getPageBodyContent(data, pageContent) {
   return { pagebodyNoApplicationsFound, pageBodyNewApplicationFromPrevious }
 }
 
-function createAreYouSureModel(errors) {
+function createAreYouSureModel (errors) {
   const commonContent = textContent.common
   const pageContent = textContent.mySubmissions.areYouSureDraftDelete
   const defaultTitle = pageContent.defaultTitle
@@ -191,7 +189,7 @@ function createAreYouSureModel(errors) {
   const formActionPage = `${currentPath}/draft-delete`
 
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['areYouSure'])
-    
+
   const model = {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
@@ -200,49 +198,48 @@ function createAreYouSureModel(errors) {
     pageHeader: pageHeader,
     pageBody: pageBody,
     continueWithoutSaveButton: true,
-    inputName: "areYouSure",
-    inputClasses: "govuk-radios--inline",
-    errorMessage: getFieldError(errorList, "#areYouSure")
+    inputName: 'areYouSure',
+    inputClasses: 'govuk-radios--inline',
+    errorMessage: getFieldError(errorList, '#areYouSure')
   }
   return { ...commonContent, ...model }
 }
 
-function getApplicationDate(date) {
-  const dateObj = new Date(date);
-  const options = { day: 'numeric', month: 'long', year: 'numeric' };
-  const formattedDate = dateObj.toLocaleDateString('en-GB', options);
+function getApplicationDate (date) {
+  const dateObj = new Date(date)
+  const options = { day: 'numeric', month: 'long', year: 'numeric' }
+  const formattedDate = dateObj.toLocaleDateString('en-GB', options)
   return formattedDate
 }
 
-function paginate(totalSubmissions, currentPage, textPagination) {
-  const totalPages = Math.ceil(totalSubmissions / pageSize);
+function paginate (totalSubmissions, currentPage, textPagination) {
+  const totalPages = Math.ceil(totalSubmissions / pageSize)
 
   const prevAttr = currentPage === 1 ? { 'data-disabled': '' } : null
   const nextAttr = currentPage === totalPages ? { 'data-disabled': '' } : null
 
-
   const pagination = {
-    id: "pagination",
-    name: "pagination",
+    id: 'pagination',
+    name: 'pagination',
     previous: {
-      href: currentPage === 1 ? "#" : `${currentPath}/${currentPage - 1}`,
-      text: "Previous",
+      href: currentPage === 1 ? '#' : `${currentPath}/${currentPage - 1}`,
+      text: 'Previous',
       attributes: prevAttr
     },
     next: {
-      href: currentPage === totalPages ? "#" : `${currentPath}/${currentPage + 1}`,
-      text: "Next",
+      href: currentPage === totalPages ? '#' : `${currentPath}/${currentPage + 1}`,
+      text: 'Next',
       attributes: nextAttr
     },
     items: [{
       number: textPagination
-    }],
-  };
+    }]
+  }
 
-  return pagination;
+  return pagination
 }
 
-async function getSubmissionsData(request, pageNo, filterData) {
+async function getSubmissionsData (request, pageNo, filterData) {
   let queryUrls = getYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS)
   const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
 
@@ -254,9 +251,9 @@ async function getSubmissionsData(request, pageNo, filterData) {
     queryUrls = [queryUrl]
   }
 
-  if (pageNo > queryUrls.
-    length || pageNo < 1) {
-    console.log("Invalid page number")
+  if (pageNo > queryUrls
+    .length || pageNo < 1) {
+    console.log('Invalid page number')
   }
 
   const { submissions, nextQueryUrl, totalSubmissions } = await dynamics.getSubmissions(request.server, queryUrls[pageNo - 1], pageSize)
@@ -264,8 +261,6 @@ async function getSubmissionsData(request, pageNo, filterData) {
   if (nextQueryUrl && queryUrls.length === pageNo) {
     queryUrls.push(nextQueryUrl)
   }
-
-
 
   setYarValue(request, sessionKey.MY_SUBMISSIONS_QUERY_URLS, queryUrls)
 
@@ -280,15 +275,15 @@ module.exports = [
       return h.redirect(currentPath)
     }
   },
-  //GET for my applications page
+  // GET for my applications page
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{pageNo?}`,
     options: {
       validate: {
         params: Joi.object({
           pageNo: Joi.number().allow('')
-        }),
+        })
       }
     },
 
@@ -305,7 +300,7 @@ module.exports = [
       let filterData = getYarValue(request, sessionKey.MY_SUBMISSIONS_FILTER_DATA)
 
       if (!filterData) {
-        filterData = { submittedBy: "me" }
+        filterData = { submittedBy: 'me' }
       }
 
       const { submissions, totalSubmissions } = await getSubmissionsData(request, pageNo, filterData)
@@ -332,16 +327,16 @@ module.exports = [
       return h.view(pageId, createModel(pageData))
     }
   },
-  //POST for start new application button
+  // POST for start new application button
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/new-application`,
     options: {
       validate: {
         failAction: (_request, _h, error) => {
           console.log(error)
         }
-      },
+      }
     },
     handler: async (request, h) => {
       const draftSubmissionDetail = await getDraftSubmissionDetails(request)
@@ -353,9 +348,9 @@ module.exports = [
       return h.redirect(`${nextPathPermitType}`)
     }
   },
-  //POST for apply filter button and search button
+  // POST for apply filter button and search button
   {
-    method: "POST",
+    method: 'POST',
     path: currentPath,
     options: {
       validate: {
@@ -372,14 +367,13 @@ module.exports = [
               Joi.string(),
               Joi.array().items(Joi.string().valid(...statuses))
             ),
-          submittedBy: Joi.string().allow(''),
+          submittedBy: Joi.string().allow('')
         }),
         failAction: (_request, _h, error) => {
           console.log(error)
         }
       },
       handler: async (request, h) => {
-
         const pageNo = 1
 
         let filterPermitTypes = null
@@ -432,13 +426,13 @@ module.exports = [
     }
   },
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/select/{submissionRef}`,
     options: {
       validate: {
         params: Joi.object({
           submissionRef: Joi.string().allow('')
-        }),
+        })
       }
     },
 
@@ -449,7 +443,7 @@ module.exports = [
     }
   },
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/draft-continue`,
     handler: async (request, h) => {
       const submission = await loadDraftSubmission(request)
@@ -457,14 +451,14 @@ module.exports = [
     }
   },
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/draft-delete`,
     handler: async (_request, h) => {
       return h.view(areYouSureViewName, createAreYouSureModel(null))
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/draft-delete`,
     options: {
       validate: {
@@ -485,4 +479,3 @@ module.exports = [
     }
   }
 ]
-

@@ -1,4 +1,4 @@
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const { getErrorList } = require('../lib/helper-functions')
 const { getInputs, createGetHandler, createPostHandler } = require('../lib/importer-details-common')
 const textContent = require('../content/text-content')
@@ -8,10 +8,9 @@ const currentPathWithParams = `${currentPath}/{applicationIndex}`
 const previousPathAddExportPermit = `${urlPrefix}/add-export-permit`
 const nextPathAppSummary = `${urlPrefix}/application-summary/check`
 
-function createModel(errors, data) {
-
+function createModel (errors, data) {
   const { common: commonContent, importerDetails: pageContent } = textContent
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["country", "name", "addressLine1", "addressLine2", "addressLine3", "addressLine4", "postcode"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['country', 'name', 'addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode'])
 
   const defaultBacklink = `${previousPathAddExportPermit}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -37,5 +36,5 @@ const getRedirect = (applicationIndex) => `${nextPathAppSummary}/${applicationIn
 
 module.exports = [
   createGetHandler(pageId, currentPathWithParams, createModel, getImporterExporterDetails),
-  createPostHandler(pageId, currentPathWithParams, createModel, getRedirect )
+  createPostHandler(pageId, currentPathWithParams, createModel, getRedirect)
 ]

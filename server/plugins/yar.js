@@ -4,9 +4,8 @@ const { readSecret } = require('../lib/key-vault')
 module.exports = {
   name: 'yar',
   register: async function (server, _options) {
-
     const cookiePassword = (await readSecret('SESSION-COOKIE-PASSWORD')).value
-        
+
     server.register({
       plugin: require('@hapi/yar'),
       options: {
@@ -19,9 +18,9 @@ module.exports = {
         cookieOptions: {
           password: cookiePassword,
           isSecure: config.cookieOptions.isSecure,
-          isHttpOnly: true, 
+          isHttpOnly: true,
           isSameSite: 'None',
-          ttl: config.sessionCacheTTL,
+          ttl: config.sessionCacheTTL
         }//,
         // customSessionIDGenerator: function (request) {
         //   // const sessionID = Uuid.v4()
@@ -33,5 +32,5 @@ module.exports = {
         // }
       }
     })
-  },
+  }
 }

@@ -1,5 +1,3 @@
-const Joi = require('joi')
-
 module.exports = [{
   method: 'GET',
   path: '/profile',
@@ -7,7 +5,7 @@ module.exports = [{
     auth: 'jwt'
   },
   handler: async (request, _h) => {
-    const { user } = request.auth.credentials;
-    return `Hello, ${user}!`;
-  }  
+    const { user } = request.auth.credentials
+    return `Hello, ${user}!`
+  }
 }]

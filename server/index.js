@@ -1,35 +1,37 @@
 const hapi = require('@hapi/hapi')
 const config = require('../config/config')
 const { getCacheConfig } = require('../config/cache')
-const Fs = require('fs');
-const { getOpenIdClient } = require('./services/oidc-client');
+const Fs = require('fs')
+const { getOpenIdClient } = require('./services/oidc-client')
 const { getCountries, getAccessToken, getTradeTermCodes } = require('./services/dynamics-service')
 const { getBlobServiceClient } = require('./services/blob-storage-service')
 
-//Run this command line to create certs
-//openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
+// Run this command line to create certs
+// openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
 
-async function createServer() {
+async function createServer () {
   console.log('###### CITES PORTAL STARTUP: Creating server config ######')
   console.log('Environment: ' + config.env)
   const cacheConfig = await getCacheConfig()
-  
-  const tlsConfig = config.env === 'local' ? {
-    key: Fs.readFileSync('key.pem'),
-    cert: Fs.readFileSync('cert.pem')
-  } : null
+
+  const tlsConfig = config.env === 'local'
+    ? {
+        key: Fs.readFileSync('key.pem'),
+        cert: Fs.readFileSync('cert.pem')
+      }
+    : null
 
   // Create the hapi server
   const server = hapi.server({
     port: config.port,
-    tls: tlsConfig, //COMMENT THIS OUT TO GO BACK TO HTTP
+    tls: tlsConfig, // COMMENT THIS OUT TO GO BACK TO HTTP
     cache: cacheConfig,
     routes: {
       // auth: {
       //   mode: 'optional' //UNCOMMENT THIS TO DISABLE SECURITY
       // },
       security: {
-        hsts: { //Adds the HSTS header to all responses.
+        hsts: { // Adds the HSTS header to all responses.
           includeSubDomains: true,
           preload: true,
           maxAge: 15768000
@@ -42,7 +44,6 @@ async function createServer() {
       }
     }
   })
-
 
   console.log('###### CITES PORTAL STARTUP: Configuring application insights ######')
 
@@ -59,11 +60,11 @@ async function createServer() {
     getOpenIdClient(),
     getCountries(server),
     getTradeTermCodes(server)
-  ]);
+  ])
 
-  server.app.oidcClient = oidcClient;
-  server.app.countries = countries;
-  server.app.tradeTermCodes = tradeTermCodes;
+  server.app.oidcClient = oidcClient
+  server.app.countries = countries
+  server.app.tradeTermCodes = tradeTermCodes
 
   console.log('###### CITES PORTAL STARTUP: Registering plugins ######')
   // Register the plugins
@@ -77,26 +78,26 @@ async function createServer() {
   await server.register(require('blipp'))
   await server.register(require('./plugins/on-pre-response'))
 
-  await server.initialize();
-  console.log(`###### CITES PORTAL STARTUP: Server initialized - Ready to start ######`)
+  await server.initialize()
+  console.log('###### CITES PORTAL STARTUP: Server initialized - Ready to start ######')
   return server
 }
 
 const init = async () => {
   const server = await createServer()
-  return server;
-};
+  return server
+}
 
 const start = async () => {
   const server = await createServer()
-  await server.start();
+  await server.start()
   console.log(`###### CITES PORTAL STARTUP: Server started on port ${server.info.uri} ######`)
 
-  return server;
-};
+  return server
+}
 process.on('unhandledRejection', (err) => {
-  console.log(err);
-  process.exit(1);
+  console.log(err)
+  process.exit(1)
 })
 
 module.exports = { init, start }

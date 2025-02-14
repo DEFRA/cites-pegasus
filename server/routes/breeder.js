@@ -1,10 +1,10 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "breeder"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, stringToBool } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'breeder'
 const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
@@ -13,7 +13,7 @@ const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const nextPathAlreadyHaveA10 = `${urlPrefix}/already-have-a10`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const { common: commonContent, breeder: pageContent } = textContent
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isBreeder'])
 
@@ -27,19 +27,19 @@ function createModel(errors, data) {
     pageTitle: errorList
       ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix
       : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputName: "isBreeder",
+    inputName: 'isBreeder',
     pageHeader: pageContent.pageHeader,
     inputYesChecked: data.isBreeder,
-    errorMessage: getFieldError(errorList, "#isBreeder"),
-    inputClasses: "govuk-radios--inline",
-    }
- 
+    errorMessage: getFieldError(errorList, '#isBreeder'),
+    inputClasses: 'govuk-radios--inline'
+  }
+
   return { ...commonContent, ...model }
 }
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -74,7 +74,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -92,7 +92,7 @@ module.exports = [
           const application = submission.applications[applicationIndex]
 
           const isBreeder = stringToBool(request.payload.isBreeder, null)
-          
+
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             applicationIndex: applicationIndex,

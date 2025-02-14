@@ -1,8 +1,8 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
+const { checkChangeRouteExit } = require('../lib/change-route')
 const textContent = require('../content/text-content')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const pageId = 'has-unique-identification-mark'
@@ -17,13 +17,12 @@ const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
-
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.hasUniqueIdentificationMark
-  
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["hasUniqueIdentificationMark"])
-  
+
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['hasUniqueIdentificationMark'])
+
   let previousPath = previousPathTradeTermCode
 
   if (data.specimenType === 'animalLiving') {
@@ -41,18 +40,17 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputName: "hasUniqueIdentificationMark",
+    inputName: 'hasUniqueIdentificationMark',
     pageHeader: pageContent.pageHeader,
     inputHint: pageContent.inputHint,
     inputYesChecked: data.hasUniqueIdentificationMark,
-    errorMessage: getFieldError(errorList, "#hasUniqueIdentificationMark")
+    errorMessage: getFieldError(errorList, '#hasUniqueIdentificationMark')
   }
 
   return { ...commonContent, ...model }
 }
 
-
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
   const species = submission.applications[applicationIndex].species
@@ -69,7 +67,7 @@ function failAction(request, h, err) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -103,7 +101,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -114,7 +112,7 @@ module.exports = [
         payload: Joi.object({
           hasUniqueIdentificationMark: Joi.boolean().required()
         }),
-        failAction,
+        failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
@@ -152,7 +150,6 @@ module.exports = [
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
       }
     }
   }

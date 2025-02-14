@@ -1,10 +1,10 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "add-export-permit"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, stringToBool } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'add-export-permit'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
@@ -12,9 +12,9 @@ const nextPathAppSummary = `${urlPrefix}/application-summary/check`
 const nextPathImporterDetails = `${urlPrefix}/importer-details`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const { common: commonContent, addExportPermit: pageContent } = textContent
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isExportPermitRequired"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isExportPermitRequired'])
 
   const defaultBacklink = `${previousPathAdditionalInfo}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -30,14 +30,14 @@ function createModel(errors, data) {
     pageBody1: pageContent.pageBody1,
     pageBody2: pageContent.pageBody2,
     radios: {
-      idPrefix: "isExportPermitRequired",
-      name: "isExportPermitRequired",
-      classes: "govuk-radios--inline",
+      idPrefix: 'isExportPermitRequired',
+      name: 'isExportPermitRequired',
+      classes: 'govuk-radios--inline',
       fieldset: {
         legend: {
           text: pageContent.inputIsExportPermitRequiredHeading,
           isPageHeading: false,
-          classes: "govuk-fieldset__legend--m"
+          classes: 'govuk-fieldset__legend--m'
         }
       },
       items: [
@@ -52,7 +52,7 @@ function createModel(errors, data) {
           checked: data.isExportPermitRequired === false
         }
       ],
-      errorMessage: getFieldError(errorList, "#isExportPermitRequired")
+      errorMessage: getFieldError(errorList, '#isExportPermitRequired')
     }
   }
   return { ...commonContent, ...model }
@@ -60,7 +60,7 @@ function createModel(errors, data) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -92,7 +92,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -125,10 +125,10 @@ module.exports = [
 
         const isChange = typeof application.a10ExportData?.isExportPermitRequired === 'boolean' && application.a10ExportData?.isExportPermitRequired !== request.payload.isExportPermitRequired
 
-        if (!application.hasOwnProperty('a10ExportData')) {
+        if (!('a10ExportData' in application)) {
           application.a10ExportData = { purposeCode: 'T' }
         }
-        application.a10ExportData.isExportPermitRequired = request.payload.isExportPermitRequired;
+        application.a10ExportData.isExportPermitRequired = request.payload.isExportPermitRequired
 
         if (!request.payload.isExportPermitRequired) {
           application.a10ExportData.importerDetails = null

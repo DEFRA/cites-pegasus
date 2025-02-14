@@ -1,17 +1,15 @@
-const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const { getSubmission } = require('../lib/submission')
 const textContent = require('../content/text-content')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const pageId = 'application-complete'
 const currentPath = `${urlPrefix}/${pageId}`
-//const previousPath = `${urlPrefix}/`
+// const previousPath = `${urlPrefix}/`
 const nextPathMySubmissions = `${urlPrefix}/`
 const nextPathExportSubmission = `${urlPrefix}/my-submissions/draft-continue`
-const { getPermitDescription } = require("../lib/permit-type-helper")
-const invalidSubmissionPath = `${urlPrefix}/`
+const { getPermitDescription } = require('../lib/permit-type-helper')
 
-function createModel(_errors, data) {
+function createModel (_errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.applicationComplete
 
@@ -24,7 +22,6 @@ function createModel(_errors, data) {
     titleText: pageContent.panelHeading.replace('##PERMIT_TYPE##', permitTypeText),
     html: `${pageContent.panelText}<br><strong>${data.submissionRef}</strong>`
   }
-
 
   const model = {
     isExportSubmissionWaiting: data.isExportSubmissionWaiting,
@@ -51,7 +48,7 @@ function createModel(_errors, data) {
   return { ...commonContent, ...model }
 }
 
-function getPageBodyContent(pageContent, data) {
+function getPageBodyContent (pageContent, data) {
   let pageBodyContent
 
   if (data.isExportSubmissionWaiting) {
@@ -87,7 +84,7 @@ module.exports = [{
       permitSubType: submission.applications[0].permitSubType
     }
 
-    return h.view(pageId, createModel(null, pageData));
+    return h.view(pageId, createModel(null, pageData))
   }
 },
 {
@@ -95,13 +92,13 @@ module.exports = [{
   path: `${currentPath}/go-to-account`,
   handler: async (_request, h) => {
     return h.redirect(nextPathMySubmissions)
-  },
+  }
 },
 {
   method: 'POST',
   path: `${currentPath}/go-to-export`,
   handler: async (_request, h) => {
     return h.redirect(nextPathExportSubmission)
-  },
+  }
 }
 ]

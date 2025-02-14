@@ -1,25 +1,23 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
+const { checkChangeRouteExit, setDataRemoved } = require('../lib/change-route')
 const textContent = require('../content/text-content')
-const nunjucks = require("nunjucks")
+const nunjucks = require('nunjucks')
 const pageId = 'multiple-specimens'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
 const nextPathUniqueIdentifier = `${urlPrefix}/has-unique-identification-mark`
-const nextPathDescribeLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescribeSpecimen = `${urlPrefix}/describe-specimen`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
-
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.multipleSpecimens
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isMultipleSpecimens", "numberOfSpecimens"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isMultipleSpecimens', 'numberOfSpecimens'])
 
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
@@ -27,15 +25,15 @@ function createModel(errors, data) {
 
   const inputNumberOfSpecimens = nunjucks.renderString(renderString, {
     input: {
-      id: "numberOfSpecimens",
-      name: "numberOfSpecimens",
-      classes: "govuk-input govuk-input--width-20",
-      autocomplete: "on",
+      id: 'numberOfSpecimens',
+      name: 'numberOfSpecimens',
+      classes: 'govuk-input govuk-input--width-20',
+      autocomplete: 'on',
       label: {
         text: pageContent.inputLabelNumberOfSpecimens
       },
       ...(data.numberOfSpecimens ? { value: data.numberOfSpecimens } : {}),
-      errorMessage: getFieldError(errorList, "#numberOfSpecimens")
+      errorMessage: getFieldError(errorList, '#numberOfSpecimens')
     }
   })
 
@@ -50,13 +48,13 @@ function createModel(errors, data) {
     pageHeader: pageContent.pageHeader,
     pageBody: pageContent.pageBody,
     radios: {
-      idPrefix: "isMultipleSpecimens",
-      name: "isMultipleSpecimens",
+      idPrefix: 'isMultipleSpecimens',
+      name: 'isMultipleSpecimens',
       fieldset: {
         legend: {
           text: pageContent.inputLabelIsMultipleSpecimens,
           isPageHeading: false,
-          classes: "govuk-fieldset__legend--m"
+          classes: 'govuk-fieldset__legend--m'
         }
       },
       items: [
@@ -74,31 +72,31 @@ function createModel(errors, data) {
           checked: data.isMultipleSpecimens === false
         }
       ],
-      errorMessage: getFieldError(errorList, "#isA10CertificateNumberKnown")
+      errorMessage: getFieldError(errorList, '#isA10CertificateNumberKnown')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function validateNumberOfSpecimens(value, helpers) {
+// Note: It usage commented, hence showing 'validateNumberOfSpecimens' is defined but never used
+// function validateNumberOfSpecimens (value, helpers) {
+//   if (value.length === 0) {
+//     return helpers.error('any.empty', { customLabel: 'numberOfSpecimens' })
+//   }
 
-  if (value.length === 0) {
-    return helpers.error('any.empty', { customLabel: 'numberOfSpecimens' })
-  }
+//   const schema = Joi.number().min(2).max(1000000).integer()
+//   const result = schema.validate(value)
 
-  const schema = Joi.number().min(2).max(1000000).integer()
-  const result = schema.validate(value)
+//   if (result.error) {
+//     return helpers.error(result.error.details[0].type, { customLabel: 'numberOfSpecimens' })
+//   }
 
-  if (result.error) {
-    return helpers.error(result.error.details[0].type, { customLabel: 'numberOfSpecimens' })
-  }
-
-  return value
-}
+//   return value
+// }
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -128,11 +126,10 @@ module.exports = [
       }
 
       return h.view(viewName, createModel(null, pageData))
-
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -142,12 +139,12 @@ module.exports = [
         options: { abortEarly: false },
         payload: Joi.object({
           isMultipleSpecimens: Joi.boolean().required(),
-          numberOfSpecimens:Joi.number().when('isMultipleSpecimens', {
+          numberOfSpecimens: Joi.number().when('isMultipleSpecimens', {
             is: true,
-            then:  Joi.number().min(2).max(1000000).integer(),
-            //then: Joi.any().custom(validateNumberOfSpecimens),
+            then: Joi.number().min(2).max(1000000).integer(),
+            // then: Joi.any().custom(validateNumberOfSpecimens),
             otherwise: Joi.number().optional().allow(null, '')
-          }) 
+          })
         }),
         failAction: (request, h, err) => {
           const { applicationIndex } = request.params
@@ -163,15 +160,14 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
         const species = submission.applications[applicationIndex].species
-        
+
         const isMajorChange = species.isMultipleSpecimens !== request.payload.isMultipleSpecimens
 
         species.isMultipleSpecimens = request.payload.isMultipleSpecimens
         species.numberOfUnmarkedSpecimens = request.payload.isMultipleSpecimens === true ? request.payload.numberOfSpecimens : null
 
-        
         if (isMajorChange) {
-          //If changing between 1 specimen and > 1 specimen, remove unique identifier and description details
+          // If changing between 1 specimen and > 1 specimen, remove unique identifier and description details
           species.hasUniqueIdentificationMark = null
           species.uniqueIdentificationMarks = null
           species.specimenDescriptionGeneric = null

@@ -2,7 +2,7 @@ const Joi = require('joi')
 const { urlPrefix, documentUploadMaxFilesLimit } = require('../../config/config')
 const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { getSubmission, mergeSubmission, setSubmission, saveDraftSubmission } = require('../lib/submission')
-const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists, AVScanResult } = require("../services/blob-storage-service")
+const { createContainerWithTimestamp, saveFileToContainer, deleteFileFromContainer, checkContainerExists, AVScanResult } = require('../services/blob-storage-service')
 const textContent = require('../content/text-content')
 const pageId = 'upload-supporting-documents'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -14,12 +14,11 @@ const maxFileSizeBytes = 10485760
 const pageSize = 15
 const multiPartFormData = 'multipart/form-data'
 
-function createModel(errors, data) {
-
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.uploadSupportingDocuments
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["fileUpload", "fileUpload.hapi.headers.content-type", "fileUpload.hapi.filename", "file"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['fileUpload', 'fileUpload.hapi.headers.content-type', 'fileUpload.hapi.filename', 'file'])
+
   const documents = data.files?.map((file) => {
     return {
       ...file,
@@ -36,7 +35,7 @@ function createModel(errors, data) {
   const paginatedDocuments = sortedDocuments.slice(startIndex, endIndex)
 
   const clientJSConfig = {
-    fileSizeErrorText: pageContent.errorMessages["error.fileUpload.any.filesize"],
+    fileSizeErrorText: pageContent.errorMessages['error.fileUpload.any.filesize'],
     maxFileSizeBytes: maxFileSizeBytes,
     errorSummaryTitle: commonContent.errorSummaryTitle
   }
@@ -55,8 +54,8 @@ function createModel(errors, data) {
     pageTitle: errorList && errorList?.length !== 0 ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     isAgent: data.isAgent,
     inputFile: {
-      id: "fileUpload",
-      name: "fileUpload",
+      id: 'fileUpload',
+      name: 'fileUpload',
       errorMessage: getFieldError(errorList, '#fileUpload'),
       attributes: {
         accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg'
@@ -67,7 +66,7 @@ function createModel(errors, data) {
   return { ...commonContent, ...pageContent, ...model }
 }
 
-function getPaginationControl(totalItems, pageNo, url) {
+function getPaginationControl (totalItems, pageNo, url) {
   if (totalItems <= pageSize) {
     return null
   }
@@ -82,23 +81,22 @@ function getPaginationControl(totalItems, pageNo, url) {
   const prevAttr = pageNo === 1 ? { 'data-disabled': '' } : null
   const nextAttr = pageNo === totalPages ? { 'data-disabled': '' } : null
 
-
   const pagination = {
-    id: "pagination",
-    name: "pagination",
+    id: 'pagination',
+    name: 'pagination',
     previous: {
-      href: pageNo === 1 ? "#" : `${url}/${pageNo - 1}`,
-      text: "Previous",
+      href: pageNo === 1 ? '#' : `${url}/${pageNo - 1}`,
+      text: 'Previous',
       attributes: prevAttr
     },
     next: {
-      href: pageNo === totalPages ? "#" : `${url}/${pageNo + 1}`,
-      text: "Next",
+      href: pageNo === totalPages ? '#' : `${url}/${pageNo + 1}`,
+      text: 'Next',
       attributes: nextAttr
     },
     items: [{
       number: paginationText
-    }],
+    }]
   }
 
   return pagination
@@ -110,12 +108,12 @@ const fileSchema = Joi.object({
     headers: Joi.object({
       'content-disposition': Joi.string().required(),
       'content-type': Joi.string().valid('application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg').required()
-    }).unknown(true),
+    }).unknown(true)
   }).unknown(true),
   _data: Joi.any().required()
 }).unknown(true)
 
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const submission = getSubmission(request)
 
   const pageData = {
@@ -128,12 +126,12 @@ function failAction(request, h, err) {
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
-function getMaxDocs(applicationsCount) {
+function getMaxDocs (applicationsCount) {
   const maxDocsMultiplier = 5
   return Math.min(maxDocsMultiplier + (applicationsCount * maxDocsMultiplier), documentUploadMaxFilesLimit)
 }
 
-function getAVError(avScanResult) {
+function getAVError (avScanResult) {
   const avError = {
     details: [
       {
@@ -156,8 +154,8 @@ function getAVError(avScanResult) {
   return avError
 }
 
-function validateRequest(request) {
-  if (request.headers["content-length"] > maxFileSizeBytes) {
+function validateRequest (request) {
+  if (request.headers['content-length'] > maxFileSizeBytes) {
     return {
       details: [
         {
@@ -180,7 +178,7 @@ function validateRequest(request) {
   return error
 }
 
-function getFileUploadError(type) {
+function getFileUploadError (type) {
   return {
     details: [
       {
@@ -194,19 +192,19 @@ function getFileUploadError(type) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{pageNo?}`,
     options: {
       validate: {
         params: Joi.object({
           pageNo: Joi.number().allow('').default(1)
-        }),
+        })
       }
     },
     handler: async (request, h) => {
       const submission = getSubmission(request)
 
-      //Check that the container is still in azure
+      // Check that the container is still in azure
       if (submission.supportingDocuments?.containerName) {
         const exists = await checkContainerExists(request.server, submission.supportingDocuments.containerName)
         if (!exists) {
@@ -214,11 +212,10 @@ module.exports = [
           try {
             setSubmission(request, submission)
           } catch (err) {
-            console.error(err);
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
         }
-
       }
 
       const pageData = {
@@ -232,7 +229,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/upload`,
     options: {
       payload: {
@@ -264,7 +261,6 @@ module.exports = [
           return failAction(request, h, error)
         }
 
-
         const existingFile = docs.files.find(file => file.fileName === request.payload.fileUpload.hapi.filename)
         if (existingFile) {
           const error = getFileUploadError('any.existing')
@@ -279,13 +275,12 @@ module.exports = [
             try {
               mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
             } catch (err) {
-              console.error(err);
+              console.error(err)
               return h.redirect(invalidSubmissionPath)
             }
           }
 
           const fileSaveResult = await saveFileToContainer(request.server, docs.containerName, request.payload.fileUpload.hapi.filename, request.payload.fileUpload._data)
-
 
           if (fileSaveResult.avScanResult !== AVScanResult.SUCCESS) {
             const avError = getAVError(fileSaveResult.avScanResult)
@@ -300,11 +295,10 @@ module.exports = [
             mergeSubmission(request, { supportingDocuments: docs }, `${pageId}`)
             saveDraftSubmission(request, currentPath)
           } catch (err) {
-            console.error(err);
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
-        }
-        catch (err) {
+        } catch (err) {
           console.error(err)
           const error = {
             details: [
@@ -330,7 +324,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/delete/{fileName}`,
     options: {
       payload: {
@@ -359,12 +353,11 @@ module.exports = [
           try {
             setSubmission(request, submission, `${pageId}`)
           } catch (err) {
-            console.error(err);
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
           saveDraftSubmission(request, currentPath)
-        }
-        catch (err) {
+        } catch (err) {
           console.error(err)
           const error = {
             details: [
@@ -390,7 +383,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/continue`,
     options: {
       payload: {
@@ -406,7 +399,7 @@ module.exports = [
           try {
             setSubmission(request, submission, `${pageId}`)
           } catch (err) {
-            console.error(err);
+            console.error(err)
             return h.redirect(invalidSubmissionPath)
           }
         }
@@ -415,5 +408,5 @@ module.exports = [
         return h.redirect(redirectTo)
       }
     }
-  },
+  }
 ]

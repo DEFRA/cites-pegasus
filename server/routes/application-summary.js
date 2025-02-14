@@ -1,15 +1,14 @@
-const Joi = require("joi")
-const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { getErrorList, getFieldError, toPascalCase } = require("../lib/helper-functions")
+const Joi = require('joi')
+const { urlPrefix, enableDeliveryType, enableInternalReference, enableGenerateExportPermitsFromA10s } = require('../../config/config')
+const { getErrorList, getFieldError, toPascalCase } = require('../lib/helper-functions')
 const { getYarValue, setYarValue, sessionKey } = require('../lib/session')
-const { deliveryType: dt, summaryType: summaryTypeConst } = require("../lib/constants")
-const { permitType: pt, permitTypeOption: pto, getPermitDescription } = require("../lib/permit-type-helper")
-const { getSubmission, mergeSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists, allowPageNavigation } = require("../lib/submission")
-const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require("../lib/change-route")
-const dynamics = require("../services/dynamics-service")
-const textContent = require("../content/text-content")
-const { config } = require("dotenv")
-const pageId = "application-summary"
+const { deliveryType: dt, summaryType: summaryTypeConst } = require('../lib/constants')
+const { permitType: pt, getPermitDescription } = require('../lib/permit-type-helper')
+const { getSubmission, validateSubmission, cloneSubmission, saveDraftSubmission, checkDraftSubmissionExists, allowPageNavigation } = require('../lib/submission')
+const { setChangeRoute, clearChangeRoute, getChangeRouteData, changeTypes } = require('../lib/change-route')
+const dynamics = require('../services/dynamics-service')
+const textContent = require('../content/text-content')
+const pageId = 'application-summary'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathAdditionalInfo = `${urlPrefix}/additional-info`
 const previousPathAddExportPermit = `${urlPrefix}/add-export-permit`
@@ -59,7 +58,7 @@ const changeLink = {
 const pageContent = textContent.applicationSummary
 const commonContent = textContent.common
 
-function createApplicationSummaryModel(errors, data) {
+function createApplicationSummaryModel (errors, data) {
   const summaryType = data.summaryType
 
   const summaryData = {
@@ -113,9 +112,9 @@ function createApplicationSummaryModel(errors, data) {
 
   const model = {
     backLink,
-    breadcrumbs: [summaryTypeConst.VIEW_SUBMITTED, summaryTypeConst.COPY_AS_NEW].includes(summaryType) ? breadcrumbs : "",
+    breadcrumbs: [summaryTypeConst.VIEW_SUBMITTED, summaryTypeConst.COPY_AS_NEW].includes(summaryType) ? breadcrumbs : '',
     pageHeader: appContent.pageHeader,
-    //pageTitle: appContent.pageTitle + commonContent.pageTitleSuffix,
+    // pageTitle: appContent.pageTitle + commonContent.pageTitleSuffix,
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : appContent.pageTitle + commonContent.pageTitleSuffix,
     buttonText: appContent.buttonText,
     showConfirmButton: appContent.showConfirmButton,
@@ -137,8 +136,8 @@ function createApplicationSummaryModel(errors, data) {
     headingExportPermitDetails: pageContent.headingExportPermitDetails,
     headingImportPermitDetails: pageContent.headingImportPermitDetails,
     headerAdditionalInformation: pageContent.headerAdditionalInformation,
-    returnToYourApplicationsLinkText: summaryType === summaryTypeConst.VIEW_SUBMITTED ? pageContent.returnToYourApplicationsLinkText : "",
-    returnToYourApplicationsLinkUrl: summaryType === summaryTypeConst.VIEW_SUBMITTED ? `${urlPrefix}/my-submissions` : "",
+    returnToYourApplicationsLinkText: summaryType === summaryTypeConst.VIEW_SUBMITTED ? pageContent.returnToYourApplicationsLinkText : '',
+    returnToYourApplicationsLinkUrl: summaryType === summaryTypeConst.VIEW_SUBMITTED ? `${urlPrefix}/my-submissions` : '',
     ...summaryListSectionsObject,
     errorSummaryTitle: pageContent.errorSummaryTitle,
     errorList
@@ -146,11 +145,11 @@ function createApplicationSummaryModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function canShowImportPermitDetails(summaryListSectionsObject, summaryType) {
+function canShowImportPermitDetails (summaryListSectionsObject, summaryType) {
   return summaryListSectionsObject.summaryListImportPermitDetails.rows?.length > 0 && (summaryType !== summaryTypeConst.VIEW_SUBMITTED || Boolean(summaryListSectionsObject.summaryListImportPermitDetails.rows[0].value?.text))
 }
 
-function getBackLink(summaryType, data) {
+function getBackLink (summaryType, data) {
   const endOfApplicationPage = getEndOfApplicationPage(data.applicationIndex, data.permitType, data.a10ExportData)
   switch (summaryType) {
     case summaryTypeConst.CHECK:
@@ -163,8 +162,8 @@ function getBackLink(summaryType, data) {
   }
 }
 
-function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData) {
-  //This determines which was the page before the application summary ie. the end of the application
+function getEndOfApplicationPage (applicationIndex, permitType, a10ExportData) {
+  // This determines which was the page before the application summary ie. the end of the application
   let endOfApplicationPage = `${previousPathAdditionalInfo}/${applicationIndex}`
 
   if (permitType === pt.ARTICLE_10 && enableGenerateExportPermitsFromA10s) {
@@ -177,7 +176,7 @@ function getEndOfApplicationPage(applicationIndex, permitType, a10ExportData) {
   return endOfApplicationPage
 }
 
-function getBreadcrumbs(data, summaryType, applicationRef) {
+function getBreadcrumbs (data, summaryType, applicationRef) {
   const submissionRef = data.submissionRef || data.cloneSource?.submissionRef
   const submissionLink = `${previousPathMySubmission}/${data.cloneSource ? data.cloneSource.submissionRef : data.submissionRef}`
   const applicationLink = `${currentPath}/view-submitted/${data.cloneSource ? data.cloneSource.applicationIndex : data.applicationIndex}`
@@ -185,7 +184,7 @@ function getBreadcrumbs(data, summaryType, applicationRef) {
     items: [
       {
         text: pageContent.textBreadcrumbs,
-        href: previousPathMySubmissions,
+        href: previousPathMySubmissions
       }
     ]
   }
@@ -200,42 +199,41 @@ function getBreadcrumbs(data, summaryType, applicationRef) {
   if (applicationRef) {
     breadcrumbs.items.push({
       text: applicationRef,
-      href: summaryType === summaryTypeConst.COPY_AS_NEW ? applicationLink : "#"
+      href: summaryType === summaryTypeConst.COPY_AS_NEW ? applicationLink : '#'
     })
   }
 
   if (summaryType === summaryTypeConst.COPY_AS_NEW) {
     breadcrumbs.items.push({
       text: pageContent.pageHeaderCopy,
-      href: "#"
+      href: '#'
     })
   }
 
   return breadcrumbs
 }
 
-function createSummaryList(key, id, rows) {
+function createSummaryList (key, id, rows) {
   return {
     key,
     value: {
       id,
       name: id,
-      classes: "govuk-!-margin-bottom-9",
+      classes: 'govuk-!-margin-bottom-9',
       rows
     }
   }
 }
 
-function getSummaryListAboutThePermit(summaryData, appContent) {
+function getSummaryListAboutThePermit (summaryData, appContent) {
   return createSummaryList(
     'summaryListAboutThePermit',
     'permitType',
-    [createSummaryListRow(summaryData, ["permitTypeOption", "otherPermitTypeOption"], pageContent.rowTextPermitType, appContent.permitTypeValue, "/permitType", "permit type")]
+    [createSummaryListRow(summaryData, ['permitTypeOption', 'otherPermitTypeOption'], pageContent.rowTextPermitType, appContent.permitTypeValue, '/permitType', 'permit type')]
   )
 }
 
-
-function getSummaryListDeliveryAddress(summaryData, data) {
+function getSummaryListDeliveryAddress (summaryData, data) {
   const summaryListDeliveryAddressRows = []
 
   const deliveryAddressDataItems = [
@@ -250,7 +248,7 @@ function getSummaryListDeliveryAddress(summaryData, data) {
 
   const deliveryAddressDataValue = deliveryAddressDataItems.join(', ')
 
-  let deliveryTypeDataValue = ""
+  let deliveryTypeDataValue = ''
   if (enableDeliveryType) {
     switch (data.delivery.deliveryType) {
       case dt.SPECIAL_DELIVERY:
@@ -260,14 +258,14 @@ function getSummaryListDeliveryAddress(summaryData, data) {
         deliveryTypeDataValue = pageContent.rowTextStandardDelivery
         break
       default:
-        throw new Error("Unknown delivery type: " + data.delivery.deliveryType)
+        throw new Error('Unknown delivery type: ' + data.delivery.deliveryType)
     }
   }
 
-  summaryListDeliveryAddressRows.push(createSummaryListRow(summaryData, "delivery-address", pageContent.rowTextAddress, deliveryAddressDataValue, "/deliveryAddress", "delivery address"))
+  summaryListDeliveryAddressRows.push(createSummaryListRow(summaryData, 'delivery-address', pageContent.rowTextAddress, deliveryAddressDataValue, '/deliveryAddress', 'delivery address'))
 
   if (deliveryTypeDataValue) {
-    summaryListDeliveryAddressRows.push(createSummaryListRow(summaryData, "deliveryType", pageContent.rowTextDeliveryType, deliveryTypeDataValue, "/deliveryType", "delivery type"))
+    summaryListDeliveryAddressRows.push(createSummaryListRow(summaryData, 'deliveryType', pageContent.rowTextDeliveryType, deliveryTypeDataValue, '/deliveryType', 'delivery type'))
   }
 
   return createSummaryList(
@@ -277,13 +275,13 @@ function getSummaryListDeliveryAddress(summaryData, data) {
   )
 }
 
-function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly) {
+function getSummaryListSpecimenDetails (summaryData, appContent, data, isReadOnly) {
   const summaryListSpecimenDetailsRows = []
 
   let unitsOfMeasurementValue = null
-  if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfSpecimens") {
+  if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === 'noOfSpecimens') {
     unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
-  } else if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === "noOfPiecesOrParts") {
+  } else if (data.species.unitOfMeasurement && data.species.unitOfMeasurement === 'noOfPiecesOrParts') {
     unitsOfMeasurementValue = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
   } else {
     unitsOfMeasurementValue = data.species?.unitOfMeasurement
@@ -306,56 +304,56 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
     }
   }
 
-  summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "speciesName", pageContent.rowTextScientificName, data.species.speciesName, "/speciesName", "species name"))
+  summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'speciesName', pageContent.rowTextScientificName, data.species.speciesName, '/speciesName', 'species name'))
 
-  //This is where we need to add a new entry for number of unmarked specimens
+  // This is where we need to add a new entry for number of unmarked specimens
 
-  if (allowPageNavigation(data.submissionProgress, "source-code/" + data.applicationIndex) || isReadOnly) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["sourceCode", "enterAReason"], pageContent.rowTextSourceCode, `${data.species.sourceCode || ""} ${appContent.sourceCodeValueText[data.species.sourceCode] || ""}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
+  if (allowPageNavigation(data.submissionProgress, 'source-code/' + data.applicationIndex) || isReadOnly) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['sourceCode', 'enterAReason'], pageContent.rowTextSourceCode, `${data.species.sourceCode || ''} ${appContent.sourceCodeValueText[data.species.sourceCode] || ''}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
 
     if (data.species.sourceCode === 'I') {
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForI", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForI || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForI] || ""}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'anotherSourceCodeForI', pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForI || ''} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForI] || ''}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
     }
     if (data.species.sourceCode === 'O') {
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "anotherSourceCodeForO", pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForO || ""} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForO] || ""}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'anotherSourceCodeForO', pageContent.rowTextOtherSourceCode, `${data.species.anotherSourceCodeForO || ''} ${appContent.otherSourceCodeValueText[data.species.anotherSourceCodeForO] || ''}`, changeLink.sourceCode.href, changeLink.sourceCode.hiddenText))
     }
   }
-  //Old logic if (data.permitType !== pt.ARTICLE_10) {
-  if (allowPageNavigation(data.submissionProgress, "purpose-code/" + data.applicationIndex) || (isReadOnly && data.species.purposeCode)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "purposeCode", pageContent.rowTextPurposeCode, `${data.species.purposeCode || ""} ${appContent.purposeCodeValueText[data.species.purposeCode] || ""}`, "/purposeCode", "purpose code"))
+  // Old logic if (data.permitType !== pt.ARTICLE_10) {
+  if (allowPageNavigation(data.submissionProgress, 'purpose-code/' + data.applicationIndex) || (isReadOnly && data.species.purposeCode)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'purposeCode', pageContent.rowTextPurposeCode, `${data.species.purposeCode || ''} ${appContent.purposeCodeValueText[data.species.purposeCode] || ''}`, '/purposeCode', 'purpose code'))
   }
-  if (allowPageNavigation(data.submissionProgress, "specimen-origin/" + data.applicationIndex) || (isReadOnly && data.species.specimenOrigin)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenOrigin", pageContent.rowTextA10SpecimenOrigin, appContent.a10SpecimenOriginValue[data.species.specimenOrigin], "/specimenOrigin", "specimen origin"))
+  if (allowPageNavigation(data.submissionProgress, 'specimen-origin/' + data.applicationIndex) || (isReadOnly && data.species.specimenOrigin)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'specimenOrigin', pageContent.rowTextA10SpecimenOrigin, appContent.a10SpecimenOriginValue[data.species.specimenOrigin], '/specimenOrigin', 'specimen origin'))
   }
-  if (allowPageNavigation(data.submissionProgress, "use-certificate-for/" + data.applicationIndex) || (isReadOnly && data.species.useCertificateFor)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "useCertificateFor", pageContent.rowTextA10CertificatePurpose, appContent.a10CertificatePurposeValue[data.species.useCertificateFor], "/useCertificateFor", "use certificate for"))
+  if (allowPageNavigation(data.submissionProgress, 'use-certificate-for/' + data.applicationIndex) || (isReadOnly && data.species.useCertificateFor)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'useCertificateFor', pageContent.rowTextA10CertificatePurpose, appContent.a10CertificatePurposeValue[data.species.useCertificateFor], '/useCertificateFor', 'use certificate for'))
   }
-  if (allowPageNavigation(data.submissionProgress, "specimen-type/" + data.applicationIndex) || (isReadOnly && data.species.specimenType)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenType", pageContent.rowTextSpecimenType, appContent.specimenTypeValue[data.species.specimenType], "/specimenType", "specimen type"))
+  if (allowPageNavigation(data.submissionProgress, 'specimen-type/' + data.applicationIndex) || (isReadOnly && data.species.specimenType)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'specimenType', pageContent.rowTextSpecimenType, appContent.specimenTypeValue[data.species.specimenType], '/specimenType', 'specimen type'))
   }
-  //Old logic if (data.species.specimenType !== "animalLiving") {
-  if (allowPageNavigation(data.submissionProgress, "quantity/" + data.applicationIndex) || (isReadOnly && data.species.quantity)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, data.species.quantity, "/quantity", "quantity"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "unitOfMeasurement", pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, "/quantity", "unit of measurement"))
+  // Old logic if (data.species.specimenType !== "animalLiving") {
+  if (allowPageNavigation(data.submissionProgress, 'quantity/' + data.applicationIndex) || (isReadOnly && data.species.quantity)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'quantity', pageContent.rowTextQuantity, data.species.quantity, '/quantity', 'quantity'))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'unitOfMeasurement', pageContent.rowTextUnitOfMeasurement, unitsOfMeasurementValue, '/quantity', 'unit of measurement'))
   }
-  if (allowPageNavigation(data.submissionProgress, "multiple-specimens/" + data.applicationIndex) || (isReadOnly && typeof data.isMultipleSpecimens === 'boolean')) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "quantity", pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, "/multipleSpecimens", "multipleSpecimens"))
+  if (allowPageNavigation(data.submissionProgress, 'multiple-specimens/' + data.applicationIndex) || (isReadOnly && typeof data.isMultipleSpecimens === 'boolean')) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'quantity', pageContent.rowTextQuantity, `${data.species.numberOfUnmarkedSpecimens || 1} specimen${data.species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`, '/multipleSpecimens', 'multipleSpecimens'))
   }
-  //Old logic if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
-  if (allowPageNavigation(data.submissionProgress, "created-date/" + data.applicationIndex) || (isReadOnly && data.createdDate)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['createdDate-isExactDateUnknown', 'createdDate-approximateDate', 'createdDate-date'], pageContent.rowTextCreatedDate, data.species.createdDate?.isExactDateUnknown ? data.species.createdDate?.approximateDate : getDateValue(data.species.createdDate), "/createdDate", "created date"))
+  // Old logic if (data.species.specimenType === "animalWorked" || data.species.specimenType === "plantWorked") {
+  if (allowPageNavigation(data.submissionProgress, 'created-date/' + data.applicationIndex) || (isReadOnly && data.createdDate)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['createdDate-isExactDateUnknown', 'createdDate-approximateDate', 'createdDate-date'], pageContent.rowTextCreatedDate, data.species.createdDate?.isExactDateUnknown ? data.species.createdDate?.approximateDate : getDateValue(data.species.createdDate), '/createdDate', 'created date'))
   }
-  if (allowPageNavigation(data.submissionProgress, "trade-term-code/" + data.applicationIndex) || (isReadOnly && data.tradeTermCode)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["isTradeTermCode", "tradeTermCode"], pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode || ""} ${data.species.tradeTermCodeDesc || ""}` : pageContent.rowTextNotKnown, "/tradeTermCode", "trade term code"))
+  if (allowPageNavigation(data.submissionProgress, 'trade-term-code/' + data.applicationIndex) || (isReadOnly && data.tradeTermCode)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['isTradeTermCode', 'tradeTermCode'], pageContent.rowTextTradeTermCode, data.species.isTradeTermCode ? `${data.species.tradeTermCode || ''} ${data.species.tradeTermCodeDesc || ''}` : pageContent.rowTextNotKnown, '/tradeTermCode', 'trade term code'))
   }
-  if (isReadOnly && data.species.uniqueIdentificationMarkType) {//Only for viewing old applications with single unique identifiction mark
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark"], pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMarkType === "unmarked" ? pageContent.rowTextSpecimenIsNotMarked : data.species.uniqueIdentificationMark, "/uniqueIdentificationMark", "unique identification mark"))
-  } else if (allowPageNavigation(data.submissionProgress, "has-unique-identification-mark/" + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "hasUniqueIdentificationMarkType", pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/hasUniqueIdentificationMark", "has unique identification mark"))
+  if (isReadOnly && data.species.uniqueIdentificationMarkType) { // Only for viewing old applications with single unique identifiction mark
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['uniqueIdentificationMarkType', 'uniqueIdentificationMark'], pageContent.rowTextUniqueIdentificationMark, data.species.uniqueIdentificationMarkType === 'unmarked' ? pageContent.rowTextSpecimenIsNotMarked : data.species.uniqueIdentificationMark, '/uniqueIdentificationMark', 'unique identification mark'))
+  } else if (allowPageNavigation(data.submissionProgress, 'has-unique-identification-mark/' + data.applicationIndex) || (isReadOnly && typeof data.species.hasUniqueIdentificationMark === 'boolean')) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'hasUniqueIdentificationMarkType', pageContent.rowTextHasUniqueIdentificationMark, data.species.hasUniqueIdentificationMark ? commonContent.radioOptionYes : commonContent.radioOptionNo, '/hasUniqueIdentificationMark', 'has unique identification mark'))
   } else {
-    //Do nothing
+    // Do nothing
   }
-  if (data.species.hasUniqueIdentificationMark && (allowPageNavigation(data.submissionProgress, "unique-identification-mark/" + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark))) {
+  if (data.species.hasUniqueIdentificationMark && (allowPageNavigation(data.submissionProgress, 'unique-identification-mark/' + data.applicationIndex) || (isReadOnly && data.species.uniqueIdentificationMarks && data.species.hasUniqueIdentificationMark))) {
     const markCount = data.species.uniqueIdentificationMarks ? data.species.uniqueIdentificationMarks.length : 1
     for (let i = 0; i < markCount; i++) {
       let markDetails = ''
@@ -364,38 +362,37 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
         const markTypeText = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
         markDetails = `${markTypeText}: ${mark.uniqueIdentificationMark}`
       }
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ["uniqueIdentificationMarkType", "uniqueIdentificationMark", "uniqueIdentificationMarks"], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', markDetails, "/uniqueIdentificationMark", "unique identification mark"))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['uniqueIdentificationMarkType', 'uniqueIdentificationMark', 'uniqueIdentificationMarks'], i === 0 ? pageContent.rowTextUniqueIdentificationMark : '', markDetails, '/uniqueIdentificationMark', 'unique identification mark'))
     }
   }
-  if (allowPageNavigation(data.submissionProgress, "describe-living-animal/" + data.applicationIndex) || (isReadOnly && data.species.sex)) {
-
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "sex", pageContent.rowTextSex, sexDescription, changeLink.describeLivingAnimal.href, "sex"))
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "dateOfBirth", pageContent.rowTextDateOfBirth, data.species.dateOfBirth?.isExactDateUnknown ? data.species.dateOfBirth?.approximateDate : getDateValue(data.species.dateOfBirth), changeLink.describeLivingAnimal.href, "date of birth"))
+  if (allowPageNavigation(data.submissionProgress, 'describe-living-animal/' + data.applicationIndex) || (isReadOnly && data.species.sex)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'sex', pageContent.rowTextSex, sexDescription, changeLink.describeLivingAnimal.href, 'sex'))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'dateOfBirth', pageContent.rowTextDateOfBirth, data.species.dateOfBirth?.isExactDateUnknown ? data.species.dateOfBirth?.approximateDate : getDateValue(data.species.dateOfBirth), changeLink.describeLivingAnimal.href, 'date of birth'))
 
     if ([pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(data.permitType)) {
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "maleParentDetails", pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, changeLink.describeLivingAnimal.href, "male parent details"))
-      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "femaleParentDetails", pageContent.rowTextFemaleParentDetails, data.species.femaleParentDetails, changeLink.describeLivingAnimal.href, "female parent details"))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'maleParentDetails', pageContent.rowTextMaleParentDetails, data.species.maleParentDetails, changeLink.describeLivingAnimal.href, 'male parent details'))
+      summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'femaleParentDetails', pageContent.rowTextFemaleParentDetails, data.species.femaleParentDetails, changeLink.describeLivingAnimal.href, 'female parent details'))
     }
-    //Old logic if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionLivingAnimal", pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : "", changeLink.describeLivingAnimal.href, "describe the specimen"))
+    // Old logic if (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType !== 'unmarked') {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'specimenDescriptionLivingAnimal', pageContent.rowTextOtherDescription, data.species.specimenDescriptionLivingAnimal ? data.species.specimenDescriptionLivingAnimal : '', changeLink.describeLivingAnimal.href, 'describe the specimen'))
   }
-  //Old logic if (data.species.specimenType !== "animalLiving" || (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) {
-  if (allowPageNavigation(data.submissionProgress, "describe-specimen/" + data.applicationIndex) || (isReadOnly && data.species.specimenDescriptionGeneric)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, "specimenDescriptionGeneric", pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, "/descriptionGeneric", "description"))
+  // Old logic if (data.species.specimenType !== "animalLiving" || (data.species.specimenType === "animalLiving" && data.species.uniqueIdentificationMarkType === 'unmarked')) {
+  if (allowPageNavigation(data.submissionProgress, 'describe-specimen/' + data.applicationIndex) || (isReadOnly && data.species.specimenDescriptionGeneric)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'specimenDescriptionGeneric', pageContent.rowTextDescription, data.species.specimenDescriptionGeneric, '/descriptionGeneric', 'description'))
   }
-  if (allowPageNavigation(data.submissionProgress, "breeder/" + data.applicationIndex) || (isReadOnly && typeof data.isBreeder === 'boolean')) {
-    let textDescription = ""
+  if (allowPageNavigation(data.submissionProgress, 'breeder/' + data.applicationIndex) || (isReadOnly && typeof data.isBreeder === 'boolean')) {
+    let textDescription = ''
     if (typeof data.isBreeder === 'boolean') {
       textDescription = data.isBreeder ? commonContent.radioOptionYes : commonContent.radioOptionNo
     }
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'isBreeder', pageContent.rowTextAreYouTheBreeder, textDescription, "/breeder", "are you the breeder"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, 'isBreeder', pageContent.rowTextAreYouTheBreeder, textDescription, '/breeder', 'are you the breeder'))
   }
-  //Old logic if (data.permitType === pt.ARTICLE_10) {
-  if (allowPageNavigation(data.submissionProgress, "acquired-date/" + data.applicationIndex) || (isReadOnly && data.species.acquiredDate)) {
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['acquiredDate-isExactDateUnknown', 'acquiredDate-approximateDate', 'acquiredDate-date'], pageContent.rowTextAcquiredDate, data.species.acquiredDate?.isExactDateUnknown ? data.species.acquiredDate?.approximateDate : getDateValue(data.species.acquiredDate), "/acquiredDate", "acquired date"))
+  // Old logic if (data.permitType === pt.ARTICLE_10) {
+  if (allowPageNavigation(data.submissionProgress, 'acquired-date/' + data.applicationIndex) || (isReadOnly && data.species.acquiredDate)) {
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['acquiredDate-isExactDateUnknown', 'acquiredDate-approximateDate', 'acquiredDate-date'], pageContent.rowTextAcquiredDate, data.species.acquiredDate?.isExactDateUnknown ? data.species.acquiredDate?.approximateDate : getDateValue(data.species.acquiredDate), '/acquiredDate', 'acquired date'))
   }
-  if (allowPageNavigation(data.submissionProgress, "already-have-a10/" + data.applicationIndex) || (isReadOnly && typeof data.species.isA10CertificateNumberKnown === 'boolean')) {
-    let textDescription = ""
+  if (allowPageNavigation(data.submissionProgress, 'already-have-a10/' + data.applicationIndex) || (isReadOnly && typeof data.species.isA10CertificateNumberKnown === 'boolean')) {
+    let textDescription = ''
     if (typeof data.species.isA10CertificateNumberKnown === 'boolean') {
       if (data.species.isA10CertificateNumberKnown) {
         textDescription = data.species.a10CertificateNumber
@@ -403,7 +400,7 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
         textDescription = pageContent.rowTextNotKnown
       }
     }
-    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['a10CertificateNumber', 'isA10CertificateNumberKnown'], pageContent.rowTextExistingArticle10Certificate, textDescription, "/a10CertificateNumber", "existing a10 certificate"))
+    summaryListSpecimenDetailsRows.push(createSummaryListRow(summaryData, ['a10CertificateNumber', 'isA10CertificateNumberKnown'], pageContent.rowTextExistingArticle10Certificate, textDescription, '/a10CertificateNumber', 'existing a10 certificate'))
   }
 
   return createSummaryList(
@@ -412,7 +409,7 @@ function getSummaryListSpecimenDetails(summaryData, appContent, data, isReadOnly
     summaryListSpecimenDetailsRows
   )
 }
-function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
+function getSummaryListA10ExportData (summaryData, data, isReadOnly) {
   const summaryListA10ExportDataRows = []
 
   const viewingOldApplication = summaryData.summaryType === summaryTypeConst.VIEW_SUBMITTED && !data.a10ExportData
@@ -428,27 +425,25 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
 
     const addressDataValue = addressDataItems.join(', ')
 
-    let textDescription = ""
+    let textDescription = ''
     if (data.a10ExportData?.isExportPermitRequired === true) {
       textDescription = commonContent.radioOptionYes
     } else if (data.a10ExportData?.isExportPermitRequired === false) {
       textDescription = commonContent.radioOptionNo
     } else {
-      //Do nothing
+      // Do nothing
     }
 
     if (shouldDisplayAddExportPermit(data, isReadOnly)) {
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, "/addExportPermit", "is export permit required"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'isExportPermitRequired', pageContent.rowTextIsExportPermitRequired, textDescription, '/addExportPermit', 'is export permit required'))
     }
 
     if (shouldDisplayImporterDetails(data, isReadOnly)) {
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData?.importerDetails?.countryDesc, changeLink.importerDetails.href, "importer country"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData?.importerDetails?.name, changeLink.importerDetails.href, "importer name"))
-      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, changeLink.importerDetails.href, "importer address"))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-country', pageContent.rowTextImporterCountry, data.a10ExportData?.importerDetails?.countryDesc, changeLink.importerDetails.href, 'importer country'))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, 'importerDetails-name', pageContent.rowTextImporterName, data.a10ExportData?.importerDetails?.name, changeLink.importerDetails.href, 'importer name'))
+      summaryListA10ExportDataRows.push(createSummaryListRow(summaryData, ['importerDetails-addressLine1', 'importerDetails-addressLine2', 'importerDetails-addressLine3', 'importerDetails-addressLine4', 'importerDetails-postcode'], pageContent.rowTextImporterAddress, addressDataValue, changeLink.importerDetails.href, 'importer address'))
     }
   }
-
-
 
   return createSummaryList(
     'summaryListA10ExportData',
@@ -457,15 +452,15 @@ function getSummaryListA10ExportData(summaryData, data, isReadOnly) {
   )
 }
 
-function shouldDisplayAddExportPermit(data, isReadOnly) {
-  return allowPageNavigation(data.submissionProgress, "add-export-permit/" + data.applicationIndex) || (isReadOnly && data.a10ExportData)
+function shouldDisplayAddExportPermit (data, isReadOnly) {
+  return allowPageNavigation(data.submissionProgress, 'add-export-permit/' + data.applicationIndex) || (isReadOnly && data.a10ExportData)
 }
 
-function shouldDisplayImporterDetails(data, isReadOnly) {
-  return allowPageNavigation(data.submissionProgress, "importer-details/" + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)
+function shouldDisplayImporterDetails (data, isReadOnly) {
+  return allowPageNavigation(data.submissionProgress, 'importer-details/' + data.applicationIndex) || (isReadOnly && data.a10ExportData?.importerDetails)
 }
 
-function getSummaryListImporterExporterDetails(summaryData, data, isReadOnly) {
+function getSummaryListImporterExporterDetails (summaryData, data, isReadOnly) {
   const summaryListImporterExporterDetailsRows = []
 
   const addressDataItems = [
@@ -478,9 +473,9 @@ function getSummaryListImporterExporterDetails(summaryData, data, isReadOnly) {
 
   const addressDataValue = addressDataItems.join(', ')
 
-  if (allowPageNavigation(data.submissionProgress, "importer-exporter/" + data.applicationIndex) || (isReadOnly && data.importerExporterDetails)) {
+  if (allowPageNavigation(data.submissionProgress, 'importer-exporter/' + data.applicationIndex) || (isReadOnly && data.importerExporterDetails)) {
     if (data.permitType !== pt.IMPORT) {
-      summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, data.importerExporterDetails?.countryDesc, changeLink.importerExporterDetails.href, "country"))
+      summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-country', pageContent.rowTextCountry, data.importerExporterDetails?.countryDesc, changeLink.importerExporterDetails.href, 'country'))
     }
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, 'importerExporter-name', pageContent.rowTextFullName, data.importerExporterDetails?.name, changeLink.importerExporterDetails.href, changeLink.importerExporterDetails.hiddenTextContactDetails))
     summaryListImporterExporterDetailsRows.push(createSummaryListRow(summaryData, ['importerExporter-addressLine1', 'importerExporter-addressLine2', 'importerExporter-addressLine3', 'importerExporter-addressLine4', 'importerExporter-postcode'], pageContent.rowTextAddress, addressDataValue, changeLink.importerExporterDetails.href, changeLink.importerExporterDetails.hiddenTextContactDetails))
@@ -493,13 +488,13 @@ function getSummaryListImporterExporterDetails(summaryData, data, isReadOnly) {
   )
 }
 
-function getSummaryListRemarks(summaryData, data, isReadOnly) {
+function getSummaryListRemarks (summaryData, data, isReadOnly) {
   const summaryListRemarksRows = []
-  if (allowPageNavigation(data.submissionProgress, "additional-info/" + data.applicationIndex) || isReadOnly) {
-    summaryListRemarksRows.push(createSummaryListRow(summaryData, "comments", pageContent.rowTextRemarks, data.comments, "/additionalInfo", "remarks"))
+  if (allowPageNavigation(data.submissionProgress, 'additional-info/' + data.applicationIndex) || isReadOnly) {
+    summaryListRemarksRows.push(createSummaryListRow(summaryData, 'comments', pageContent.rowTextRemarks, data.comments, '/additionalInfo', 'remarks'))
 
     if (enableInternalReference) {
-      summaryListRemarksRows.push(createSummaryListRow(summaryData, "internalReference", pageContent.rowTextInternalReference, data.internalReference, "/additionalInfo", "internal reference"))
+      summaryListRemarksRows.push(createSummaryListRow(summaryData, 'internalReference', pageContent.rowTextInternalReference, data.internalReference, '/additionalInfo', 'internal reference'))
     }
   }
 
@@ -510,7 +505,7 @@ function getSummaryListRemarks(summaryData, data, isReadOnly) {
   )
 }
 
-function getSummaryListContactDetails(summaryData, data) {
+function getSummaryListContactDetails (summaryData, data) {
   const summaryListContactDetailsRows = []
   const addressDataItems = [
     data.applicant.address.addressLine1,
@@ -544,7 +539,7 @@ function getSummaryListContactDetails(summaryData, data) {
   )
 }
 
-function getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnly) {
+function getSummaryListCountryOfOriginPermitDetails (summaryData, data, isReadOnly) {
   const summaryListPermitDetailsCountryOfOriginRows = []
 
   const permitIssueDate = {
@@ -552,7 +547,6 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnl
     month: data.permitDetails?.countryOfOriginPermitIssueDate?.month,
     year: data.permitDetails?.countryOfOriginPermitIssueDate?.year
   }
-
 
   let countryOfOriginText = toPascalCase(data.permitDetails?.countryOfOriginDesc)
   let countryOfOriginPermitNumberText = data.permitDetails?.countryOfOriginPermitNumber
@@ -570,13 +564,13 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnl
     countryOfOriginPermitIssueDateText = pageContent.rowTextNotKnown
   }
 
-  if (allowPageNavigation(data.submissionProgress, "origin-permit-details/" + data.applicationIndex) || (isReadOnly && countryOfOriginText)) {
+  if (allowPageNavigation(data.submissionProgress, 'origin-permit-details/' + data.applicationIndex) || (isReadOnly && countryOfOriginText)) {
     summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOrigin', pageContent.rowTextCountry, countryOfOriginText, changeLink.originPermitDetails.href, changeLink.originPermitDetails.hiddenText))
     summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitNumber', pageContent.rowTextPermitNumber, countryOfOriginPermitNumberText, changeLink.originPermitDetails.href, changeLink.originPermitDetails.hiddenText))
     summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'countryOfOriginPermitIssueDate', pageContent.rowTextPermitIssueDate, countryOfOriginPermitIssueDateText, changeLink.originPermitDetails.href, changeLink.originPermitDetails.hiddenText))
     if (data.permitType === pt.IMPORT && typeof data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin === 'boolean' && !data.permitDetails?.isCountryOfOriginNotKnown) {
       const isExportOrReexportSameAsCountryOfOrigin = pageContent.rowTextIsExportOrReexportSameAsCountryOfOrigin.replace('##COUNTRY##', toPascalCase(countryOfOriginText))
-      summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'isExportOrReexportSameAsCountryOfOrigin', isExportOrReexportSameAsCountryOfOrigin, data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin ? commonContent.radioOptionYes : commonContent.radioOptionNo, "/countryOfOriginImport", "country of origin import"))
+      summaryListPermitDetailsCountryOfOriginRows.push(createSummaryListRow(summaryData, 'isExportOrReexportSameAsCountryOfOrigin', isExportOrReexportSameAsCountryOfOrigin, data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin ? commonContent.radioOptionYes : commonContent.radioOptionNo, '/countryOfOriginImport', 'country of origin import'))
     }
   }
 
@@ -587,8 +581,7 @@ function getSummaryListCountryOfOriginPermitDetails(summaryData, data, isReadOnl
   )
 }
 
-function getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOnly) {
-
+function getSummaryListExportOrReexportPermitDetails (summaryData, data, isReadOnly) {
   const summaryListPermitDetailsExportOrReexportRows = []
 
   const permitIssueDate = {
@@ -601,7 +594,7 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOn
   let exportOrReexportPermitNumberText = data.permitDetails?.exportOrReexportPermitNumber
   let exportOrReexportPermitIssueDateText = getDateValue(permitIssueDate)
 
-  if (data.permitDetails?.isExportOrReexportNotApplicable) { //This is for viewing historic applications data correctly
+  if (data.permitDetails?.isExportOrReexportNotApplicable) { // This is for viewing historic applications data correctly
     exportOrReexportCountryText = pageContent.rowTextNotApplicable
     exportOrReexportPermitNumberText = pageContent.rowTextNotApplicable
     exportOrReexportPermitIssueDateText = pageContent.rowTextNotApplicable
@@ -621,7 +614,7 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOn
 
   const sameAsCountryOfOriginShownInOriginPermitDetails = data.permitType === pt.IMPORT && data.permitDetails?.isExportOrReexportSameAsCountryOfOrigin && !data.permitDetails?.isCountryOfOriginNotKnown
 
-  if (allowPageNavigation(data.submissionProgress, "export-permit-details/" + data.applicationIndex) || (isReadOnly && exportOrReexportCountryText && !sameAsCountryOfOriginShownInOriginPermitDetails)) {
+  if (allowPageNavigation(data.submissionProgress, 'export-permit-details/' + data.applicationIndex) || (isReadOnly && exportOrReexportCountryText && !sameAsCountryOfOriginShownInOriginPermitDetails)) {
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportCountry', pageContent.rowTextCountry, exportOrReexportCountryText, changeLink.exportPermitDetails.href, changeLink.exportPermitDetails.hiddenText))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitNumber', pageContent.rowTextPermitNumber, exportOrReexportPermitNumberText, changeLink.exportPermitDetails.href, changeLink.exportPermitDetails.hiddenText))
     summaryListPermitDetailsExportOrReexportRows.push(createSummaryListRow(summaryData, 'exportOrReexportPermitIssueDate', pageContent.rowTextPermitIssueDate, exportOrReexportPermitIssueDateText, changeLink.exportPermitDetails.href, changeLink.exportPermitDetails.hiddenText))
@@ -633,7 +626,7 @@ function getSummaryListExportOrReexportPermitDetails(summaryData, data, isReadOn
   )
 }
 
-function getSummaryListImportPermitDetails(summaryData, data, isReadOnly) {
+function getSummaryListImportPermitDetails (summaryData, data, isReadOnly) {
   const summaryListPermitDetailsImportRows = []
 
   const permitIssueDate = {
@@ -641,7 +634,6 @@ function getSummaryListImportPermitDetails(summaryData, data, isReadOnly) {
     month: data.permitDetails?.importPermitIssueDate?.month,
     year: data.permitDetails?.importPermitIssueDate?.year
   }
-
 
   let importText = data.permitDetails?.importDesc
   let importPermitNumberText = data.permitDetails?.importPermitNumber
@@ -653,9 +645,9 @@ function getSummaryListImportPermitDetails(summaryData, data, isReadOnly) {
     importPermitIssueDateText = pageContent.rowTextNotKnown
   }
 
-  if (allowPageNavigation(data.submissionProgress, "import-permit-details/" + data.applicationIndex) || (isReadOnly && importText)) {
-    summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitNumber', pageContent.rowTextPermitNumber, importPermitNumberText, "/importPermitDetails", "import permit details"))
-    summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitIssueDate', pageContent.rowTextPermitIssueDate, importPermitIssueDateText, "/importPermitDetails", "import permit details"))
+  if (allowPageNavigation(data.submissionProgress, 'import-permit-details/' + data.applicationIndex) || (isReadOnly && importText)) {
+    summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitNumber', pageContent.rowTextPermitNumber, importPermitNumberText, '/importPermitDetails', 'import permit details'))
+    summaryListPermitDetailsImportRows.push(createSummaryListRow(summaryData, 'importPermitIssueDate', pageContent.rowTextPermitIssueDate, importPermitIssueDateText, '/importPermitDetails', 'import permit details'))
   }
 
   return createSummaryList(
@@ -665,15 +657,15 @@ function getSummaryListImportPermitDetails(summaryData, data, isReadOnly) {
   )
 }
 
-function applyBorderClasses(summaryList) {
+function applyBorderClasses (summaryList) {
   if (summaryList && summaryList.rows.length > 0) {
-
-    summaryList.rows.forEach(item => item.classes = "")
+    // Arrow function should not return assignment
+    summaryList.rows.forEach(item => { item.classes = '' })
 
     summaryList.rows[0].classes += 'border-top '
 
     summaryList.rows.forEach((item, index) => {
-      if (index < summaryList.rows.length - 1) { //All items except the last one
+      if (index < summaryList.rows.length - 1) { // All items except the last one
         item.classes += 'govuk-summary-list__row--no-border'
       }
     })
@@ -681,8 +673,7 @@ function applyBorderClasses(summaryList) {
   return summaryList
 }
 
-function checkMandatoryFields(submissionProgress, applicationIndex) {
-
+function checkMandatoryFields (submissionProgress, applicationIndex) {
   return submissionProgress.filter(page => page.pageData && (page.applicationIndex === null || page.applicationIndex === applicationIndex))
     .flatMap(page => page.pageData)
     .map(field => {
@@ -693,10 +684,9 @@ function checkMandatoryFields(submissionProgress, applicationIndex) {
       }
     })
     .filter(field => field !== null)
-
 }
 
-function createSummaryListRow(summaryData, fieldIds, label, value, href, hiddenText) {
+function createSummaryListRow (summaryData, fieldIds, label, value, href, hiddenText) {
   let actions = null
   let error = null
 
@@ -740,7 +730,7 @@ function createSummaryListRow(summaryData, fieldIds, label, value, href, hiddenT
   return summaryListRow
 }
 
-function getDateValue(date) {
+function getDateValue (date) {
   if (!date?.month || !date?.year) {
     return ''
   }
@@ -753,7 +743,7 @@ function getDateValue(date) {
   }
 }
 
-function getPermitSpecificContent(permitType) {
+function getPermitSpecificContent (permitType) {
   let headerApplicantContactDetails = null
   let headingImporterExporterDetails = null
   switch (permitType) {
@@ -781,7 +771,7 @@ function getPermitSpecificContent(permitType) {
   return { headerApplicantContactDetails, headingImporterExporterDetails }
 }
 
-function lookupAppContent(data) {
+function lookupAppContent (data) {
   const { pageTitle, pageHeader, buttonText, showConfirmButton } = getSummaryTypeSpecificContent(data)
   const permitTypeValue = getPermitDescription(data.permitType, data.permitSubType)
 
@@ -798,7 +788,7 @@ function lookupAppContent(data) {
     animalCoral: pageContent.rowTextSpecimenTypeAnimalCoral,
     plantLiving: pageContent.rowTextSpecimenTypePlantLiving,
     plantProduct: pageContent.rowTextSpecimenTypePlantProduct,
-    plantWorked: pageContent.rowTextSpecimenTypePlantWorked,
+    plantWorked: pageContent.rowTextSpecimenTypePlantWorked
   }
 
   const a10SpecimenOriginValue = {
@@ -836,8 +826,7 @@ function lookupAppContent(data) {
   }
 }
 
-function getPurposeCodeValueText() {
-
+function getPurposeCodeValueText () {
   return {
     B: pageContent.rowTextPurposeCodeB,
     E: pageContent.rowTextPurposeCodeE,
@@ -854,11 +843,11 @@ function getPurposeCodeValueText() {
   }
 }
 
-function getSourceCodeValueText(kingdom, enterAReason) {
+function getSourceCodeValueText (kingdom, enterAReason) {
   return {
     W: pageContent.rowTextSourceCodeW,
     R: pageContent.rowTextSourceCodeR,
-    D: kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    D: kingdom === 'Animalia' ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
     C: pageContent.rowTextSourceCodeC,
     F: pageContent.rowTextSourceCodeF,
     I: pageContent.rowTextSourceCodeI,
@@ -870,11 +859,11 @@ function getSourceCodeValueText(kingdom, enterAReason) {
   }
 }
 
-function getOtherSourceCodeValueText(kingdom) {
+function getOtherSourceCodeValueText (kingdom) {
   return {
     W: pageContent.rowTextSourceCodeW,
     R: pageContent.rowTextSourceCodeR,
-    D: kingdom === "Animalia" ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
+    D: kingdom === 'Animalia' ? pageContent.rowTextSourceCodeDAnimal : pageContent.rowTextSourceCodeDPlant,
     C: pageContent.rowTextSourceCodeC,
     F: pageContent.rowTextSourceCodeF,
     A: pageContent.rowTextSourceCodeA,
@@ -884,13 +873,11 @@ function getOtherSourceCodeValueText(kingdom) {
   }
 }
 
-function getSummaryTypeSpecificContent(data) {
-
+function getSummaryTypeSpecificContent (data) {
   let pageTitle = null
   let pageHeader = null
   let buttonText = null
   let showConfirmButton = true
-
 
   switch (data.summaryType) {
     case summaryTypeConst.CHECK:
@@ -921,8 +908,8 @@ function getSummaryTypeSpecificContent(data) {
   return { pageTitle, pageHeader, buttonText, showConfirmButton }
 }
 
-function createAreYouSureModel(errors, data) {
-  //const commonContent = textContent.common
+function createAreYouSureModel (errors, data) {
+  // const commonContent = textContent.common
 
   const pageContentAreYouSure = getPageContentAreYouSure(data)
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentAreYouSure.errorMessages }, ['areYouSure'])
@@ -935,49 +922,49 @@ function createAreYouSureModel(errors, data) {
     pageHeader: pageContentAreYouSure.pageHeader,
     pageBody: pageContentAreYouSure.pageBody2 ? `${pageContentAreYouSure.pageBody1} ${data.permitType} ${pageContentAreYouSure.pageBody2}` : pageContentAreYouSure.pageBody1,
     continueWithoutSaveButton: true,
-    inputName: "areYouSure",
-    inputClasses: "govuk-radios--inline",
-    errorMessage: getFieldError(errorList, "#areYouSure")    
+    inputName: 'areYouSure',
+    inputClasses: 'govuk-radios--inline',
+    errorMessage: getFieldError(errorList, '#areYouSure')
   }
   return { ...commonContent, ...model }
 }
 
-function getPageContentAreYouSure(data) {
+function getPageContentAreYouSure (data) {
   const changeType = data.changeRouteData.changeType
   const areYouSureText = textContent.applicationSummary.areYouSure
 
   let pageContentAreYouSure = null
-  if (changeType === "permitType") {
+  if (changeType === 'permitType') {
     pageContentAreYouSure = areYouSureText.permitType
-  } else if (changeType === "speciesName") {
+  } else if (changeType === 'speciesName') {
     pageContentAreYouSure = areYouSureText.scientificName
-  } else if (changeType === "multipleSpecimens") {
+  } else if (changeType === 'multipleSpecimens') {
     pageContentAreYouSure = areYouSureText.multipleSpecimens
-  } else if (changeType === "deliveryAddress") {
+  } else if (changeType === 'deliveryAddress') {
     pageContentAreYouSure = areYouSureText.deliveryAddress
   } else if (!data.isAgent) {
-    if (changeType === "applicantContactDetails") {
+    if (changeType === 'applicantContactDetails') {
       pageContentAreYouSure = areYouSureText.yourContactDetails
-    } else if (changeType === "applicantAddress") {
+    } else if (changeType === 'applicantAddress') {
       pageContentAreYouSure = areYouSureText.yourAddress
     } else {
-      //Do nothing
+      // Do nothing
     }
   } else if (data.isAgent) {
-    if (changeType === "applicantContactDetails") {
+    if (changeType === 'applicantContactDetails') {
       pageContentAreYouSure = getPageContentApplicantContactDetails(data.permitType, areYouSureText)
-    } else if (changeType === "applicantAddress") {
+    } else if (changeType === 'applicantAddress') {
       pageContentAreYouSure = getPageContentApplicantAddress(data.permitType, areYouSureText)
     } else {
-      //Do nothing
+      // Do nothing
     }
   } else {
-    //Do nothing
+    // Do nothing
   }
   return pageContentAreYouSure
 }
 
-function getPageContentApplicantContactDetails(permitType, areYouSureText) {
+function getPageContentApplicantContactDetails (permitType, areYouSureText) {
   switch (permitType) {
     case pt.IMPORT:
       return areYouSureText.importerContactDetails
@@ -995,7 +982,7 @@ function getPageContentApplicantContactDetails(permitType, areYouSureText) {
   }
 }
 
-function getPageContentApplicantAddress(permitType, areYouSureText) {
+function getPageContentApplicantAddress (permitType, areYouSureText) {
   switch (permitType) {
     case pt.IMPORT:
       return areYouSureText.importerAddress
@@ -1013,7 +1000,7 @@ function getPageContentApplicantAddress(permitType, areYouSureText) {
   }
 }
 
-function postFailAction(request, h, err) {
+function postFailAction (request, h, err) {
   const { summaryType, applicationIndex } = request.params
   const submission = getSubmission(request)
   const { submissionProgress } = validateSubmission(submission, `${pageId}/${summaryType}/${applicationIndex}`, true)
@@ -1047,15 +1034,15 @@ function postFailAction(request, h, err) {
 }
 
 module.exports = [
-  //GET for Application Summary page
+  // GET for Application Summary page
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
           summaryType: Joi.string().valid(...summaryTypes),
-          applicationIndex: Joi.number().required(),
+          applicationIndex: Joi.number().required()
         }),
         failAction: (_request, _h, error) => {
           console.log(error)
@@ -1072,13 +1059,12 @@ module.exports = [
       }
 
       if (cloneSource?.submissionRef && summaryType === summaryTypeConst.VIEW_SUBMITTED) {
-        //When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
+        // When coming back from the copy-as-new page, load the source back in from dynamics instead of the clone
         const { user: { organisationId } } = getYarValue(request, 'CIDMAuth')
         submission = await dynamics.getSubmission(request.server, request.auth.credentials.contactId, organisationId, cloneSource?.submissionRef)
         setYarValue(request, sessionKey.SUBMISSION, submission)
         setYarValue(request, sessionKey.CLONE_SOURCE, null)
       }
-
 
       let submissionProgress
 
@@ -1119,16 +1105,16 @@ module.exports = [
       return h.view(pageId, createApplicationSummaryModel(null, pageData))
     }
   },
-  //GET for change links
+  // GET for change links
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{summaryType}/change/{applicationIndex}/{changeType}`,
     options: {
       validate: {
         params: Joi.object({
           summaryType: Joi.string().valid(...summaryTypes),
           applicationIndex: Joi.number().required(),
-          changeType: Joi.string().valid(...changeTypes),
+          changeType: Joi.string().valid(...changeTypes)
         }),
         failAction: (_request, _h, error) => {
           console.log(error)
@@ -1148,9 +1134,9 @@ module.exports = [
       }
     }
   },
-  //GET for Are You Sure page
+  // GET for Are You Sure page
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/are-you-sure/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
@@ -1177,14 +1163,14 @@ module.exports = [
         applicationIndex: applicationIndex,
         permitType: submission.permitType,
         isAgent: submission.isAgent,
-        changeRouteData: changeRouteData,
+        changeRouteData: changeRouteData
       }
       return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
-  //POST for Application Summary Page
+  // POST for Application Summary Page
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
@@ -1233,13 +1219,12 @@ module.exports = [
           saveDraftSubmission(request, nextPathYourSubmission)
           return h.redirect(nextPathYourSubmission)
         }
-
       }
     }
   },
-  //POST for Are You Sure Page
+  // POST for Are You Sure Page
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/are-you-sure/{summaryType}/{applicationIndex}`,
     options: {
       validate: {
@@ -1262,7 +1247,7 @@ module.exports = [
             applicationIndex: applicationIndex,
             permitType: submission.permitType,
             isAgent: submission.isAgent,
-            changeRouteData: changeRouteData,
+            changeRouteData: changeRouteData
           }
 
           return h.view(areYouSureViewName, createAreYouSureModel(err, pageData)).takeover()
@@ -1281,4 +1266,3 @@ module.exports = [
     }
   }
 ]
-

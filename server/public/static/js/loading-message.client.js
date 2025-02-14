@@ -1,25 +1,25 @@
-const containerId = "loading-overlay-container"
+const containerId = 'loading-overlay-container'
 window.addEventListener('pageshow', function (_event) {
-    //Clears the loading message when the page is accessed via the back button
-    hideLoadingMessage()
+  // Clears the loading message when the page is accessed via the back button
+  hideLoadingMessage()
 })
 
-window.addEventListener('load',function () {
-    const triggers = document.querySelectorAll(".loading-message-trigger")
-    triggers.forEach(element => {
-        element.addEventListener("click", showLoadingMessage)
-    })
+window.addEventListener('load', function () {
+  const triggers = document.querySelectorAll('.loading-message-trigger')
+  triggers.forEach(element => {
+    element.addEventListener('click', showLoadingMessage)
+  })
 })
 
-function hideLoadingMessage() {
-    const elementToHide = document.querySelectorAll(".hide-when-loading")
-    elementToHide.forEach(element => {
-        element.style.visibility = "visible"
-    })
-    const container = document.getElementById(containerId)
-    if (container) {
-        container.remove()
-    }
+function hideLoadingMessage () {
+  const elementToHide = document.querySelectorAll('.hide-when-loading')
+  elementToHide.forEach(element => {
+    element.style.visibility = 'visible'
+  })
+  const container = document.getElementById(containerId)
+  if (container) {
+    container.remove()
+  }
 }
 
 const loadingOverlay = `    
@@ -34,16 +34,15 @@ const loadingOverlay = `
             </div>            
         </div>`
 
-function showLoadingMessage() {
-    const element = document.querySelectorAll(".hide-when-loading")[0]
-    element.style.visibility = "hidden"
+function showLoadingMessage () {
+  const element = document.querySelectorAll('.hide-when-loading')[0]
+  element.style.visibility = 'hidden'
 
-    const overlayContainer = document.createElement("div")
-    overlayContainer.classList.add(containerId)
-    overlayContainer.id = containerId
-    overlayContainer.innerHTML = loadingOverlay
+  const overlayContainer = document.createElement('div')
+  overlayContainer.classList.add(containerId)
+  overlayContainer.id = containerId
+  overlayContainer.innerHTML = loadingOverlay
 
-    element.parentNode.insertBefore(overlayContainer, element)
-    window.scrollTo(0, 0)
+  element.parentNode.insertBefore(overlayContainer, element)
+  window.scrollTo(0, 0)
 }
-

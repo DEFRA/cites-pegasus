@@ -1,10 +1,10 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, toPascalCase, stringToBool } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "country-of-origin-import"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, toPascalCase, stringToBool } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'country-of-origin-import'
 const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/origin-permit-details`
@@ -12,11 +12,11 @@ const nextPathExportPermitDetails = `${urlPrefix}/export-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.countryOfOriginImport
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["isExportOrReexportSameAsCountryOfOrigin"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isExportOrReexportSameAsCountryOfOrigin'])
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
@@ -28,18 +28,18 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : defaultTitle + commonContent.pageTitleSuffix,
-    inputName: "isExportOrReexportSameAsCountryOfOrigin",
+    inputName: 'isExportOrReexportSameAsCountryOfOrigin',
     pageHeader,
     inputYesChecked: data.isExportOrReexportSameAsCountryOfOrigin,
-    errorMessage: getFieldError(errorList, "#isExportOrReexportSameAsCountryOfOrigin"),
-    inputClasses: "govuk-radios--inline"
+    errorMessage: getFieldError(errorList, '#isExportOrReexportSameAsCountryOfOrigin'),
+    inputClasses: 'govuk-radios--inline'
   }
   return { ...commonContent, ...model }
 }
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -71,7 +71,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -118,7 +118,6 @@ module.exports = [
             year: null
           }
         }
-
 
         try {
           setSubmission(request, submission, `${pageId}/${applicationIndex}`)
