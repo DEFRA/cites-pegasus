@@ -1,10 +1,10 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, stringToBool } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "ever-imported-exported"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, stringToBool } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit, setDataRemoved, getChangeRouteData } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'ever-imported-exported'
 const viewName = 'application-yes-no-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/already-have-a10`
@@ -12,7 +12,7 @@ const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.everImportedExported
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isEverImportedExported'])
@@ -25,23 +25,23 @@ function createModel(errors, data) {
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
-    inputName: "isEverImportedExported",
+    inputName: 'isEverImportedExported',
     pageHeader: pageContent.pageHeader,
     inputYesChecked: data.isEverImportedExported,
-    errorMessage: getFieldError(errorList, "#isEverImportedExported"),
-    inputClasses: "govuk-radios--inline",
+    errorMessage: getFieldError(errorList, '#isEverImportedExported'),
+    inputClasses: 'govuk-radios--inline'
   }
 
   return { ...commonContent, ...model }
 }
 
-function getRedirect(isEverImportedExported, permitType, applicationIndex) {
+function getRedirect (isEverImportedExported, permitType, applicationIndex) {
   return isEverImportedExported && permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
 }
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -73,7 +73,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -137,7 +137,7 @@ module.exports = [
           }
         }
 
-        //request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
+        // request.payload.isEverImportedExported && submission.permitType !== 'export' ? `${nextPathOriginPermitDetails}/${applicationIndex}` : `${nextPathAdditionalInfo}/${applicationIndex}`
         const redirectTo = getRedirect(request.payload.isEverImportedExported, submission.permitType, applicationIndex)
 
         saveDraftSubmission(request, redirectTo)

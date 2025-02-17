@@ -1,12 +1,12 @@
-const textContent = require("../content/text-content.json")
+const textContent = require('../content/text-content.json')
 
-function isChecked(data, option) {
+function isChecked (data, option) {
   return !!data && data.includes(option)
 }
 
-function setLabelData(data, labelData) {
+function setLabelData (data, labelData) {
   return labelData.map((label) => {
-    if (typeof label === "string" && label !== "divider") {
+    if (typeof label === 'string' && label !== 'divider') {
       return {
         value: label,
         text: label,
@@ -14,8 +14,8 @@ function setLabelData(data, labelData) {
         selected: data === label
       }
     }
-    if (label === "divider") {
-      return { divider: "or" }
+    if (label === 'divider') {
+      return { divider: 'or' }
     }
 
     const { text, value, hint } = label
@@ -29,7 +29,7 @@ function setLabelData(data, labelData) {
   })
 }
 
-function findErrorList({ details }, inputFields, errorMessages) {
+function findErrorList ({ details }, inputFields, errorMessages) {
   const errorCodes = inputFields.map((input) => {
     const foundErrorList = details.filter(
       ({ context: { label: valLabel, customLabel } }) => customLabel ? customLabel === input : valLabel === input
@@ -52,13 +52,13 @@ function findErrorList({ details }, inputFields, errorMessages) {
   )
 }
 
-function getErrorList(errors, errorMessages, fields) {
+function getErrorList (errors, errorMessages, fields) {
   if (!errors) {
     return null
   }
 
   const errorList = []
-  
+
   fields.forEach((field) => {
     const fieldError = findErrorList(errors, [field], errorMessages)[0]
     if (fieldError) {
@@ -69,7 +69,7 @@ function getErrorList(errors, errorMessages, fields) {
     }
   })
 
-  if(errorList.length === 0) {
+  if (errorList.length === 0) {
     console.error('Errors: ', errors)
     console.error('Fields: ', fields)
     console.error(`Unable to prepare error message for error: ${errors?.output?.payload?.message} `)
@@ -110,72 +110,71 @@ const getAddressSummary = (address) => {
   return addressComponents.join(', ')
 }
 
-function toPascalCase(inputString) {
+function toPascalCase (inputString) {
   if (inputString) {
-    //return inputString.toLowerCase().replace(/(?:^|\s)\w/g, match => match.toUpperCase())
+    // return inputString.toLowerCase().replace(/(?:^|\s)\w/g, match => match.toUpperCase())
     return inputString.toLowerCase().replace(/\b\w/g, match => match.toUpperCase())
   }
-  return ""
+  return ''
 }
 
-function deleteIfExists(object, property) {
-  if(Object.hasOwn(object, property)) {
-       delete object[property]
+function deleteIfExists (object, property) {
+  if (Object.hasOwn(object, property)) {
+    delete object[property]
   }
 }
 
-function stringToBool(string, defaultValue) {
-
-  if(!string) {
+function stringToBool (string, defaultValue) {
+  if (!string) {
     return defaultValue
   }
 
   const stringLower = string.toLowerCase()
 
-  if(stringLower === 'true'){
+  if (stringLower === 'true') {
     return true
-  } else if (stringLower === 'false'){
+  } else if (stringLower === 'false') {
     return false
   } else {
     return defaultValue
   }
 }
 
-function getCountries(countryList, selectedCountryCode) {
+function getCountries (countryList, selectedCountryCode) {
   const countries = [{
-      text: textContent.common.countrySelectDefault,
-      value: '',
-      selected: false
+    text: textContent.common.countrySelectDefault,
+    value: '',
+    selected: false
   }]
 
   countries.push(...countryList.map(country => {
-      return {
-          text: country.name,
-          value: country.code,
-          selected: country.code === (selectedCountryCode || '')
-      }
+    return {
+      text: country.name,
+      value: country.code,
+      selected: country.code === (selectedCountryCode || '')
+    }
   }))
-  
+
   return countries
 }
 
-function getContent(page) {
+function getContent (page) {
   return {
     commonContent: textContent.common,
     pageContent: textContent[page]
   }
 }
 
-function replaceBaseUrl(originalUrl, newBaseUrl) {
+function replaceBaseUrl (originalUrl, newBaseUrl) {
   try {
     const url = new URL(originalUrl)
     const newBase = new URL(newBaseUrl)
 
-    url.protocol = newBase.protocol;
-    url.hostname = newBase.hostname;
-    url.port = newBase.port;  // Keep the port if the new base URL has it
-  
-    return url.toString();
+    url.protocol = newBase.protocol
+    url.hostname = newBase.hostname
+    url.port = newBase.port // Keep the port if the new base URL has it
+
+    return url.toString()
   } catch (error) {
     console.error(`Invalid URL provided - original: ${originalUrl} new: ${newBaseUrl}`)
     throw new Error(`Invalid URL provided - original: ${originalUrl} new: ${newBaseUrl}`)

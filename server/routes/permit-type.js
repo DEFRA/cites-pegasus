@@ -1,9 +1,9 @@
 const Joi = require('joi')
-const { urlPrefix, enableOtherPermitTypes } = require("../../config/config")
+const { urlPrefix, enableOtherPermitTypes } = require('../../config/config')
 const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
 const { permitTypeOption: pto, getPermit } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
+const { checkChangeRouteExit, setDataRemoved } = require('../lib/change-route')
 const textContent = require('../content/text-content')
 const pageId = 'permit-type'
 const viewName = 'application-radios-layout'
@@ -15,11 +15,11 @@ const cannotUseServicePath = `${urlPrefix}/cannot-use-service`
 const invalidSubmissionPath = `${urlPrefix}/`
 const previousPathYourSubmission = `${urlPrefix}/your-submission`
 
-function createModel(errors, data) {
-  const commonContent = textContent.common;
-  const pageContent = textContent.permitType;
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, [ "permitTypeOption" ])
-  
+function createModel (errors, data) {
+  const commonContent = textContent.common
+  const pageContent = textContent.permitType
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['permitTypeOption'])
+
   let defaultBacklink = previousPath
   if (data.fromYourSubmission) {
     defaultBacklink = previousPathYourSubmission
@@ -31,14 +31,14 @@ function createModel(errors, data) {
     // helpBarContent: { helpBarQuestion: commonContent.helpBarQuestion, helpBarLinkText: commonContent.helpBarLinkText },
     formActionPage: currentPath,
     ...errorList ? { errorList } : {},
-    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text  + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
+    pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     radios: {
-      name: "permitTypeOption",
+      name: 'permitTypeOption',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       items: [
@@ -92,7 +92,7 @@ module.exports = [{
       return h.redirect(invalidSubmissionPath)
     }
 
-    const fromYourSubmission = applicationStatuses.some((application) => application.status === "complete")
+    const fromYourSubmission = applicationStatuses.some((application) => application.status === 'complete')
 
     const pageData = {
       backLinkOverride: checkChangeRouteExit(request, true),
@@ -100,7 +100,7 @@ module.exports = [{
       fromYourSubmission: fromYourSubmission
     }
 
-    return h.view(viewName, createModel(null, pageData));
+    return h.view(viewName, createModel(null, pageData))
   }
 },
 {
@@ -118,14 +118,13 @@ module.exports = [{
         const pageData = {
           backLinkOverride: checkChangeRouteExit(request, true),
           permitTypeOption: request.payload.permitTypeOption,
-          fromYourSubmission: applicationStatuses.some((application) => application.status === "complete")
+          fromYourSubmission: applicationStatuses.some((application) => application.status === 'complete')
         }
 
         return h.view(viewName, createModel(err, pageData)).takeover()
       }
     },
     handler: async (request, h) => {
-
       let submission = getSubmission(request)
 
       if (!submission) {
@@ -135,13 +134,13 @@ module.exports = [{
       const isChange = submission.permitTypeOption && submission.permitTypeOption !== request.payload.permitTypeOption
 
       if (isChange) {
-        //Clear the whole submission if the permit type has changed
+        // Clear the whole submission if the permit type has changed
         submission = createSubmission(request)
       }
 
       submission.permitTypeOption = request.payload.permitTypeOption
       submission.permitType = getPermit(submission.otherPermitTypeOption || request.payload.permitTypeOption).permitType
-      
+
       try {
         setSubmission(request, submission, pageId)
       } catch (err) {
@@ -154,7 +153,7 @@ module.exports = [{
       }
 
       const exitChangeRouteUrl = checkChangeRouteExit(request, false, !isChange)
-      
+
       if (exitChangeRouteUrl) {
         saveDraftSubmission(request, exitChangeRouteUrl)
         return h.redirect(exitChangeRouteUrl)
@@ -171,5 +170,5 @@ module.exports = [{
       saveDraftSubmission(request, redirectTo)
       return h.redirect(redirectTo)
     }
-  },
+  }
 }]

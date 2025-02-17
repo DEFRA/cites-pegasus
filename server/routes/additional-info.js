@@ -1,12 +1,12 @@
-const Joi = require("joi")
-const { urlPrefix, enableInternalReference, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const Joi = require('joi')
+const { urlPrefix, enableInternalReference, enableGenerateExportPermitsFromA10s } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt } = require('../lib/permit-type-helper')
-const { checkChangeRouteExit } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const { COMMENTS_REGEX } = require("../lib/regex-validation")
-const pageId = "additional-info"
+const { checkChangeRouteExit } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const { COMMENTS_REGEX } = require('../lib/regex-validation')
+const pageId = 'additional-info'
 const currentPath = `${urlPrefix}/${pageId}`
 const oldPath = `${urlPrefix}/comments`
 const previousPathImportPermitDetails = `${urlPrefix}/import-permit-details`
@@ -20,10 +20,10 @@ const invalidSubmissionPath = `${urlPrefix}/`
 const commentsMaxLength = 500
 const internalReferenceMaxLength = 30
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.additionalInfo
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["comments", "internalReference"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['comments', 'internalReference'])
 
   const previousPath = getPreviousPath(data.permitType, data.isEverImportedExported, data.permitDetails)
 
@@ -38,41 +38,41 @@ function createModel(errors, data) {
     enableInternalReference,
     pageHeader: pageContent.pageHeader,
     inputComments: {
-      id: "comments",
-      name: "comments",
+      id: 'comments',
+      name: 'comments',
       maxlength: commentsMaxLength,
-      classes: "govuk-textarea govuk-js-character-count",
+      classes: 'govuk-textarea govuk-js-character-count',
       label: {
         text: pageContent.headingRemarks,
         isPageHeading: false,
-        classes: "govuk-label--m"
+        classes: 'govuk-label--m'
       },
       hint: {
         text: pageContent.inputHintRemarks
       },
       ...(data.comments ? { value: data.comments } : {}),
-      errorMessage: getFieldError(errorList, "#comments")
+      errorMessage: getFieldError(errorList, '#comments')
     },
     inputInternalReference: {
       label: {
         text: pageContent.headingInternalReference,
-        classes: "govuk-label--m"
+        classes: 'govuk-label--m'
       },
       hint: {
         text: pageContent.inputHintInternalReference
       },
-      id: "internalReference",
-      name: "internalReference",
-      classes: "govuk-input govuk-input--width-20",
-      autocomplete: "on",
+      id: 'internalReference',
+      name: 'internalReference',
+      classes: 'govuk-input govuk-input--width-20',
+      autocomplete: 'on',
       ...(data.internalReference ? { value: data.internalReference } : {}),
-      errorMessage: getFieldError(errorList, "#internalReference")
+      errorMessage: getFieldError(errorList, '#internalReference')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function getPreviousPath(permitType, isEverImportedExported, permitDetails) {
+function getPreviousPath (permitType, isEverImportedExported, permitDetails) {
   let previousPath = ''
   if (permitType === pt.EXPORT) {
     previousPath = previousPathImporterExporter
@@ -94,7 +94,7 @@ function getPreviousPath(permitType, isEverImportedExported, permitDetails) {
   return previousPath
 }
 
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
 
@@ -111,7 +111,7 @@ function failAction(request, h, err) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${oldPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -126,7 +126,7 @@ module.exports = [
     }
   },
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -160,7 +160,7 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -169,8 +169,8 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
-          internalReference: Joi.string().optional().allow(null, "").max(internalReferenceMaxLength),
+          comments: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ''),
+          internalReference: Joi.string().optional().allow(null, '').max(internalReferenceMaxLength)
         }),
         failAction: failAction
       },
@@ -178,7 +178,7 @@ module.exports = [
         const { applicationIndex } = request.params
 
         const modifiedComments = request.payload.comments.replace(/\r/g, '')
-        const schema = Joi.object({ comments: Joi.string().max(commentsMaxLength).optional().allow(null, "") })
+        const schema = Joi.object({ comments: Joi.string().max(commentsMaxLength).optional().allow(null, '') })
         const result = schema.validate({ comments: modifiedComments }, { abortEarly: false })
 
         if (result.error) {
@@ -186,7 +186,7 @@ module.exports = [
         }
 
         const submission = getSubmission(request)
-        submission.applications[applicationIndex].comments = modifiedComments || ""
+        submission.applications[applicationIndex].comments = modifiedComments || ''
         submission.applications[applicationIndex].internalReference = request.payload.internalReference
 
         try {

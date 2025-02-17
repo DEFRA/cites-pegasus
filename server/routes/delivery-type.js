@@ -1,11 +1,11 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { deliveryType: dt } = require("../lib/constants")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "delivery-type"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { deliveryType: dt } = require('../lib/constants')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'delivery-type'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathSelectDeliveryAddress = `${urlPrefix}/select-delivery-address`
@@ -13,13 +13,13 @@ const previousPathConfirmDeliveryAddress = `${urlPrefix}/confirm-address/deliver
 const nextPath = `${urlPrefix}/species-name/0`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.deliveryType
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["deliveryType"])
-  
-  const defaultBacklink = data.deliveryAddressOption === "different" ? previousPathConfirmDeliveryAddress : previousPathSelectDeliveryAddress
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['deliveryType'])
+
+  const defaultBacklink = data.deliveryAddressOption === 'different' ? previousPathConfirmDeliveryAddress : previousPathSelectDeliveryAddress
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
   const model = {
@@ -30,12 +30,12 @@ function createModel(errors, data) {
 
     radios:
     {
-      name: "deliveryType",
+      name: 'deliveryType',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       hint: {
@@ -59,7 +59,7 @@ function createModel(errors, data) {
           )
         }
       ],
-      errorMessage: getFieldError(errorList, "#deliveryType")
+      errorMessage: getFieldError(errorList, '#deliveryType')
     }
   }
   return { ...commonContent, ...model }
@@ -67,7 +67,7 @@ function createModel(errors, data) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
@@ -90,7 +90,7 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: currentPath,
     options: {
       validate: {
@@ -99,7 +99,7 @@ module.exports = [
           deliveryType: Joi.string().valid(...Object.values(dt)).required()
         }),
         failAction: (request, h, err) => {
-          const submission = getSubmission(request)   
+          const submission = getSubmission(request)
           const pageData = {
             backLinkOverride: checkChangeRouteExit(request, true),
             deliveryAddressOption: submission.delivery.addressOption,
@@ -110,7 +110,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const submission = getSubmission(request)        
+        const submission = getSubmission(request)
 
         submission.delivery.deliveryType = request.payload.deliveryType
 
@@ -134,7 +134,6 @@ module.exports = [
         const redirectTo = nextPath
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
       }
     }
   }

@@ -1,6 +1,6 @@
 process.env.PORT = 8080
 process.env.NODE_ENV = 'local'
-//process.env.URL_PREFIX = ' '
+// process.env.URL_PREFIX = ' '
 process.env.KEY_VAULT_URI = 'x'
 process.env.CIDM_CALLBACK_URL = 'x'
 process.env.CIDM_API_DISCOVERY_URL = 'x'
@@ -33,3 +33,8 @@ process.env.GOOGLE_TAG_ID = null
 process.env.STORAGE_ACCOUNT_URL = 'x'
 process.env.USE_REDIS = false
 process.env.MEMORY_CACHE_MAX_BYTE_SIZE = 1073741824
+process.env.CLIENT_ID = 'x'
+process.env.CLIENT_SECRET = 'x'
+process.env.GRANT_TYPE = 'x'
+process.env.SCOPE = 'x'
+process.env.AUTH_URL = 'x'

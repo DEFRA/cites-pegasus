@@ -1,13 +1,12 @@
 const textContent = require('../content/text-content')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const pageId = 'accessibility'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathMySubmissions = `${urlPrefix}/my-submissions`
 
-
-function createModel(previousPath){
-  const commonContent = textContent.common;
-  const pageContent = textContent.accessibility;
+function createModel (previousPath) {
+  const commonContent = textContent.common
+  const pageContent = textContent.accessibility
   const backLink = previousPath || previousPathMySubmissions
   const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix
   return { ...commonContent, ...pageContent, backLink, pageTitle }
@@ -18,6 +17,6 @@ module.exports = [{
   path: currentPath,
   handler: (request, h) => {
     const previousPath = request.headers.referer
-    return h.view(pageId, createModel(previousPath));  
+    return h.view(pageId, createModel(previousPath))
   }
 }]

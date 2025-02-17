@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { permitType: pt } = require('../lib/permit-type-helper')
 const { getSubmission, setSubmission, createApplication, validateSubmission, cloneApplication, deleteApplication, getCompletedApplications, saveDraftSubmission, moveApplicationToEndOfList, reIndexApplications } = require('../lib/submission')
@@ -14,15 +14,14 @@ const nextPathSpeciesName = `${urlPrefix}/species-name`
 const areYouSurePath = 'are-you-sure'
 const areYouSureViewName = 'application-yes-no-layout'
 const lodash = require('lodash')
-const specimenType = require('./specimen-type')
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createSubmitApplicationModel(_errors, data) {
+function createSubmitApplicationModel (_errors, data) {
   const commonContent = textContent.common
 
   let pageContent = null
   let insetText = null
-  const yourSubmissionText = lodash.cloneDeep(textContent.yourSubmission) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+  const yourSubmissionText = lodash.cloneDeep(textContent.yourSubmission) // Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
   switch (data.permitType) {
     case pt.IMPORT:
@@ -46,8 +45,6 @@ function createSubmitApplicationModel(_errors, data) {
       throw new Error(`Unknown permit type ${data.permitType}`)
   }
 
-
-
   const applicationsData = data.applications
   const applicationsTableData = applicationsData.map(application => {
     const speciesNameUrl = `${nextPathCheckApplication}/${application.applicationIndex}`
@@ -56,7 +53,8 @@ function createSubmitApplicationModel(_errors, data) {
     if (application.species.hasUniqueIdentificationMark && application.species.uniqueIdentificationMarks) {
       marks = application.species.uniqueIdentificationMarks.map(mark => {
         let labelMark
-        if (commonContent.uniqueIdentificationMarkTypes.hasOwnProperty(mark.uniqueIdentificationMarkType)) {
+        // Note: Do not access Object.prototype method 'hasOwnProperty' from target object
+        if (commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType] !== undefined) {
           labelMark = commonContent.uniqueIdentificationMarkTypes[mark.uniqueIdentificationMarkType]
         }
         return { mark: mark.uniqueIdentificationMark, labelMark }
@@ -66,9 +64,9 @@ function createSubmitApplicationModel(_errors, data) {
     const unitsOfMeasurementText = getUnitsOfMeasurementText(application.species, pageContent)
 
     let quantity = null
-    if (application.species.specimenType === "animalLiving" && application.species.numberOfUnmarkedSpecimens) {
+    if (application.species.specimenType === 'animalLiving' && application.species.numberOfUnmarkedSpecimens) {
       quantity = application.species.numberOfUnmarkedSpecimens
-    } else if (application.species.specimenType === "animalLiving") {
+    } else if (application.species.specimenType === 'animalLiving') {
       quantity = 1
     } else {
       quantity = application.species?.quantity
@@ -79,7 +77,6 @@ function createSubmitApplicationModel(_errors, data) {
 
     return { speciesName: application.species.speciesName, speciesNameUrl, quantity, unitsOfMeasurementText, marks, internalReference, formActionCopy, formActionRemove }
   })
-
 
   const model = {
     pageTitle: pageContent.defaultTitle + commonContent.pageTitleSuffix,
@@ -93,22 +90,22 @@ function createSubmitApplicationModel(_errors, data) {
     addAnotherSpeciesUrl: `${currentPath}/create-application`,
     copyAriaLabel: pageContent.copyAriaLabel,
     removeAriaLabel: pageContent.removeAriaLabel,
-    applyForADifferentTypeOfPermitUrl: `${currentPath}/${areYouSurePath}/permit-type`,
+    applyForADifferentTypeOfPermitUrl: `${currentPath}/${areYouSurePath}/permit-type`
   }
   return { ...commonContent, ...model }
 }
 
-function getUnitsOfMeasurementText(species, pageContent) {
+function getUnitsOfMeasurementText (species, pageContent) {
   let unitsOfMeasurementText = null
-  if (species.specimenType === "animalLiving") {
+  if (species.specimenType === 'animalLiving') {
     if (species.numberOfUnmarkedSpecimens > 1) {
       unitsOfMeasurementText = `Specimen${species.numberOfUnmarkedSpecimens > 1 ? 's' : ''}`
     } else {
-      unitsOfMeasurementText = `Specimen`
+      unitsOfMeasurementText = 'Specimen'
     }
-  } else if (species.unitOfMeasurement === "noOfSpecimens") {
+  } else if (species.unitOfMeasurement === 'noOfSpecimens') {
     unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfSpecimens
-  } else if (species.unitOfMeasurement === "noOfPiecesOrParts") {
+  } else if (species.unitOfMeasurement === 'noOfPiecesOrParts') {
     unitsOfMeasurementText = pageContent.rowTextUnitsOfMeasurementNoOfPiecesOrParts
   } else {
     unitsOfMeasurementText = species?.unitOfMeasurement
@@ -116,7 +113,7 @@ function getUnitsOfMeasurementText(species, pageContent) {
   return unitsOfMeasurementText
 }
 
-function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
+function getExportInsetText (permitType, a10SourceSubmissionRef, pageContent) {
   if (permitType === pt.EXPORT && a10SourceSubmissionRef) {
     return pageContent.insetText
   } else {
@@ -124,7 +121,7 @@ function getExportInsetText(permitType, a10SourceSubmissionRef, pageContent) {
   }
 }
 
-function getA10InsetText(permitType, applications, pageContent) {
+function getA10InsetText (permitType, applications, pageContent) {
   if (permitType === pt.ARTICLE_10 && applications.some(app => app.a10ExportData?.isExportPermitRequired)) {
     return pageContent.insetText
   } else {
@@ -132,7 +129,7 @@ function getA10InsetText(permitType, applications, pageContent) {
   }
 }
 
-function createAreYouSureModel(errors, data) {
+function createAreYouSureModel (errors, data) {
   const commonContent = textContent.common
 
   let pageContent = null
@@ -145,7 +142,7 @@ function createAreYouSureModel(errors, data) {
     pageContent = textContent.yourSubmission.areYouSureRemove
     defaultTitle = `${pageContent.defaultTitlePart1} ${data.speciesName} ${pageContent.defaultTitlePart2}`
     pageHeader = `${pageContent.pageHeaderPart1} ${data.speciesName} ${pageContent.pageHeaderPart2}`
-    pageBody = data.applications.length === 1 ? pageContent.pageBody : ""
+    pageBody = data.applications.length === 1 ? pageContent.pageBody : ''
     formActionPage = `${currentPath}/${areYouSurePath}/remove/${data.applicationIndex}`
     errorMessageRemove = {
       'error.areYouSure.any.required': `${pageContent.errorMessages['error.areYouSure.part1.any.required']} ${data.speciesName} ${pageContent.errorMessages['error.areYouSure.part2.any.required']}`
@@ -158,8 +155,8 @@ function createAreYouSureModel(errors, data) {
     formActionPage = `${currentPath}/${areYouSurePath}/permit-type`
   }
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessageRemove }, ["areYouSure"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages, ...errorMessageRemove }, ['areYouSure'])
+
   const model = {
     backLink: `${currentPath}`,
     formActionPage: formActionPage,
@@ -168,18 +165,18 @@ function createAreYouSureModel(errors, data) {
     pageHeader: pageHeader,
     pageBody,
     continueWithoutSaveButton: true,
-    inputName: "areYouSure",
-    inputClasses: "govuk-radios--inline",
-    errorMessage: getFieldError(errorList, "#areYouSure")
-      
+    inputName: 'areYouSure',
+    inputClasses: 'govuk-radios--inline',
+    errorMessage: getFieldError(errorList, '#areYouSure')
+
   }
   return { ...commonContent, ...model }
 }
 
 module.exports = [
-  //GET for submit applications page
+  // GET for submit applications page
   {
-    method: "GET",
+    method: 'GET',
     path: currentPath,
     handler: async (request, h) => {
       const submission = getSubmission(request)
@@ -204,9 +201,9 @@ module.exports = [
       return h.view(pageId, createSubmitApplicationModel(null, pageData))
     }
   },
-  //GET for are you page from apply for a different type of permit link
+  // GET for are you page from apply for a different type of permit link
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/${areYouSurePath}/permit-type`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
@@ -223,9 +220,9 @@ module.exports = [
       return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
-  //GET for Add another species link
+  // GET for Add another species link
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/create-application`,
     handler: async (request, h) => {
       const submission = getSubmission(request)
@@ -241,7 +238,7 @@ module.exports = [
       if (inProgressAppStatus) {
         let inProgressApplicationIndex = inProgressAppStatus.applicationIndex
         if (inProgressAppStatus.applicationIndex < submission.applications.length - 1) {
-          //The application being worked on should always be the last in the array so that the add-application screen knows which was your last application so that it can offer you the chance to copy it
+          // The application being worked on should always be the last in the array so that the add-application screen knows which was your last application so that it can offer you the chance to copy it
           moveApplicationToEndOfList(submission.applications, inProgressAppStatus.applicationIndex)
           reIndexApplications(submission.applications)
           setSubmission(request, submission)
@@ -254,14 +251,14 @@ module.exports = [
       return h.redirect(`${nextPathSpeciesName}/${applicationIndex}`)
     }
   },
-  //GET for are you page from remove button
+  // GET for are you page from remove button
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/${areYouSurePath}/remove/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          applicationIndex: Joi.number().required(),
+          applicationIndex: Joi.number().required()
         }),
         failAction: (_request, _h, error) => {
           console.log(error)
@@ -281,17 +278,17 @@ module.exports = [
       }
       const pageData = {
         applicationIndex: applicationIndex,
-        confirmType: "remove",
+        confirmType: 'remove',
         applications: applications,
         speciesName: submission.applications[applicationIndex].species.speciesName,
-        areYouSure: submission.areYouSure,
+        areYouSure: submission.areYouSure
       }
       return h.view(areYouSureViewName, createAreYouSureModel(null, pageData))
     }
   },
-  //POST for submit applications page
+  // POST for submit applications page
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}`,
     options: {
       validate: {
@@ -313,14 +310,14 @@ module.exports = [
       }
     }
   },
-  //POST for COPY button
+  // POST for COPY button
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/copy/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          applicationIndex: Joi.number().required(),
+          applicationIndex: Joi.number().required()
         }),
         failAction: (_request, _h, error) => {
           console.log(error)
@@ -339,14 +336,14 @@ module.exports = [
       return h.redirect(`${nextPathCopyApplication}/${newApplicationIndex}`)
     }
   },
-  //POST for REMOVE button
+  // POST for REMOVE button
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/remove/{applicationIndex}`,
     options: {
       validate: {
         params: Joi.object({
-          applicationIndex: Joi.number().required(),
+          applicationIndex: Joi.number().required()
         }),
         failAction: (_request, _h, error) => {
           console.log(error)
@@ -359,9 +356,9 @@ module.exports = [
       return h.redirect(`${currentPath}/${areYouSurePath}/remove/${applicationIndex}`)
     }
   },
-  //POST for are you page from apply for a different type of permit link
+  // POST for are you page from apply for a different type of permit link
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/${areYouSurePath}/permit-type`,
     options: {
       validate: {
@@ -373,7 +370,7 @@ module.exports = [
           const submission = getSubmission(request)
           const pageData = {
             confirmType: 'permit-type',
-            permitType: submission.permitType,
+            permitType: submission.permitType
           }
           return h.view(areYouSurePath, createAreYouSureModel(err, pageData)).takeover()
         }
@@ -387,15 +384,15 @@ module.exports = [
       }
     }
   },
-  //POST for are you page from remove button
+  // POST for are you page from remove button
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/${areYouSurePath}/remove/{applicationIndex}`,
     options: {
       validate: {
         options: { abortEarly: false },
         params: Joi.object({
-          applicationIndex: Joi.number().required(),
+          applicationIndex: Joi.number().required()
         }),
         payload: Joi.object({
           areYouSure: Joi.boolean().required()
@@ -407,15 +404,15 @@ module.exports = [
 
           const pageData = {
             applicationIndex: applicationIndex,
-            confirmType: "remove",
+            confirmType: 'remove',
             applications: applications,
-            speciesName: submission.applications[applicationIndex].species.speciesName,
+            speciesName: submission.applications[applicationIndex].species.speciesName
           }
           return h.view(areYouSurePath, createAreYouSureModel(err, pageData)).takeover()
         }
       },
       handler: async (request, h) => {
-        const applicationIndex = request.params.applicationIndex;
+        const applicationIndex = request.params.applicationIndex
         const submission = getSubmission(request)
         const applications = submission.applications
 
@@ -436,4 +433,3 @@ module.exports = [
     }
   }
 ]
-

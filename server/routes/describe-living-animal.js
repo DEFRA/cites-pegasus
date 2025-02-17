@@ -1,14 +1,14 @@
 const Joi = require('joi')
-const { urlPrefix, enableBreederPage } = require("../../config/config")
+const { urlPrefix, enableBreederPage } = require('../../config/config')
 const { getFieldError, isChecked, getErrorList } = require('../lib/helper-functions')
 const { stringLength } = require('../lib/constants')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt, permitTypeOption: pto } = require('../lib/permit-type-helper')
 const textContent = require('../content/text-content')
-const { checkChangeRouteExit } = require("../lib/change-route")
-const nunjucks = require("nunjucks")
-const { dateValidator } = require("../lib/validators")
-const { COMMENTS_REGEX } = require("../lib/regex-validation")
+const { checkChangeRouteExit } = require('../lib/change-route')
+const nunjucks = require('nunjucks')
+const { dateValidator } = require('../lib/validators')
+const { COMMENTS_REGEX } = require('../lib/regex-validation')
 const pageId = 'describe-living-animal'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPathUniqueId = `${urlPrefix}/unique-identification-mark`
@@ -20,16 +20,16 @@ const nextPathBreeder = `${urlPrefix}/breeder`
 const nextPathAcquiredDate = `${urlPrefix}/acquired-date`
 const invalidSubmissionPath = `${urlPrefix}/`
 const dateOfBirthDateFieldItems = {
-  DATE: "dateOfBirth",
-  DAY: "dateOfBirth-day",
-  DAY_MONTH: "dateOfBirth-day-month",
-  DAY_YEAR: "dateOfBirth-day-year",
-  MONTH: "dateOfBirth-month",
-  MONTH_YEAR: "dateOfBirth-month-year",
-  YEAR: "dateOfBirth-year"
+  DATE: 'dateOfBirth',
+  DAY: 'dateOfBirth-day',
+  DAY_MONTH: 'dateOfBirth-day-month',
+  DAY_YEAR: 'dateOfBirth-day-year',
+  MONTH: 'dateOfBirth-month',
+  MONTH_YEAR: 'dateOfBirth-month-year',
+  YEAR: 'dateOfBirth-year'
 }
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.describeLivingAnimal
 
@@ -42,11 +42,11 @@ function createModel(errors, data) {
     dateOfBirthDateFieldItems.MONTH,
     dateOfBirthDateFieldItems.MONTH_YEAR,
     dateOfBirthDateFieldItems.YEAR,
-    "approximateDate",
-    "sex",
-    "maleParentDetails",
-    "femaleParentDetails",
-    "description"
+    'approximateDate',
+    'sex',
+    'maleParentDetails',
+    'femaleParentDetails',
+    'description'
   ]
 
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, fields)
@@ -62,7 +62,7 @@ function createModel(errors, data) {
       dateOfBirthDateFieldItems.YEAR
     ]
     dateOfBirthFields.forEach((field) => {
-      const error = getFieldError(errorList, "#" + field)
+      const error = getFieldError(errorList, '#' + field)
       if (error) {
         dateOfBirthErrors.push({ field: field, message: error.text })
       }
@@ -80,9 +80,9 @@ function createModel(errors, data) {
   const dateOfBirthInputGroupItems = getDateOfBirthInputGroupItems(dateOfBirthComponents, dateOfBirthErrors)
 
   const inputDateOfBirth = {
-    id: "dateOfBirth",
-    name: "dateOfBirth",
-    namePrefix: "dateOfBirth",
+    id: 'dateOfBirth',
+    name: 'dateOfBirth',
+    namePrefix: 'dateOfBirth',
     items: dateOfBirthInputGroupItems,
     errorMessage: dateOfBirthErrorMessage ? { html: dateOfBirthErrorMessage } : null
   }
@@ -109,33 +109,32 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-
-function getCheckboxIsExactDateUnknown(pageContent, data, errorList) {
+function getCheckboxIsExactDateUnknown (pageContent, data, errorList) {
   const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
   const approximateDateInput = nunjucks.renderString(renderString, {
     input: {
-      id: "approximateDate",
-      name: "approximateDate",
-      classes: "govuk-input govuk-!-width-two-thirds",
-      autocomplete: "on",
+      id: 'approximateDate',
+      name: 'approximateDate',
+      classes: 'govuk-input govuk-!-width-two-thirds',
+      autocomplete: 'on',
       label: {
         text: pageContent.inputLabelApproximateDate
       },
       ...(data.approximateDate
         ? { value: data.approximateDate }
         : {}),
-      errorMessage: getFieldError(errorList, "#approximateDate")
+      errorMessage: getFieldError(errorList, '#approximateDate')
     }
   })
 
   return {
     checkboxIsExactDateUnknown: {
-      idPrefix: "isExactDateUnknown",
-      name: "isExactDateUnknown",
-      classes: "govuk-checkboxes--small",
+      idPrefix: 'isExactDateUnknown',
+      name: 'isExactDateUnknown',
+      classes: 'govuk-checkboxes--small',
       items: [
         {
           value: true,
@@ -146,13 +145,12 @@ function getCheckboxIsExactDateUnknown(pageContent, data, errorList) {
           }
         }
       ],
-      errorMessage: getFieldError(errorList, "#isExactDateUnknown")
+      errorMessage: getFieldError(errorList, '#isExactDateUnknown')
     }
   }
 }
 
-function getOtherInputs(pageContent, data, errorList) {
-
+function getOtherInputs (pageContent, data, errorList) {
   const radioOptions = [
     { text: pageContent.radioOptionSexMale, value: 'M', hasInput: false },
     { text: pageContent.radioOptionSexFemale, value: 'F', hasInput: false },
@@ -163,50 +161,49 @@ function getOtherInputs(pageContent, data, errorList) {
 
   return {
     inputSex: {
-      idPrefix: "sex",
-      name: "sex",
+      idPrefix: 'sex',
+      name: 'sex',
       hint: {
         text: pageContent.hintTextSex
       },
       items: radioItems,
-      errorMessage: getFieldError(errorList, "#sex")
+      errorMessage: getFieldError(errorList, '#sex')
     },
 
     inputMaleParentDetails: {
-      name: "maleParentDetails",
-      id: "maleParentDetails",
+      name: 'maleParentDetails',
+      id: 'maleParentDetails',
       maxlength: stringLength.max1000,
       hint: {
         text: pageContent.inputHintMaleParentDetails
       },
       ...(data.maleParentDetails ? { value: data.maleParentDetails } : {}),
-      errorMessage: getFieldError(errorList, "#maleParentDetails")
+      errorMessage: getFieldError(errorList, '#maleParentDetails')
     },
     inputFemaleParentDetails: {
-      name: "femaleParentDetails",
-      id: "femaleParentDetails",
+      name: 'femaleParentDetails',
+      id: 'femaleParentDetails',
       maxlength: stringLength.max1000,
       hint: {
         text: pageContent.inputHintFemaleParentDetails
       },
       ...(data.femaleParentDetails ? { value: data.femaleParentDetails } : {}),
-      errorMessage: getFieldError(errorList, "#femaleParentDetails")
+      errorMessage: getFieldError(errorList, '#femaleParentDetails')
     },
     inputDescription: {
-      name: "description",
-      id: "description",
+      name: 'description',
+      id: 'description',
       maxlength: stringLength.max500,
       hint: {
         text: pageContent.inputHintDescription
       },
       ...(data.description ? { value: data.description } : {}),
-      errorMessage: getFieldError(errorList, "#description")
+      errorMessage: getFieldError(errorList, '#description')
     }
   }
 }
 
-function getBackLink(data) {
-
+function getBackLink (data) {
   let previousPath = data.hasUniqueIdentificationMark ? previousPathUniqueId : previousPathHasUniqueMark
   if (data.isMultipleSpecimens && data.numberOfSpecimens > 1) {
     previousPath = previousPathMultipleSpecimens
@@ -216,8 +213,7 @@ function getBackLink(data) {
   return data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 }
 
-function getRadioItem(sex, radioOption) {
-
+function getRadioItem (sex, radioOption) {
   const checked = sex ? isChecked(sex, radioOption.value) : false
 
   return {
@@ -227,8 +223,7 @@ function getRadioItem(sex, radioOption) {
   }
 }
 
-function getDateOfBirthInputGroupItems(components, dateOfBirthErrors) {
-
+function getDateOfBirthInputGroupItems (components, dateOfBirthErrors) {
   return components.map(component => {
     let classes = component.name === 'year' ? 'govuk-input--width-4' : 'govuk-input--width-2'
     const inputError = dateOfBirthErrors.filter(item => item.field.includes('-' + component.name) || item.field === 'dateOfBirth')
@@ -239,15 +234,15 @@ function getDateOfBirthInputGroupItems(components, dateOfBirthErrors) {
   })
 }
 
-function dateOfBirthValidator(value, helpers) {
+function dateOfBirthValidator (value, helpers) {
   const {
-    "dateOfBirth-day": day,
-    "dateOfBirth-month": month,
-    "dateOfBirth-year": year
+    'dateOfBirth-day': day,
+    'dateOfBirth-month': month,
+    'dateOfBirth-year': year
   } = value
 
   if (value.isExactDateUnknown && (day || month || year)) {
-    return helpers.error("any.both", { customLabel: 'dateOfBirth' })
+    return helpers.error('any.both', { customLabel: 'dateOfBirth' })
   }
 
   if ((day + month + year).length === 0) {
@@ -262,7 +257,7 @@ function dateOfBirthValidator(value, helpers) {
   return value
 }
 
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
   const application = submission.applications[applicationIndex]
@@ -276,23 +271,23 @@ function failAction(request, h, err) {
     femaleParentDetails: request.payload.femaleParentDetails,
     isExactDateUnknown: request.payload.isExactDateUnknown,
     approximateDate: request.payload.approximateDate,
-    dateOfBirth: { day: request.payload["dateOfBirth-day"], month: request.payload["dateOfBirth-month"], year: request.payload["dateOfBirth-year"] },
+    dateOfBirth: { day: request.payload['dateOfBirth-day'], month: request.payload['dateOfBirth-month'], year: request.payload['dateOfBirth-year'] },
     sex: request.payload.sex,
     isMultipleSpecimens: application.species.isMultipleSpecimens,
     numberOfUnmarkedSpecimens: application.species.numberOfUnmarkedSpecimens,
     hasUniqueIdentificationMark: application.species.hasUniqueIdentificationMark
-    //undeterminedSexReason: request.payload.undeterminedSexReason
+    // undeterminedSexReason: request.payload.undeterminedSexReason
   }
   return h.view(pageId, createModel(err, pageData)).takeover()
 }
 
-function getModifiedParentDetails(permitType, parentDetails) {
+function getModifiedParentDetails (permitType, parentDetails) {
   return [pt.ARTICLE_10, pt.EXPORT, pt.POC, pt.TEC].includes(permitType) ? parentDetails.replace(/\r/g, '') : null
 }
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -335,7 +330,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -344,18 +339,18 @@ module.exports = [
         }),
         options: { abortEarly: false },
         payload: Joi.object({
-          sex: Joi.string().required().valid("M", "F", "U"),
-          maleParentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
-          femaleParentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ""),
+          sex: Joi.string().required().valid('M', 'F', 'U'),
+          maleParentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ''),
+          femaleParentDetails: Joi.string().regex(COMMENTS_REGEX).optional().allow(null, ''),
           description: Joi.string().regex(COMMENTS_REGEX).required(),
           isExactDateUnknown: Joi.boolean().default(false),
-          approximateDate: Joi.when("isExactDateUnknown", {
+          approximateDate: Joi.when('isExactDateUnknown', {
             is: true,
-            then: Joi.string().max(stringLength.max150).optional().allow(null, "")
+            then: Joi.string().max(stringLength.max150).optional().allow(null, '')
           }),
-          "dateOfBirth-day": Joi.number().optional().allow(null, ""),
-          "dateOfBirth-month": Joi.number().optional().allow(null, ""),
-          "dateOfBirth-year": Joi.number().optional().allow(null, "")
+          'dateOfBirth-day': Joi.number().optional().allow(null, ''),
+          'dateOfBirth-month': Joi.number().optional().allow(null, ''),
+          'dateOfBirth-year': Joi.number().optional().allow(null, '')
         }).custom(dateOfBirthValidator),
         failAction: failAction
       },
@@ -370,8 +365,8 @@ module.exports = [
         const modifiedFemaleParentDetails = getModifiedParentDetails(submission.permitType, request.payload.femaleParentDetails)
         const schema = Joi.object({
           description: Joi.string().min(stringLength.min5).max(stringLength.max500),
-          maleParentDetails: Joi.string().min(stringLength.min3).max(stringLength.max1000).optional().allow(null, ""),
-          femaleParentDetails: Joi.string().min(stringLength.min3).max(stringLength.max1000).optional().allow(null, "")
+          maleParentDetails: Joi.string().min(stringLength.min3).max(stringLength.max1000).optional().allow(null, ''),
+          femaleParentDetails: Joi.string().min(stringLength.min3).max(stringLength.max1000).optional().allow(null, '')
         })
         const result = schema.validate({ description: modifiedDescription, maleParentDetails: modifiedMaleParentDetails, femaleParentDetails: modifiedFemaleParentDetails }, { abortEarly: false })
 
@@ -387,7 +382,7 @@ module.exports = [
 
         species.dateOfBirth = request.payload.isExactDateUnknown
           ? { day: null, month: null, year: null, isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: request.payload.approximateDate }
-          : { day: parseInt(request.payload["dateOfBirth-day"]), month: parseInt(request.payload["dateOfBirth-month"]), year: parseInt(request.payload["dateOfBirth-year"]), isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: null }
+          : { day: parseInt(request.payload['dateOfBirth-day']), month: parseInt(request.payload['dateOfBirth-month']), year: parseInt(request.payload['dateOfBirth-year']), isExactDateUnknown: request.payload.isExactDateUnknown, approximateDate: null }
 
         try {
           setSubmission(request, submission, `${pageId}/${applicationIndex}`)
@@ -413,10 +408,8 @@ module.exports = [
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
       }
 
     }
   }
 ]
-

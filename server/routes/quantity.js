@@ -1,18 +1,18 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const textContent = require("../content/text-content")
-const lodash = require("lodash")
-const { checkChangeRouteExit } = require("../lib/change-route")
-const pageId = "quantity"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const textContent = require('../content/text-content')
+const lodash = require('lodash')
+const { checkChangeRouteExit } = require('../lib/change-route')
+const pageId = 'quantity'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-type`
 const nextPathTradeTermCode = `${urlPrefix}/trade-term-code`
 const nextPathCreatedDate = `${urlPrefix}/created-date`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.quantity
 
@@ -22,11 +22,11 @@ function createModel(errors, data) {
   ])
 
   unitsOfMeasurement.forEach((e) => {
-    if (e.value === data.unitOfMeasurement) { e.selected = "true" }
+    if (e.value === data.unitOfMeasurement) { e.selected = 'true' }
   })
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["quantity", "unitOfMeasurement"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['quantity', 'unitOfMeasurement'])
+
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
 
@@ -38,31 +38,31 @@ function createModel(errors, data) {
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
 
     inputQuantity: {
-      id: "quantity",
-      name: "quantity",
-      classes: "govuk-input--width-4",
+      id: 'quantity',
+      name: 'quantity',
+      classes: 'govuk-input--width-4',
       label: {
         text: pageContent.inputLabelQuantity
       },
       ...(data.quantity ? { value: data.quantity } : {}),
-      errorMessage: getFieldError(errorList, "#quantity")
+      errorMessage: getFieldError(errorList, '#quantity')
     },
     selectUnitOfMeasurement: {
       label: {
         text: pageContent.selectLabelUnitOfMeasurement
       },
-      id: "unitOfMeasurement",
-      name: "unitOfMeasurement",
+      id: 'unitOfMeasurement',
+      name: 'unitOfMeasurement',
       items: unitsOfMeasurement,
-      errorMessage: getFieldError(errorList, "#unitOfMeasurement")
+      errorMessage: getFieldError(errorList, '#unitOfMeasurement')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function quantity(value, helpers) {
+function quantity (value, helpers) {
   if (value.length === 0) {
-    return helpers.error("any.empty", { customLabel: "quantity" })
+    return helpers.error('any.empty', { customLabel: 'quantity' })
   }
 
   const schema = Joi.number().min(0.0001).max(1000000)
@@ -70,7 +70,7 @@ function quantity(value, helpers) {
 
   if (result.error) {
     return helpers.error(result.error.details[0].type, {
-      customLabel: "quantity"
+      customLabel: 'quantity'
     })
   }
 
@@ -83,7 +83,7 @@ const unitOfMeasurementValues = textContent.quantity.unitsOfMeasurement.map(
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -117,7 +117,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -169,12 +169,11 @@ module.exports = [
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
-        
-        const redirectTo = (species.specimenType === "animalWorked" ||species.specimenType === "plantWorked") ? `${nextPathCreatedDate}/${applicationIndex}` : `${nextPathTradeTermCode}/${applicationIndex}`
-                
+
+        const redirectTo = (species.specimenType === 'animalWorked' || species.specimenType === 'plantWorked') ? `${nextPathCreatedDate}/${applicationIndex}` : `${nextPathTradeTermCode}/${applicationIndex}`
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
       }
     }
   }

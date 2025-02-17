@@ -1,39 +1,39 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
-const { checkChangeRouteExit } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const { certificateUse: cu } = require("../lib/constants")
-const { getPermit } = require("../lib/permit-type-helper")
-const pageId = "use-certificate-for"
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getSubmission, mergeSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
+const { checkChangeRouteExit } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const { certificateUse: cu } = require('../lib/constants')
+const { getPermit } = require('../lib/permit-type-helper')
+const pageId = 'use-certificate-for'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/specimen-origin`
 const nextPath = `${urlPrefix}/specimen-type`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.useCertificateFor
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["useCertificateFor"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['useCertificateFor'])
 
   const defaultBacklink = `${previousPath}/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     radios: {
-      idPrefix: "useCertificateFor",
-      name: "useCertificateFor",
+      idPrefix: 'useCertificateFor',
+      name: 'useCertificateFor',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       items: [
@@ -78,7 +78,7 @@ function createModel(errors, data) {
           )
         }
       ],
-      errorMessage: getFieldError(errorList, "#useCertificateFor")
+      errorMessage: getFieldError(errorList, '#useCertificateFor')
     }
   }
   return { ...commonContent, ...model }
@@ -86,7 +86,7 @@ function createModel(errors, data) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -117,7 +117,7 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -141,7 +141,7 @@ module.exports = [
         const { applicationIndex } = request.params
         const submission = getSubmission(request)
         const application = submission.applications[applicationIndex]
-        
+
         application.species.useCertificateFor = request.payload.useCertificateFor
         application.permitSubType = getPermit(submission.otherPermitTypeOption || submission.permitTypeOption, request.payload.useCertificateFor).permitSubType
 
@@ -161,11 +161,10 @@ module.exports = [
           saveDraftSubmission(request, exitChangeRouteUrl)
           return h.redirect(exitChangeRouteUrl)
         }
-        
+
         const redirectTo = `${nextPath}/${applicationIndex}`
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-        
       }
     }
   }

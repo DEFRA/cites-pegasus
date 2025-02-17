@@ -14,131 +14,129 @@ let routes
 let route
 let request
 let code
+let h
 
 describe('Healthcheck Basic and Detailed Routes', () => {
+  beforeEach(async () => {
+    server = {
+      route: jest.fn()
+    }
+    router.plugin.register(server)
+    routes = server.route.mock.calls[0][0]
+  })
 
-    beforeEach(async () => {
-        server = {
-            route: jest.fn()
+  describe('the healthcheck-basic route', () => {
+    beforeEach(() => {
+      route = routes.find(controller => controller.path === '/healthcheck-basic')
+    })
+    test('has a method of GET', () => {
+      expect(route.method).toEqual('GET')
+    })
+    test('has no authentication', () => {
+      expect(route.config.auth).toEqual(false)
+    })
+    describe('the handler when called', () => {
+      beforeEach(async () => {
+        request = {
+          server: { mockServer: 'mock server' }
         }
-        router.plugin.register(server)
-        routes = server.route.mock.calls[0][0]
-    });
 
-    describe('the healthcheck-basic route', () => {
-        beforeEach(() => {
-            route = routes.find(controller => controller.path === '/healthcheck-basic')            
-        })
-        test('has a method of GET', () => {
-            expect(route.method).toEqual('GET')            
-        })
-        test('has no authentication', () => {
-            expect(route.config.auth).toEqual(false)
-        })        
-        describe('the handler when called', () => {
-            beforeEach(async () => {
-                request =  {
-                    server: { mockServer: 'mock server'}
-                }
- 
-                code = jest.fn()
-                
-                h = {
-                        response: jest.fn().mockReturnValue({
-                        code: code
-                    })
-                }                
-                
-            }, 20000)
-            test('returns Success', async () => {
-                await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Success')
-                expect(code.mock.calls[0][0]).toEqual(200)
-            })
-        })
-    })    
+        code = jest.fn()
 
-    describe('the healthcheck-detailed route', () => {
-        beforeEach(() => {
-            route = routes.find(controller => controller.path === '/healthcheck-detailed')            
-        })
-        test('has a method of GET', () => {
-            expect(route.method).toEqual('GET')            
-        })
-        test('has no authentication', () => {
-            expect(route.config.auth).toEqual(false)
-        })
-        describe('the handler when called', () => {
-            beforeEach(async () => {
-                keyVault.readSecret = jest.fn()
-                session.setYarValue = jest.fn()
-                blobStorageService.listContainerNames = jest.fn().mockReturnValue([])
-                dynamicsService.whoAmI = jest.fn()
-                request =  {
-                    server: { mockServer: 'mock server'}
-                }
+        h = {
+          response: jest.fn().mockReturnValue({
+            code: code
+          })
+        }
+      }, 20000)
+      test('returns Success', async () => {
+        await route.handler(request, h)
+        expect(h.response.mock.calls[0][0]).toEqual('Success')
+        expect(code.mock.calls[0][0]).toEqual(200)
+      })
+    })
+  })
 
-                code = jest.fn()
-                
-                h = {
+  describe('the healthcheck-detailed route', () => {
+    beforeEach(() => {
+      route = routes.find(controller => controller.path === '/healthcheck-detailed')
+    })
+    test('has a method of GET', () => {
+      expect(route.method).toEqual('GET')
+    })
+    test('has no authentication', () => {
+      expect(route.config.auth).toEqual(false)
+    })
+    describe('the handler when called', () => {
+      beforeEach(async () => {
+        keyVault.readSecret = jest.fn()
+        session.setYarValue = jest.fn()
+        blobStorageService.listContainerNames = jest.fn().mockReturnValue([])
+        dynamicsService.whoAmI = jest.fn()
+        request = {
+          server: { mockServer: 'mock server' }
+        }
 
-                    view: jest.fn(),
-                    response: jest.fn().mockReturnValue({
-                        code: code
-                    })
-                }                
-                
-            }, 20000)
-            test('returns Success', async () => {
-                await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Success')
-                expect(code.mock.calls[0][0]).toEqual(200)
-            })
-            test('calls keyVault.readSecret', async () => {
-                await route.handler(request, h)
-                expect(keyVault.readSecret.mock.calls.length).toEqual(1)
-                expect(keyVault.readSecret.mock.calls[0][0]).toEqual('CIDM-API-CLIENT-ID')
-            })
-            test('calls blobStorageService.listContainerNames', async () => {
-                await route.handler(request, h)
-                expect(blobStorageService.listContainerNames.mock.calls.length).toEqual(1)
-                expect(blobStorageService.listContainerNames.mock.calls[0][0]).toBe(request.server)
-            })
-            test('calls session.setYarValue', async () => {
-                await route.handler(request, h)
-                expect(session.setYarValue.mock.calls.length).toEqual(1)
-                expect(session.setYarValue.mock.calls[0][0]).toEqual(request)
-            })
-            test('calls dynamicsService.whoAmI', async () => {
-                await route.handler(request, h)
-                expect(dynamicsService.whoAmI.mock.calls.length).toEqual(1)
-                expect(dynamicsService.whoAmI.mock.calls[0][0]).toBe(request.server)
-            })
-            test('returns error message for keyVault.readSecret exception', async () => {
-                keyVault.readSecret.mockRejectedValue(new Error('KeyVault Error'));
-                await route.handler(request, h);
-                expect(h.response.mock.calls[0][0]).toEqual('Error calling key vault')
-                expect(code.mock.calls[0][0]).toEqual(500)                
-            })    
-            test('returns error message for session.setYarValue exception', async () => {
-                session.setYarValue.mockImplementation(() => { throw new Error('Session Error') })
-                await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Error testing session cache')
-                expect(code.mock.calls[0][0]).toEqual(500)
-            })
-            test('returns error message for blobStorageService.listContainerNames exception', async () => {
-                blobStorageService.listContainerNames.mockImplementation(() => { throw new Error('BlobStorage Error') })
-                await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Error calling blob storage')
-                expect(code.mock.calls[0][0]).toEqual(500)
-            })
-    
-            test('returns error message for dynamicsService.whoAmI exception', async () => {
-                dynamicsService.whoAmI.mockImplementation(() => { throw new Error('Dynamics Error') })
-                await route.handler(request, h)
-                expect(h.response.mock.calls[0][0]).toEqual('Error calling dynamics service')
-                expect(code.mock.calls[0][0]).toEqual(500)
-            })            
-        })
-    })    
+        code = jest.fn()
+
+        h = {
+
+          view: jest.fn(),
+          response: jest.fn().mockReturnValue({
+            code: code
+          })
+        }
+      }, 20000)
+      test('returns Success', async () => {
+        await route.handler(request, h)
+        expect(h.response.mock.calls[0][0]).toEqual('Success')
+        expect(code.mock.calls[0][0]).toEqual(200)
+      })
+      test('calls keyVault.readSecret', async () => {
+        await route.handler(request, h)
+        expect(keyVault.readSecret.mock.calls.length).toEqual(1)
+        expect(keyVault.readSecret.mock.calls[0][0]).toEqual('CIDM-API-CLIENT-ID')
+      })
+      test('calls blobStorageService.listContainerNames', async () => {
+        await route.handler(request, h)
+        expect(blobStorageService.listContainerNames.mock.calls.length).toEqual(1)
+        expect(blobStorageService.listContainerNames.mock.calls[0][0]).toBe(request.server)
+      })
+      test('calls session.setYarValue', async () => {
+        await route.handler(request, h)
+        expect(session.setYarValue.mock.calls.length).toEqual(1)
+        expect(session.setYarValue.mock.calls[0][0]).toEqual(request)
+      })
+      test('calls dynamicsService.whoAmI', async () => {
+        await route.handler(request, h)
+        expect(dynamicsService.whoAmI.mock.calls.length).toEqual(1)
+        expect(dynamicsService.whoAmI.mock.calls[0][0]).toBe(request.server)
+      })
+      test('returns error message for keyVault.readSecret exception', async () => {
+        keyVault.readSecret.mockRejectedValue(new Error('KeyVault Error'))
+        await route.handler(request, h)
+        expect(h.response.mock.calls[0][0]).toEqual('Error calling key vault')
+        expect(code.mock.calls[0][0]).toEqual(500)
+      })
+      test('returns error message for session.setYarValue exception', async () => {
+        session.setYarValue.mockImplementation(() => { throw new Error('Session Error') })
+        await route.handler(request, h)
+        expect(h.response.mock.calls[0][0]).toEqual('Error testing session cache')
+        expect(code.mock.calls[0][0]).toEqual(500)
+      })
+      test('returns error message for blobStorageService.listContainerNames exception', async () => {
+        blobStorageService.listContainerNames.mockImplementation(() => { throw new Error('BlobStorage Error') })
+        await route.handler(request, h)
+        expect(h.response.mock.calls[0][0]).toEqual('Error calling blob storage')
+        expect(code.mock.calls[0][0]).toEqual(500)
+      })
+
+      test('returns error message for dynamicsService.whoAmI exception', async () => {
+        dynamicsService.whoAmI.mockImplementation(() => { throw new Error('Dynamics Error') })
+        await route.handler(request, h)
+        expect(h.response.mock.calls[0][0]).toEqual('Error calling dynamics service')
+        expect(code.mock.calls[0][0]).toEqual(500)
+      })
+    })
+  })
 })

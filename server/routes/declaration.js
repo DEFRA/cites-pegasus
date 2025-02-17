@@ -1,23 +1,23 @@
-const Joi = require("joi")
-const { urlPrefix, enableGenerateExportPermitsFromA10s } = require("../../config/config")
-const { getErrorList, getFieldError } = require("../lib/helper-functions")
+const Joi = require('joi')
+const { urlPrefix, enableGenerateExportPermitsFromA10s } = require('../../config/config')
+const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { permitType: pt } = require('../lib/permit-type-helper')
-const { httpStatusCode } = require("../lib/constants")
+const { httpStatusCode } = require('../lib/constants')
 const config = require('../../config/config')
-const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission, setSubmission, generateExportSubmissionFromA10, saveGeneratedDraftSubmission, reIndexApplications } = require("../lib/submission")
-const { postSubmission } = require("../services/dynamics-service")
-const textContent = require("../content/text-content")
-const pageId = "declaration"
+const { mergeSubmission, getSubmission, validateSubmission, deleteInProgressApplications, deleteDraftSubmission, setSubmission, generateExportSubmissionFromA10, saveGeneratedDraftSubmission, reIndexApplications } = require('../lib/submission')
+const { postSubmission } = require('../services/dynamics-service')
+const textContent = require('../content/text-content')
+const pageId = 'declaration'
 const currentPath = `${urlPrefix}/${pageId}`
 const previousPath = `${urlPrefix}/upload-supporting-documents`
 const nextPath = `${urlPrefix}/pay-application`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.declaration
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["declaration"])
-  
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['declaration'])
+
   const model = {
     backLink: previousPath,
     formActionPage: currentPath,
@@ -28,19 +28,19 @@ function createModel(errors, data) {
     pageBodyText1: pageContent.pageBodyText1,
     pageBodyText2: pageContent.pageBodyText2,
     pageBodyText3: pageContent.pageBodyText3,
-    pageBodyTextAgent: data.isAgent ? pageContent.pageBodyTextAgent : "",
+    pageBodyTextAgent: data.isAgent ? pageContent.pageBodyTextAgent : '',
 
     inputDeclaration: {
-      idPrefix: "declaration",
-      name: "declaration",
+      idPrefix: 'declaration',
+      name: 'declaration',
       items: [
         {
           value: true,
           text: pageContent.checkboxLabelIAgree,
-          checked: data.declaration,
-        },
+          checked: data.declaration
+        }
       ],
-      errorMessage: getFieldError(errorList, "#declaration")
+      errorMessage: getFieldError(errorList, '#declaration')
     }
   }
   return { ...commonContent, ...model }
@@ -48,7 +48,7 @@ function createModel(errors, data) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: currentPath,
     handler: async (request, h) => {
       const submission = getSubmission(request)
@@ -59,19 +59,19 @@ module.exports = [
         return h.redirect(invalidSubmissionPath)
       }
       const pageData = {
-        isAgent: submission?.isAgent,
+        isAgent: submission?.isAgent
       }
       return h.view(pageId, createModel(null, pageData))
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: currentPath,
     options: {
       validate: {
         options: { abortEarly: false },
         payload: Joi.object({
-          declaration: Joi.boolean().required(),
+          declaration: Joi.boolean().required()
         }),
         failAction: (request, h, err) => {
           const submission = getSubmission(request)
@@ -83,7 +83,6 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-
         deleteInProgressApplications(request)
 
         const submission = getSubmission(request)
@@ -119,20 +118,19 @@ module.exports = [
           await saveGeneratedDraftSubmission(request, `${urlPrefix}/your-submission`, exportSubmission)
         }
 
-
         return h.redirect(nextPath)
       }
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/set-submission`,
     config: {
       auth: false,
       validate: {
         options: { abortEarly: false },
         payload: Joi.object({
-          submission: Joi.object().required(),
+          submission: Joi.object().required()
         })
       },
       handler: async (request, h) => {

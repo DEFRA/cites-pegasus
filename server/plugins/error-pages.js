@@ -33,7 +33,6 @@ module.exports = {
             stack: response.data ? response.data.stack : response.stack
           })
 
-
           // The return the `500` view
           return h.view('500').code(statusCode)
         }

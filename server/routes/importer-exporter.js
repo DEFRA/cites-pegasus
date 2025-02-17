@@ -1,4 +1,4 @@
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const { getErrorList } = require('../lib/helper-functions')
 const { getInputs, createGetHandler, createPostHandler } = require('../lib/importer-details-common')
 const { permitType: pt } = require('../lib/permit-type-helper')
@@ -12,13 +12,12 @@ const nextPathOriginPermitDetails = `${urlPrefix}/origin-permit-details`
 const nextPathAdditionalInfo = `${urlPrefix}/additional-info`
 const lodash = require('lodash')
 
-function createModel(errors, data) {
-
+function createModel (errors, data) {
   const commonContent = textContent.common
 
   let pageContent = null
 
-  const importerExporterText = lodash.cloneDeep(textContent.importerExporter) //Need to clone the source of the text content so that the merge below doesn't affect other pages.
+  const importerExporterText = lodash.cloneDeep(textContent.importerExporter) // Need to clone the source of the text content so that the merge below doesn't affect other pages.
 
   if (data.permitType === pt.IMPORT) {
     pageContent = lodash.merge(importerExporterText.common, importerExporterText.exporterDetails)
@@ -26,7 +25,7 @@ function createModel(errors, data) {
     pageContent = lodash.merge(importerExporterText.common, importerExporterText.importerDetails)
   }
 
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["country", "name", "addressLine1", "addressLine2", "addressLine3", "addressLine4", "postcode"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['country', 'name', 'addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'postcode'])
 
   const previousPath = data.sex ? previousPathDescribeLivingAnimal : previousPathDescribeSpecimen
 
@@ -45,7 +44,6 @@ function createModel(errors, data) {
   }
   return { ...commonContent, ...model }
 }
-
 
 const getImporterExporterDetails = (submission, applicationIndex) => submission.applications[applicationIndex].importerExporterDetails
 

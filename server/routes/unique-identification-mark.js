@@ -1,9 +1,9 @@
 const Joi = require('joi')
-const { urlPrefix, maxNumberOfUniqueIdentifiers } = require("../../config/config")
+const { urlPrefix, maxNumberOfUniqueIdentifiers } = require('../../config/config')
 const { getErrorList, getFieldError } = require('../lib/helper-functions')
 const { stringLength } = require('../lib/constants')
 const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
-const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
+const { checkChangeRouteExit } = require('../lib/change-route')
 const textContent = require('../content/text-content')
 const pageId = 'unique-identification-mark'
 const currentPath = `${urlPrefix}/${pageId}`
@@ -12,14 +12,12 @@ const nextPathDescLivingAnimal = `${urlPrefix}/describe-living-animal`
 const nextPathDescGeneric = `${urlPrefix}/describe-specimen`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
-
-
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.uniqueIdentificationMark
 
-  const {fields, pageContentErrorMessages} = prepareErrorData(data, pageContent)
-  
+  const { fields, pageContentErrorMessages } = prepareErrorData(data, pageContent)
+
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContentErrorMessages }, fields)
 
   const selectItems = Object.entries(commonContent.uniqueIdentificationMarkTypes)
@@ -27,9 +25,9 @@ function createModel(errors, data) {
     .map(([key, value]) => ({
       text: value,
       value: key
-    }));
+    }))
 
-  selectItems.unshift({ text: pageContent.inputSelectDefaultUniqueIdentificationMarkType, value: '' });
+  selectItems.unshift({ text: pageContent.inputSelectDefaultUniqueIdentificationMarkType, value: '' })
 
   const marks = []
 
@@ -43,32 +41,32 @@ function createModel(errors, data) {
       showAddMarkButton: i === (data.numberOfMarks - 1) && i < (maxNumberOfUniqueIdentifiers - 1),
       showRemoveMarkButton: data.numberOfMarks > 1,
       fieldsetMark: {
-        classes: "add-another__item",
+        classes: 'add-another__item',
         legend: {
           text: pageContent.markHeader.replace('##MARK_NUMBER##', (i + 1)),
-          classes: "govuk-fieldset__legend--m add-another__title",
+          classes: 'govuk-fieldset__legend--m add-another__title',
           isPageHeading: false
         }
       },
       selectUniqueIdentificationMarkType: {
-        id: "uniqueIdentificationMarkType" + i,
-        name: "uniqueIdentificationMarkType" + i,
+        id: 'uniqueIdentificationMarkType' + i,
+        name: 'uniqueIdentificationMarkType' + i,
         label: {
           text: pageContent.inputLabelUniqueIdentificationMarkType
         },
         items: selectItems,
         value: markPair?.uniqueIdentificationMarkType,
-        errorMessage: getFieldError(errorList, "#uniqueIdentificationMarkType" + i)
+        errorMessage: getFieldError(errorList, '#uniqueIdentificationMarkType' + i)
       },
       inputUniqueIdentificationMark: {
-        id: "uniqueIdentificationMark" + i,
-        name: "uniqueIdentificationMark" + i,
+        id: 'uniqueIdentificationMark' + i,
+        name: 'uniqueIdentificationMark' + i,
         label: {
           text: pageContent.inputLabelUniqueIdentificationMark,
           isPageHeading: false
         },
         value: markPair?.uniqueIdentificationMark,
-        errorMessage: getFieldError(errorList, "#uniqueIdentificationMark" + i)
+        errorMessage: getFieldError(errorList, '#uniqueIdentificationMark' + i)
       }
     })
   }
@@ -92,7 +90,7 @@ function createModel(errors, data) {
   return { ...commonContent, ...model }
 }
 
-function prepareErrorData(data, pageContent) {
+function prepareErrorData (data, pageContent) {
   const fields = []
   const pageContentErrorMessages = {}
   const propertyPartIndex = {
@@ -106,23 +104,22 @@ function prepareErrorData(data, pageContent) {
     fields.push(`uniqueIdentificationMark${i}`)
 
     for (const property in pageContent.errorMessages) {
-      if(!property){
-        console.error("Invalid error message")
+      if (!property) {
+        console.error('Invalid error message')
       }
-      const propertyParts = property.split(".")
+      const propertyParts = property.split('.')
       if (propertyParts[propertyPartIndex.part0] && propertyParts[propertyPartIndex.part1] && propertyParts[propertyPartIndex.part2] && propertyParts[propertyPartIndex.part3]) {
         const newPropertyName = `${propertyParts[propertyPartIndex.part0]}.${propertyParts[propertyPartIndex.part1]}${i}.${propertyParts[propertyPartIndex.part2]}.${propertyParts[propertyPartIndex.part3]}`
         pageContentErrorMessages[newPropertyName] = pageContent.errorMessages[property]
       } else {
-        console.error("Invalid error message")
-    }
+        console.error('Invalid error message')
+      }
     }
   }
-  return {fields, pageContentErrorMessages}
+  return { fields, pageContentErrorMessages }
 }
 
-function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniqueIdentificationMarks, submission, applicationIndex) {
-
+function isDuplicateValidator (uniqueIdentificationMark, helpers, markIndex, uniqueIdentificationMarks, submission, applicationIndex) {
   const markCapsNoSpaces = uniqueIdentificationMark?.toUpperCase().replace(/ /g, '')
 
   const uniqueIdentificationMarkType = uniqueIdentificationMarks[markIndex].uniqueIdentificationMarkType
@@ -136,7 +133,7 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
   if (applicationDuplicates.length > 1) {
     const duplicateIndex = applicationDuplicates.findIndex(obj => obj.index === markIndex)
 
-    if (duplicateIndex !== 0) {//Only show the error if it's the second or more instance of that mark
+    if (duplicateIndex !== 0) { // Only show the error if it's the second or more instance of that mark
       return helpers.error('any.applicationDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
     }
   }
@@ -146,31 +143,31 @@ function isDuplicateValidator(uniqueIdentificationMark, helpers, markIndex, uniq
     return helpers.error('any.submissionDuplicate', { customLabel: `uniqueIdentificationMark${markIndex}` })
   }
 
-  return markCapsNoSpaces;
+  return markCapsNoSpaces
 }
 
-function getDuplicateUniqueIdentifiersWithinThisApplication(uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark) {
+function getDuplicateUniqueIdentifiersWithinThisApplication (uniqueIdentificationMarks, uniqueIdentificationMarkType, uniqueIdentificationMark) {
   return uniqueIdentificationMarks.filter(markPair =>
-    uniqueIdentificationMarkType === markPair.uniqueIdentificationMarkType
-    && uniqueIdentificationMark.toLowerCase() === markPair.uniqueIdentificationMark.toLowerCase())
+    uniqueIdentificationMarkType === markPair.uniqueIdentificationMarkType &&
+    uniqueIdentificationMark.toLowerCase() === markPair.uniqueIdentificationMark.toLowerCase())
 }
 
-function getDuplicateUniqueIdentifiersWithinThisSubmission(submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex) {
+function getDuplicateUniqueIdentifiersWithinThisSubmission (submission, uniqueIdentificationMarkType, uniqueIdentificationMark, applicationIndex) {
   const otherAppsWithSameSpecies = submission.applications.filter(app =>
-    app.applicationIndex !== applicationIndex
-    && app.species.speciesName.toLowerCase() === submission.applications[applicationIndex].species.speciesName.toLowerCase()
-    && app.species?.uniqueIdentificationMarks
-    && app.species?.hasUniqueIdentificationMark
+    app.applicationIndex !== applicationIndex &&
+    app.species.speciesName.toLowerCase() === submission.applications[applicationIndex].species.speciesName.toLowerCase() &&
+    app.species?.uniqueIdentificationMarks &&
+    app.species?.hasUniqueIdentificationMark
   )
   return otherAppsWithSameSpecies.filter(app => {
     return app.species?.uniqueIdentificationMarks.find(mark =>
-      mark.uniqueIdentificationMarkType === uniqueIdentificationMarkType
-      && mark.uniqueIdentificationMark.toLowerCase() === uniqueIdentificationMark.toLowerCase()
+      mark.uniqueIdentificationMarkType === uniqueIdentificationMarkType &&
+      mark.uniqueIdentificationMark.toLowerCase() === uniqueIdentificationMark.toLowerCase()
     )
   })
 }
 
-function getUniqueIdentificationMarksFromPayload(payload) {
+function getUniqueIdentificationMarksFromPayload (payload) {
   const uniqueIdentificationMarks = []
   for (let i = 0; i < payload.numberOfMarks && i < maxNumberOfUniqueIdentifiers; i++) {
     uniqueIdentificationMarks.push({
@@ -182,7 +179,7 @@ function getUniqueIdentificationMarksFromPayload(payload) {
   return uniqueIdentificationMarks
 }
 
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const { applicationIndex } = request.params
   const submission = getSubmission(request)
   const species = submission.applications[applicationIndex].species
@@ -202,7 +199,7 @@ function failAction(request, h, err) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -238,7 +235,7 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}/addMark`,
     options: {
       validate: {
@@ -248,7 +245,7 @@ module.exports = [
         options: {
           abortEarly: false
         },
-        failAction,
+        failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
@@ -267,13 +264,12 @@ module.exports = [
           uniqueIdentificationMarks
         }
 
-        return h.view(pageId, createModel(null, pageData))//.takeover()      
-
+        return h.view(pageId, createModel(null, pageData))// .takeover()
       }
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}/removeMark/{markIndex}`,
     options: {
       validate: {
@@ -284,7 +280,7 @@ module.exports = [
         options: {
           abortEarly: false
         },
-        failAction,
+        failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
@@ -308,18 +304,18 @@ module.exports = [
     }
   },
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}/continue`,
     options: {
       validate: {
         params: Joi.object({
           applicationIndex: Joi.number().required()
         }),
-        //payload: payloadValidation,
+        // payload: payloadValidation,
         options: {
           abortEarly: false
         },
-        failAction,
+        failAction
       },
       handler: async (request, h) => {
         const { applicationIndex } = request.params
@@ -332,7 +328,7 @@ module.exports = [
         }
 
         for (let i = 0; i < request.payload.numberOfMarks; i++) {
-          schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid("MC", "CR", "SR", "OT", "CB", "HU", "LB", "SI", "SN", "TG")
+          schemaObject[`uniqueIdentificationMarkType${i}`] = Joi.string().required().valid('MC', 'CR', 'SR', 'OT', 'CB', 'HU', 'LB', 'SI', 'SN', 'TG')
           schemaObject[`uniqueIdentificationMark${i}`] = Joi.string().required().min(stringLength.min3).max(stringLength.max150).custom((value, helpers) => isDuplicateValidator(value, helpers, i, uniqueIdentificationMarks, submission, applicationIndex), 'Custom validation')
         }
 
@@ -365,7 +361,6 @@ module.exports = [
 
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-
       }
     }
   }

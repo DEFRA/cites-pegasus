@@ -1,11 +1,11 @@
-const Joi = require("joi")
-const { urlPrefix } = require("../../config/config")
-const { getErrorList, getFieldError, isChecked } = require("../lib/helper-functions")
-const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require("../lib/submission")
+const Joi = require('joi')
+const { urlPrefix } = require('../../config/config')
+const { getErrorList, getFieldError, isChecked } = require('../lib/helper-functions')
+const { getSubmission, setSubmission, validateSubmission, saveDraftSubmission } = require('../lib/submission')
 const { permitType: pt } = require('../lib/permit-type-helper')
-const { checkChangeRouteExit, setDataRemoved } = require("../lib/change-route")
-const textContent = require("../content/text-content")
-const pageId = "specimen-type"
+const { checkChangeRouteExit, setDataRemoved } = require('../lib/change-route')
+const textContent = require('../content/text-content')
+const pageId = 'specimen-type'
 const viewName = 'application-radios-layout'
 const currentPath = `${urlPrefix}/${pageId}`
 const nextPathQuantity = `${urlPrefix}/quantity`
@@ -13,86 +13,86 @@ const nextPathUniqueId = `${urlPrefix}/has-unique-identification-mark`
 const nextPathMultipleSpecimens = `${urlPrefix}/multiple-specimens`
 const invalidSubmissionPath = `${urlPrefix}/`
 
-function createModel(errors, data) {
+function createModel (errors, data) {
   const commonContent = textContent.common
   const pageContent = textContent.specimenType
-  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ["specimenType"])
+  const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['specimenType'])
 
   let radioOptions = null
 
-  if (data.kingdom === "Animalia") {
+  if (data.kingdom === 'Animalia') {
     radioOptions = [
       {
-        value: "animalLiving",
+        value: 'animalLiving',
         text: pageContent.radioOptionAnimalLiving,
-        checked: isChecked(data.specimenType, "animalLiving")
+        checked: isChecked(data.specimenType, 'animalLiving')
       },
       {
-        value: "animalPart",
+        value: 'animalPart',
         text: pageContent.radioOptionAnimalPart,
-        checked: isChecked(data.specimenType, "animalPart")
+        checked: isChecked(data.specimenType, 'animalPart')
       },
       {
-        value: "animalWorked",
+        value: 'animalWorked',
         text: pageContent.radioOptionAnimalWorked,
-        checked: isChecked(data.specimenType, "animalWorked")
+        checked: isChecked(data.specimenType, 'animalWorked')
       },
       {
-        value: "animalCoral",
+        value: 'animalCoral',
         text: pageContent.radioOptionAnimalCoral,
-        checked: isChecked(data.specimenType, "animalCoral")
+        checked: isChecked(data.specimenType, 'animalCoral')
       }
     ]
   } else {
     radioOptions = [
       {
-        value: "plantLiving",
+        value: 'plantLiving',
         text: pageContent.radioOptionPlantLiving,
-        checked: isChecked(data.specimenType, "plantLiving")
+        checked: isChecked(data.specimenType, 'plantLiving')
       },
       {
-        value: "plantProduct",
+        value: 'plantProduct',
         text: pageContent.radioOptionPlantProduct,
         hint: { text: pageContent.radioOptionPlantProductHint },
-        checked: isChecked(data.specimenType, "plantProduct")
+        checked: isChecked(data.specimenType, 'plantProduct')
       },
       {
-        value: "plantWorked",
+        value: 'plantWorked',
         text: pageContent.radioOptionPlantWorked,
         hint: { text: pageContent.radioOptionPlantWorkedHint },
-        checked: isChecked(data.specimenType, "plantWorked")
+        checked: isChecked(data.specimenType, 'plantWorked')
       }
     ]
   }
 
   const defaultBacklink = data.permitType === pt.ARTICLE_10 ? `${urlPrefix}/use-certificate-for/${data.applicationIndex}` : `${urlPrefix}/purpose-code/${data.applicationIndex}`
   const backLink = data.backLinkOverride ? data.backLinkOverride : defaultBacklink
-  
+
   const model = {
     backLink: backLink,
     formActionPage: `${currentPath}/${data.applicationIndex}`,
     ...(errorList ? { errorList } : {}),
     pageTitle: errorList ? commonContent.errorSummaryTitlePrefix + errorList[0].text + commonContent.pageTitleSuffix : pageContent.defaultTitle + commonContent.pageTitleSuffix,
     radios: {
-      name: "specimenType",
+      name: 'specimenType',
       fieldset: {
         legend: {
           text: pageContent.pageHeader,
           isPageHeading: true,
-          classes: "govuk-fieldset__legend--l"
+          classes: 'govuk-fieldset__legend--l'
         }
       },
       items: radioOptions,
-      errorMessage: getFieldError(errorList, "#specimenType")
+      errorMessage: getFieldError(errorList, '#specimenType')
     }
   }
   return { ...commonContent, ...model }
 }
 
-function failAction(request, h, err) {
+function failAction (request, h, err) {
   const submission = getSubmission(request)
   const species = submission.applications[request.params.applicationIndex].species
-  
+
   const pageData = {
     backLinkOverride: checkChangeRouteExit(request, true),
     permitType: submission.permitType,
@@ -101,12 +101,12 @@ function failAction(request, h, err) {
     kingdom: species.kingdom,
     specimenType: request.payload.specimenType
   }
-  
+
   return h.view(viewName, createModel(err, pageData)).takeover()
 }
 
-function getRedirect(species, submission, applicationIndex) {
-  if (species.specimenType === 'animalLiving'){
+function getRedirect (species, submission, applicationIndex) {
+  if (species.specimenType === 'animalLiving') {
     if (submission.permitType === pt.ARTICLE_10) {
       return `${nextPathUniqueId}/${applicationIndex}`
     } else {
@@ -118,7 +118,7 @@ function getRedirect(species, submission, applicationIndex) {
 
 module.exports = [
   {
-    method: "GET",
+    method: 'GET',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -153,7 +153,7 @@ module.exports = [
   },
 
   {
-    method: "POST",
+    method: 'POST',
     path: `${currentPath}/{applicationIndex}`,
     options: {
       validate: {
@@ -180,7 +180,7 @@ module.exports = [
         const result = payloadSchema.validate(request.payload, { abortEarly: false })
 
         if (result.error) {
-          return failAction(request, h, result.error)          
+          return failAction(request, h, result.error)
         }
 
         const isWorkedItem = request.payload.specimenType === 'animalWorked' || request.payload.specimenType === 'plantWorked'
@@ -189,7 +189,7 @@ module.exports = [
 
         species.specimenType = request.payload.specimenType
 
-        if(isChange){
+        if (isChange) {
           species.quantity = null
           species.unitOfMeasurement = null
           species.createdDate = null
@@ -209,16 +209,15 @@ module.exports = [
           application.isBreeder = null
         }
 
-        if(!isWorkedItem){
+        if (!isWorkedItem) {
           species.createdDate = null
         }
 
         try {
           setSubmission(request, submission, `${pageId}/${request.params.applicationIndex}`)
-          //mergeSubmission(request, { applications: submission.applications }, `${pageId}/${request.params.applicationIndex}`)
-        }
-        catch (err) {
-          console.error(err);
+          // mergeSubmission(request, { applications: submission.applications }, `${pageId}/${request.params.applicationIndex}`)
+        } catch (err) {
+          console.error(err)
           return h.redirect(invalidSubmissionPath)
         }
 
@@ -232,14 +231,12 @@ module.exports = [
           return h.redirect(exitChangeRouteUrl)
         }
 
-        
         const redirectTo = getRedirect(species, submission, request.params.applicationIndex)
-        
+
         saveDraftSubmission(request, redirectTo)
         return h.redirect(redirectTo)
-        
       }
     }
   }
-  
+
 ]

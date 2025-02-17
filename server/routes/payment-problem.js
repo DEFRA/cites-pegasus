@@ -1,15 +1,13 @@
-const Joi = require("joi")
+const Joi = require('joi')
 const textContent = require('../content/text-content')
-const { getSubmission } = require('../lib/submission')
-const { createPayment } = require('../services/govpay-service')
-const { urlPrefix } = require("../../config/config")
+const { urlPrefix } = require('../../config/config')
 const pageId = 'payment-problem'
 const currentPath = `${urlPrefix}/${pageId}`
 const paymentRoutes = ['account', 'new-application']
 
-function createModel(paymentRoute) {
-  const commonContent = textContent.common;
-  const pageContent = textContent.paymentProblem;
+function createModel (paymentRoute) {
+  const commonContent = textContent.common
+  const pageContent = textContent.paymentProblem
   const submitApplicationAndPayLaterUrl = `${urlPrefix}/application-complete`
   const returnToYourApplicationsUrl = `${urlPrefix}/`
   const goBackAndTryPaymentAgainUrl = `${urlPrefix}/govpay/create-payment/${paymentRoute}`
@@ -32,7 +30,7 @@ module.exports = [{
     },
 
     handler: async (request, h) => {
-      return h.view(pageId, createModel(request.params.paymentRoute));
+      return h.view(pageId, createModel(request.params.paymentRoute))
     }
-  },
+  }
 }]
