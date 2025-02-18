@@ -133,7 +133,7 @@ module.exports = [{
 
       mergeSubmission(request, newSubmission, `${pageId}/${contactType}`)
 
-      const response = await getAddressesByPostcode(searchData.postcode)
+      const response = await getAddressesByPostcode(searchData.postcode, request)
       const pageData = {
         contactType: contactType,
         permitType: submission?.permitType,
