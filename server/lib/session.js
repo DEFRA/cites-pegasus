@@ -19,7 +19,8 @@ const sessionKey = {
   CIDM_AUTH: 'CIDMAuth',
   GOVPAY_PAYMENT_ROUTE: 'govpay-paymentRoute',
   MY_SUBMISSIONS_QUERY_URLS: 'mySubmissions-queryUrls',
-  MY_SUBMISSIONS_FILTER_DATA: 'mySubmissions-filterData'
+  MY_SUBMISSIONS_FILTER_DATA: 'mySubmissions-filterData',
+  APIM_ACCESS_TOKEN: 'apimAccessToken'
 }
 
 module.exports = {

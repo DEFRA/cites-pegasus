@@ -41,13 +41,6 @@ const schema = Joi.object().keys({
     // clearInvalid: Joi.bool().default(false),
     // strictHeader: Joi.bool().default(true)
   }),
-  azureAPIManagement: Joi.object({
-    clientId: Joi.string().required(),
-    clientSecret: Joi.string().required(),
-    grantType: Joi.string().required(),
-    scope: Joi.string().required(),
-    authURL: Joi.string().required()
-  }),
   dynamicsAPI: Joi.object({
     knownAuthority: Joi.string().required(),
     authorityUrl: Joi.string().required(),
@@ -125,13 +118,6 @@ const config = {
     authorityUrl: process.env.AUTHORITY_URL,
     apiPath: process.env.DYNAMICS_API_PATH,
     baseURL: process.env.DYNAMICS_BASE_URL
-  },
-  azureAPIManagement: {
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    grantType: process.env.GRANT_TYPE,
-    scope: process.env.SCOPE,
-    authURL: process.env.AUTH_URL
   },
   govpayPaymentsURL: process.env.GOVPAY_PAYMENTS_URL,
   govpayCallbackURL: process.env.GOVPAY_CALLBACK_URL,
