@@ -4,11 +4,12 @@ const { readSecret } = require("../lib/key-vault");
 const { getYarValue, setYarValue, sessionKey } = require("../lib/session");
 const _ = require("lodash");
 
-const clientId = await readSecret("CLIENT_ID");
-const clientSecret = await readSecret("CLIENT_SECRET");
-const grantType = await readSecret("GRANT_TYPE");
+const clientId = await readSecret("CLIENT-ID");
+const clientSecret = await readSecret("CLIENT-SECRET");
+const grantType = await readSecret("GRANT-TYPE");
 const scope = await readSecret("SCOPE");
-const authURL = await readSecret("AUTH_URL");
+const tenantId = await readSecret("TENANT-ID");
+const authURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
 
 const getAPIMAccessToken = async (request) => {
   const payload = new URLSearchParams();
