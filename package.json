@@ -34,6 +34,7 @@
     "@hapi/yar": "^11.0.0",
     "accessible-autocomplete": "^2.0.4",
     "applicationinsights": "^2.7.3",
+    "axios": "^1.7.9",
     "blipp": "4.0.2",
     "dotenv": "^16.0.3",
     "govuk-frontend": "^4.8.0",
