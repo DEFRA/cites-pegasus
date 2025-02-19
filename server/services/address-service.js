@@ -1,17 +1,18 @@
+const Wreck = require("@hapi/wreck");
 const { httpStatusCode } = require("../lib/constants");
 const config = require("../../config/config");
 const { readSecret } = require("../lib/key-vault");
 const { getYarValue, setYarValue, sessionKey } = require("../lib/session");
 const _ = require("lodash");
 
-const clientId = await readSecret("CLIENT-ID");
-const clientSecret = await readSecret("CLIENT-SECRET");
-const grantType = await readSecret("GRANT-TYPE");
-const scope = await readSecret("SCOPE");
-const tenantId = await readSecret("TENANT-ID");
-const authURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
-
 const getAPIMAccessToken = async (request) => {
+  const clientId = (await readSecret("CLIENT-ID")).value
+  const clientSecret = (await readSecret("CLIENT-SECRET")).value
+  const grantType = (await readSecret("GRANT-TYPE")).value
+  const scope = (await readSecret("SCOPE")).value
+  const tenantId = (await readSecret("TENANT-ID")).value
+  const authURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+
   const payload = new URLSearchParams();
   payload.append("client_id", clientId);
   payload.append("client_secret", clientSecret);
@@ -35,7 +36,6 @@ const getAPIMAccessToken = async (request) => {
       accessToken: tokenResponse.access_token,
       expiryTime: new Date().getTime() + tokenResponse.expires_in * 1000,
     };
-    console.log(`[APIM_ACCESS_TOKEN]: ${data}`);
     setYarValue(request, sessionKey.APIM_ACCESS_TOKEN, data);
     console.log("TOKEN_RESPONSE ", data);
     return tokenResponse.access_token;
@@ -63,25 +63,32 @@ const validateAPIMToken = (token) => {
 };
 
 async function getAddressesByPostcode(postcode, request) {
+  const tenantId = await readSecret("TENANT-ID");
+  const authURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
   try {
     let token;
     const sessionAPIM = getYarValue(request, sessionKey.APIM_ACCESS_TOKEN);
-    console.log(`[APIM_ACCESS_TOKEN_FROM_COOKIE]: ${sessionAPIM}`);
+
+    const encodedPostcode = !_.isEmpty(postcode)
+      ? encodeURIComponent(postcode.trim())
+      : null;
+
+    console.log(`[APIM_ACCESS_TOKEN_FROM_COOKIE]: ${JSON.stringify(sessionAPIM)}`);
     if (!validateAPIMToken(sessionAPIM)) {
       token = await getAPIMAccessToken(request);
     } else {
       token = sessionAPIM.accessToken;
     }
 
-    if (!_.isEmpty(token)) {
-      const url = `${config.addressLookupBaseUrl}postcodes?postcode=${postcode}`;
+    if (!_.isEmpty(token) && !_.isEmpty(encodedPostcode)) {
+      const url = `${config.addressLookupBaseUrl}postcodes?postcode=${encodedPostcode}`;
 
       const { res, payload } = await Wreck.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(`[APIM_TO_GET_ADDRESS]: ${url}, ${payload}`);
+      console.log(`[APIM_GET_ADDRESS_URL]: ${url}`);
       if (payload && res.statusCode !== httpStatusCode.NO_CONTENT) {
         console.log(JSON.parse(payload));
         return JSON.parse(payload);
