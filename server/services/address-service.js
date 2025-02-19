@@ -1,7 +1,7 @@
-const Wreck = require("@hapi/wreck");
 const { httpStatusCode } = require("../lib/constants");
 const config = require("../../config/config");
 const isEmpty = require("lodash/isEmpty");
+const axios = require("axios");
 
 const getAPIMAccessToken = async () => {
   const { clientId, clientSecret, grantType, scope, authURL } =
@@ -11,23 +11,20 @@ const getAPIMAccessToken = async () => {
     client_id: clientId,
     client_secret: clientSecret,
     grant_type: grantType,
-    scope: scope
-  }
-
-  const options = {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    payload: new URLSearchParams(payload).toString()
+    scope: scope,
   };
 
-  console.log("AUTH_REQ_OPTIONS ", options)
+  const headers = {
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+
+  console.log("AUTH_REQ_OPTIONS Payload", payload);
 
   try {
-    const { payload: response } = await Wreck.post(authURL, options)
-    const tokenResponse = JSON.parse(response.toString())
-    console.log("TOKEN_RESPONSE ", tokenResponse);
-    return tokenResponse.access_token
+    const { data } = await axios.post(authURL, payload, { headers: headers });
+
+    console.log("TOKEN_RESPONSE ", data);
+    return data.access_token;
   } catch (error) {
     console.error("ERROR_WHILE_GEN_TOKEN ", error);
     throw error;
@@ -41,15 +38,16 @@ async function getAddressesByPostcode(postcode) {
     if (!isEmpty(token)) {
       const url = `${config.addressLookupBaseUrl}postcodes?postcode=${postcode}`;
 
-      const { res, payload } = await Wreck.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("APIM_TO_GET_ADDRESS ", url, res.statusCode);
-      if (payload && res.statusCode !== httpStatusCode.NO_CONTENT) {
-        console.log("Addresses: ", JSON.parse(payload));
-        return JSON.parse(payload);
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.get(url, { headers: headers });
+
+      console.log("APIM_TO_GET_ADDRESS ", url, response);
+      if (response.data && response.statusCode !== httpStatusCode.NO_CONTENT) {
+        console.log("Addresses: ", response.data);
+        return response.data;
       }
     } else {
       console.log(`TOKEN_NOT_FOUND: ${authURL}`);
