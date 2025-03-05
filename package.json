@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "engines": {
+        "node": "~v20.11.1",
+        "npm": "~10.2.4"
+    },
   "scripts": {
     "start": "node index.js",
     "startdev": "nodemon --inspect index.js",
