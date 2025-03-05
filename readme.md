@@ -10,7 +10,7 @@
 
 ## Prerequisites
 
-Node v18+
+Node v20+
 
 ## Running the application
 
