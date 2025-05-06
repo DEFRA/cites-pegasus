@@ -54,6 +54,7 @@ const routes = [].concat(
   require('../routes/application-complete'),
   require('../routes/privacy'),
   require('../routes/cookies'),
+  require('../routes/cookie-problem'),
   require('../routes/accessibility'),
   require('../routes/species-warning'),
   require('../routes/draft-submission-warning'),

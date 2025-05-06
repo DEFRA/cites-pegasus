@@ -2,12 +2,29 @@ const { govpayPaymentsURL, govpayCallbackURL } = require('../../config/config')
 const { readSecret } = require('../lib/key-vault')
 const Wreck = require('@hapi/wreck')
 
-async function createPayment (costingValue, submissionRef, email, name, description) {
+async function buildReturnUrl(paymentRoute, submissionRef,contactId, organisationId){
+  const ref = `${govpayCallbackURL}/${submissionRef}`
+  const url = new URL(ref);
+
+  // refer following
+  // const encodedPostcode = !_.isEmpty(postcode)
+  //     ? encodeURIComponent(postcode.trim())
+  //     : null;
+  
+  if(paymentRoute) url.searchParams.append('pr',paymentRoute)
+  if(contactId) url.searchParams.append('cid',contactId)
+  if(organisationId)url.searchParams.append('oid',organisationId)
+
+  return url.toString();
+}
+
+async function createPayment (request, costingValue, submissionRef, email, name, description, contactId, organisationId) {
+  const returnUrl = await buildReturnUrl(request.params.paymentRoute, submissionRef, contactId, organisationId)
   const requestPayload = {
     amount: Math.round(costingValue * 100),
     reference: submissionRef,
     description: description,
-    return_url: `${govpayCallbackURL}/${submissionRef}`,
+    return_url: returnUrl,
     email: email,
     prefilled_cardholder_details: {
       cardholder_name: name
@@ -28,12 +45,12 @@ async function createPayment (costingValue, submissionRef, email, name, descript
       headers: { Authorization: `Bearer ${apiKey}` },
       payload: requestPayload
     }
-    console.log(`HTTP Request Verb: POST Url: ${govpayPaymentsURL}`)
-    console.log('Request Payload: ' + JSON.stringify(requestPayload, null, 2))
+    console.log(`[CREATE-PAYMENT] HTTP Request Verb: POST Url: ${govpayPaymentsURL}`)
+    console.log('[CREATE-PAYMENT] Request Payload: ' + JSON.stringify(requestPayload, null, 2))
 
     const { payload } = await Wreck.post(govpayPaymentsURL, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+    console.log('[CREATE-PAYMENT] HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
     return { paymentId: payload.payment_id, state: payload.state.status, nextUrl: payload._links.next_url.href }
   } catch (err) {
@@ -53,11 +70,11 @@ async function getPaymentStatus (paymentId) {
       json: true,
       headers: { Authorization: `Bearer ${apiKey}` }
     }
-    console.log(`HTTP Request Verb: GET Url: ${govpayPaymentsURL}/${paymentId}`)
+    console.log(`[PAYMENT-STATUS] HTTP Request Verb: GET Url: ${govpayPaymentsURL}/${paymentId}`)
 
     const { payload } = await Wreck.get(`${govpayPaymentsURL}/${paymentId}`, options)
 
-    console.log('HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
+    console.log('[PAYMENT-STATUS] HTTP Response Payload: ' + JSON.stringify(payload, null, 2))
 
     return { paymentId: payload.payment_id, status: payload.state.status, finished: payload.state.finished, amount: payload.amount, email: payload.email }
   } catch (err) {

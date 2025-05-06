@@ -1,13 +1,18 @@
 const config = require('../../config/config')
 const { getYarValue, setYarValue, clearYarSession, sessionKey } = require('../lib/session')
 const { httpStatusCode } = require('../lib/constants')
+const { urlPrefix } = require('../../config/config')
 // Not in use - TBC
 // const { getOpenIdClient } = require('../services/oidc-client')
 const { cidmCallbackUrl, cidmPostLogoutRedirectUrl, cidmAccountManagementUrl } = require('../../config/config')
-
+const user = require('../lib/user')
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken')
+const { setSubmissionPayment } = require('../services/dynamics-service')
+const { getPaymentStatus } = require('../services/govpay-service')
+const { getSubmission, mergeSubmission } = require('../lib/submission')
 const landingPage = '/my-submissions'
+const nextPathFailed = `${urlPrefix}/payment-problem`
 const relationshipsParts = {
   organisationId: 1,
   organisationName: 2,
@@ -51,6 +56,89 @@ function getRoleDetails (user) {
   }
 
   return roleDetails
+}
+
+async function getFinishedPaymentStatus (paymentId) {
+  const timeoutMs = 60000 // 1 minute timeout
+  const intervalMs = 2000 // 2 seconds interval
+
+  const startTimestamp = Date.now()
+
+  while (true) {
+    const statusResponse = await getPaymentStatus(paymentId)
+    console.log(statusResponse.status)
+
+    if (statusResponse.finished) {
+      return statusResponse
+    }
+
+    const elapsedMs = Date.now() - startTimestamp
+
+    if (elapsedMs >= timeoutMs) {
+      console.log('Timeout reached getting payment status')
+      return statusResponse
+    }
+
+    await new Promise(resolve => setTimeout(resolve, intervalMs))
+  }
+}
+
+async function checkLastPermit (request,h,htmlContent) {
+  // take submission from cookies
+  // use paymentId and check the status of last permit
+  let submission = getSubmission(request)
+  console.log("submission after re login: ",await submission);
+
+  const paymentId = submission.paymentDetails.paymentId
+  const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid
+  const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
+
+  const paymentStatus = await getFinishedPaymentStatus(paymentId)
+
+  submission.paymentDetails.paymentStatus = paymentStatus
+
+  try {
+    mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
+  } catch (err) {
+    console.error(err)
+    return h.redirect(invalidSubmissionPath)
+  }
+  const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
+  console.log("paymentRoute: ---> ",paymentRoute);
+
+  // if(paymentStatus.code === 'P0030'){
+  //   console.log("Code --->", paymentStatus.code);
+  //   return h.response(htmlContent).header('Content-Type', 'text/html')
+  // }
+
+  if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
+    return h.redirect(`${nextPathFailed}/${paymentRoute}`)// need to handkle this how to get paymentRoute
+    // why need to show user that session has been lost 
+    // if cancel payment I think they should be redirected to home page.    
+  }
+
+  
+
+  // const user = getYarValue(request, 'CIDMAuth')?.user; //re confirm this line
+  // const sessionCIDMAuth = getYarValue(request, sessionKey.CIDM_AUTH)
+  // console.log("sessionCIDMAuth ---. ",sessionCIDMAuth);
+
+  let contactIdFilter = submission.contactId
+  if (user.hasOrganisationWideAccess(request)) {
+    contactIdFilter = null
+  }
+
+  const submissionPaymentParams = {
+    server: request.server,
+    contactId: contactIdFilter,
+    organisationId: submission.organisationId,
+    submissionId: submission.submissionId,
+    paymentRef: paymentStatus.paymentId,
+    paymentValue: paymentStatus.amount / 100,
+    isAdditionalPayment,
+    previousAdditionalAmountPaid
+  }
+  await setSubmissionPayment(submissionPaymentParams)
 }
 
 module.exports = [
@@ -109,6 +197,8 @@ module.exports = [
       // The token stored in the cookie will not be available on the first page after login if we redirect to it at this stage.
       // So we are instead returning a page which will cause the browser to perform the redirect instead
 
+      const sessionLost = getYarValue(request, sessionKey.SESSION_LOST)
+
       const htmlContent = `<!DOCTYPE html>
                             <html>
                               <head>
@@ -118,6 +208,11 @@ module.exports = [
                               </body>
                             </html>`
 
+      if(sessionLost){
+        console.log("sessionLost",sessionLost);
+        await checkLastPermit(request,h,htmlContent)
+      }
+      
       return h.response(htmlContent).header('Content-Type', 'text/html')
     }
   },
