@@ -96,6 +96,7 @@ module.exports = [
     handler: async (request, h) => {
       const { submissionRef } = request.params
       const submission = getSubmission(request)
+      console.log("For testing only");
       if (submission.submissionRef !== submissionRef) {
         throw new Error('Invalid submission reference')
       }
