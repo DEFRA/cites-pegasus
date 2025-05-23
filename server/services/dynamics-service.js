@@ -92,6 +92,8 @@ async function postSubmission (server, submission) {
 
     const { payload } = await Wreck.post(url, options)
 
+    console.log("payload for postSubmission-->",payload)
+
     // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
     return payload
@@ -516,7 +518,7 @@ async function getSubmission (server, contactId, organisationId, submissionRef) 
   const filter = `$filter=${filterParts.join(' and ')}`
 
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
-  // console.log(url)
+  
   const accessToken = await getAccessToken(server)
 
   try {
@@ -667,18 +669,20 @@ async function setPaymentReference (params) {
 
   try {
     const url = `${apiUrl}cites_submissions(${params.submissionId})`
-
-    let requestPayload = {}
+    console.log("url -->",url)
+    let requestPayload = {
+      statuscode: 149900002
+    }
 
     if (params.isAdditionalPayment) {
       // requestPayload
-      // requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
+      requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
       requestPayload.cites_additionalpaymentreference = params.paymentRef
-      // requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
+      requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
     } else {
-      // requestPayload.cites_paymentmethod = 149900000 // Gov Pay
+      requestPayload.cites_paymentmethod = 149900000 // Gov Pay
       requestPayload.cites_paymentreference = params.paymentRef
-      // requestPayload.cites_totalfeeamount = params.paymentValue
+      requestPayload.cites_totalfeeamount = params.paymentValue
     }
 
     const options = {
@@ -690,8 +694,9 @@ async function setPaymentReference (params) {
     console.log('[PAYMENT-ID] Request Payload: ' + JSON.stringify(requestPayload, null, 2))
 
     const { payload } = await Wreck.patch(url, options)
+    console.log("payload----->",payload)
 
-    // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
   } catch (err) {
     if (err.data?.payload) {
       console.error(err.data.payload)

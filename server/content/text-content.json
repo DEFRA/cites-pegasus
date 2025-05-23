@@ -1665,7 +1665,9 @@
   "cookieProblem": {
     "defaultTitle": "Sorry, there was a problem with the service",
     "pageHeader": "Sorry, there was a problem with the service",
-    "pageBody": "Sample demo message to show to user",
+    "pageBodyText1": "Log back into your account using the link below to confirm the status of your application.",
+    "pageBodyText2": "Contact Centre for International Trade Bristol for further information",
+    "pageBodyText3": "wildlife.licensing@apha.gov.uk",
     "returnToYourApplicationsLinkText": "Return to your applications",
     "goToSubmissionText": "Try Paying Again."
   },

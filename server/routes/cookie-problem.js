@@ -11,11 +11,13 @@ function createModel(paymentRoute) {
   // const returnToYourApplicationsUrl = `${urlPrefix}/`;
   const returnToYourApplicationsUrl = `${urlPrefix}/login`;
   const pageTitle = pageContent.defaultTitle + commonContent.pageTitleSuffix;
+  const wildLifeLicensingEmailAddress =  `${urlPrefix}`;
   console.log("urlPrefix: ", urlPrefix);
   // return h.redirect(`/login`)
   return {
     ...commonContent,
     ...pageContent,
+    wildLifeLicensingEmailAddress,
     returnToYourApplicationsUrl,
     paymentRoute,
     pageTitle,

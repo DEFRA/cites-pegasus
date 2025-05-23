@@ -5,12 +5,16 @@ govukButton %} {% block content %}
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">{{pageHeader}}</h1>
 
-    <p class="govuk-body">{{pageBody}}</p>
+    <p class="govuk-body">{{pageBodyText1}}</p>
+    <p class="govuk-body">{{pageBodyText2}}</p>
+    <p class="govuk-body">
+      Email:
+      <!-- <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'></a>. -->
+      <a href="mailto:{{wildLifeLicensingEmailAddress}}">{{pageBodyText3}}</a>
+    </p>
 
     <p class="govuk-body">
-      <a href="{{returnToYourApplicationsUrl}}"
-        >{{returnToYourApplicationsLinkText}}</a
-      >
+      <a href="{{returnToYourApplicationsUrl}}">{{returnToYourApplicationsLinkText}}</a>
     </p>
   </div>
 </div>

@@ -16,7 +16,7 @@ const invalidSubmissionPath = `${urlPrefix}/`
 const nextPathSuccessNewApplication = `${urlPrefix}/application-complete`
 const nextPathSuccessAccountFlow = `${urlPrefix}/payment-success`
 const paymentRoutes = ['account', 'new-application']
-
+ 
 async function getFinishedPaymentStatus (paymentId) {
   const timeoutMs = 60000 // 1 minute timeout
   const intervalMs = 2000 // 2 seconds interval
@@ -80,14 +80,14 @@ module.exports = [
         return h.redirect(invalidSubmissionPath)
       }
 
-      console.log("1. paymentRoute ---> ",request.params.paymentRoute);
+      // console.log("1. paymentRoute ---> ", request.params.paymentRoute);
       setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.params.paymentRoute)
 
       let contactIdFilter = contactId
       if (user.hasOrganisationWideAccess(request)) {
         contactIdFilter = null
-      }      
-
+      }
+      
       const paymentReferenceParams = {
         server: request.server,
         contactId: contactIdFilter,
@@ -96,12 +96,14 @@ module.exports = [
         paymentRef: response.paymentId,
         // paymentValue: paymentStatus.amount / 100,
         isAdditionalPayment,
-        // previousAdditionalAmountPaid
+        previousAdditionalAmountPaid
       }
+      console.log("paymentReferenceParams--->",paymentReferenceParams)
 
       await setPaymentReference(paymentReferenceParams)
       return h.redirect(response.nextUrl)
     }
+
   },
   {
     method: 'GET',
@@ -116,55 +118,139 @@ module.exports = [
     //     })
     //   }
     // },
+    // handler: async (request, h) => {
+    //   const { submissionRef } = request.params
+    //   let submission = getSubmission(request)
+    //   let { contactId, organisationId } = getYarValue(request, 'CIDMAuth')?.user || {} 
+
+
+    //   if(!contactId) contactId = request.query.cid ? request.query.cid : null;
+    //   if(!organisationId) organisationId = request.query.oid ? request.query.oid : null
+
+    //   if (submission === null) {
+    //     submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef)
+    //     console.log("Submission--->",submission)
+    //     submission.contactId = contactId;
+    //     submission.organisationId = organisationId;
+    //     // submission.paymentRoute = request.query.pr ? request.query.pr : null
+    //     setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.query.pr)
+    //     setYarValue(request, sessionKey.SUBMISSION, submission)
+    //     setYarValue(request, sessionKey.SESSION_LOST, true)
+    //     return h.redirect(`${cookieExpired}/new-application`)
+    //   }
+
+    //   if (submission.submissionRef !== submissionRef) {
+    //     throw new Error('Invalid submission reference')
+    //   }
+
+    //   const paymentId = submission.paymentDetails.paymentId
+    //   const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid
+    //   const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
+    //   console.log("paymentId--->,submission--->",paymentId,submission)
+    //   const paymentStatus = await getFinishedPaymentStatus(paymentId)
+    //   console.log("paymentStatus-->",paymentStatus)
+
+
+    //   submission.paymentDetails.paymentStatus = paymentStatus
+    //   console.log('submission.paymentDetails.paymentStatus ---->',submission.paymentDetails.paymentStatus )
+
+    //   try {
+    //     mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
+    //   } catch (err) {
+    //     console.error(err)
+    //     return h.redirect(invalidSubmissionPath)
+    //   }
+    //   const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
+    //   console.log("2. paymentRoute sesssion ---> ",paymentRoute);
+
+    //   if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
+    //     console.log(" Routes ---> ",`${nextPathFailed}/${paymentRoute}`);
+    //     return h.redirect(`${nextPathFailed}/${paymentRoute}`)
+    //   }
+
+    //   let contactIdFilter = contactId
+    //   if (user.hasOrganisationWideAccess(request)) {
+    //     contactIdFilter = null
+    //   }
+
+    //   const submissionPaymentParams = {
+    //     server: request.server,
+    //     contactId: contactIdFilter,
+    //     organisationId,
+    //     submissionId: submission.submissionId,
+    //     paymentRef: paymentStatus.paymentId,
+    //     paymentValue: paymentStatus.amount / 100,
+    //     isAdditionalPayment,
+    //     previousAdditionalAmountPaid
+    //   }
+
+    //   await setSubmissionPayment(submissionPaymentParams)
+
+    //   if (paymentRoute === 'new-application') {
+    //     return h.redirect(nextPathSuccessNewApplication)
+    //   } else {
+    //     return h.redirect(nextPathSuccessAccountFlow)
+    //   }
+    // }
     handler: async (request, h) => {
       const { submissionRef } = request.params
       let submission = getSubmission(request)
-      let { contactId, organisationId } = getYarValue(request, 'CIDMAuth')?.user || {}      
+      let { contactId, organisationId } = getYarValue(request, 'CIDMAuth')?.user || {} 
 
-      if(!contactId) contactId = request.query.cid ? request.query.cid : null;
-      if(!organisationId) organisationId = request.query.oid ? request.query.oid : null
 
+      if (!contactId) contactId = request.query.cid || null;
+      if (!organisationId) organisationId = request.query.oid || null;
+
+      // First attempt to fetch submission if not found in session
       if (submission === null) {
-        submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef)
-        submission.contactId = contactId;
-        submission.organisationId = organisationId;
-        // submission.paymentRoute = request.query.pr ? request.query.pr : null
-        setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.query.pr)
-        setYarValue(request, sessionKey.SUBMISSION, submission)
-        setYarValue(request, sessionKey.SESSION_LOST, true)
-        return h.redirect(`${cookieExpired}/new-application`)
+        shouldRedirectToCookieExpired = true; // ✅ Set flag immediately
+        submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef);
+        console.log("Submission--->", submission);
+
+        if (submission) {
+          submission.contactId = contactId;
+          submission.organisationId = organisationId;
+          setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.query.pr);
+          setYarValue(request, sessionKey.SUBMISSION, submission);
+          setYarValue(request, sessionKey.SESSION_LOST, true);
+        }
       }
 
-      if (submission.submissionRef !== submissionRef) {
-        throw new Error('Invalid submission reference')
+      // If still no submission, throw error
+      if (!submission || submission.submissionRef !== submissionRef) {
+        throw new Error('Invalid submission reference');
       }
 
-      const paymentId = submission.paymentDetails.paymentId
-      const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid
-      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
+      const paymentId = submission.paymentDetails.paymentId;
+      const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid;
+      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0;
 
-      // const paymentStatus = await getFinishedPaymentStatus(paymentId)
-      const paymentStatus = "abc"
+      const paymentStatus = await getFinishedPaymentStatus(paymentId)
+      
 
-      submission.paymentDetails.paymentStatus = paymentStatus
+      submission.paymentDetails.paymentStatus = paymentStatus;
 
       try {
-        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
+        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`);
       } catch (err) {
-        console.error(err)
-        return h.redirect(invalidSubmissionPath)
+        console.error(err);
+        return h.redirect(invalidSubmissionPath);
       }
-      const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
-      console.log("2. paymentRoute sesssion ---> ",paymentRoute);
+
+      const paymentRoute = getYarValue(request, 'govpay-paymentRoute');
+
+      // ✅ Redirect after all logic is done
+      if (shouldRedirectToCookieExpired) {
+        return h.redirect(`${cookieExpired}/new-application`);
+      }
 
       if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
-        console.log(" Routes ---> ",`${nextPathFailed}/${paymentRoute}`);
-        return h.redirect(`${nextPathFailed}/${paymentRoute}`)
+        return h.redirect(`${nextPathFailed}/${paymentRoute}`);
       }
 
-      let contactIdFilter = contactId
+      let contactIdFilter = contactId;
       if (user.hasOrganisationWideAccess(request)) {
-        contactIdFilter = null
+        contactIdFilter = null;
       }
 
       const submissionPaymentParams = {
@@ -176,15 +262,15 @@ module.exports = [
         paymentValue: paymentStatus.amount / 100,
         isAdditionalPayment,
         previousAdditionalAmountPaid
-      }
+      };
 
-      await setSubmissionPayment(submissionPaymentParams)
+      await setSubmissionPayment(submissionPaymentParams);
 
-      if (paymentRoute === 'new-application') {
-        return h.redirect(nextPathSuccessNewApplication)
-      } else {
-        return h.redirect(nextPathSuccessAccountFlow)
-      }
+      return paymentRoute === 'new-application'
+        ? h.redirect(nextPathSuccessNewApplication)
+        : h.redirect(nextPathSuccessAccountFlow);
     }
+
+
   }
 ]

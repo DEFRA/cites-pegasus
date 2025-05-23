@@ -1258,7 +1258,9 @@ const schema = Joi.object().keys({
   cookieProblem: Joi.object({
     defaultTitle: Joi.string().required(),
     pageHeader: Joi.string().required(),
-    pageBody: Joi.string().required(),
+    pageBodyText1: Joi.string().required(),
+    pageBodyText2: Joi.string().required(),
+    pageBodyText3: Joi.string().required(),
     goToSubmissionText: Joi.string().required(),
     returnToYourApplicationsLinkText: Joi.string().required()
   }).required(),
