@@ -96,9 +96,8 @@ module.exports = [
         paymentRef: response.paymentId,
         // paymentValue: paymentStatus.amount / 100,
         isAdditionalPayment,
-        previousAdditionalAmountPaid
+        // previousAdditionalAmountPaid
       }
-      console.log("paymentReferenceParams--->",paymentReferenceParams)
 
       await setPaymentReference(paymentReferenceParams)
       return h.redirect(response.nextUrl)
@@ -111,87 +110,6 @@ module.exports = [
     config: {
       auth: false
     },
-    // options: {
-    //   validate: {
-    //     params: Joi.object({
-    //       submissionRef: Joi.string().required()
-    //     })
-    //   }
-    // },
-    // handler: async (request, h) => {
-    //   const { submissionRef } = request.params
-    //   let submission = getSubmission(request)
-    //   let { contactId, organisationId } = getYarValue(request, 'CIDMAuth')?.user || {} 
-
-
-    //   if(!contactId) contactId = request.query.cid ? request.query.cid : null;
-    //   if(!organisationId) organisationId = request.query.oid ? request.query.oid : null
-
-    //   if (submission === null) {
-    //     submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef)
-    //     console.log("Submission--->",submission)
-    //     submission.contactId = contactId;
-    //     submission.organisationId = organisationId;
-    //     // submission.paymentRoute = request.query.pr ? request.query.pr : null
-    //     setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.query.pr)
-    //     setYarValue(request, sessionKey.SUBMISSION, submission)
-    //     setYarValue(request, sessionKey.SESSION_LOST, true)
-    //     return h.redirect(`${cookieExpired}/new-application`)
-    //   }
-
-    //   if (submission.submissionRef !== submissionRef) {
-    //     throw new Error('Invalid submission reference')
-    //   }
-
-    //   const paymentId = submission.paymentDetails.paymentId
-    //   const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid
-    //   const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
-    //   console.log("paymentId--->,submission--->",paymentId,submission)
-    //   const paymentStatus = await getFinishedPaymentStatus(paymentId)
-    //   console.log("paymentStatus-->",paymentStatus)
-
-
-    //   submission.paymentDetails.paymentStatus = paymentStatus
-    //   console.log('submission.paymentDetails.paymentStatus ---->',submission.paymentDetails.paymentStatus )
-
-    //   try {
-    //     mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
-    //   } catch (err) {
-    //     console.error(err)
-    //     return h.redirect(invalidSubmissionPath)
-    //   }
-    //   const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
-    //   console.log("2. paymentRoute sesssion ---> ",paymentRoute);
-
-    //   if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
-    //     console.log(" Routes ---> ",`${nextPathFailed}/${paymentRoute}`);
-    //     return h.redirect(`${nextPathFailed}/${paymentRoute}`)
-    //   }
-
-    //   let contactIdFilter = contactId
-    //   if (user.hasOrganisationWideAccess(request)) {
-    //     contactIdFilter = null
-    //   }
-
-    //   const submissionPaymentParams = {
-    //     server: request.server,
-    //     contactId: contactIdFilter,
-    //     organisationId,
-    //     submissionId: submission.submissionId,
-    //     paymentRef: paymentStatus.paymentId,
-    //     paymentValue: paymentStatus.amount / 100,
-    //     isAdditionalPayment,
-    //     previousAdditionalAmountPaid
-    //   }
-
-    //   await setSubmissionPayment(submissionPaymentParams)
-
-    //   if (paymentRoute === 'new-application') {
-    //     return h.redirect(nextPathSuccessNewApplication)
-    //   } else {
-    //     return h.redirect(nextPathSuccessAccountFlow)
-    //   }
-    // }
     handler: async (request, h) => {
       const { submissionRef } = request.params
       let submission = getSubmission(request)

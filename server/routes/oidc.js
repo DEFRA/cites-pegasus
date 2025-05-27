@@ -96,7 +96,7 @@ async function checkLastPermit (request,h,htmlContent) {
   const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
 
   const paymentStatus = await getFinishedPaymentStatus(paymentId)
-  console.log(" paymentStatus --->", paymentStatus)
+  console.log('Received paymentStatus:', paymentStatus);
 
   submission.paymentDetails.paymentStatus = paymentStatus
 
@@ -107,24 +107,13 @@ async function checkLastPermit (request,h,htmlContent) {
     return h.redirect(invalidSubmissionPath)
   }
   const paymentRoute = getYarValue(request, 'govpay-paymentRoute')
-  console.log("paymentRoute: ---> ",paymentRoute);
-
-  // if(paymentStatus.code === 'P0030'){
-  //   console.log("Code --->", paymentStatus.code);
-  //   return h.response(htmlContent).header('Content-Type', 'text/html')
-  // }
+  console.log('Retrieved paymentRoute:', paymentRoute);
 
   if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
     return h.redirect(`${nextPathFailed}/${paymentRoute}`)// need to handkle this how to get paymentRoute
     // why need to show user that session has been lost 
     // if cancel payment I think they should be redirected to home page.    
   }
-
-  
-
-  // const user = getYarValue(request, 'CIDMAuth')?.user; //re confirm this line
-  // const sessionCIDMAuth = getYarValue(request, sessionKey.CIDM_AUTH)
-  // console.log("sessionCIDMAuth ---. ",sessionCIDMAuth);
 
   let contactIdFilter = submission.contactId
   if (user.hasOrganisationWideAccess(request)) {
@@ -141,10 +130,6 @@ async function checkLastPermit (request,h,htmlContent) {
     isAdditionalPayment,
     previousAdditionalAmountPaid
   }
-  // await setSubmissionPayment(submissionPaymentParams)
-  await setPaymentReference(submissionPaymentParams)
-
-  console.log("submissionPaymentParams-->",submissionPaymentParams)
   // await setSubmissionPayment(submissionPaymentParams)
   await setPaymentReference(submissionPaymentParams)
 }

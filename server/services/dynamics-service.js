@@ -6,7 +6,7 @@ const { readSecret } = require('../lib/key-vault')
 const { httpStatusCode } = require('../lib/constants')
 const lodash = require('lodash')
 const apiUrl = config.dynamicsAPI.baseURL + config.dynamicsAPI.apiPath
-// const httpResponsePrefix = 'HTTP Response Payload: '
+const httpResponsePrefix = 'HTTP Response Payload: '
 const collectionExpandoString = '#Collection(Microsoft.Dynamics.CRM.expando)'
 const countString = '@odata.count'
 const dynamicsStatusCodeConst = {
@@ -92,9 +92,7 @@ async function postSubmission (server, submission) {
 
     const { payload } = await Wreck.post(url, options)
 
-    console.log("payload for postSubmission-->",payload)
-
-    // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
     return payload
   } catch (err) {
@@ -430,7 +428,6 @@ function getFilterParts (submittedByFilterEnabled, submittedBy, contactId, organ
 }
 
 async function getSubmissions (server, query, pageSize) {
-  // console.log(query)
   const accessToken = await getAccessToken(server)
 
   try {
@@ -531,14 +528,13 @@ async function getSubmission (server, contactId, organisationId, submissionRef) 
     const { payload } = response
 
     if (payload) {
-      // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
       if (payload.value.length === 0) {
         throw new Error(`Submission not found with reference '${submissionRef}' and contact '${contactId}'`)
       }
 
       const submission = payload.value[0]
-      console.log("Submission dyn -->: ",submission);
       const dynamicsApplications = payload.value[0].cites_cites_submission_incident_submission
 
       const jsonContent = JSON.parse((submission.cites_portaljsoncontent) + (submission.cites_portaljsoncontentcontinued || ''))
@@ -607,7 +603,7 @@ async function validateSubmission (accessToken, contactId, organisationId, submi
     const { payload } = await Wreck.get(url, options)
 
     if (payload) {
-      // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
+      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
 
       if (payload.value.length === 0) {
         throw new Error(`Submission not found with details submisssionRef: '${submissionRef}', submissionId: '${submissionId}', contactId: '${contactId}', organisationId: '${organisationId}'`)
@@ -653,7 +649,7 @@ async function setSubmissionPayment (params) {
 
     const { payload } = await Wreck.patch(url, options)
 
-    // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
   } catch (err) {
     if (err.data?.payload) {
       console.error(err.data.payload)
@@ -669,7 +665,7 @@ async function setPaymentReference (params) {
 
   try {
     const url = `${apiUrl}cites_submissions(${params.submissionId})`
-    console.log("url -->",url)
+
     let requestPayload = {
       statuscode: 149900002
     }
@@ -694,7 +690,6 @@ async function setPaymentReference (params) {
     console.log('[PAYMENT-ID] Request Payload: ' + JSON.stringify(requestPayload, null, 2))
 
     const { payload } = await Wreck.patch(url, options)
-    console.log("payload----->",payload)
 
     console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
   } catch (err) {
