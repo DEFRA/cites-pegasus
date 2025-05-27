@@ -8,7 +8,7 @@ const { cidmCallbackUrl, cidmPostLogoutRedirectUrl, cidmAccountManagementUrl } =
 const user = require('../lib/user')
 const { readSecret } = require('../lib/key-vault')
 const jwt = require('jsonwebtoken')
-const { setSubmissionPayment,setPaymentReference } = require('../services/dynamics-service')
+const { setPaymentReference } = require('../services/dynamics-service')
 const { getPaymentStatus } = require('../services/govpay-service')
 const { getSubmission, mergeSubmission } = require('../lib/submission')
 const landingPage = '/my-submissions'
@@ -130,7 +130,6 @@ async function checkLastPermit (request,h,htmlContent) {
     isAdditionalPayment,
     previousAdditionalAmountPaid
   }
-  // await setSubmissionPayment(submissionPaymentParams)
   await setPaymentReference(submissionPaymentParams)
 }
 
@@ -224,7 +223,6 @@ module.exports = [
         serviceId: serviceId
       }
       const oidcClient = request.server.app.oidcClient
-      // const oidcClient = await getOpenIdClient()
       const authorizationUri = oidcClient.authorizationUrl(authOptions)
 
       return h.redirect(authorizationUri)

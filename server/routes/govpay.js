@@ -94,9 +94,7 @@ module.exports = [
         organisationId,
         submissionId: submission.submissionId,
         paymentRef: response.paymentId,
-        // paymentValue: paymentStatus.amount / 100,
         isAdditionalPayment,
-        // previousAdditionalAmountPaid
       }
 
       await setPaymentReference(paymentReferenceParams)
@@ -123,7 +121,7 @@ module.exports = [
       if (submission === null) {
         shouldRedirectToCookieExpired = true; // ✅ Set flag immediately
         submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef);
-        console.log("Submission--->", submission);
+        console.log('Retrieved submission from Dynamics:', submission);
 
         if (submission) {
           submission.contactId = contactId;

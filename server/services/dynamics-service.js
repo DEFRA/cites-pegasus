@@ -441,7 +441,6 @@ async function getSubmissions (server, query, pageSize) {
     const { payload } = response
 
     if (payload) {
-      // console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
       // log('HTTP Response Payload', payload)
       return {
         submissions: payload.value.map(x => {
