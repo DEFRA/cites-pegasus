@@ -428,7 +428,6 @@ function getFilterParts (submittedByFilterEnabled, submittedBy, contactId, organ
 }
 
 async function getSubmissions (server, query, pageSize) {
-  // console.log(query)
   const accessToken = await getAccessToken(server)
 
   try {
@@ -442,7 +441,6 @@ async function getSubmissions (server, query, pageSize) {
     const { payload } = response
 
     if (payload) {
-      console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
       // log('HTTP Response Payload', payload)
       return {
         submissions: payload.value.map(x => {
@@ -500,7 +498,7 @@ function updateSubmissionSchema (jsonContent) {
 
 async function getSubmission (server, contactId, organisationId, submissionRef) {
   const top = '$top=1'
-  const select = '$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,cites_remainingadditionalamount,cites_additionalamountpaid,statuscode,statecode'
+  const select = '$select=cites_portaljsoncontent,cites_portaljsoncontentcontinued,cites_paymentreference,cites_submissionid,cites_totalfeecalculation,cites_paymentcalculationtype,cites_feehasbeenpaid,cites_remainingadditionalamount,cites_additionalamountpaid,statuscode,statecode'
   const expand = '$expand=cites_cites_submission_incident_submission($select=cites_applicationreference,cites_permittype,statuscode,cites_portalapplicationindex)'
   const organisationIdValue = organisationId ? `'${organisationId}'` : 'null'
 
@@ -516,7 +514,7 @@ async function getSubmission (server, contactId, organisationId, submissionRef) 
   const filter = `$filter=${filterParts.join(' and ')}`
 
   const url = `${apiUrl}cites_submissions?${top}&${select}&${expand}&${filter}`
-  // console.log(url)
+  
   const accessToken = await getAccessToken(server)
 
   try {
@@ -543,6 +541,7 @@ async function getSubmission (server, contactId, organisationId, submissionRef) 
       jsonContent.submissionId = submission.cites_submissionid
       jsonContent.submissionStatus = getPortalSubmissionStatus(submission.statuscode, submission.statecode)
       jsonContent.paymentDetails = {
+        paymentId: submission.cites_paymentreference,
         costingType: getPaymentCalculationType(submission.cites_paymentcalculationtype),
         costingValue: submission.cites_totalfeecalculation,
         feePaid: submission.cites_feehasbeenpaid,
@@ -659,4 +658,46 @@ async function setSubmissionPayment (params) {
   }
 }
 
-module.exports = { getAccessToken, whoAmI, getSpecies, getSpecieses, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission, setSubmissionPayment }
+async function setPaymentReference (params) {
+  const accessToken = await getAccessToken(params.server)
+  await validateSubmission(accessToken, params.contactId, params.organisationId, null, params.submissionId)// Not necessary as we are using submissionId which is server side
+
+  try {
+    const url = `${apiUrl}cites_submissions(${params.submissionId})`
+
+    let requestPayload = {
+      statuscode: 149900002
+    }
+
+    if (params.isAdditionalPayment) {
+      // requestPayload
+      requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
+      requestPayload.cites_additionalpaymentreference = params.paymentRef
+      requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
+    } else {
+      requestPayload.cites_paymentmethod = 149900000 // Gov Pay
+      requestPayload.cites_paymentreference = params.paymentRef
+      requestPayload.cites_totalfeeamount = params.paymentValue
+    }
+
+    const options = {
+      json: true,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      payload: requestPayload
+    }
+    console.log(`[PAYMENT-ID] HTTP Request Verb: PATCH Url: ${url}`)
+    console.log('[PAYMENT-ID] Request Payload: ' + JSON.stringify(requestPayload, null, 2))
+
+    const { payload } = await Wreck.patch(url, options)
+
+    console.log(httpResponsePrefix + JSON.stringify(payload, null, 2))
+  } catch (err) {
+    if (err.data?.payload) {
+      console.error(err.data.payload)
+    }
+    console.error(err)
+    throw err
+  }
+}
+
+module.exports = { getAccessToken, whoAmI, getSpecies, getSpecieses, getSubmissions, getNewSubmissionsQueryUrl, postSubmission, getCountries, getTradeTermCodes, getSubmission, setSubmissionPayment, setPaymentReference }

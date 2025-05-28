@@ -1,0 +1,30 @@
+{% extends 'layout.html' %} {% from "govuk/components/back-link/macro.njk"
+import govukBackLink %} {% from "govuk/components/button/macro.njk" import
+govukButton %} {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">{{pageHeader}}</h1>
+
+    <p class="govuk-body">{{pageBodyText1}}</p>
+    <p class="govuk-body">{{pageBodyText2}}</p>
+    <p class="govuk-body">
+      Email:
+      <!-- <a class='govuk-link' href='mailto:wildlife.licensing@apha.gov.uk'></a>. -->
+      <a href="mailto:{{wildLifeLicensingEmailAddress}}">{{pageBodyText3}}</a>
+    </p>
+
+    <p class="govuk-body">
+      <a href="{{returnToYourApplicationsUrl}}">{{returnToYourApplicationsLinkText}}</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+
+<!-- Sorry,  there was a problem with the service.
+
+Log back into your account using the link below to confirm the status of your application.
+
+Contact Centre for International Trade – Bristol for further information
+
+Email: wildlife.licensing@apha.gov.uk -->
