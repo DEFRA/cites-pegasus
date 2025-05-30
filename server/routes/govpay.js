@@ -112,6 +112,7 @@ module.exports = [
       const { submissionRef } = request.params
       let submission = getSubmission(request)
       let { contactId, organisationId } = getYarValue(request, 'CIDMAuth')?.user || {} 
+      let shouldRedirectToCookieExpired = false
 
 
       if (!contactId) contactId = request.query.cid || null;
