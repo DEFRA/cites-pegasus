@@ -1,127 +1,130 @@
-{% extends "govuk/template.njk" %}
-{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
-{% from "govuk/components/footer/macro.njk" import govukFooter %}
+{% extends "dist/govuk/template.njk" %}
+{% from "dist/govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "dist/govuk/components/footer/macro.njk" import govukFooter %}
 {% from "components/help-bar/macro.njk" import helpBar %}
+{% set govukRebrand = true %}
 
 {% block head %}
-  <!--[if !IE 8]><!-->
-  <link href="{{ assetPath }}/stylesheets/application.css" rel="stylesheet"/>
-  <link href="{{ assetPath }}/stylesheets/custom.css" rel="stylesheet"/>
-  <!--<![endif]-->
-  {% if googleTagId %}
-  <!-- Google Tag Manager - Basic -->
-    <script async="async" src="https://www.googletagmanager.com/gtag/js?id={{googleTagId}}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', '{{googleTagId}}');
-    </script>
-    <!-- End Google Tag Manager -->
+<!--[if !IE 8]><!-->
+<link href="{{ assetPath }}/stylesheets/application.css" rel="stylesheet" />
+<link href="{{ assetPath }}/stylesheets/custom.css" rel="stylesheet" />
+<!--<![endif]-->
+{% if googleTagId %}
+<!-- Google Tag Manager - Basic -->
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id={{googleTagId}}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', '{{googleTagId}}');
+</script>
+<!-- End Google Tag Manager -->
 
-    <!-- Google Tag Manager - Nonce Aware -->
+<!-- Google Tag Manager - Nonce Aware -->
     {# <script nonce="{{cspNonce}}">
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
+  (function (w, d, s, l, i) {
+    w[l] = w[l] || [];
         w[l].push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer'
-            ? '&l=' + l
-            : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        var n = d.querySelector('[nonce]');
-        n && j.setAttribute('nonce', n.nonce || n.getAttribute('nonce'));
-        f
-          .parentNode
-          .insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', '{{googleTagId}}');
-    </script> #}
-    <!-- End Google Tag Manager -->
-  {% endif %}
-  {# For Internet Explorer 8, you need to compile specific stylesheet #}
-  {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
-  <!--[if IE 8]> <link href="{{ assetPath }}/govuk-frontend/all-ie8.css" rel="stylesheet" /> <![endif]-->
+    var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s),
+      dl = l != 'dataLayer'
+        ? '&l=' + l
+        : '';
+    j.async = true;
+    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+    var n = d.querySelector('[nonce]');
+    n && j.setAttribute('nonce', n.nonce || n.getAttribute('nonce'));
+    f
+      .parentNode
+      .insertBefore(j, f);
+  })(window, document, 'script', 'dataLayer', '{{googleTagId}}');
+</script> #}
+<!-- End Google Tag Manager -->
+{% endif %}
+{# For Internet Explorer 8, you need to compile specific stylesheet #}
+{# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
+<!--[if IE 8]> <link href="{{ assetPath }}/govuk-frontend/all-ie8.css" rel="stylesheet" /> <![endif]-->
 
-  {# For older browsers to allow them to recognise HTML5 elements such as `<header>` #}
+{# For older browsers to allow them to recognise HTML5 elements such as `<header>` #}
   <!--[if lt IE 9]> <script src="/html5-shiv/html5shiv.js"></script> <![endif]-->
-{% endblock %}
+  {% endblock %}
 
-{% block header %}
+  {% block header %}
   {{ govukHeader({
-    homepageUrl: "#",
-    useTudorCrown: true,
-    containerClasses: "govuk-width-container",
-    serviceName: serviceName,
-    serviceUrl: "#",
-    navigation: [
-    {
-      href: "/account-management",
-      text: navigationAccountManagement,
-      attributes: {
-        target: "_blank",
-        rel: "noopener noreferrer"
-      },
-      active: false
-    },
-    {
-      href: "/logout",
-      text: navigationSignOut,
-      active: false
-    }    
-    ]
+  homepageUrl: "#",
+  rebrand: true,
+  useTudorCrown: true,
+  containerClasses: "govuk-width-container",
+  serviceName: serviceName,
+  serviceUrl: "#",
+  navigation: [
+  {
+  href: "/account-management",
+  text: navigationAccountManagement,
+  attributes: {
+  target: "_blank",
+  rel: "noopener noreferrer"
+  },
+  active: false
+  },
+  {
+  href: "/logout",
+  text: navigationSignOut,
+  active: false
+  }
+  ]
   }) }}
   {% if phaseBannerPhase != null %}
-    {{  govukPhaseBanner({
-      tag: {
-        text: phaseBannerPhase
-      },
-      html: phaseBannerHTML,
-      classes: 'govuk-width-container'
-    }) }}
+  {{ govukPhaseBanner({
+  tag: {
+  text: phaseBannerPhase
+  },
+  html: phaseBannerHTML,
+  classes: 'govuk-width-container'
+  }) }}
   {% endif %}
-{% endblock %}
+  {% endblock %}
 
-{% block pageTitle %}
+  {% block pageTitle %}
   {{ pageTitle }}
 
-{% endblock %}
-{% block content %}
+  {% endblock %}
+  {% block content %}
   <h1 class="govuk-heading-xl">Default page template</h1>
-{% endblock %}
-{% block footer %}
+  {% endblock %}
+  {% block footer %}
   {{ helpBar(helpBarContent) }}
   {{ govukFooter({
+  rebrand: true,
   meta: {
-    items: [
-      {
-        href: "/privacy",
-        text: footerLinkTextPrivacy
-      },
-      {
-        href: "/accessibility",
-        text: footerLinkTextAccessibilityStatement
-      },
-      {
-        href: "/cookies",
-        text: footerLinkTextCookies
-      },
-      {
-        href: footerLinkUrlContactUs,
-        text: footerLinkTextContactUs,
-        attributes: { target: "_blank", rel: "noopener noreferrer" }
-      }
-    ]
+  items: [
+  {
+  href: "/privacy",
+  text: footerLinkTextPrivacy
+  },
+  {
+  href: "/accessibility",
+  text: footerLinkTextAccessibilityStatement
+  },
+  {
+  href: "/cookies",
+  text: footerLinkTextCookies
+  },
+  {
+  href: footerLinkUrlContactUs,
+  text: footerLinkTextContactUs,
+  attributes: { target: "_blank", rel: "noopener noreferrer" }
   }
-}) }}
-{% endblock %}
+  ]
+  }
+  }) }}
+  {% endblock %}
 
-{% block bodyEnd %}
+  {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-  <script src="{{ assetPath }}/all.js"></script>
-  <script src="{{assetPath}}/js/govuk-init-all.client.js"></script>
-  {% block localJS %}{% endblock %}
-{% endblock %}
+    <script src="{{ assetPath }}/all.js"></script>
+    <script src="{{assetPath}}/js/govuk-init-all.client.js"></script>
+    {% block localJS %}{% endblock %}
+    {% endblock %}

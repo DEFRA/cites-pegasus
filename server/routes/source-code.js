@@ -43,7 +43,7 @@ function createModel (errors, data) {
     if (e.value === data.anotherSourceCodeForO) { e.selected = 'true' }
   })
 
-  let renderString = "{% from 'govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
+  let renderString = "{% from 'dist/govuk/components/select/macro.njk' import govukSelect %} \n {{govukSelect(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 
@@ -65,7 +65,7 @@ function createModel (errors, data) {
     }
   })
 
-  renderString = "{% from 'govuk/components/character-count/macro.njk' import govukCharacterCount %} \n {{govukCharacterCount(input)}}"
+  renderString = "{% from 'dist/govuk/components/character-count/macro.njk' import govukCharacterCount %} \n {{govukCharacterCount(input)}}"
 
   const sourceCharacterCount = nunjucks.renderString(renderString, {
     input: {

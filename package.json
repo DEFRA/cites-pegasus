@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "engines": {
-        "node": "^20.11.1",
-        "npm": "^10.2.4"
-    },
+    "node": "^20.11.1",
+    "npm": "^10.2.4"
+  },
   "scripts": {
     "start": "node index.js",
     "startdev": "nodemon --inspect index.js",
@@ -40,7 +40,7 @@
     "applicationinsights": "^2.9.6",
     "blipp": "4.0.2",
     "dotenv": "^16.4.7",
-    "govuk-frontend": "^4.9.0",
+    "govuk-frontend": "^5.10.1",
     "hapi-auth-jwt2": "^10.7.0",
     "hapi-pino": "9.1.1",
     "jwks-rsa": "^3.0.1",

@@ -11,7 +11,7 @@ module.exports = [{
   options: { auth: false },
   handler: {
     // file: 'node_modules/govuk-frontend/govuk/govuk-frontend.min.js'
-    file: 'node_modules/govuk-frontend/govuk/all.js'
+    file: 'node_modules/govuk-frontend/dist/govuk/all.js'
   }
 }, {
   method: 'GET',
@@ -22,7 +22,7 @@ module.exports = [{
       path: [
         'server/public/static',
         'server/public/build',
-        'node_modules/govuk-frontend/govuk/assets',
+        'node_modules/govuk-frontend/dist/govuk/assets',
         'node_modules/accessible-autocomplete/dist'
       ]
     }

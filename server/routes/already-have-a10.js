@@ -22,7 +22,7 @@ function createModel (errors, data) {
 
   const errorList = getErrorList(errors, { ...commonContent.errorMessages, ...pageContent.errorMessages }, ['isA10CertificateNumberKnown', 'a10CertificateNumber'])
 
-  const renderString = "{% from 'govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
+  const renderString = "{% from 'dist/govuk/components/input/macro.njk' import govukInput %} \n {{govukInput(input)}}"
 
   nunjucks.configure(['node_modules/govuk-frontend/'], { autoescape: true, watch: false })
 

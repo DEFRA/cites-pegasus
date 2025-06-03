@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
-{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "dist/govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "dist/govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "dist/govuk/components/button/macro.njk" import govukButton %}
+{% from "dist/govuk/components/file-upload/macro.njk" import govukFileUpload %}
+{% from "dist/govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% block beforeContent %}
   {{ govukBackLink({
