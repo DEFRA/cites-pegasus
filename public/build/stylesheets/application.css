@@ -8121,7 +8121,6 @@ p + .govuk-heading-s,
   }
 }
 
-
-
-
-
+.govuk-template--rebranded .govuk-header {
+  background: #1d70b8 !important;
+}
