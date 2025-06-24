@@ -3978,9 +3978,6 @@ p + .govuk-heading-s,
 .govuk-template--rebranded .govuk-header {
   border-bottom: 1px solid transparent;
 }
-.govuk-template--rebranded .govuk-header {
-  background: #1d70b8;
-}
 
 .govuk-header__container--full-width {
   padding: 0 15px;
