@@ -1,9 +1,3 @@
-#!/bin/bash
-
-# node-sass --output-style=expanded \
-#   --output=server/public/build/stylesheets \
-#   client/sass
-
 sass --load-path=. \
   --no-source-map \
   --quiet \
