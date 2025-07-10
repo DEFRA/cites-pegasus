@@ -62,6 +62,7 @@ steps:
     sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**' 
     targetFolder: $(Build.ArtifactStagingDirectory)/npm
+    CleanTargetFolder: true
   displayName: 'Copy npm package'
 
 - task: PublishPipelineArtifact@1
