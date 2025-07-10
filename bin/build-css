@@ -1,8 +1,8 @@
 #!/bin/sh
  
-rm -rf assets/stylesheets
+rm -rf public/build/stylesheets
 
 sass --load-path=. \
   --no-source-map \
   --quiet \
-  client/sass:assets/stylesheets
+  client/sass:public/build/stylesheets

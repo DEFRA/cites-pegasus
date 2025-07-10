@@ -16,4 +16,4 @@ lcov.info
 stdout
 tests/coverage
 dump.rdb
-assets/stylesheets/
+public/build

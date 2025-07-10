@@ -20,7 +20,7 @@ module.exports = [{
     directory: {
       path: [
         'server/public/static',
-        'server/public/build',
+        'public/build/stylesheets',
         'node_modules/govuk-frontend/dist/govuk/assets',
         'node_modules/accessible-autocomplete/dist'
       ]
