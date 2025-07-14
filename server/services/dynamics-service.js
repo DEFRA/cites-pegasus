@@ -665,8 +665,9 @@ async function setPaymentReference (params) {
   try {
     const url = `${apiUrl}cites_submissions(${params.submissionId})`
 
+    // For status codes please refer to dynamicsStatusCodeConst in start of this file.
     let requestPayload = {
-      statuscode: 149900002
+      statuscode: dynamicsStatusCodeConst.awaitingPayment
     }
 
     if (params.isAdditionalPayment) {
