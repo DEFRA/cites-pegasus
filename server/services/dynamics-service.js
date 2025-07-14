@@ -666,7 +666,7 @@ async function setPaymentReference (params) {
     const url = `${apiUrl}cites_submissions(${params.submissionId})`
 
     let requestPayload = {
-      statuscode: 149900002
+      statuscode: 1
     }
 
     if (params.isAdditionalPayment) {
