@@ -64,7 +64,7 @@ module.exports = [
       const email = cidmAuth.user.email
       let amount = submission.paymentDetails.costingValue
       const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
-
+      const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid;
       if (submission.paymentDetails.feePaid && isAdditionalPayment) {
         amount = submission.paymentDetails.remainingAdditionalAmount
       }
@@ -95,8 +95,8 @@ module.exports = [
         submissionId: submission.submissionId,
         paymentRef: response.paymentId,
         isAdditionalPayment,
+        previousAdditionalAmountPaid
       }
-
       await setPaymentReference(paymentReferenceParams)
       return h.redirect(response.nextUrl)
     }
