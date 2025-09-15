@@ -667,14 +667,13 @@ async function setPaymentReference (params) {
 
     // For status codes please refer to dynamicsStatusCodeConst in start of this file.
     let requestPayload = {
-      statuscode: dynamicsStatusCodeConst.awaitingPayment
+      statuscode: params.isAdditionalPayment?dynamicsStatusCodeConst.awaitingAdditionalPayment:dynamicsStatusCodeConst.awaitingPayment
     }
-
     if (params.isAdditionalPayment) {
       // requestPayload
       requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
       requestPayload.cites_additionalpaymentreference = params.paymentRef
-      requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
+      requestPayload.cites_additionalamountpaid = params.previousAdditionalAmountPaid?params.previousAdditionalAmountPaid:0
     } else {
       requestPayload.cites_paymentmethod = 149900000 // Gov Pay
       requestPayload.cites_paymentreference = params.paymentRef
