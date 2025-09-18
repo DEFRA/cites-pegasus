@@ -667,6 +667,7 @@ async function setPaymentReference (params) {
 
     // For status codes please refer to dynamicsStatusCodeConst in start of this file.
     let requestPayload = {
+      // sending status codes on the type of payment
       statuscode: params.isAdditionalPayment?dynamicsStatusCodeConst.awaitingAdditionalPayment:dynamicsStatusCodeConst.awaitingPayment
     }
     if (params.isAdditionalPayment) {
