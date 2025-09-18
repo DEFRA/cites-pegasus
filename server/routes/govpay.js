@@ -122,7 +122,6 @@ module.exports = [
       if (submission === null) {
         shouldRedirectToCookieExpired = true; // ✅ Set flag immediately
         submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef);
-        console.log('Retrieved submission from Dynamics:', submission);
 
         if (submission) {
           submission.contactId = contactId;
