@@ -2,8 +2,6 @@ const config = require('../../config/config')
 const { getYarValue, setYarValue, clearYarSession, sessionKey } = require('../lib/session')
 const { httpStatusCode } = require('../lib/constants')
 const { urlPrefix } = require('../../config/config')
-// Not in use - TBC
-// const { getOpenIdClient } = require('../services/oidc-client')
 const { cidmCallbackUrl, cidmPostLogoutRedirectUrl, cidmAccountManagementUrl } = require('../../config/config')
 const user = require('../lib/user')
 const { readSecret } = require('../lib/key-vault')
@@ -45,13 +43,13 @@ function getRelationshipDetails (user) {
   return relationshipDetails
 }
 
-function getRoleDetails (user) {
+function getRoleDetails (userParams) {
   const roleDetails = {
     serviceRole: null
   }
 
-  if (user.roles && user.roles.length === 1) {
-    const parts = user.roles[0].split(':')
+  if (userParams.roles && userParams.roles.length === 1) {
+    const parts = userParams.roles[0].split(':')
     if (parts.length >= roleMinParts) {
       roleDetails.serviceRole = parts[roleParts.serviceRole]
     }
@@ -61,8 +59,8 @@ function getRoleDetails (user) {
 }
 
 async function getFinishedPaymentStatus (paymentId) {
-  const timeoutMs = 60000 // 1 minute timeout
-  const intervalMs = 2000 // 2 seconds interval
+  const timeoutMs = 60000 
+  const intervalMs = 2000 
 
   const startTimestamp = Date.now()
 
@@ -86,9 +84,7 @@ async function getFinishedPaymentStatus (paymentId) {
 }
 
 async function checkLastPermit (request,h,htmlContent) {
-  // take submission from cookies
-  // use paymentId and check the status of last permit
-  let submission = getSubmission(request)
+  const submission = getSubmission(request)
   console.log("submission after re login: ",await submission);
 
   const paymentId = submission.paymentDetails.paymentId
@@ -110,9 +106,7 @@ async function checkLastPermit (request,h,htmlContent) {
   console.log('Retrieved paymentRoute:', paymentRoute);
 
   if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
-    return h.redirect(`${nextPathFailed}/${paymentRoute}`)// need to handkle this how to get paymentRoute
-    // why need to show user that session has been lost 
-    // if cancel payment I think they should be redirected to home page.    
+    return h.redirect(`${nextPathFailed}/${paymentRoute}`)
   }
 
   let contactIdFilter = submission.contactId
