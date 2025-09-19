@@ -33,30 +33,6 @@ steps:
     npm run unit-test-cov || exit 1
   displayName: 'Run Unit Tests'
 
-- task: SonarCloudPrepare@2
-  displayName: 'SonarCloudPrepare'
-  inputs:
-    SonarCloud: 'SonarCloud Github'
-    organization: 'defra'
-    scannerMode: 'CLI'
-    projectKey: 'DEFRA_cites-pegasus'
-    projectName: 'Github-Defra-APHA-CITES'
-    extraProperties: |
-      sonar.projectKey=DEFRA_cites-pegasus
-      sonar.projectName=Github-Defra-APHA-CITES
-      sonar.sources=./
-      sonar.exclusions=**/tests/**
-      sonar.tests=./tests
-      sonar.javascript.lcov.reportPaths=./tests/coverage/lcov.info    
-
-- task: SonarCloudAnalyze@2
-  inputs:
-    jdkversion: 'JAVA_HOME_17_X64'
-
-- task: SonarCloudPublish@2
-  inputs:
-    pollingTimeoutSec: '300'
-
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
