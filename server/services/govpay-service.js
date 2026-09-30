@@ -94,7 +94,7 @@ async function createPayment ({
   }
 
   // Guard: ensure the response has the fields we need before returning
-  if (!payload?.payment_id || !payload?._links?.next_url?.href) {
+if (!payload?.payment_id || !payload?.state?.status || !payload?._links?.next_url?.href) {
     throw new PaymentServiceError('Unexpected GovPay create-payment response shape', {
       code: 'GOVPAY_INVALID_RESPONSE',
       upstream: payload
