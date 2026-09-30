@@ -254,7 +254,7 @@ module.exports = [
         throw new Error('Missing paymentId on submission')
       }
 
-      if (submission.paymentDetails?.feePaid) {
+if (submission.paymentDetails?.feePaid && !(submission.paymentDetails?.remainingAdditionalAmount > 0)) {
         console.log(JSON.stringify({
           level: 'info',
           context: 'CALLBACK',
