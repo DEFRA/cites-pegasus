@@ -333,7 +333,7 @@ if (submission.paymentDetails?.feePaid && !(submission.paymentDetails?.remaining
 
       const isAdditionalPayment = submission.paymentDetails?.remainingAdditionalAmount > 0
       const previousAdditionalAmountPaid = submission.paymentDetails?.additionalAmountPaid
-      const contactIdFilter = user.hasOrganisationWideAccess(request) ? null : contactId
+const contactIdFilter = getYarValue(request, sessionKey.CIDM_AUTH)?.user && user.hasOrganisationWideAccess(request) ? null : contactId
 
       // ── F4 + F5: single atomic Dynamics write — fee AND status set together ──
       // Frontend redirect only happens AFTER this succeeds.
