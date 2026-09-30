@@ -156,6 +156,7 @@ module.exports = [
           organisationId,
           submissionId: submission.submissionId,
           paymentRef: govpayResponse.paymentId,
+          paymentValue: amount,
           isAdditionalPayment,
           previousAdditionalAmountPaid
         })
