@@ -70,7 +70,7 @@ module.exports = [
           console.log(JSON.stringify({
             level: 'error',
             context: 'CREATE-PAYMENT-VALIDATE',
-            message: 'error-message'
+message: error.message
           }))
           return h.redirect(invalidSubmissionPath).takeover()
         }
