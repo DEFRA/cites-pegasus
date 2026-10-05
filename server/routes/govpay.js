@@ -10,35 +10,46 @@ const { getPaymentStatus } = require('../services/govpay-service')
 const dynamics = require('../services/dynamics-service')
 const pageId = 'govpay'
 const currentPath = `${urlPrefix}/${pageId}`
-const cookieExpired = `${urlPrefix}/cookie-problem`
+const cookieExpiredBase = `${urlPrefix}/cookie-problem`
 const nextPathFailed = `${urlPrefix}/payment-problem`
 const invalidSubmissionPath = `${urlPrefix}/`
 const nextPathSuccessNewApplication = `${urlPrefix}/application-complete`
 const nextPathSuccessAccountFlow = `${urlPrefix}/payment-success`
 const paymentRoutes = ['account', 'new-application']
- 
+
 async function getFinishedPaymentStatus (paymentId) {
   const timeoutMs = 60000 // 1 minute timeout
   const intervalMs = 2000 // 2 seconds interval
 
-  const startTimestamp = Date.now()
+  const deadline = Date.now() + timeoutMs
 
   while (true) {
     const statusResponse = await getPaymentStatus(paymentId)
-    console.log(statusResponse.status)
-
     if (statusResponse.finished) {
       return statusResponse
     }
 
-    const elapsedMs = Date.now() - startTimestamp
-
-    if (elapsedMs >= timeoutMs) {
-      console.log('Timeout reached getting payment status')
+    if (Date.now() >= deadline) {
+      console.log(JSON.stringify({
+        level: 'warn',
+        context: 'PAYMENT-STATUS-POLL',
+        message: 'Timeout reached before payment reached a terminal state.',
+        paymentId,
+        lastStatus: statusResponse.status
+      }))
       return statusResponse
     }
 
     await new Promise(resolve => setTimeout(resolve, intervalMs))
+  }
+}
+
+//  Reads contactId and organisationId from the yar session.
+function resolveIdentity (request) {
+  const fromSession = getYarValue(request, 'CIDMAuth')?.user || {}
+  return {
+    contactId: fromSession.contactId || request.query.cid || null,
+    organisationId: fromSession.organisationId || request.query.oid || null
   }
 }
 
@@ -51,142 +62,346 @@ module.exports = [
         params: Joi.object({
           paymentRoute: Joi.string().valid(...paymentRoutes)
         }),
-        failAction: (_request, _h, error) => {
+        failAction: (request, h, error) => {
           console.log(error)
+          console.log(JSON.stringify({
+            level: 'error',
+            context: 'CREATE-PAYMENT-VALIDATE',
+            message: error.message
+          }))
+          return h.redirect(invalidSubmissionPath).takeover()
         }
       }
     },
     handler: async (request, h) => {
       const cidmAuth = getYarValue(request, 'CIDMAuth')
-      const { user: { contactId, organisationId } } = getYarValue(request, 'CIDMAuth')
+      const { contactId, organisationId, firstName, lastName, email } = cidmAuth?.user || {}
       const submission = getSubmission(request)
-      const name = `${cidmAuth.user.firstName} ${cidmAuth.user.lastName}`
-      const email = cidmAuth.user.email
-      let amount = submission.paymentDetails.costingValue
-      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0
-      const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid;
-      if (submission.paymentDetails.feePaid && isAdditionalPayment) {
-        amount = submission.paymentDetails.remainingAdditionalAmount
+      const hasCidmAuth = !!cidmAuth?.user
+      const contactIdFilter = hasCidmAuth && user.hasOrganisationWideAccess(request)
+        ? null
+        : contactId
+      let currentFeePaid = submission.paymentDetails?.feePaid
+      let currentRemainingAdditional = submission.paymentDetails?.remainingAdditionalAmount
+      try {
+        const dynamicsSubmission = await dynamics.getSubmission(
+          request.server, contactIdFilter, organisationId, submission.submissionRef
+        )
+        if (dynamicsSubmission) {
+          currentFeePaid = dynamicsSubmission.paymentDetails?.feePaid             ?? currentFeePaid
+          currentRemainingAdditional = dynamicsSubmission.paymentDetails?.remainingAdditionalAmount ?? currentRemainingAdditional
+        }
+      } catch (err) {
+        console.warn(JSON.stringify({
+          level: 'warn',
+          context: 'CREATE-PAYMENT',
+          submissionRef: submission.submissionRef,
+          message: 'Could not re-fetch feePaid from Dynamics — using session state',
+          error: err.message
+        }))
+      }
+      // guard — do not allow re-payment on an already-paid submission ──
+      const isAdditionalPayment = currentRemainingAdditional > 0
+      if (currentFeePaid && !isAdditionalPayment) {
+        console.warn(JSON.stringify({
+          level: 'warn',
+          context: 'CREATE-PAYMENT',
+          message: 'Attempt to create payment for already-paid submission',
+          submissionRef: submission.submissionRef
+        }))
+        // Redirect to success — the user has already paid
+        const paymentRoute = request.params.paymentRoute
+        return paymentRoute === 'new-application'
+          ? h.redirect(nextPathSuccessNewApplication)
+          : h.redirect(nextPathSuccessAccountFlow)
       }
 
-      const response = await createPayment(request, amount, submission.submissionRef, email, name, textContent.payApplication.paymentDescription)
+      // Determine the amount to charge
+      const previousAdditionalAmountPaid = submission.paymentDetails?.additionalAmountPaid
+      const amount = (currentFeePaid && isAdditionalPayment)
+        ? currentRemainingAdditional
+        : submission.paymentDetails.costingValue
 
-      submission.paymentDetails = { paymentId: response.paymentId }
-
+      let govpayResponse
       try {
-        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`)
+        govpayResponse = await createPayment({
+          paymentRoute: request.params.paymentRoute,
+          costingValue: amount,
+          submissionRef: submission.submissionRef,
+          email,
+          name: `${firstName} ${lastName}`,
+          description: textContent.payApplication.paymentDescription,
+          contactId: contactIdFilter,
+          organisationId
+        })
       } catch (err) {
-        console.error(err)
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CREATE-PAYMENT',
+          submissionRef: submission.submissionRef,
+          message: err.message
+        }))
+        throw err // Hapi's error handler return a 500; do not swallow
+      }
+
+      // Persist only the new paymentId into the submission — do not clobber other fields
+      try {
+        mergeSubmission(
+          request,
+          { paymentDetails: { ...submission.paymentDetails, paymentId: govpayResponse.paymentId } },
+          pageId
+        )
+      } catch (err) {
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CREATE-PAYMENT',
+          submissionRef: submission.submissionRef,
+          message: 'Failed to merge submission after payment creation'
+        }))
         return h.redirect(invalidSubmissionPath)
       }
 
-      // console.log("1. paymentRoute ---> ", request.params.paymentRoute);
       setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.params.paymentRoute)
 
-      let contactIdFilter = contactId
-      if (user.hasOrganisationWideAccess(request)) {
-        contactIdFilter = null
+      // Write the payment reference to Dynamics BEFORE redirecting to GovPay.
+      // This ensures a reference exists even if the callback is never called.
+      try {
+        await setPaymentReference({
+          server: request.server,
+          contactId: contactIdFilter,
+          organisationId,
+          submissionId: submission.submissionId,
+          paymentRef: govpayResponse.paymentId,
+          isAdditionalPayment,
+          previousAdditionalAmountPaid
+        })
+      } catch (err) {
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CREATE-PAYMENT',
+          submissionRef: submission.submissionRef,
+          paymentId: govpayResponse.paymentId,
+          message: 'Failed to write payment reference to Dynamics'
+        }))
+        throw err
       }
-      
-      const paymentReferenceParams = {
-        server: request.server,
-        contactId: contactIdFilter,
-        organisationId,
-        submissionId: submission.submissionId,
-        paymentRef: response.paymentId,
-        isAdditionalPayment,
-        previousAdditionalAmountPaid
-      }
-      await setPaymentReference(paymentReferenceParams)
-      return h.redirect(response.nextUrl)
-    }
 
+      console.log(JSON.stringify({
+        level: 'info',
+        context: 'CREATE-PAYMENT',
+        submissionRef: submission.submissionRef,
+        paymentId: govpayResponse.paymentId,
+        amount,
+        isAdditionalPayment
+      }))
+
+      return h.redirect(govpayResponse.nextUrl)
+    }
   },
   {
     method: 'GET',
     path: `${currentPath}/callback/{submissionRef}`,
-    config: {
+    options: {
       auth: false
     },
     handler: async (request, h) => {
       const { submissionRef } = request.params
+      const { contactId, organisationId } = resolveIdentity(request)
+      let sessionWasLost = false
+
+      // ── Resolve submission (session or Dynamics fallback) ──
       let submission = getSubmission(request)
-      let { contactId, organisationId } = getYarValue(request, 'CIDMAuth')?.user || {} 
-      let shouldRedirectToCookieExpired = false
 
-
-      if (!contactId) contactId = request.query.cid || null;
-      if (!organisationId) organisationId = request.query.oid || null;
-
-      // First attempt to fetch submission if not found in session
-      if (submission === null) {
-        shouldRedirectToCookieExpired = true; // ✅ Set flag immediately
-        submission = await dynamics.getSubmission(request.server, contactId, organisationId, submissionRef);
-
-        if (submission) {
-          submission.contactId = contactId;
-          submission.organisationId = organisationId;
-          setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.query.pr);
-          setYarValue(request, sessionKey.SUBMISSION, submission);
-          setYarValue(request, sessionKey.SESSION_LOST, true);
+      if (!submission) {
+        sessionWasLost = true
+        try {
+          submission = await dynamics.getSubmission(
+            request.server, contactId, organisationId, submissionRef
+          )
+        } catch (err) {
+          console.error(JSON.stringify({
+            level: 'error',
+            context: 'CALLBACK',
+            submissionRef,
+            message: 'Dynamics lookup failed during session recovery',
+            error: err.message
+          }))
+          throw err
         }
+
+        if (!submission) {
+          console.error(JSON.stringify({
+            level: 'error',
+            context: 'CALLBACK',
+            submissionRef,
+            message: 'Submission not found in Dynamics after session loss'
+          }))
+          throw new Error('Submission not found')
+        }
+
+        submission.contactId = contactId
+        submission.organisationId = organisationId
+        setYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE, request.query.pr)
+        setYarValue(request, sessionKey.SUBMISSION, submission)
+        setYarValue(request, sessionKey.SESSION_LOST, true)
       }
 
-      // If still no submission, throw error
-      if (!submission || submission.submissionRef !== submissionRef) {
-        throw new Error('Invalid submission reference');
+      // Sanity-check the submissionRef matches what we fetched
+      if (submission.submissionRef !== submissionRef) {
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CALLBACK',
+          submissionRef,
+          storedRef: submission.submissionRef,
+          message: 'submissionRef mismatch — possible session corruption'
+        }))
+        throw new Error('Invalid submission reference')
       }
 
-      const paymentId = submission.paymentDetails.paymentId;
-      const previousAdditionalAmountPaid = submission.paymentDetails.additionalAmountPaid;
-      const isAdditionalPayment = submission.paymentDetails.remainingAdditionalAmount > 0;
+      const paymentId = submission.paymentDetails?.paymentId
 
-      const paymentStatus = await getFinishedPaymentStatus(paymentId)
-      
+      if (!paymentId) {
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CALLBACK',
+          submissionRef,
+          message: 'No paymentId found in submission — cannot check status'
+        }))
+        throw new Error('Missing paymentId on submission')
+      }
+      const isAdditionalPayment = submission.paymentDetails?.remainingAdditionalAmount > 0
+      const previousAdditionalAmountPaid = submission.paymentDetails?.additionalAmountPaid
 
-      submission.paymentDetails.paymentStatus = paymentStatus;
+      if (submission.paymentDetails?.feePaid && !isAdditionalPayment) {
+        console.log(JSON.stringify({
+          level: 'info',
+          context: 'CALLBACK',
+          submissionRef,
+          paymentId,
+          message: 'Duplicate callback received — submission already paid, skipping write'
+        }))
+        const paymentRoute = getYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE)
+        return paymentRoute === 'new-application'
+          ? h.redirect(nextPathSuccessNewApplication)
+          : h.redirect(nextPathSuccessAccountFlow)
+      }
+
+      let paymentStatus
+      try {
+        paymentStatus = await getFinishedPaymentStatus(paymentId)
+      } catch (err) {
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CALLBACK',
+          submissionRef,
+          paymentId,
+          message: 'Error fetching payment status from GovPay',
+          error: err.message
+        }))
+        throw err
+      }
+
+      // Persist status into session (non-fatal if it fails)
+      try {
+        mergeSubmission(
+          request,
+          { paymentDetails: { ...submission.paymentDetails, paymentStatus } },
+          pageId
+        )
+      } catch (err) {
+        // Log but do not abort — the session merge is a convenience, not critical path
+        console.error(JSON.stringify({
+          level: 'warn',
+          context: 'CALLBACK',
+          submissionRef,
+          message: 'Failed to merge payment status into session',
+          error: err.message
+        }))
+      }
+
+      const paymentRoute = getYarValue(request, sessionKey.GOVPAY_PAYMENT_ROUTE)
+
+      if (paymentStatus.status !== 'success' || paymentStatus.finished !== true) {
+        console.warn(JSON.stringify({
+          level: 'warn',
+          context: 'CALLBACK',
+          submissionRef,
+          paymentId,
+          status: paymentStatus.status,
+          finished: paymentStatus.finished,
+          message: 'Payment did not succeed — redirecting to failure path'
+        }))
+        return h.redirect(`${nextPathFailed}/${paymentRoute}`)
+      }
+      if (paymentStatus.paymentId !== paymentId) {
+        console.error(JSON.stringify({
+          level:    'error',
+          context:  'CALLBACK',
+          submissionRef,
+          expected: paymentId,
+          received: paymentStatus.paymentId,
+          message:  'GovPay paymentId does not match submission record — possible replay'
+        }))
+        throw new Error('Payment ID mismatch')
+      }
+      const paymentValuePounds = paymentStatus.amount / 100
+      if (!Number.isFinite(paymentValuePounds) || paymentValuePounds <= 0) {
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CALLBACK',
+          submissionRef,
+          paymentId,
+          rawAmount: paymentStatus.amount,
+          message: 'Invalid payment amount received from GovPay'
+        }))
+        throw new Error('Invalid payment amount')
+      }
+      const hasCidmAuth = !!getYarValue(request, 'CIDMAuth')?.user 
+      const contactIdFilter = hasCidmAuth && user.hasOrganisationWideAccess(request)
+        ? null
+        : contactId
 
       try {
-        mergeSubmission(request, { paymentDetails: submission.paymentDetails }, `${pageId}`);
+        await setSubmissionPayment({
+          server: request.server,
+          contactId: contactIdFilter,
+          organisationId,
+          submissionId: submission.submissionId,
+          paymentRef: paymentStatus.paymentId,
+          paymentValue: paymentValuePounds,
+          isAdditionalPayment,
+          previousAdditionalAmountPaid
+        })
       } catch (err) {
-        console.error(err);
-        return h.redirect(invalidSubmissionPath);
+        console.error(JSON.stringify({
+          level: 'error',
+          context: 'CALLBACK',
+          submissionRef,
+          paymentId,
+          paymentValuePounds,
+          message: 'CRITICAL: GovPay payment succeeded but Dynamics write failed',
+          error: err.message
+        }))
+        throw err
       }
 
-      const paymentRoute = getYarValue(request, 'govpay-paymentRoute');
-
-      // ✅ Redirect after all logic is done
-      if (shouldRedirectToCookieExpired) {
-        return h.redirect(`${cookieExpired}/new-application`);
-      }
-
-      if (paymentStatus.status !== 'success' || paymentStatus.finished === false) {
-        return h.redirect(`${nextPathFailed}/${paymentRoute}`);
-      }
-
-      let contactIdFilter = contactId;
-      if (user.hasOrganisationWideAccess(request)) {
-        contactIdFilter = null;
-      }
-
-      const submissionPaymentParams = {
-        server: request.server,
-        contactId: contactIdFilter,
-        organisationId,
-        submissionId: submission.submissionId,
-        paymentRef: paymentStatus.paymentId,
-        paymentValue: paymentStatus.amount / 100,
+      console.log(JSON.stringify({
+        level: 'info',
+        context: 'CALLBACK',
+        submissionRef,
+        paymentId,
+        paymentValuePounds,
         isAdditionalPayment,
-        previousAdditionalAmountPaid
-      };
-
-      await setSubmissionPayment(submissionPaymentParams);
+        sessionWasLost,
+        message: 'Payment write to Dynamics succeeded'
+      }))
+      if (sessionWasLost) {
+        return h.redirect(`${cookieExpiredBase}/new-application`)
+      }
 
       return paymentRoute === 'new-application'
         ? h.redirect(nextPathSuccessNewApplication)
-        : h.redirect(nextPathSuccessAccountFlow);
+        : h.redirect(nextPathSuccessAccountFlow)
     }
-
-
   }
 ]
