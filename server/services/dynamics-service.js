@@ -631,7 +631,6 @@ async function setSubmissionPayment (params) {
       const previousPaid = Number(params.previousAdditionalAmountPaid) || 0
       requestPayload.cites_additionalpaymentmethod = 149900000 // Gov Pay
       requestPayload.cites_additionalamountpaid = params.paymentValue + previousPaid
-      requestPayload.cites_additionalamountpaid = params.paymentValue + params.previousAdditionalAmountPaid
     } else {
       requestPayload.cites_paymentmethod = 149900000 // Gov Pay
       requestPayload.cites_paymentreference = params.paymentRef
