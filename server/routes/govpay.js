@@ -385,6 +385,8 @@ module.exports = [
         throw err
       }
 
+      setYarValue(request, sessionKey.SESSION_LOST, false)
+
       console.log(JSON.stringify({
         level: 'info',
         context: 'CALLBACK',
